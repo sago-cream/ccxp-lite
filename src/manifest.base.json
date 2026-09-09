@@ -83,7 +83,9 @@
         "https://ccxp.nthu.edu.tw/ccxp/INQUIRE/PE/1/14D/*"
       ],
       "run_at": "document_start",
-      "js": ["work-log/content.js"]
+      "js": ["work-log/locale.js", "work-log/content.js"],
+      "all_frames": true,
+      "css": ["work-log/content.css"]
     },
     {
       "matches": ["https://oauth.ccxp.nthu.edu.tw/v1.1/authorize.php*"],

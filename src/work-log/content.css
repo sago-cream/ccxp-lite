@@ -1,0 +1,550 @@
+html[data-ccxp-lite-work-log-language] body {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+html[data-ccxp-lite-work-log-language] body > center,
+html[data-ccxp-lite-work-log-language] body > #dialog {
+  padding-inline: var(--ccxp-lite-spacing-lg, 24px);
+}
+
+#ccxp-lite-work-log-nav {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--ccxp-lite-spacing-lg);
+  padding: var(--ccxp-lite-spacing-md, 16px) var(--ccxp-lite-spacing-lg, 24px);
+  margin-bottom: var(--ccxp-lite-spacing-lg);
+  border-bottom: 1px solid var(--ccxp-lite-border);
+}
+
+.ccxp-lite-work-log-language {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  color: var(--ccxp-lite-type-body-color);
+  font: var(--ccxp-lite-type-body);
+  cursor: pointer;
+}
+
+#ccxp-lite-work-log-nav .ccxp-lite-work-log-switch {
+  appearance: none !important;
+  box-sizing: border-box;
+  position: relative;
+  flex: 0 0 32px;
+  width: 32px !important;
+  height: 18px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background: var(--ccxp-lite-border, #d5d7dc) !important;
+  box-shadow: none !important;
+  cursor: pointer;
+}
+
+#ccxp-lite-work-log-nav .ccxp-lite-work-log-switch::before {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--ccxp-lite-text, #474f5c);
+}
+
+#ccxp-lite-work-log-nav .ccxp-lite-work-log-switch:checked {
+  background: var(--ccxp-lite-type-primary-link-color, #996699) !important;
+}
+
+#ccxp-lite-work-log-nav .ccxp-lite-work-log-switch:checked::before {
+  transform: translateX(14px);
+  background: white;
+}
+
+#ccxp-lite-work-log-nav .ccxp-lite-work-log-switch:focus-visible {
+  outline: 2px solid var(--ccxp-lite-type-primary-link-color, #996699);
+  outline-offset: 3px;
+}
+
+html[data-ccxp-lite-work-log-language] .engContent + br,
+html[data-ccxp-lite-work-log-language] label > br,
+html[data-ccxp-lite-work-log-language] th > br,
+html[data-ccxp-lite-work-log-language] #divTitle > br {
+  display: none;
+}
+
+#ccxp-lite-work-log-nav {
+  flex-wrap: wrap;
+}
+
+#ccxp-lite-work-log-nav .ccxp-lite-work-log-notice {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+#ccxp-lite-work-log-nav .ccxp-lite-work-log-notice > button {
+  width: auto;
+  height: 36px;
+  gap: var(--ccxp-lite-spacing-inline-sm, 6px);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  line-height: 1.4;
+}
+
+#ccxp-lite-work-log-nav .ccxp-lite-work-log-notice > .ccxp-lite-account-guide-info-popup {
+  top: 100%;
+  left: 0;
+  right: auto;
+  width: min(440px, calc(100vw - 64px));
+  max-height: 60vh;
+  overflow-y: auto;
+  box-sizing: border-box;
+  text-align: left;
+  white-space: normal;
+  line-height: 1.6;
+  z-index: 10;
+  --ccxp-lite-popup-translate-x: 0;
+  --ccxp-lite-popup-translate-y: var(--ccxp-lite-spacing-2xs);
+}
+
+#ccxp-lite-work-log-nav .ccxp-lite-work-log-notice > .ccxp-lite-account-guide-info-popup::before {
+  content: none;
+}
+
+html[data-ccxp-lite-work-log-language] #queTask > a[href="#"],
+html[data-ccxp-lite-work-log-language] body > center > div:has(> a[href*="goo.gl"]),
+html[data-ccxp-lite-work-log-language] body > #dialog {
+  display: none !important;
+}
+
+html[data-ccxp-lite-work-log-language] :is(#btnDiv1, #btnDiv2),
+html[data-ccxp-lite-work-log-section="add"] #queTask,
+html[data-ccxp-lite-work-log-section="search"] #insTask,
+html[data-ccxp-lite-work-log-section="add"] #listForm {
+  display: none !important;
+}
+
+html[data-ccxp-lite-work-log-section="add"] #insTask,
+html[data-ccxp-lite-work-log-section="search"] #queTask,
+html[data-ccxp-lite-work-log-section="search"] #listForm {
+  display: block !important;
+}
+
+#ccxp-lite-work-log-sections {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  margin-bottom: var(--ccxp-lite-spacing-lg, 24px);
+  border: 1px solid var(--ccxp-lite-border);
+  border-radius: var(--ccxp-lite-radius-sm, 6px);
+  background: var(--ccxp-lite-surface-muted);
+}
+
+#ccxp-lite-work-log-sections label {
+  position: relative;
+  cursor: pointer;
+}
+
+#ccxp-lite-work-log-sections input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+#ccxp-lite-work-log-sections span {
+  display: block;
+  padding: 8px 20px;
+  border-radius: var(--ccxp-lite-radius-sm, 6px);
+  color: var(--ccxp-lite-type-caption-color);
+  font: var(--ccxp-lite-type-body);
+}
+
+#ccxp-lite-work-log-sections input:checked + span {
+  background: var(--ccxp-lite-surface);
+  color: var(--ccxp-lite-type-primary-link-color);
+  box-shadow: 0 1px 3px var(--ccxp-lite-border);
+}
+
+#ccxp-lite-work-log-sections input:focus-visible + span {
+  outline: 2px solid var(--ccxp-lite-primary-focus-border);
+  outline-offset: 2px;
+}
+
+html[data-ccxp-lite-work-log-language] :is(#insTask, #queTask, #listForm) hr {
+  display: none !important;
+}
+
+/* A compact type scale over the legacy markup; form values and handlers stay intact. */
+html[data-ccxp-lite-work-log-language] {
+  --ccxp-lite-work-log-body: 400 16px/1.55 var(--ccxp-lite-font-sans);
+  --ccxp-lite-work-log-label: 700 14px/1.4 var(--ccxp-lite-font-sans);
+  --ccxp-lite-work-log-utility: 400 14px/1.4 var(--ccxp-lite-font-sans);
+}
+
+html[data-ccxp-lite-work-log-language]
+  :is(#insTask, #queTask, #listForm)
+  :is(table, td, input, select, textarea, button) {
+  font: var(--ccxp-lite-work-log-body) !important;
+  color: var(--ccxp-lite-text) !important;
+}
+
+html[data-ccxp-lite-work-log-language] :is(#insTask, #queTask, #listForm) :is(th, th label) {
+  font: var(--ccxp-lite-work-log-label) !important;
+  color: var(--ccxp-lite-text) !important;
+}
+
+html[data-ccxp-lite-work-log-language] :is(#insTask, #queTask, #listForm) .engContent {
+  font: inherit !important;
+  color: inherit !important;
+}
+
+html[data-ccxp-lite-work-log-language] :is(#insTask, #queTask, #listForm) :is(select, input, td) {
+  font-variant-numeric: tabular-nums;
+}
+
+html[data-ccxp-lite-work-log-language] #divTitle,
+html[data-ccxp-lite-work-log-language] #divTitle span {
+  font: var(--ccxp-lite-type-page-title) !important;
+  color: var(--ccxp-lite-text) !important;
+}
+
+html[data-ccxp-lite-work-log-language] #divContact,
+html[data-ccxp-lite-work-log-language] #divContact span,
+html[data-ccxp-lite-work-log-language]
+  #ccxp-lite-work-log-nav
+  :is(
+    .ccxp-lite-work-log-language,
+    .ccxp-lite-account-guide-info-button,
+    .ccxp-lite-account-guide-info-popup
+  ) {
+  font: var(--ccxp-lite-work-log-utility) !important;
+  color: var(--ccxp-lite-text-muted) !important;
+}
+
+html[data-ccxp-lite-work-log-language] #ccxp-lite-work-log-nav > a {
+  font: var(--ccxp-lite-work-log-utility) !important;
+  color: var(--ccxp-lite-primary) !important;
+  margin-inline-end: auto;
+  background: transparent !important;
+}
+
+html[data-ccxp-lite-work-log-language]
+  :is(#insTask, #queTask, #listForm)
+  span[style*="color:blue" i],
+html[data-ccxp-lite-work-log-language]
+  :is(#insTask, #queTask, #listForm)
+  span[style*="color: blue" i] {
+  font: var(--ccxp-lite-work-log-utility) !important;
+  color: var(--ccxp-lite-text-muted) !important;
+}
+
+html[data-ccxp-lite-work-log-language]
+  :is(#insTask, #queTask, #listForm)
+  span[style*="color:red" i],
+html[data-ccxp-lite-work-log-language]
+  :is(#insTask, #queTask, #listForm)
+  span[style*="color: red" i] {
+  font: var(--ccxp-lite-work-log-utility) !important;
+  color: var(--ccxp-lite-type-danger-color) !important;
+}
+
+html[data-ccxp-lite-work-log-language] #ccxp-lite-work-log-nav {
+  padding-inline: var(--ccxp-lite-spacing-lg, 24px);
+}
+
+/* Replace the legacy blank lines with half their previous vertical space. */
+html[data-ccxp-lite-work-log-language] #divTitle + br,
+html[data-ccxp-lite-work-log-language] #divContact + br,
+html[data-ccxp-lite-work-log-language] #divContact + br + br {
+  display: none;
+}
+
+html[data-ccxp-lite-work-log-language] #divTitle {
+  margin-bottom: calc(var(--ccxp-lite-font-size-body, 16px) * 0.775);
+}
+
+html[data-ccxp-lite-work-log-language] #divContact {
+  margin-bottom: calc(var(--ccxp-lite-font-size-body, 16px) * 1.55);
+}
+
+html[data-ccxp-lite-work-log-language] #listForm {
+  overflow-x: auto;
+  margin-top: var(--ccxp-lite-spacing-lg, 24px);
+}
+
+html[data-ccxp-lite-work-log-language] #listForm table[data-ccxp-lite-records] {
+  width: 100%;
+  min-width: 760px;
+  table-layout: auto;
+}
+
+html[data-ccxp-lite-work-log-language] #listForm table[data-ccxp-lite-records] :is(th, td) {
+  padding: 12px 16px;
+  text-align: start;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+
+html[data-ccxp-lite-work-log-language] #listForm table[data-ccxp-lite-records] th {
+  white-space: nowrap;
+}
+
+html[data-ccxp-lite-work-log-language] #listForm .ccxp-lite-record-secondary {
+  margin-top: 4px;
+  color: var(--ccxp-lite-text-muted);
+  font: var(--ccxp-lite-work-log-utility);
+}
+
+html[data-ccxp-lite-work-log-language] #listForm .ccxp-lite-record-detail[hidden] {
+  display: none !important;
+}
+
+html[data-ccxp-lite-work-log-language] #listForm .ccxp-lite-record-detail dl {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px 24px;
+  margin: 0;
+  padding-block: 4px;
+}
+
+html[data-ccxp-lite-work-log-language] #listForm .ccxp-lite-record-detail dt {
+  font: var(--ccxp-lite-work-log-label);
+  color: var(--ccxp-lite-text-muted);
+  margin-bottom: 4px;
+}
+
+html[data-ccxp-lite-work-log-language] #listForm .ccxp-lite-record-detail dd {
+  margin: 0;
+}
+
+html[data-ccxp-lite-work-log-language] #listForm .ccxp-lite-record-actions > div {
+  display: inline-block;
+  margin-inline-end: 8px;
+}
+
+html[data-ccxp-lite-work-log-language] #listForm .ccxp-lite-record-toggle {
+  display: block;
+  min-height: 40px;
+  padding: 4px 0;
+  border: 0;
+  background: transparent;
+  color: var(--ccxp-lite-primary);
+  cursor: pointer;
+}
+
+html[data-ccxp-lite-work-log-language] #listForm .ccxp-lite-record-toggle:hover {
+  text-decoration: underline;
+}
+
+html[data-ccxp-lite-work-log-language] #listForm .ccxp-lite-record-toggle:focus-visible {
+  outline: 2px solid var(--ccxp-lite-primary);
+  outline-offset: 2px;
+}
+
+html[data-ccxp-lite-work-log-language] #listForm .ccxp-lite-record-totals {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px 16px;
+  font: var(--ccxp-lite-work-log-label);
+}
+
+html[data-ccxp-lite-work-log-language] #listForm .ccxp-lite-record-totals > span:empty {
+  display: none;
+}
+
+/* Keep native fields recognizable beneath the legacy jQuery UI classes. */
+html[data-ccxp-lite-work-log-language]
+  :is(#insTask, #queForm)
+  :is(
+    input[type="text"],
+    input:not([type]),
+    input[type="number"],
+    input[type="date"],
+    textarea,
+    select
+  ) {
+  box-sizing: border-box;
+  max-width: 100%;
+  min-height: 40px;
+  padding: 8px 12px !important;
+  border: 1px solid var(--ccxp-lite-sidebar-search-border, #e5e7eb) !important;
+  border-radius: var(--ccxp-lite-radius-sm, 6px) !important;
+  background: var(--ccxp-lite-surface, #fff) !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+html[data-ccxp-lite-work-log-language]
+  :is(#insTask, #queForm)
+  :is(
+    input[type="text"],
+    input:not([type]),
+    input[type="number"],
+    input[type="date"],
+    textarea,
+    select
+  ):focus-visible {
+  border-color: var(--ccxp-lite-primary-focus-border, #e3cde8) !important;
+  outline: none !important;
+  outline-offset: 0;
+  box-shadow: 0 0 0 3px var(--ccxp-lite-primary-focus-ring, rgb(163 91 176 / 10%)) !important;
+}
+
+html[data-ccxp-lite-work-log-language] #insTask input[name="I_TASK_NOTE"] {
+  display: block;
+  width: min(100%, 42rem);
+}
+
+html[data-ccxp-lite-work-log-language] #insTask td:has(input[name="I_TASK_NOTE"]) {
+  white-space: normal !important;
+}
+
+html[data-ccxp-lite-work-log-language] #insTask input[name="I_TASK_NOTE"] ~ span {
+  display: block;
+  max-width: 42rem;
+  margin-top: 8px;
+  white-space: normal !important;
+  overflow-wrap: anywhere;
+}
+
+html[data-ccxp-lite-work-log-language] :is(#insTask, #queTask) :is(th, td) {
+  padding: 16px 20px !important;
+  line-height: 1.6 !important;
+}
+
+html[data-ccxp-lite-work-log-language] #listForm table[data-ccxp-lite-records] :is(th, td) {
+  padding: 16px 20px !important;
+}
+
+html[data-ccxp-lite-work-log-language] .ccxp-lite-work-log-actions {
+  margin-top: 12px;
+  margin-bottom: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: var(--ccxp-lite-spacing-sm, 8px);
+}
+
+html[data-ccxp-lite-work-log-language] :is(#insTask, #queForm) .ccxp-lite-work-log-actions input {
+  min-width: 88px;
+  height: var(--ccxp-lite-size-login-control-height, 40px);
+  padding: 0 var(--ccxp-lite-spacing-inset-lg, 24px) !important;
+  border-radius: var(--ccxp-lite-radius-full, 999px) !important;
+  border: 1px solid var(--ccxp-lite-border, #ddd) !important;
+  background: transparent !important;
+  font-size: var(--ccxp-lite-font-size-utility, 14px) !important;
+  font-weight: var(--ccxp-lite-font-weight-strong, 700) !important;
+  cursor: pointer;
+  transition:
+    background-color 120ms ease,
+    box-shadow 120ms ease;
+}
+
+html[data-ccxp-lite-work-log-language]
+  :is(#insTask, #queForm)
+  .ccxp-lite-work-log-actions
+  .ccxp-lite-action-control-primary {
+  border: 0 !important;
+  background: var(--ccxp-lite-primary, #a35bb0) !important;
+  color: var(--ccxp-lite-bg, #fff) !important;
+}
+
+html[data-ccxp-lite-work-log-language]
+  :is(#insTask, #queForm)
+  .ccxp-lite-work-log-actions
+  .ccxp-lite-action-control-primary:is(:hover, :focus-visible) {
+  background: var(--ccxp-lite-primary-hover-solid, #8b4997) !important;
+  box-shadow: none;
+}
+
+html[data-ccxp-lite-work-log-language]
+  :is(#insTask, #queForm)
+  .ccxp-lite-work-log-actions
+  input:focus-visible {
+  outline: 2px solid var(--ccxp-lite-primary, #a35bb0);
+  outline-offset: 3px;
+}
+
+html[data-ccxp-lite-work-log-language]
+  :is(#insTask, #queForm)
+  td
+  > input[type="text"]:has(~ select) {
+  margin-bottom: 8px;
+}
+
+/* Match the login form's stacked layout while retaining host row hooks. */
+html[data-ccxp-lite-work-log-language] :is(#insTask, #queForm) {
+  max-width: 720px;
+  margin-inline: auto;
+  text-align: start;
+}
+
+html[data-ccxp-lite-work-log-language] :is(#insTask, #queForm) table.ccxp-lite-work-log-form-fields,
+html[data-ccxp-lite-work-log-language]
+  :is(#insTask, #queForm)
+  .ccxp-lite-work-log-form-fields
+  :is(tbody, tr, th, td) {
+  display: block;
+  box-sizing: border-box;
+  width: 100% !important;
+  min-width: 0;
+  height: auto;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  text-align: start;
+}
+
+html[data-ccxp-lite-work-log-language]
+  :is(#insTask, #queForm)
+  .ccxp-lite-work-log-form-fields
+  > tbody
+  > tr
+  + tr {
+  margin-top: var(--ccxp-lite-spacing-lg, 24px) !important;
+}
+
+html[data-ccxp-lite-work-log-language] :is(#insTask, #queForm) .ccxp-lite-work-log-form-fields th {
+  margin-bottom: var(--ccxp-lite-spacing-sm, 8px) !important;
+  font: var(--ccxp-lite-work-log-label) !important;
+}
+
+html[data-ccxp-lite-work-log-language]
+  :is(#insTask, #queForm)
+  .ccxp-lite-work-log-form-fields
+  th
+  > br {
+  display: none;
+}
+
+html[data-ccxp-lite-work-log-language]
+  :is(#insTask, #queForm)
+  .ccxp-lite-work-log-form-fields
+  [hidden] {
+  display: none !important;
+}
+
+html[data-ccxp-lite-work-log-language] :is(#insTask, #queForm) .ccxp-lite-work-log-actions {
+  margin-top: 32px;
+}
+
+html[data-ccxp-lite-work-log-language]
+  :is(#insTask, #queForm)
+  .ccxp-lite-work-log-form-fields
+  th
+  :is(label, span, b, strong) {
+  font: inherit !important;
+  color: inherit !important;
+}
