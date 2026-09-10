@@ -123,8 +123,7 @@ html.ccxp-registration .ccxp-registration-header :focus-visible {
   outline: 2px solid var(--ccxp-lite-primary);
   outline-offset: 4px;
 }
-html.ccxp-registration #smart-form > .tagline,
-html.ccxp-registration #smart-form > .ccxp-registration-section-title {
+html.ccxp-registration #smart-form > .tagline {
   max-width: 800px;
   height: auto;
   border: 0;
@@ -135,8 +134,7 @@ html.ccxp-registration #smart-form > .ccxp-registration-section-title {
   font: var(--ccxp-lite-type-body-strong);
   text-transform: none;
 }
-html.ccxp-registration #smart-form > .ccxp-registration-records-title {
-  max-width: none;
+html.ccxp-registration #smart-form > .ccxp-registration-row:has(#grid) {
   margin-top: 48px;
 }
 html.ccxp-registration .ccxp-registration-choice-help {
