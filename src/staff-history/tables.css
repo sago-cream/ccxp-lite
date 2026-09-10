@@ -46,6 +46,7 @@ html[data-ccxp-lite-scope="main"]
   white-space: nowrap;
 }
 :is(#grid, #grid_pre)[data-ccxp-staff-table="true"] .ccxp-staff-document-action i {
+  color: inherit !important;
   font-size: 16px;
   width: auto;
   line-height: inherit;
