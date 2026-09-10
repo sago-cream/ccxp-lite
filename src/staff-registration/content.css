@@ -25,6 +25,26 @@ html.ccxp-registration .material-tooltip {
 html.ccxp-registration .material-tooltip .backdrop {
   display: none !important;
 }
+html.ccxp-registration .waves-ripple {
+  display: none !important;
+}
+html.ccxp-registration .k-state-focused,
+html.ccxp-registration .k-state-focused > .k-select {
+  border-color: var(--ccxp-lite-border) !important;
+  box-shadow: none !important;
+  outline: none;
+}
+html.ccxp-registration :focus:not(:focus-visible) {
+  outline: none !important;
+}
+html.ccxp-registration #smart-form :focus-visible {
+  outline: 1px solid var(--ccxp-lite-type-body-muted-color);
+  outline-offset: 2px;
+}
+html.ccxp-registration #smart-form input[type="checkbox"]:focus-visible + label {
+  outline: 1px solid var(--ccxp-lite-type-body-muted-color);
+  outline-offset: 2px;
+}
 html.ccxp-registration :is(.ccxp-registration-header, #smart-form),
 html.ccxp-registration :is(.ccxp-registration-header, #smart-form) * {
   text-shadow: none !important;
