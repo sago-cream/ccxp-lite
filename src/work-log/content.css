@@ -548,3 +548,102 @@ html[data-ccxp-lite-work-log-language]
   font: inherit !important;
   color: inherit !important;
 }
+
+#ccxp-lite-batch {
+  box-sizing: border-box;
+  width: min(960px, 100%);
+  margin: 24px auto;
+  padding: 16px;
+  border: 1px solid var(--ccxp-lite-border, #d5d7dc);
+  border-radius: 8px;
+  background: var(--ccxp-lite-surface, #fff);
+  color: var(--ccxp-lite-text, #474f5c);
+  text-align: left;
+  font: inherit;
+}
+
+#ccxp-lite-batch summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+#ccxp-lite-batch fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+#ccxp-lite-batch .ccxp-lite-batch-fields,
+#ccxp-lite-batch .ccxp-lite-batch-weekdays,
+#ccxp-lite-batch .ccxp-lite-batch-slot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: end;
+  margin-block: 12px;
+}
+
+#ccxp-lite-batch label {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-block: 8px;
+}
+
+#ccxp-lite-batch input:not([type="checkbox"]) {
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
+  padding: 8px;
+  border: 1px solid var(--ccxp-lite-border, #d5d7dc);
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+
+#ccxp-lite-batch input[type="checkbox"] {
+  appearance: auto;
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  accent-color: var(--ccxp-lite-type-primary-link-color, #996699);
+}
+
+#ccxp-lite-batch button {
+  margin: 4px 8px 4px 0;
+  padding: 8px 12px;
+  min-height: 40px;
+  border: 1px solid var(--ccxp-lite-border, #d5d7dc);
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+#ccxp-lite-batch button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+#ccxp-lite-batch :focus-visible {
+  outline: 2px solid var(--ccxp-lite-type-primary-link-color, #996699);
+  outline-offset: 2px;
+}
+
+#ccxp-lite-batch .ccxp-lite-batch-preview {
+  max-height: 360px;
+  overflow: auto;
+}
+
+#ccxp-lite-batch [hidden] {
+  display: none !important;
+}
+
+@media (max-width: 600px) {
+  #ccxp-lite-batch label {
+    flex-wrap: wrap;
+  }
+}

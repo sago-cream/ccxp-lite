@@ -1,6 +1,6 @@
 (function installWorkLogLanguage() {
   // Transport responses must remain raw until imported into the visible document.
-  if (window.name === "ccxp-lite-pe14d-transport") {
+  if (window.name.startsWith("ccxp-lite-pe14d-")) {
     return;
   }
   let english = false;
