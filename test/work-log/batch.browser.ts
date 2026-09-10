@@ -46,18 +46,20 @@ function fixture(fields = new URLSearchParams(), success = false) {
   return `<!doctype html><html><head><meta charset="big5"></head><body>
 <form id="insForm" name="insForm" method="post" accept-charset="big5" action="PE14D1.php">
 <input name="ACIXSTORE" value="test-session" type="hidden">
-${select("I_TASK_DT_Year", ["2026", "2027"], "2026")}
+<table><tbody><tr><th>Work date</th><td>${select("I_TASK_DT_Year", ["2026", "2027"], "2026")}
 ${select("I_TASK_DT_Month", numbers(12, 1), "09")}
 ${select("I_TASK_DT_Day", numbers(31, 1), "10")}
+</td></tr><tr><th>Work time</th><td>
 ${select("I_TASK_A_TM_Hour", numbers(24), "08")}
 ${select("I_TASK_A_TM_Minute", numbers(60), "00")}
 ${select("I_TASK_Z_TM_Hour", numbers(25), "10")}
 ${select("I_TASK_Z_TM_Minute", numbers(60), "00")}
+</td></tr></tbody></table>
 <input type="radio" name="I_LAB_SERIAL" value="task-1" checked>
 <input type="radio" name="I_LAB_SERIAL" value="task-2">
 ${select("I_SRV_ID", ["DEPT"], "DEPT")}
 <input name="I_TASK_NOTE" value="__NOTE__" maxlength="15">
-<input type="submit" name="S_SUBMIT" value="Add">
+<input type="submit" name="S_SUBMIT" value="Add" onclick="toSubmit(this.form, 'ins'); return false">
 </form>
 <form id="listForm"><table>${success ? `<tr>${cells.map((cell) => `<td>${cell}</td>`).join("")}</tr>` : ""}</table></form>
 <script>
@@ -70,53 +72,51 @@ ${success ? "alert('Add successfully!');" : ""}
 </script></body></html>`;
 }
 
-test("previews weekly dates, deduplicates extras, rejects overlaps and invalidates changed forms", async () => {
+test("switches date modes without changing native values and validates the shared time", async () => {
   const browser = await chromium.launch({ headless: true });
   try {
-    const page = await browser.newPage();
-    page.setDefaultTimeout(4000);
+    const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+    const posts: string[] = [];
     await page.route("**/*", async (route) => {
+      const body = route.request().postData();
+      if (body !== null) {
+        posts.push(body);
+      }
       await route.fulfill({ contentType: "text/html", body: fixture() });
     });
     await page.goto(endpoint);
     await page.addScriptTag({ content: source });
     await page.addStyleTag({ path: "src/work-log/content.css" });
-    await page.setViewportSize({ width: 390, height: 844 });
-    await page.locator("#ccxp-lite-batch summary").click();
-    const dates = page.locator('#ccxp-lite-batch input[type="date"]');
-    await dates.nth(0).fill("2026-09-07");
-    await dates.nth(1).fill("2026-09-13");
-    await page.locator('#ccxp-lite-batch input[type="text"]').fill("2026-09-07,2026-09-12");
-    await page
-      .getByRole("button", { name: "\u9810\u89BD\u767B\u9304\u6E05\u55AE", exact: true })
-      .click();
-    expect(await page.locator(".ccxp-lite-batch-preview input").count()).toBe(6);
+    expect(await page.locator(".ccxp-lite-single-date").isVisible()).toBe(true);
+    expect(await page.locator("#ccxp-lite-batch fieldset").isVisible()).toBe(false);
+    await page.getByRole("button", { name: "\u591A\u65E5", exact: true }).click();
+    expect(await page.locator(".ccxp-lite-single-date").isVisible()).toBe(true);
+    expect(await page.locator('[name="I_TASK_DT_Year"]').count()).toBe(1);
+    expect(await page.locator("#ccxp-lite-weekday-row").isVisible()).toBe(true);
+    expect(await page.locator("#ccxp-lite-weekday-label").textContent()).toBe(
+      "\u50C5\u767B\u9304\u4EE5\u4E0B\u661F\u671F",
+    );
+    await page.getByLabel("\u7D50\u675F\u65E5\u671F\u6708", { exact: true }).selectOption("01");
+    await page.getByLabel("\u7D50\u675F\u65E5\u671F\u65E5", { exact: true }).selectOption("31");
+    await page.getByLabel("\u7D50\u675F\u65E5\u671F\u6708", { exact: true }).selectOption("02");
     expect(
-      await page
-        .locator("#ccxp-lite-batch")
-        .evaluate((panel) => panel.scrollWidth <= panel.clientWidth),
-    ).toBe(true);
-    expect(await page.locator(".ccxp-lite-batch-preview").textContent()).toContain("2026-09-12");
-    await page
-      .getByRole("button", { name: "\uFF0B \u589E\u52A0\u6642\u6BB5", exact: true })
-      .click();
-    const times = page.locator(".ccxp-lite-batch-slot input");
-    await times.nth(2).fill("09:00");
-    await page
-      .getByRole("button", { name: "\u9810\u89BD\u767B\u9304\u6E05\u55AE", exact: true })
-      .click();
-    expect(await page.getByRole("status").textContent()).toContain("\u4E0D\u53EF\u91CD\u758A");
-    await times.nth(2).fill("13:00");
-    await page
-      .getByRole("button", { name: "\u9810\u89BD\u767B\u9304\u6E05\u55AE", exact: true })
-      .click();
-    expect(await page.locator(".ccxp-lite-batch-preview input").count()).toBe(12);
-    await page.locator('[name="I_TASK_NOTE"]').fill("Changed");
-    expect(
-      await page
-        .getByRole("button", { name: "\u958B\u59CB\u6279\u6B21\u767B\u9304", exact: true })
-        .isDisabled(),
-    ).toBe(true);
+      await page.getByLabel("\u7D50\u675F\u65E5\u671F\u65E5", { exact: true }).inputValue(),
+    ).toBe("28");
+    await page.getByLabel("\u7D50\u675F\u65E5\u671F\u6708", { exact: true }).selectOption("09");
+
+    await page.locator('[name="I_TASK_Z_TM_Hour"]').selectOption("07");
+    await page.getByRole("button", { name: "Add", exact: true }).click();
+    expect(await page.getByRole("status").textContent()).toContain(
+      "\u7D50\u675F\u6642\u9593\u5FC5\u9808\u665A\u65BC",
+    );
+    expect(posts).toHaveLength(0);
+    await page.getByRole("button", { name: "\u55AE\u65E5", exact: true }).click();
+    expect(await page.locator('[name="I_TASK_DT_Day"]').inputValue()).toBe("10");
+    expect(await page.locator('[name="I_TASK_Z_TM_Hour"]').inputValue()).toBe("07");
+    expect(await page.locator(".ccxp-lite-single-date").isVisible()).toBe(true);
+    await page.getByRole("button", { name: "Add", exact: true }).click();
+    await page.waitForLoadState();
+    expect(posts).toHaveLength(1);
   } finally {
     await browser.close();
   }
@@ -144,14 +144,9 @@ test("submits sequential native Big5 forms with fresh date tasks and guards comp
     });
     await page.goto(endpoint);
     await page.addScriptTag({ content: source });
-    await page.locator("#ccxp-lite-batch summary").click();
-    await page.locator('#ccxp-lite-batch input[type="date"]').nth(1).fill("2026-09-11");
-    await page
-      .getByRole("button", { name: "\u9810\u89BD\u767B\u9304\u6E05\u55AE", exact: true })
-      .click();
-    await page
-      .getByRole("button", { name: "\u958B\u59CB\u6279\u6B21\u767B\u9304", exact: true })
-      .click();
+    await page.getByRole("button", { name: "\u591A\u65E5", exact: true }).click();
+    await page.getByLabel("\u7D50\u675F\u65E5\u671F\u65E5", { exact: true }).selectOption("11");
+    await page.getByRole("button", { name: "Add", exact: true }).click();
     await page.waitForFunction(
       () =>
         document.querySelector('[role="status"]')?.textContent.includes("\u6210\u529F 2 \u7B46"),
@@ -165,15 +160,10 @@ test("submits sequential native Big5 forms with fresh date tasks and guards comp
     expect(posts[1]).toContain("I_LAB_SERIAL=task-1");
     expect(posts[1]).not.toContain("task-2");
     expect(posts[3]).toContain("I_TASK_DT_Day=11");
-    await page
-      .getByRole("button", { name: "\u9810\u89BD\u767B\u9304\u6E05\u55AE", exact: true })
-      .click();
-    expect(
-      await page
-        .getByRole("button", { name: "\u958B\u59CB\u6279\u6B21\u767B\u9304", exact: true })
-        .isDisabled(),
-    ).toBe(true);
-    expect(await page.locator(".ccxp-lite-batch-preview input:checked").count()).toBe(0);
+    await page.getByRole("button", { name: "Add", exact: true }).click();
+    expect(await page.getByRole("status").textContent()).toContain(
+      "\u5DF2\u767B\u9304\u6216\u5F85\u78BA\u8A8D",
+    );
     expect(posts).toHaveLength(4);
   } finally {
     await browser.close();
@@ -211,14 +201,9 @@ test.each(["reject", "uncertain", "stop"] as const)(
       });
       await page.goto(endpoint);
       await page.addScriptTag({ content: source });
-      await page.locator("#ccxp-lite-batch summary").click();
-      await page.locator('#ccxp-lite-batch input[type="date"]').nth(1).fill("2026-09-11");
-      await page
-        .getByRole("button", { name: "\u9810\u89BD\u767B\u9304\u6E05\u55AE", exact: true })
-        .click();
-      await page
-        .getByRole("button", { name: "\u958B\u59CB\u6279\u6B21\u767B\u9304", exact: true })
-        .click();
+      await page.getByRole("button", { name: "\u591A\u65E5", exact: true }).click();
+      await page.getByLabel("\u7D50\u675F\u65E5\u671F\u65E5", { exact: true }).selectOption("11");
+      await page.getByRole("button", { name: "Add", exact: true }).click();
       await page.waitForFunction(
         (expected) => document.querySelector('[role="status"]')?.textContent.includes(expected),
         {
@@ -234,12 +219,6 @@ test.each(["reject", "uncertain", "stop"] as const)(
       );
       expect(journal).toContain({ reject: "{}", stop: "done", uncertain: "pending" }[mode]);
       expect(await page.locator('[name="I_TASK_NOTE"]').isEnabled()).toBe(true);
-      await page
-        .getByRole("button", { name: "\u9810\u89BD\u767B\u9304\u6E05\u55AE", exact: true })
-        .click();
-      expect(await page.locator(".ccxp-lite-batch-preview input:checked").count()).toBe(
-        mode === "reject" ? 2 : 1,
-      );
     } finally {
       await browser.close();
     }
@@ -256,17 +235,33 @@ test("rejects unsupported Big5 characters before submitting", async () => {
     });
     await page.goto(endpoint);
     await page.addScriptTag({ content: source });
-    await page.locator("#ccxp-lite-batch summary").click();
+    await page.getByRole("button", { name: "\u591A\u65E5", exact: true }).click();
     await page.locator('[name="I_TASK_NOTE"]').fill("\u{1F600}");
-    await page
-      .getByRole("button", { name: "\u9810\u89BD\u767B\u9304\u6E05\u55AE", exact: true })
-      .click();
+    await page.getByRole("button", { name: "Add", exact: true }).click();
     expect(await page.getByRole("status").textContent()).toContain("Big5");
+  } finally {
+    await browser.close();
+  }
+}, 20_000);
+
+test("waits for host parsing before grouping and copying date controls", async () => {
+  const browser = await chromium.launch({ headless: true });
+  try {
+    const page = await browser.newPage();
+    await page.route("**/*", async (route) => {
+      await route.fulfill({
+        contentType: "text/html",
+        body: fixture().replace("</head>", `<script>${source}</script></head>`),
+      });
+    });
+    await page.goto(endpoint);
+    expect(await page.locator(".ccxp-lite-single-date select").count()).toBe(3);
     expect(
-      await page
-        .getByRole("button", { name: "\u958B\u59CB\u6279\u6B21\u767B\u9304", exact: true })
-        .isDisabled(),
-    ).toBe(true);
+      await page.getByLabel("\u7D50\u675F\u65E5\u671F\u6708", { exact: true }).inputValue(),
+    ).toBe("09");
+    expect(
+      await page.getByLabel("\u7D50\u675F\u65E5\u671F\u65E5", { exact: true }).inputValue(),
+    ).toBe("10");
   } finally {
     await browser.close();
   }

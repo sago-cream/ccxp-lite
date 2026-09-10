@@ -30,17 +30,17 @@
   let stopped = false;
   let plan: Plan | undefined;
   let built = false;
-  let panel: HTMLDetailsElement;
+  let panel: HTMLDivElement;
+  let multiple = false;
+  let singleDates: HTMLDivElement;
+  let feedback: HTMLDivElement;
   let settings: HTMLFieldSetElement;
-  let preview: HTMLDivElement;
   let status: HTMLParagraphElement;
-  let startButton: HTMLButtonElement;
   let stopButton: HTMLButtonElement;
-  let from: HTMLInputElement;
-  let until: HTMLInputElement;
-  let extra: HTMLInputElement;
-  let slots: HTMLDivElement;
+  let from: HTMLDivElement;
+  let until: HTMLDivElement;
   let weekdays: HTMLDivElement;
+  let weekdayRow: HTMLTableRowElement;
   let stale = true;
 
   let big5Characters: Set<string> | undefined;
@@ -77,19 +77,6 @@
       throw new Error("Invalid journal");
     }
     return stored as Record<string, string | undefined>;
-  }
-
-  function updateSummary() {
-    if (!plan || stale || running) {
-      return;
-    }
-    const checks = [...preview.querySelectorAll<HTMLInputElement>("input")];
-    const selected = plan.entries.filter((_entry, index) => checks[index].checked);
-    const minutes = (time: string) => Number(time.slice(0, 2)) * 60 + Number(time.slice(3));
-    const hours =
-      selected.reduce((sum, entry) => sum + minutes(entry.end) - minutes(entry.start), 0) / 60;
-    status.textContent = `\u5DF2\u9078 ${selected.length} \u7B46\uFF0C\u5171 ${Number(hours.toFixed(2))} \u5C0F\u6642\u3002\u8ACB\u6838\u5C0D\u6E05\u55AE\u5F8C\u958B\u59CB\u767B\u9304\u3002`;
-    startButton.disabled = selected.length === 0;
   }
 
   function isStopped() {
@@ -136,152 +123,177 @@
 
   function invalidate() {
     stale = true;
-    startButton.disabled = true;
-    if (preview.childElementCount > 0 && !running) {
-      status.textContent =
-        "\u8A2D\u5B9A\u5DF2\u8B8A\u66F4\uFF0C\u8ACB\u91CD\u65B0\u9810\u89BD\u3002";
+    if (!running) {
+      status.textContent = "";
     }
-  }
-
-  function addSlot(start = "08:00", end = "10:00") {
-    const row = element("div");
-    row.className = "ccxp-lite-batch-slot";
-    field(row, "\u958B\u59CB", "time", start);
-    field(row, "\u7D50\u675F", "time", end);
-    const removeBtn = button("\u79FB\u9664\u6B64\u6642\u6BB5", () => {
-      row.remove();
-      invalidate();
-    });
-    removeBtn.className = "ccxp-lite-batch-remove-btn";
-    row.append(removeBtn);
-    slots.append(row);
-    invalidate();
   }
 
   function build() {
-    if (document.querySelector(`#${id}`) || !document.querySelector("#insForm")) {
+    // Wait for all host date selects and their inline initialization to finish parsing.
+    if (document.readyState === "loading") {
       return;
     }
-    // Keep the panel and its event handlers when the existing transport replaces the body.
-    if (built) {
-      hostForm().before(panel);
-      invalidate();
+    if (document.querySelector(`#${id}`)) {
       return;
     }
-    built = true;
-    panel = element("details");
-    panel.id = id;
-    panel.append(element("summary", "\u6279\u6B21\u767B\u9304 \u00B7 \u6BCF\u9031\u91CD\u8907"));
-    panel.append(
-      element(
-        "p",
-        "\u5148\u5728\u4E0B\u65B9\u65B0\u589E\u8868\u55AE\u9078\u597D\u4EFB\u52D9\u3001\u5DE5\u4F5C\u55AE\u4F4D\u8207\u5DE5\u4F5C\u5167\u5BB9\uFF0C\u518D\u8A2D\u5B9A\u65E5\u671F\u548C\u6642\u6BB5\u3002\u6BCF\u9031\u91CD\u8907\u6703\u5C55\u958B\u70BA\u672C\u6B21\u767B\u9304\u6E05\u55AE\uFF0C\u4E0D\u6703\u5728\u80CC\u666F\u5B9A\u6642\u9001\u51FA\u3002",
-      ),
-    );
-    settings = element("fieldset");
-    panel.append(settings);
-    const dates = element("div");
-    dates.className = "ccxp-lite-batch-fields";
-    const form = hostForm();
-    const initialDate = ["Year", "Month", "Day"]
-      .map((part) => value(form, `I_TASK_DT_${part}`))
-      .join("-");
-    from = field(dates, "\u958B\u59CB\u65E5\u671F", "date", initialDate);
-    until = field(dates, "\u7D50\u675F\u65E5\u671F", "date", initialDate);
-    settings.append(dates);
-    const weekdaySection = element("div");
-    weekdaySection.className = "ccxp-lite-batch-weekday-section";
-    const weekdayHeader = element("div");
-    weekdayHeader.className = "ccxp-lite-batch-weekday-header";
-    weekdayHeader.append(element("span", "\u5340\u9593\u5167\u6BCF\u9031\u91CD\u8907"));
-    const weekdayQuick = element("div");
-    weekdayQuick.className = "ccxp-lite-batch-quick-actions";
-    const setWeekdays = (indices: ReadonlySet<number>) => {
-      for (const input of weekdays.querySelectorAll<HTMLInputElement>("input")) {
-        input.checked = indices.has(Number(input.value));
+    const form = document.querySelector<HTMLFormElement>("#insForm");
+    const dateControl = form?.querySelector('[name="I_TASK_DT_Year"]');
+    const dateCell = dateControl?.closest("td");
+    if (!form || !dateCell) {
+      return;
+    }
+    singleDates = element("div");
+    singleDates.className = "ccxp-lite-single-date";
+    singleDates.append(...dateCell.childNodes);
+    dateCell.append(singleDates);
+    if (!built) {
+      built = true;
+      panel = element("div");
+      panel.id = id;
+      const modes = element("div");
+      modes.className = "ccxp-lite-date-modes";
+      modes.setAttribute("role", "group");
+      modes.setAttribute("aria-label", "\u5DE5\u4F5C\u65E5\u671F\u6A21\u5F0F");
+      for (const [index, title] of ["\u55AE\u65E5", "\u591A\u65E5"].entries()) {
+        const mode = button(title, selectMode(index === 1));
+        mode.setAttribute("aria-pressed", String(index === 0));
+        modes.append(mode);
       }
+      settings = element("fieldset");
+      settings.hidden = true;
+      const dates = element("div");
+      dates.className = "ccxp-lite-batch-fields";
+      until = dateFields(form, "\u7D50\u675F\u65E5\u671F");
+      dates.append(element("span", "\uFF5E"), until);
+      weekdays = element("div");
+      weekdays.className = "ccxp-lite-batch-weekdays";
+      weekdays.setAttribute("role", "group");
+      weekdays.setAttribute("aria-label", "\u6BCF\u9031\u65E5\u671F");
+      for (const [index, day] of [
+        "\u65E5",
+        "\u4E00",
+        "\u4E8C",
+        "\u4E09",
+        "\u56DB",
+        "\u4E94",
+        "\u516D",
+      ].entries()) {
+        const input = field(weekdays, `\u9031${day}`, "checkbox");
+        input.value = String(index);
+        input.checked = index > 0 && index < 6;
+      }
+      weekdayRow = element("tr");
+      weekdayRow.id = "ccxp-lite-weekday-row";
+
+      const weekdayCell = element("td");
+      const weekdayLabel = element("div", "\u50C5\u767B\u9304\u4EE5\u4E0B\u661F\u671F");
+      weekdayLabel.id = "ccxp-lite-weekday-label";
+      weekdays.setAttribute("aria-labelledby", weekdayLabel.id);
+      weekdayCell.append(weekdayLabel, weekdays);
+      weekdayCell.colSpan = 2;
+      weekdayRow.append(weekdayCell);
+      settings.append(dates);
+      panel.append(modes, settings);
+      feedback = element("div");
+      feedback.id = "ccxp-lite-batch-feedback";
+      status = element("p");
+      status.setAttribute("role", "status");
+      status.setAttribute("aria-live", "polite");
+      stopButton = button("\u5B8C\u6210\u76EE\u524D\u4E00\u7B46\u5F8C\u505C\u6B62", () => {
+        stopped = true;
+        stopButton.disabled = true;
+      });
+      stopButton.hidden = true;
+      feedback.append(status, stopButton);
+    }
+    from = singleDates;
+    singleDates.before(panel);
+    settings.before(singleDates);
+    dateCell.closest("tr")?.after(weekdayRow);
+    form.after(feedback);
+    syncMode();
+    invalidate();
+    form.addEventListener("input", invalidate);
+    form.addEventListener("reset", () => {
+      multiple = false;
+      syncMode();
+      invalidate();
+    });
+  }
+
+  function selectMode(next: boolean) {
+    return () => {
+      multiple = next;
+      syncMode();
       invalidate();
     };
-    weekdayQuick.append(
-      button("\u5DE5\u4F5C\u65E5", () => {
-        setWeekdays(new Set([1, 2, 3, 4, 5]));
-      }),
-      button("\u5168\u9078", () => {
-        setWeekdays(new Set([0, 1, 2, 3, 4, 5, 6]));
-      }),
-      button("\u6E05\u7A7A", () => {
-        setWeekdays(new Set());
-      }),
-    );
-    weekdayHeader.append(weekdayQuick);
-    weekdays = element("div");
-    weekdays.className = "ccxp-lite-batch-weekdays";
-    for (const [index, day] of [
-      "\u65E5",
-      "\u4E00",
-      "\u4E8C",
-      "\u4E09",
-      "\u56DB",
-      "\u4E94",
-      "\u516D",
-    ].entries()) {
-      const input = field(weekdays, `\u9031${day}`, "checkbox");
-      input.value = String(index);
-      input.checked = index > 0 && index < 6;
+  }
+
+  function syncMode() {
+    singleDates.hidden = false;
+    settings.hidden = !multiple;
+    weekdayRow.hidden = !multiple;
+    for (const [index, mode] of panel.querySelectorAll(".ccxp-lite-date-modes button").entries()) {
+      mode.setAttribute("aria-pressed", String(multiple === (index === 1)));
     }
-    weekdaySection.append(weekdayHeader, weekdays);
-    settings.append(weekdaySection);
-    const extraWrap = element("div");
-    extraWrap.className = "ccxp-lite-batch-extra";
-    extra = field(
-      extraWrap,
-      "\u984D\u5916\u65E5\u671F\uFF08\u4EE5\u9017\u865F\u5206\u9694\uFF0C\u4F8B\u5982 2026-09-12, 2026-09-19\uFF09",
-      "text",
-    );
-    settings.append(extraWrap);
-    slots = element("div");
-    slots.className = "ccxp-lite-batch-slots";
-    settings.append(slots);
-    const actionsRow = element("div");
-    actionsRow.className = "ccxp-lite-batch-actions";
-    actionsRow.append(
-      button("\uFF0B \u589E\u52A0\u6642\u6BB5", () => {
-        addSlot("13:00", "17:00");
-      }),
-    );
-    actionsRow.append(button("\u9810\u89BD\u767B\u9304\u6E05\u55AE", makePreview));
-    settings.append(actionsRow);
-    preview = element("div");
-    preview.className = "ccxp-lite-batch-preview";
-    preview.addEventListener("change", updateSummary);
-    status = element("p");
-    status.setAttribute("role", "status");
-    status.setAttribute("aria-live", "polite");
-    startButton = button("\u958B\u59CB\u6279\u6B21\u767B\u9304", () => {
-      run().catch((error: unknown) => {
-        status.textContent = String(error);
-      });
+  }
+
+  function intercept(event: Event) {
+    if (!multiple || !(event.target instanceof Element)) {
+      return;
+    }
+    const form = event.target.closest("#insForm");
+    if (!form || (event.type === "click" && !event.target.closest('[name="S_SUBMIT"]'))) {
+      return;
+    }
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    if (running) {
+      return;
+    }
+    preparePlan();
+    run().catch((error: unknown) => {
+      status.textContent = String(error);
     });
-    startButton.className = "ccxp-lite-batch-primary-btn";
-    startButton.disabled = true;
-    stopButton = button("\u5B8C\u6210\u76EE\u524D\u4E00\u7B46\u5F8C\u505C\u6B62", () => {
-      stopped = true;
-      stopButton.disabled = true;
-    });
-    stopButton.className = "ccxp-lite-batch-stop-btn";
-    stopButton.hidden = true;
-    const runActions = element("div");
-    runActions.className = "ccxp-lite-batch-run-actions";
-    runActions.append(startButton, stopButton);
-    panel.append(preview, status, runActions);
-    settings.addEventListener("input", invalidate);
-    document.addEventListener("input", (event) => {
-      if (event.target instanceof Element && event.target.closest("#insForm")) {
-        invalidate();
+  }
+  // Capture before the host's inline click handler or native submit transport.
+  document.addEventListener("click", intercept, true);
+  document.addEventListener("submit", intercept, true);
+
+  function selectedDate(group: HTMLElement) {
+    return [...group.querySelectorAll("select")].map((select) => select.value).join("-");
+  }
+
+  function dateFields(form: HTMLFormElement, title: string) {
+    const group = element("div");
+    group.className = "ccxp-lite-date-parts";
+    group.setAttribute("role", "group");
+    group.setAttribute("aria-label", title);
+    for (const [index, part] of ["Year", "Month", "Day"].entries()) {
+      const original = form.querySelector<HTMLSelectElement>(`[name="I_TASK_DT_${part}"]`);
+      const select = element("select");
+      select.setAttribute("aria-label", `${title}${["\u5E74", "\u6708", "\u65E5"][index]}`);
+      if (original) {
+        for (const option of original.options) {
+          select.append(new Option(option.text, option.value, false, option.selected));
+        }
       }
-    });
-    hostForm().before(panel);
-    addSlot();
+      group.append(select);
+    }
+    const updateDays = () => {
+      const [year, month, day] = group.querySelectorAll("select");
+      const count = new Date(Number(year.value), Number(month.value), 0).getDate();
+      const previous = Number(day.value);
+      day.replaceChildren(
+        ...Array.from({ length: count }, (_item, index) => {
+          const number = String(index + 1).padStart(2, "0");
+          return new Option(number, number, false, index + 1 === Math.min(previous, count));
+        }),
+      );
+    };
+    group.addEventListener("change", updateDays);
+    updateDays();
+    return group;
   }
 
   function dateValue(raw: string) {
@@ -296,10 +308,10 @@
     return date;
   }
 
-  function makePreview() {
+  function preparePlan() {
     try {
-      const first = dateValue(from.value);
-      const last = dateValue(until.value);
+      const first = dateValue(selectedDate(from));
+      const last = dateValue(selectedDate(until));
       const days = (last.getTime() - first.getTime()) / 86_400_000;
       if (days < 0 || days > 366) {
         throw new Error(
@@ -318,36 +330,24 @@
           dates.add(date.toISOString().slice(0, 10));
         }
       }
-      for (const raw of extra.value.split(/[,\uFF0C\s]+/u).filter(Boolean)) {
-        dates.add(dateValue(raw).toISOString().slice(0, 10));
-      }
-      const times = [...slots.children]
-        .map((row) => {
-          const inputs = row.querySelectorAll("input");
-          const start = inputs[0].value;
-          const end = inputs[1].value;
-          if (!/^\d{2}:\d{2}$/u.test(start) || !/^\d{2}:\d{2}$/u.test(end) || start >= end) {
-            throw new Error(
-              "\u6BCF\u6BB5\u7D50\u675F\u6642\u9593\u5FC5\u9808\u665A\u65BC\u958B\u59CB\u6642\u9593\uFF1B\u8DE8\u5348\u591C\u8ACB\u5206\u65E5\u767B\u9304\u3002",
-            );
-          }
-          return { start, end };
-        })
-        .toSorted((a, b) => a.start.localeCompare(b.start));
-      if (times.some((time, index) => index > 0 && time.start < times[index - 1].end)) {
+      const form = hostForm();
+      const start = `${value(form, "I_TASK_A_TM_Hour")}:${value(form, "I_TASK_A_TM_Minute")}`;
+      const end = `${value(form, "I_TASK_Z_TM_Hour")}:${value(form, "I_TASK_Z_TM_Minute")}`;
+      if (
+        !/^(?:[01]\d|2[0-3]):[0-5]\d$/u.test(start) ||
+        !/^(?:(?:[01]\d|2[0-3]):[0-5]\d|24:00)$/u.test(end) ||
+        start >= end
+      ) {
         throw new Error(
-          "\u6642\u6BB5\u4E0D\u53EF\u91CD\u758A\uFF0C\u8ACB\u8ABF\u6574\u5F8C\u518D\u9810\u89BD\u3002",
+          "\u7D50\u675F\u6642\u9593\u5FC5\u9808\u665A\u65BC\u958B\u59CB\u6642\u9593\uFF1B\u8DE8\u5348\u591C\u8ACB\u5206\u65E5\u767B\u9304\u3002",
         );
       }
-      const entries = [...dates]
-        .toSorted()
-        .flatMap((date) => times.map((time) => ({ date, ...time })));
+      const entries = [...dates].toSorted().map((date) => ({ date, start, end }));
       if (entries.length === 0 || entries.length > 100) {
         throw new Error(
           "\u8ACB\u9078\u53D6\u65E5\u671F\u8207\u6642\u6BB5\uFF0C\u6BCF\u6279\u6700\u591A 100 \u7B46\u3002",
         );
       }
-      const form = hostForm();
       const task = value(form, "I_LAB_SERIAL");
       const department = value(form, "I_SRV_ID");
       const note = value(form, "I_TASK_NOTE").trim();
@@ -362,39 +362,13 @@
         );
       }
       const journal = readJournal();
-      plan = { entries, task, department, note };
-      preview.replaceChildren("");
-      preview.append(
-        element("p", `\u4EFB\u52D9 ${task} \u00B7 \u55AE\u4F4D ${department} \u00B7 ${note}`),
-      );
-      for (const entry of entries) {
-        const input = field(
-          preview,
-          `${entry.date}\uFF08\u9031${
-            "\u65E5\u4E00\u4E8C\u4E09\u56DB\u4E94\u516D"[dateValue(entry.date).getUTCDay()]
-          }\uFF09 ${entry.start}\u2013${entry.end}`,
-          "checkbox",
-        );
-        const previous = journal[entryKey(task, entry)];
-        input.checked = previous === undefined;
-        input.disabled = previous !== undefined;
-        if (previous !== undefined) {
-          input.parentElement?.append(
-            element(
-              "strong",
-              previous === "done"
-                ? " \u5DF2\u767B\u9304"
-                : " \u5F85\u67E5\u8A62\u78BA\u8A8D\uFF0C\u8ACB\u52FF\u91CD\u9001",
-            ),
-          );
-        }
-      }
-      preview.append(
-        element("p", "\u53D6\u6D88\u52FE\u9078\u53EF\u6392\u9664\u500B\u5225\u6642\u6BB5\u3002"),
-      );
+      plan = {
+        entries: entries.filter((entry) => journal[entryKey(task, entry)] === undefined),
+        task,
+        department,
+        note,
+      };
       stale = false;
-      startButton.disabled = false;
-      updateSummary();
     } catch (error) {
       invalidate();
       status.textContent = error instanceof Error ? error.message : String(error);
@@ -548,10 +522,10 @@
       return;
     }
     const current = plan;
-    const checks = [...preview.querySelectorAll<HTMLInputElement>("input")];
-    const entries = current.entries.filter((_entry, index) => checks[index].checked);
+    const { entries } = current;
     if (entries.length === 0) {
-      status.textContent = "\u8ACB\u81F3\u5C11\u52FE\u9078\u4E00\u7B46\u3002";
+      status.textContent =
+        "\u6B64\u5340\u9593\u7684\u6642\u6BB5\u5DF2\u767B\u9304\u6216\u5F85\u78BA\u8A8D\uFF0C\u8ACB\u5148\u67E5\u8A62\u7D00\u9304\u3002";
       return;
     }
     let journal: Record<string, string | undefined>;
@@ -566,12 +540,8 @@
     running = true;
     stopped = false;
     settings.disabled = true;
-    startButton.disabled = true;
     stopButton.hidden = false;
     stopButton.disabled = false;
-    for (const check of checks) {
-      check.disabled = true;
-    }
     // Prevent changing the shared form or navigating its transport during the batch.
     const form = hostForm();
     const locked = [
@@ -659,9 +629,6 @@
         journal[key] = "done";
         sessionStorage.setItem(journalKey, JSON.stringify(journal));
         completed++;
-        const index = current.entries.indexOf(entry);
-        checks[index].checked = false;
-        checks[index].parentElement?.append(element("strong", " \u2713 \u5DF2\u767B\u9304"));
       }
       status.textContent = `${isStopped() ? "\u5DF2\u505C\u6B62\u3002" : "\u767B\u9304\u5B8C\u6210\u3002"}\u6210\u529F ${completed} \u7B46\uFF1B\u8ACB\u81F3\u67E5\u8A62\u9801\u78BA\u8A8D\u7D00\u9304\u3002`;
     } catch (error) {
@@ -674,13 +641,11 @@
       for (const control of locked) {
         control.disabled = false;
       }
-      for (const check of checks) {
-        check.disabled = false;
-      }
-      // Re-preview is required; confirmed or uncertain entries remain guarded in the journal.
+      // Rebuild the plan each run; session journal guards confirmed or uncertain entries.
       stale = true;
     }
   }
+  document.addEventListener("DOMContentLoaded", build, { once: true });
   const observer = new MutationObserver(build);
   observer.observe(document.documentElement, { childList: true, subtree: true });
   build();
