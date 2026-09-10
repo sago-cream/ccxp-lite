@@ -1,4 +1,8 @@
 (function injectCcxpLitePe14dPageScript() {
+  // Transport responses must remain raw until imported into the visible document.
+  if (window.name === "ccxp-lite-pe14d-transport") {
+    return;
+  }
   const sharedDom = globalThis.CCXP_LITE?.sharedDom;
   const pageScriptId = "ccxp-lite-pe14d-page-script";
   if (document.querySelector(`#${CSS.escape(pageScriptId)}`)) {
@@ -19,7 +23,7 @@
   }
   const script = document.createElement("script");
   script.id = pageScriptId;
-  script.src = runtimeApi.getURL("pe14d/page.js");
+  script.src = runtimeApi.getURL("work-log/page.js");
   script.async = false;
   script.addEventListener("load", () => {
     if (script.parentNode) {
