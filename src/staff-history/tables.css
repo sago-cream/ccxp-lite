@@ -1,0 +1,85 @@
+/* Kendo owns header/body synchronization. Override the old all-column minimum
+   only after the compact column configuration succeeds. */
+html[data-ccxp-lite-scope="main"]
+  body:has(#A_HEAD):has(#B_HEAD)
+  :is(#grid, #grid_pre)[data-ccxp-staff-table="true"] {
+  --ccxp-lite-staff-grid-min-width: 0px;
+}
+:is(#grid, #grid_pre)[data-ccxp-staff-table="true"] .ccxp-staff-record-details {
+  margin-top: 6px;
+  text-align: left;
+  white-space: normal;
+}
+:is(#grid, #grid_pre)[data-ccxp-staff-table="true"] .ccxp-staff-record-details summary {
+  color: var(--ccxp-lite-primary, #6d2875);
+  cursor: pointer;
+  padding: 4px;
+  font-size: 13px;
+}
+:is(#grid, #grid_pre)[data-ccxp-staff-table="true"] .ccxp-staff-record-details dl {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 8px;
+  margin: 8px 0;
+  font-size: 13px;
+}
+:is(#grid, #grid_pre)[data-ccxp-staff-table="true"] .ccxp-staff-record-details dd {
+  margin: 0;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+:is(#grid, #grid_pre)[data-ccxp-staff-table="true"] .ccxp-staff-status {
+  font-weight: 600;
+}
+:is(#grid, #grid_pre)[data-ccxp-staff-table="true"] .ccxp-staff-document-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: auto;
+  height: auto;
+  min-height: 36px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  box-shadow: none;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+:is(#grid, #grid_pre)[data-ccxp-staff-table="true"] .ccxp-staff-document-action i {
+  font-size: 16px;
+  width: auto;
+  line-height: inherit;
+}
+:is(#grid, #grid_pre)[data-ccxp-staff-table="true"] .ccxp-staff-detail-heading {
+  font: var(--ccxp-lite-type-body-strong, 600 15px/1.5 sans-serif);
+  margin: 8px 0 12px;
+}
+:is(#grid, #grid_pre)[data-ccxp-staff-table="true"] summary:focus-visible,
+:is(#grid, #grid_pre)[data-ccxp-staff-table="true"] .ccxp-staff-document-action:focus-visible {
+  outline: 2px solid var(--ccxp-lite-primary, #6d2875);
+  outline-offset: 2px;
+}
+:is(#grid, #grid_pre)[data-ccxp-staff-table="true"] .ccxp-staff-identity,
+:is(#grid, #grid_pre)[data-ccxp-staff-table="true"] .ccxp-staff-identity-heading {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background-color: var(--ccxp-lite-surface, #fff) !important;
+  box-shadow: 1px 0 var(--ccxp-lite-border, #e5e7eb);
+}
+:is(#grid, #grid_pre)[data-ccxp-staff-table="true"] .k-state-selected > .ccxp-staff-identity {
+  background-color: var(--ccxp-lite-surface-muted, #f5f7f9) !important;
+}
+:is(#grid, #grid_pre)[data-ccxp-staff-table="true"] .ccxp-staff-document-action {
+  background: transparent !important;
+  color: var(--ccxp-lite-primary, #6d2875) !important;
+  border: 1px solid var(--ccxp-lite-border, #e5e7eb);
+}
+:is(#grid, #grid_pre)[data-ccxp-staff-table="true"] .ccxp-staff-document-action:hover {
+  background: var(--ccxp-lite-surface-muted, #f5f7f9) !important;
+}
+:is(#grid, #grid_pre)[data-ccxp-staff-table="true"] .k-pager-numbers .k-state-selected {
+  background: var(--ccxp-lite-primary-muted-surface, #f4edf5);
+  color: var(--ccxp-lite-primary, #6d2875);
+  border-color: var(--ccxp-lite-border, #e5e7eb);
+}

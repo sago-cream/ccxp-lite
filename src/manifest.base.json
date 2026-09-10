@@ -39,7 +39,7 @@
       "matches": ["https://www.ccxp.nthu.edu.tw/*", "https://ccxp.nthu.edu.tw/*"]
     },
     {
-      "resources": ["staff-history/page.js"],
+      "resources": ["staff-history/page.js", "staff-history/tables.js"],
       "matches": ["https://www.ccxp.nthu.edu.tw/*", "https://ccxp.nthu.edu.tw/*"]
     }
   ],
@@ -111,7 +111,7 @@
       ],
       "run_at": "document_idle",
       "js": ["staff-history/content.js", "staff-history/shell.js"],
-      "css": ["staff-history/shell.css"]
+      "css": ["staff-history/shell.css", "staff-history/tables.css"]
     }
   ]
 }

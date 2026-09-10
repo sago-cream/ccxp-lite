@@ -22,6 +22,15 @@
   script.src = runtimeApi.getURL("staff-history/page.js");
   script.async = false;
   script.addEventListener("load", () => {
+    const tables = document.createElement("script");
+    tables.src = runtimeApi.getURL("staff-history/tables.js");
+    tables.addEventListener("load", () => {
+      tables.remove();
+    });
+    tables.addEventListener("error", () => {
+      tables.remove();
+    });
+    document.documentElement.append(tables);
     if (script.parentNode) {
       script.remove();
     }
