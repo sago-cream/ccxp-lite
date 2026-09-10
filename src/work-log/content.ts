@@ -1,4 +1,8 @@
 (function injectCcxpLitePe14dPageScript() {
+  // Transport responses must remain raw until imported into the visible document.
+  if (window.name === "ccxp-lite-pe14d-transport") {
+    return;
+  }
   const sharedDom = globalThis.CCXP_LITE?.sharedDom;
   const pageScriptId = "ccxp-lite-pe14d-page-script";
   if (document.querySelector(`#${CSS.escape(pageScriptId)}`)) {

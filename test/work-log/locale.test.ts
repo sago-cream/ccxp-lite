@@ -180,3 +180,34 @@ test("supports results-only pages with merged total cells", async () => {
   expect(doc.querySelector('[role="switch"]')).not.toBeNull();
   await window.happyDOM.close();
 });
+
+test("keeps transport responses raw and binds controls after importing them", async () => {
+  const fixture =
+    '<div id="divTitle">Title</div><div id="insTask"><form><input name="note" value="unchanged"></form></div><div id="queTask"><form id="queForm"></form><form id="listForm"></form></div>';
+  const response = createTestWindow(fixture).window;
+  response.name = "ccxp-lite-pe14d-transport";
+  const responseDoc = response.document as unknown as Document;
+  loadModules(response, ["src/work-log/locale.ts", "src/work-log/content.ts"]);
+  responseDoc.dispatchEvent(new Event("DOMContentLoaded"));
+  expect(responseDoc.querySelector("nav")).toBeNull();
+  expect(responseDoc.querySelector("script")).toBeNull();
+  expect(responseDoc.querySelector("#ccxp-lite-work-log-sections")).toBeNull();
+  const visible = createTestWindow(fixture).window;
+  const doc = visible.document as unknown as Document;
+  loadModules(visible, ["src/work-log/locale.ts"]);
+  doc.dispatchEvent(new Event("DOMContentLoaded"));
+  doc.body.replaceWith(doc.importNode(responseDoc.body, true));
+  await visible.happyDOM.waitUntilComplete();
+  const language = requireValue(
+    doc.querySelector<HTMLInputElement>('[role="switch"]') ?? undefined,
+  );
+  language.click();
+  expect(doc.documentElement.dataset.ccxpLiteWorkLogLanguage).toBe("en");
+  requireValue(doc.querySelector<HTMLInputElement>('[value="search"]') ?? undefined).click();
+  expect(doc.documentElement.dataset.ccxpLiteWorkLogSection).toBe("search");
+  expect(
+    requireValue(doc.querySelector<HTMLInputElement>('[name="note"]') ?? undefined).value,
+  ).toBe("unchanged");
+  await visible.happyDOM.close();
+  await response.happyDOM.close();
+});

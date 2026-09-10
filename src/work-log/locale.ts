@@ -1,4 +1,8 @@
 (function installWorkLogLanguage() {
+  // Transport responses must remain raw until imported into the visible document.
+  if (window.name === "ccxp-lite-pe14d-transport") {
+    return;
+  }
   let english = false;
   let activeSection = "add";
   const navigationKey = `ccxp-lite-work-log-view:${globalThis.location.pathname}`;
