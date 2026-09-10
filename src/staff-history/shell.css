@@ -113,10 +113,12 @@ html.ccxp-staff-shell .ccxp-staff-navigation > ul {
   position: static !important;
   display: flex !important;
   flex-wrap: wrap;
-  gap: 4px 12px;
+  justify-content: center;
+  align-items: center;
+  gap: 4px var(--ccxp-lite-spacing-lg, 24px);
   margin: 0;
   padding: 0;
-  text-align: left;
+  text-align: center;
   visibility: visible !important;
   opacity: 1 !important;
   background: transparent;
@@ -127,26 +129,26 @@ html.ccxp-staff-shell .ccxp-staff-navigation li {
 }
 html.ccxp-staff-shell .ccxp-staff-navigation li > a {
   position: static !important;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--ccxp-lite-spacing-2xs, 4px);
   width: auto;
   height: auto;
   min-height: 40px;
-  padding: 6px 12px;
-  border-radius: 4px;
+  padding: 6px 0;
+  border-radius: 0;
   background: transparent !important;
-  color: var(--ccxp-lite-type-body-color, #111827) !important;
+  color: var(--ccxp-lite-type-primary-link-color, #996699) !important;
   box-shadow: none !important;
   opacity: 1 !important;
   transform: none !important;
   text-transform: none;
-  font: var(--ccxp-lite-type-body, 14px/1.5 sans-serif);
+  font: var(--ccxp-lite-type-utility, 14px/1.5 sans-serif) !important;
 }
 html.ccxp-staff-shell .ccxp-staff-navigation li i {
   color: inherit !important;
-  width: 20px;
-  font-size: 16px;
+  width: 1em;
+  font-size: 1em;
   line-height: 1;
 }
 html.ccxp-staff-shell .ccxp-staff-navigation a:focus-visible {
