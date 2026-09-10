@@ -24,6 +24,7 @@ html.ccxp-staff-shell input.ccxp-staff-language {
   box-sizing: border-box;
   position: relative;
   opacity: 1 !important;
+  visibility: visible !important;
   pointer-events: auto !important;
   left: auto !important;
   flex: 0 0 32px;
