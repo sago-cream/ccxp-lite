@@ -113,3 +113,24 @@ test("ball menu opens by keyboard, closes on Escape and preserves focus", () => 
   document.body.click();
   expect(trigger.getAttribute("aria-expanded")).toBe("false");
 });
+
+test("keeps startup guidance in the header without suppressing unrelated host alerts", async () => {
+  const window = setup();
+  const document = window.document as unknown as Document;
+  loadModules(window, ["src/staff-history/shell.ts"]);
+  const guidance = document.createElement("div");
+  guidance.className = "toast";
+  guidance.textContent = "\u82E5\u767C\u751F\u5217\u8868\u7A7A\u767D";
+  const alert = document.createElement("div");
+  alert.className = "toast";
+  alert.textContent = "Request failed";
+  document.body.append(guidance, alert);
+  await window.happyDOM.waitUntilComplete();
+  expect(guidance.isConnected).toBe(false);
+  expect(alert.isConnected).toBe(true);
+  const toggle = document.querySelector<HTMLInputElement>('[role="switch"]');
+  expect(toggle?.checked).toBe(false);
+  toggle?.click();
+  expect(document.querySelector(".ccxp-staff-notices")?.textContent).toContain("browser cache");
+  expect(toggle?.checked).toBe(true);
+});

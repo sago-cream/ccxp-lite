@@ -19,15 +19,88 @@ html.ccxp-staff-shell .ccxp-staff-page > h4.header {
   justify-content: space-between;
   gap: 16px;
 }
-html.ccxp-staff-shell .ccxp-staff-language {
-  min-height: 36px;
-  padding: 4px 12px;
-  border: 0;
-  border-radius: 4px;
-  background: transparent;
-  color: var(--ccxp-lite-primary, #6d2875);
-  font: var(--ccxp-lite-type-body, 14px/1.5 sans-serif);
+html.ccxp-staff-shell input.ccxp-staff-language {
+  appearance: none !important;
+  box-sizing: border-box;
+  position: relative;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  left: auto !important;
+  flex: 0 0 32px;
+  width: 32px !important;
+  height: 18px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background: var(--ccxp-lite-border, #d5d7dc) !important;
+  box-shadow: none !important;
   cursor: pointer;
+}
+
+html.ccxp-staff-shell input.ccxp-staff-language::before {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--ccxp-lite-text, #474f5c);
+}
+
+html.ccxp-staff-shell input.ccxp-staff-language:checked {
+  background: var(--ccxp-lite-type-primary-link-color, #996699) !important;
+}
+
+html.ccxp-staff-shell input.ccxp-staff-language:checked::before {
+  transform: translateX(14px);
+  background: white;
+}
+
+html.ccxp-staff-shell input.ccxp-staff-language:focus-visible {
+  outline: 2px solid var(--ccxp-lite-type-primary-link-color, #996699);
+  outline-offset: 3px;
+}
+
+html.ccxp-staff-shell .ccxp-staff-toolbar,
+html.ccxp-staff-shell .ccxp-staff-language-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  color: var(--ccxp-lite-type-body-color, #111827);
+  font: var(--ccxp-lite-type-body, 14px/1.5 sans-serif);
+}
+html.ccxp-staff-shell .ccxp-staff-toolbar {
+  gap: 24px;
+  flex-wrap: wrap;
+}
+html.ccxp-staff-shell .ccxp-staff-language-label,
+html.ccxp-staff-shell .ccxp-staff-notices summary {
+  cursor: pointer;
+}
+html.ccxp-staff-shell .ccxp-staff-notices {
+  position: relative;
+}
+html.ccxp-staff-shell .ccxp-staff-notices > div {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 10;
+  width: min(400px, calc(100vw - 64px));
+  padding: 12px 16px;
+  background: var(--ccxp-lite-surface, #fff);
+  color: var(--ccxp-lite-type-body-color, #111827);
+  border: 1px solid var(--ccxp-lite-border, #e5e7eb);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px #0001;
+}
+html.ccxp-staff-shell .ccxp-staff-notices p {
+  margin: 0;
+}
+html.ccxp-staff-shell .ccxp-staff-notices p + p {
+  margin-top: 8px;
 }
 html.ccxp-staff-shell .ccxp-staff-navigation > a {
   display: inline-flex;

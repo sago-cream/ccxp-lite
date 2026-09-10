@@ -35,11 +35,56 @@
   title.setAttribute("aria-level", "1");
   const toolbar = document.createElement("span");
   toolbar.className = "ccxp-staff-toolbar";
-  const language = document.createElement("button");
-  language.type = "button";
+  const languageLabel = document.createElement("label");
+  languageLabel.className = "ccxp-staff-language-label";
+  languageLabel.append("English");
+  const language = document.createElement("input");
+  language.type = "checkbox";
+  language.setAttribute("role", "switch");
+  language.setAttribute("aria-label", "English");
   language.className = "ccxp-staff-language";
-  toolbar.append(language);
+  languageLabel.append(language);
+  toolbar.append(languageLabel);
   title.append(toolbar);
+  const notices = document.createElement("details");
+  notices.className = "ccxp-staff-notices";
+  const noticeSummary = document.createElement("summary");
+  const noticeContent = document.createElement("div");
+  const announcement = document.createElement("p");
+  const troubleshooting = document.createElement("p");
+  noticeContent.append(announcement, troubleshooting);
+  notices.append(noticeSummary, noticeContent);
+  toolbar.prepend(notices);
+  const removeDuplicateNotices = () => {
+    for (const toast of document.querySelectorAll(".toast")) {
+      if (
+        /\u6700\u65B0\u516C\u544A\u8ACB\u53C3\u95B1|\u82E5\u767C\u751F\u5217\u8868\u7A7A\u767D/.test(
+          toast.textContent,
+        )
+      ) {
+        toast.remove();
+      }
+    }
+  };
+  const noticeObserver = new MutationObserver(removeDuplicateNotices);
+  noticeObserver.observe(document.body, { childList: true, subtree: true });
+  removeDuplicateNotices();
+  document.addEventListener("click", (event) => {
+    if (event.target instanceof Node && !notices.contains(event.target)) {
+      notices.open = false;
+    }
+  });
+  notices.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      notices.open = false;
+      noticeSummary.focus();
+    }
+  });
+  window.addEventListener("pagehide", (event) => {
+    if (!event.persisted) {
+      noticeObserver.disconnect();
+    }
+  });
   const navigation = document.querySelector<HTMLElement>(".fixed-action-btn");
   const trigger = navigation?.querySelector<HTMLElement>("a");
   const menu = navigation?.querySelector<HTMLElement>("ul");
@@ -124,11 +169,14 @@
       english ? "Staff systems navigation" : "\u52A9\u7406\u7CFB\u7D71\u5C0E\u89BD",
     );
     trigger?.setAttribute("title", english ? "Staff systems" : "\u7CFB\u7D71\u5C0E\u89BD");
-    language.textContent = english ? "\u4E2D\u6587" : "English";
-    language.setAttribute(
-      "aria-label",
-      english ? "Switch interface labels to Chinese" : "Switch interface labels to English",
-    );
+    language.checked = english;
+    noticeSummary.textContent = english ? "Notices & help" : "\u516C\u544A\u8207\u8AAA\u660E";
+    announcement.textContent = english
+      ? "For the latest notices, open Notices in the floating menu at the bottom right."
+      : "\u6700\u65B0\u516C\u544A\u8ACB\u53C3\u95B1\u756B\u9762\u53F3\u4E0B\u65B9\u5FEB\u6377\u9215\u88E1\u7684\u3010\u516C\u544A\u4E8B\u9805\u3011\u3002";
+    troubleshooting.textContent = english
+      ? "If the table appears blank, clear your browser cache and temporary files."
+      : "\u82E5\u767C\u751F\u5217\u8868\u7A7A\u767D\uFF0C\u8ACB\u6E05\u9664\u700F\u89BD\u5668\u5FEB\u53D6\u53CA\u66AB\u5B58\u6A94\u6848\u3002";
     for (const [index, header] of headers.entries()) {
       if (header) {
         header.textContent = labels[index][english ? 1 : 0];
@@ -182,8 +230,8 @@
       }
     });
   }
-  language.addEventListener("click", () => {
-    english = !english;
+  language.addEventListener("change", () => {
+    english = language.checked;
     render();
     save();
   });
