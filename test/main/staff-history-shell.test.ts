@@ -3,7 +3,7 @@ import { createTestWindow, loadModules } from "../helpers/module-loader.js";
 
 function setup() {
   const { window } = createTestWindow(
-    `<div><h4 class="header">Title<input id="_sid" type="hidden"></h4>
+    `<div id="modal3"><div class="modal-content"></div></div><div><h4 class="header">Title<input id="_sid" type="hidden"></h4>
     <ul><li><div id="A_HEAD">A</div><div><form id="smart-form"></form></div></li>
     <li><div id="B_HEAD">B</div><div id="grid_pre"></div></li></ul></div>
     <div class="fixed-action-btn"><a class="btn-floating">+</a><ul><li><a id="MD4">Notice</a></li>
@@ -115,6 +115,8 @@ test("keeps startup guidance in the header without suppressing unrelated host al
   alert.textContent = "Request failed";
   document.body.append(guidance, alert);
   await window.happyDOM.waitUntilComplete();
+  expect(document.querySelector("#modal3 .ccxp-staff-notices")).not.toBeNull();
+  expect(document.querySelector(".ccxp-staff-toolbar details")).toBeNull();
   expect(guidance.isConnected).toBe(false);
   expect(alert.isConnected).toBe(true);
   const toggle = document.querySelector<HTMLInputElement>('[role="switch"]');
