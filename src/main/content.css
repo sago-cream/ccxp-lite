@@ -337,3 +337,14 @@ html[data-ccxp-lite-scope="main"]
   > table {
   min-width: var(--ccxp-lite-staff-grid-min-width);
 }
+
+/* The host hover rule sets white text while its .hhh cells stay white. */
+html[data-ccxp-lite-scope="main"]
+  body:has(#A_HEAD):has(#B_HEAD)
+  :is(#grid, #grid_pre)
+  tbody
+  > tr:is(:hover, .k-state-hover, .k-state-selected)
+  > td {
+  background-color: var(--ccxp-lite-surface-muted, #f5f7f9) !important;
+  color: var(--ccxp-lite-type-body-color, #111827) !important;
+}
