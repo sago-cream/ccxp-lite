@@ -19,6 +19,14 @@ function setup() {
 }
 
 describe("Staff registration cleanup", () => {
+  test("releases the startup mask when the expected form is absent", () => {
+    const window = setup();
+    const document = window.document as unknown as Document;
+    document.querySelector("#smart-form")?.remove();
+    loadModules(window, ["src/staff-registration/content.ts"]);
+    expect(document.documentElement.dataset.ccxpRegistrationReady).toBe("true");
+  });
+
   test("preserves form controls, consent, values, records, and original navigation handlers", () => {
     const window = setup();
     const document = window.document as unknown as Document;
@@ -30,6 +38,7 @@ describe("Staff registration cleanup", () => {
       clicks++;
     });
     loadModules(window, ["src/staff-registration/content.ts"]);
+    expect(document.documentElement.dataset.ccxpRegistrationReady).toBe("true");
     expect([...document.querySelectorAll("#smart-form input, #smart-form button")]).toEqual(
       controls,
     );

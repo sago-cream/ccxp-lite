@@ -119,8 +119,15 @@
         "https://ccxp.nthu.edu.tw/ccxp/INQUIRE/PE/3/3000/PE30001.php*"
       ],
       "run_at": "document_idle",
-      "js": ["staff-registration/content.js"],
-      "css": ["staff-registration/content.css"]
+      "js": ["staff-registration/content.js"]
+    },
+    {
+      "matches": [
+        "https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/PE/3/3000/PE30001.php*",
+        "https://ccxp.nthu.edu.tw/ccxp/INQUIRE/PE/3/3000/PE30001.php*"
+      ],
+      "run_at": "document_start",
+      "css": ["staff-registration/startup.css", "staff-registration/content.css"]
     }
   ]
 }

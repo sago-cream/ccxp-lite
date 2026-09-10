@@ -3,6 +3,7 @@
   const title = form?.querySelector<HTMLElement>("h5.NORMAL_BLK");
   const navigation = document.querySelector<HTMLElement>("#float_menu");
   if (!form || !title || !navigation || document.querySelector(".ccxp-registration-header")) {
+    document.documentElement.dataset.ccxpRegistrationReady = "true";
     return;
   }
   document.documentElement.classList.add("ccxp-registration");
@@ -356,4 +357,5 @@
     }
   });
   render();
+  document.documentElement.dataset.ccxpRegistrationReady = "true";
 })();
