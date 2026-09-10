@@ -149,9 +149,6 @@ html.ccxp-staff-shell .ccxp-staff-navigation li i {
   font-size: 16px;
   line-height: 1;
 }
-html.ccxp-staff-shell .ccxp-staff-navigation li > a:hover {
-  background: var(--ccxp-lite-surface-muted, #f5f7f9) !important;
-}
 html.ccxp-staff-shell .ccxp-staff-navigation a:focus-visible {
   outline: 2px solid var(--ccxp-lite-primary, #6d2875);
   outline-offset: 3px;
