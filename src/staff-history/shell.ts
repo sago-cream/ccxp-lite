@@ -120,7 +120,7 @@
     navigation.classList.add("ccxp-staff-navigation");
     navigation.setAttribute("role", "navigation");
     trigger?.remove();
-    title.after(navigation);
+    title.insertBefore(navigation, toolbar);
   }
   // Keep the original anchors in their host menu so delegated handlers still work.
   for (const link of links) {

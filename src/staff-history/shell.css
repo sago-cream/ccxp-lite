@@ -14,9 +14,9 @@ html.ccxp-staff-shell .ccxp-staff-page > h4.header {
   overflow: visible;
 }
 html.ccxp-staff-shell .ccxp-staff-page > h4.header {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
   gap: 16px;
 }
 html.ccxp-staff-shell input.ccxp-staff-language {
@@ -74,6 +74,7 @@ html.ccxp-staff-shell .ccxp-staff-language-label {
   font: var(--ccxp-lite-type-body, 14px/1.5 sans-serif);
 }
 html.ccxp-staff-shell .ccxp-staff-toolbar {
+  justify-self: end;
   gap: 24px;
   flex-wrap: wrap;
 }
@@ -106,7 +107,7 @@ html.ccxp-staff-shell .ccxp-staff-notices p + p {
 html.ccxp-staff-shell .ccxp-staff-navigation {
   position: static !important;
   padding: 0;
-  margin: 0 0 16px;
+  margin: 0;
   z-index: auto;
 }
 html.ccxp-staff-shell .ccxp-staff-navigation > ul {
@@ -221,5 +222,15 @@ html.ccxp-staff-shell #B_HEAD:focus-visible {
 @media (prefers-reduced-motion: reduce) {
   html.ccxp-staff-shell body > .animated {
     animation: none !important;
+  }
+}
+
+@media (max-width: 900px) {
+  html.ccxp-staff-shell .ccxp-staff-page > h4.header {
+    grid-template-columns: 1fr auto;
+  }
+  html.ccxp-staff-shell .ccxp-staff-navigation {
+    grid-column: 1 / -1;
+    grid-row: 2;
   }
 }

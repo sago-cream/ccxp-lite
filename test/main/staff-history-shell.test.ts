@@ -98,7 +98,7 @@ test("moves the original menu into header navigation and removes the floating tr
   const menu = document.querySelector(".fixed-action-btn ul");
   loadModules(window, ["src/staff-history/shell.ts"]);
   const navigation = document.querySelector('[role="navigation"]');
-  expect(navigation?.previousElementSibling?.tagName).toBe("H4");
+  expect(navigation?.parentElement?.tagName).toBe("H4");
   expect(navigation?.querySelector("ul")).toBe(menu);
   expect(navigation?.querySelectorAll("a")).toHaveLength(4);
 });
