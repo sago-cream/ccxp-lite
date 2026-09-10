@@ -96,6 +96,14 @@
     ["\u52A9\u7406\u6B77\u53F2", "Staff history"],
   ];
   const linkLabels = links.map((link) => {
+    link.removeAttribute("title");
+    link.removeAttribute("data-tooltip");
+    link.classList.remove("tooltipped");
+    const tooltipId = link.getAttribute("data-tooltip-id");
+    if (tooltipId) {
+      document.getElementById(tooltipId)?.remove();
+      link.removeAttribute("data-tooltip-id");
+    }
     const label = document.createElement("span");
     label.className = "ccxp-staff-nav-label";
     link.append(label);
