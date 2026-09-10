@@ -110,7 +110,8 @@
         "https://ccxp.nthu.edu.tw/ccxp/INQUIRE/PE/3/3000/PE30003.php*"
       ],
       "run_at": "document_idle",
-      "js": ["staff-history/content.js"]
+      "js": ["staff-history/content.js", "staff-history/shell.js"],
+      "css": ["staff-history/shell.css"]
     }
   ]
 }
