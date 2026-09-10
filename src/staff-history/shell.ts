@@ -33,37 +33,83 @@
   title.replaceChildren(heading, ...title.querySelectorAll("input"));
   title.setAttribute("role", "heading");
   title.setAttribute("aria-level", "1");
-  const toolbar = document.createElement("nav");
+  const toolbar = document.createElement("span");
   toolbar.className = "ccxp-staff-toolbar";
   const language = document.createElement("button");
   language.type = "button";
   language.className = "ccxp-staff-language";
   toolbar.append(language);
-  title.after(toolbar);
-  const navigation = document.querySelector(".fixed-action-btn");
-  const links = [...(navigation?.querySelectorAll<HTMLAnchorElement>("ul a") ?? [])];
+  title.append(toolbar);
+  const navigation = document.querySelector<HTMLElement>(".fixed-action-btn");
+  const trigger = navigation?.querySelector<HTMLElement>("a");
+  const menu = navigation?.querySelector<HTMLElement>("ul");
+  const links = [...(menu?.querySelectorAll<HTMLAnchorElement>("a") ?? [])];
   const navLabels = [
     ["\u516C\u544A\u4E8B\u9805", "Notices"],
     ["\u52A9\u7406\u8EAB\u4EFD", "Staff identity"],
     ["\u52A9\u7406\u767B\u9304", "Staff registration"],
     ["\u52A9\u7406\u6B77\u53F2", "Staff history"],
   ];
-  // Move the original anchors: their URLs and registered host handlers remain intact.
+  const linkLabels = links.map((link) => {
+    const label = document.createElement("span");
+    label.className = "ccxp-staff-nav-label";
+    link.append(label);
+    link.querySelector("i")?.setAttribute("aria-hidden", "true");
+    return label;
+  });
+  const setMenuOpen = (open: boolean) => {
+    if (navigation && trigger) {
+      navigation.dataset.ccxpStaffMenuOpen = String(open);
+      trigger.setAttribute("aria-expanded", String(open));
+    }
+  };
+  const activateByKey = (event: KeyboardEvent) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      (event.currentTarget as HTMLElement).click();
+    }
+  };
+  if (navigation && trigger && menu) {
+    navigation.classList.add("ccxp-staff-navigation");
+    menu.id ||= "ccxp-staff-navigation-links";
+    trigger.setAttribute("role", "button");
+    trigger.tabIndex = 0;
+    trigger.setAttribute("aria-controls", menu.id);
+    trigger.querySelector("i")?.setAttribute("aria-hidden", "true");
+    trigger.addEventListener("click", (event) => {
+      event.preventDefault();
+      setMenuOpen(trigger.getAttribute("aria-expanded") !== "true");
+    });
+    trigger.addEventListener("keydown", activateByKey);
+    navigation.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        setMenuOpen(false);
+        trigger.focus();
+      }
+    });
+    navigation.addEventListener("focusout", (event) => {
+      if (!(event.relatedTarget instanceof Node) || !navigation.contains(event.relatedTarget)) {
+        setMenuOpen(false);
+      }
+    });
+    document.addEventListener("click", (event) => {
+      if (event.target instanceof Node && !navigation.contains(event.target)) {
+        setMenuOpen(false);
+      }
+    });
+    setMenuOpen(false);
+  }
+  // Keep the original anchors in their host menu so delegated handlers still work.
   for (const link of links) {
-    link.classList.add("ccxp-staff-nav-link");
     if (!link.hasAttribute("href")) {
       link.setAttribute("role", "button");
       link.tabIndex = 0;
-      link.addEventListener("keydown", (event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          link.click();
-        }
-      });
+      link.addEventListener("keydown", activateByKey);
     }
-    language.before(link);
+    link.addEventListener("click", () => {
+      setMenuOpen(false);
+    });
   }
-  navigation?.classList.add("ccxp-staff-old-navigation");
   const save = () => {
     try {
       sessionStorage.setItem(key, JSON.stringify({ english, active }));
@@ -73,7 +119,11 @@
   };
   const render = () => {
     heading.textContent = english ? "Staff history" : "\u52A9\u7406\u6B77\u53F2";
-    toolbar.setAttribute("aria-label", english ? "Staff systems" : "\u52A9\u7406\u7CFB\u7D71");
+    trigger?.setAttribute(
+      "aria-label",
+      english ? "Staff systems navigation" : "\u52A9\u7406\u7CFB\u7D71\u5C0E\u89BD",
+    );
+    trigger?.setAttribute("title", english ? "Staff systems" : "\u7CFB\u7D71\u5C0E\u89BD");
     language.textContent = english ? "\u4E2D\u6587" : "English";
     language.setAttribute(
       "aria-label",
@@ -87,7 +137,7 @@
     for (const [index, link] of links.entries()) {
       const label = navLabels[index]?.[english ? 1 : 0];
       if (label !== "") {
-        link.textContent = label;
+        linkLabels[index].textContent = label;
         link.setAttribute("aria-label", label);
         delete link.dataset.tooltip;
       }

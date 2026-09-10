@@ -6,7 +6,7 @@ function setup() {
     `<div><h4 class="header">Title<input id="_sid" type="hidden"></h4>
     <ul><li><div id="A_HEAD">A</div><div><form id="smart-form"></form></div></li>
     <li><div id="B_HEAD">B</div><div id="grid_pre"></div></li></ul></div>
-    <div class="fixed-action-btn"><ul><li><a id="MD4">Notice</a></li>
+    <div class="fixed-action-btn"><a class="btn-floating">+</a><ul><li><a id="MD4">Notice</a></li>
     <li><a href="identity.php">Identity</a></li><li><a href="entry.php">Entry</a></li>
     <li><a href="history.php">History</a></li></ul></div>`,
     "https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/PE/3/3000/PE30003.php",
@@ -33,7 +33,7 @@ describe("Staff History shell", () => {
       clicks++;
     });
     loadModules(window, ["src/staff-history/shell.ts"]);
-    expect((window.document as unknown as Document).querySelector(".ccxp-staff-toolbar #MD4")).toBe(
+    expect((window.document as unknown as Document).querySelector(".fixed-action-btn #MD4")).toBe(
       notice,
     );
     expect((window.document as unknown as Document).querySelector("#smart-form")).toBe(form);
@@ -74,9 +74,9 @@ describe("Staff History shell", () => {
         .querySelector("#A_HEAD")
         ?.classList.contains("active"),
     ).toBe(false);
-    expect((window.document as unknown as Document).querySelector("h4")?.textContent).toBe(
-      "Staff history",
-    );
+    expect(
+      (window.document as unknown as Document).querySelector("h4 > span:first-child")?.textContent,
+    ).toBe("Staff history");
     (
       (window.document as unknown as Document).querySelector(
         ".ccxp-staff-language",
@@ -90,4 +90,26 @@ describe("Staff History shell", () => {
       ).english,
     ).toBe(false);
   });
+});
+
+test("ball menu opens by keyboard, closes on Escape and preserves focus", () => {
+  const window = setup();
+  const document = window.document as unknown as Document;
+  loadModules(window, ["src/staff-history/shell.ts"]);
+  const trigger = document.querySelector<HTMLElement>(".fixed-action-btn > a");
+  if (!trigger) {
+    throw new Error("Missing menu fixture");
+  }
+  trigger.dispatchEvent(new window.KeyboardEvent("keydown", { key: "Enter" }) as unknown as Event);
+  expect(trigger.getAttribute("aria-expanded")).toBe("true");
+  document
+    .querySelector("#MD4")
+    ?.dispatchEvent(
+      new window.KeyboardEvent("keydown", { key: "Escape", bubbles: true }) as unknown as Event,
+    );
+  expect(trigger.getAttribute("aria-expanded")).toBe("false");
+  expect(document.activeElement).toBe(trigger);
+  trigger.click();
+  document.body.click();
+  expect(trigger.getAttribute("aria-expanded")).toBe("false");
 });
