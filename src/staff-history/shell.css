@@ -86,6 +86,7 @@ html.ccxp-staff-shell .ccxp-staff-navigation li > a {
   font: var(--ccxp-lite-type-body, 14px/1.5 sans-serif);
 }
 html.ccxp-staff-shell .ccxp-staff-navigation li i {
+  color: inherit !important;
   width: 20px;
   font-size: 16px;
   line-height: 1;
