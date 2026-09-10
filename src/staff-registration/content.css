@@ -159,7 +159,22 @@ html.ccxp-registration .ccxp-registration-choices p {
 }
 html.ccxp-registration .ccxp-registration-choices label:not(.field-label) {
   min-height: 32px;
-  line-height: 24px;
+  line-height: 32px;
+  vertical-align: middle;
+}
+html.ccxp-registration .ccxp-registration-choices label:not(.field-label)::before,
+html.ccxp-registration .ccxp-registration-choices label:not(.field-label)::after {
+  top: 6px;
+}
+html.ccxp-registration .ccxp-registration-choices :is(#T_HIRE, #T_HIRE_2, #T_LBU) {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  line-height: 32px;
+  vertical-align: middle;
+}
+html.ccxp-registration .ccxp-registration-choices :is(#T_HIRE, #T_HIRE_2, #T_LBU) i {
+  line-height: 1;
 }
 html.ccxp-registration #smart-form #grid {
   margin-top: var(--ccxp-lite-spacing-md, 16px);
