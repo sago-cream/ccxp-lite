@@ -184,7 +184,7 @@
     ],
     [
       "\u4EFB\u52D9\u8CC7\u8A0A Mission Information",
-      ["\u4EFB\u52D9\u8CC7\u8A0A", "Mission information"],
+      ["\u8A08\u756B\u8207\u5BE9\u6838", "Project and approval"],
     ],
     ["\u4FDD\u96AA\u4EBA Insurant/Staff", ["\u4FDD\u96AA\u4EBA", "Insurant / staff"]],
     [
@@ -282,6 +282,48 @@
         if (column.classList.contains("s8") || column.classList.contains("s12")) {
           column.classList.add("ccxp-registration-wide");
         }
+      }
+    }
+  }
+  // Add landmarks without replacing host rows or changing control order.
+  for (const tagline of form.querySelectorAll<HTMLElement>(":scope > .tagline")) {
+    tagline.setAttribute("role", "heading");
+    tagline.setAttribute("aria-level", "2");
+  }
+  for (const [selector, zh, en] of [
+    ["#I_SYS_2", "\u5831\u652F\u8207\u8EAB\u5206", "Payment and employment type"],
+    ["#A_DATE", "\u4EFB\u52D9\u5B89\u6392", "Assignment details"],
+    ["#grid", "\u767B\u9304\u8CC7\u6599", "Registration records"],
+  ]) {
+    const row: HTMLElement | null | undefined = form
+      .querySelector(selector)
+      ?.closest<HTMLElement>(".row");
+    if (!row || row.parentElement !== form) {
+      continue;
+    }
+    const sectionTitle = document.createElement("h2");
+    sectionTitle.className = "ccxp-registration-section-title";
+    if (selector === "#grid") {
+      sectionTitle.classList.add("ccxp-registration-records-title");
+    }
+    const node = document.createTextNode(zh);
+    sectionTitle.append(node);
+    translations.push({ node, labels: [zh, en] });
+    row.before(sectionTitle);
+  }
+  const choices = form.querySelector("#I_SYS_2")?.closest<HTMLElement>(".row");
+  if (choices) {
+    choices.classList.add("ccxp-registration-choices");
+    const hint = choices.querySelector<HTMLAnchorElement>('a[href="#!"]');
+    if (hint) {
+      const help = document.createElement("div");
+      help.className = "ccxp-registration-choice-help";
+      help.append(hint);
+      choices.before(help);
+    }
+    for (const spacer of choices.querySelectorAll<HTMLElement>(".col > div")) {
+      if (spacer.textContent.trim() === "" && spacer.children.length === 0) {
+        spacer.classList.add("ccxp-registration-spacer");
       }
     }
   }
