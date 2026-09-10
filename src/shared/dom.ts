@@ -242,8 +242,13 @@
   const { ensureThemeDocument } = sharedTheme;
   const { getLocalizedStrings, normalizeLocale, rememberLocale, resolveLocaleFromDocument } =
     sharedLocale;
-  const { createBrandImage, createBrandCopy, createBrandPartnerIcon, createBrandPartnerLink } =
-    sharedBrand;
+  const {
+    createSupportMenu,
+    createBrandImage,
+    createBrandCopy,
+    createBrandPartnerIcon,
+    createBrandPartnerLink,
+  } = sharedBrand;
   namespace.shared = {
     TOKENS,
     STRINGS: LOCALIZED_STRINGS.zh,
@@ -255,6 +260,7 @@
     normalizeLocale,
     rememberLocale,
     resolveLocaleFromDocument,
+    createSupportMenu,
     createBrandImage,
     createBrandCopy,
     createBrandPartnerIcon,

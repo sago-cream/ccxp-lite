@@ -44,3 +44,41 @@ body[data-ccxp-lite-floating-anchor-host="true"] > [data-ccxp-lite-floating-anch
 [data-ccxp-lite-floating-anchor="true"] > * {
   pointer-events: auto;
 }
+
+.ccxp-lite-support-menu {
+  position: fixed;
+  inset: auto;
+  margin: 0;
+  width: 160px;
+  padding: 4px;
+  border: 1px solid var(--ccxp-lite-border);
+  border-radius: var(--ccxp-lite-radius-sm);
+  background: var(--ccxp-lite-bg);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.ccxp-lite-support-menu > a,
+.ccxp-lite-support-menu > a:visited,
+.ccxp-lite-support-menu > a:hover,
+.ccxp-lite-support-menu > a:active,
+.ccxp-lite-support-menu > a:focus-visible {
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 12px !important;
+  margin: 0 !important;
+  position: static !important;
+  inset: auto !important;
+  translate: none !important;
+  transform: none !important;
+  color: var(--ccxp-lite-type-primary-link-color);
+  font: var(--ccxp-lite-type-utility) !important;
+  text-decoration: none;
+}
+
+.ccxp-lite-support-menu > a:hover,
+.ccxp-lite-support-menu > a:focus-visible {
+  background: var(--ccxp-lite-primary-hover-surface);
+  text-decoration: underline;
+  transform: none !important;
+}
