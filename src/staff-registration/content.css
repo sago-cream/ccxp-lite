@@ -2,6 +2,29 @@ html.ccxp-registration body {
   animation: none !important;
   padding-bottom: var(--ccxp-lite-spacing-xl, 32px);
 }
+html.ccxp-registration .material-tooltip {
+  max-width: min(320px, calc(100vw - 32px));
+  min-height: 0;
+  padding: var(--ccxp-lite-spacing-inline-sm, 8px) var(--ccxp-lite-spacing-inset-sm, 12px);
+  margin: 0 !important;
+  border: 1px solid var(--ccxp-lite-border);
+  border-radius: var(--ccxp-lite-radius-input);
+  background: var(--ccxp-lite-surface-muted);
+  color: var(--ccxp-lite-type-body-muted-color);
+  font: var(--ccxp-lite-type-body-muted);
+  text-align: left;
+  text-shadow: none;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  box-shadow: none;
+  pointer-events: none;
+  animation: none !important;
+  transition: none !important;
+  transform: none !important;
+}
+html.ccxp-registration .material-tooltip .backdrop {
+  display: none !important;
+}
 html.ccxp-registration :is(.ccxp-registration-header, #smart-form),
 html.ccxp-registration :is(.ccxp-registration-header, #smart-form) * {
   text-shadow: none !important;
