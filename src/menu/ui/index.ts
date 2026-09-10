@@ -44,8 +44,7 @@
       return;
     }
     const content = shell.querySelector<HTMLElement>(".ccxp-lite-sidebar-content");
-    const footer = shell.querySelector<HTMLElement>(".ccxp-lite-sidebar-footer");
-    if (!content || !footer) {
+    if (!content) {
       return;
     }
     const searchInput = shell.querySelector<HTMLInputElement>(".ccxp-lite-sidebar-search-input");
@@ -75,19 +74,12 @@
     if (state.currentCategoryId !== "" && activeCategory === undefined) {
       state.currentCategoryId = "";
     }
-    footer.textContent = "";
     disposeDestination(hostDocument);
     content.textContent = "";
     shell.dataset.ccxpLiteSidebarVariant = state.sidebarVariant;
-    mountSidebarVariantSwitch(
-      hostDocument,
-      state,
-      strings,
-      () => {
-        renderSidebar(hostDocument, navDocument, modelInput, strings);
-      },
-      footer,
-    );
+    mountSidebarVariantSwitch(hostDocument, state, strings, () => {
+      renderSidebar(hostDocument, navDocument, modelInput, strings);
+    });
     if (state.sidebarVariant === "classic") {
       content.append(
         createClassicSidebarView(hostDocument, navDocument, model, state, strings, () => {
@@ -1677,7 +1669,6 @@
     state: CcxpLiteSidebarState,
     strings: Readonly<Record<string, string>>,
     rerender: () => void,
-    _footer?: HTMLElement,
   ) {
     const isClassic = state.sidebarVariant === "classic";
     const scopeDocument = resolveClassicOverlayScopeDocument(targetDocument, isClassic);

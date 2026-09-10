@@ -8,6 +8,7 @@
   }
 
   const {
+    createSupportMenu,
     TOKENS,
     ASSETS,
     createBrandImage,
@@ -104,9 +105,7 @@
       langSection.append(languageLinks);
     }
 
-    repoLink.addEventListener("click", () => {
-      window.open("https://github.com/NTHU-SA/ccxpLite", "_blank", "noopener,noreferrer");
-    });
+    const supportMenu = createSupportMenu(targetDocument, repoLink);
 
     const loginHeaderLabel = targetDocument.createElement("h1");
     loginHeaderLabel.className = "ccxp-lite-landing-login-label";
@@ -193,7 +192,19 @@
     } else {
       topSection.append(loginSection);
     }
-    shell.append(topSection);
+    const footer = targetDocument.createElement("footer");
+    footer.className = "ccxp-lite-landing-footer";
+    const menuLinks = [...supportMenu.querySelectorAll("a")];
+    for (const sourceLink of menuLinks.toReversed()) {
+      const link = targetDocument.createElement("a");
+      link.href = sourceLink.href;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent =
+        sourceLink.textContent === "GitHub" ? "ccxpLite" : `ccxpLite ${sourceLink.textContent}`;
+      footer.append(link);
+    }
+    shell.append(topSection, footer, supportMenu);
 
     return {
       shell,

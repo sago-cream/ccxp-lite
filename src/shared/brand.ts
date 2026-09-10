@@ -9,6 +9,59 @@
   const { ASSETS } = sharedConstants;
   const { getLocalizedStrings, resolveLocaleFromDocument } = sharedLocale;
 
+  function createSupportMenu(targetDocument: Document, repoLink: HTMLButtonElement) {
+    const supportMenu = targetDocument.createElement("div");
+    supportMenu.id = "ccxp-lite-support-menu";
+    supportMenu.className = "ccxp-lite-support-menu";
+    supportMenu.setAttribute("popover", "auto");
+    supportMenu.setAttribute("aria-label", "ccxpLite");
+    const reportLink = targetDocument.createElement("a");
+    reportLink.textContent = "\u554F\u984C\u56DE\u5831";
+    reportLink.href =
+      "https://docs.google.com/forms/d/e/1FAIpQLSeVG1MazLdDLtuTnYjWoathrmsERmYPgiPrUNgLyBMJ3vvrxA/viewform";
+    const githubLink = targetDocument.createElement("a");
+    githubLink.textContent = "GitHub";
+    githubLink.href = "https://github.com/sago-cream/ccxp-lite";
+    for (const link of [reportLink, githubLink]) {
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      supportMenu.append(link);
+    }
+    repoLink.setAttribute("aria-expanded", "false");
+    repoLink.setAttribute("aria-controls", supportMenu.id);
+
+    repoLink.addEventListener("click", () => {
+      const bounds = repoLink.getBoundingClientRect();
+      supportMenu.style.left = `${Math.max(8, Math.min(bounds.left, targetDocument.documentElement.clientWidth - 168))}px`;
+      supportMenu.style.top = `${bounds.bottom + 8}px`;
+      supportMenu.togglePopover();
+    });
+
+    const dismissSupportMenu = () => {
+      if (supportMenu.matches(":popover-open")) {
+        supportMenu.hidePopover();
+      }
+    };
+    supportMenu.addEventListener("toggle", () => {
+      const isOpen = supportMenu.matches(":popover-open");
+      repoLink.setAttribute("aria-expanded", String(isOpen));
+      if (isOpen) {
+        reportLink.focus();
+        // Pointer events in sibling frames do not reach this document.
+        targetDocument.defaultView?.addEventListener("blur", dismissSupportMenu);
+      } else {
+        targetDocument.defaultView?.removeEventListener("blur", dismissSupportMenu);
+      }
+    });
+    supportMenu.addEventListener("click", (event) => {
+      if ((event.target as Element).closest("a")) {
+        supportMenu.hidePopover();
+      }
+    });
+
+    return supportMenu;
+  }
+
   function createBrandImage(
     targetDocument: Document,
     className: string,
@@ -108,6 +161,7 @@
   }
 
   namespace.sharedBrand = {
+    createSupportMenu,
     createBrandImage,
     createBrandCopy,
     createBrandPartnerIcon,

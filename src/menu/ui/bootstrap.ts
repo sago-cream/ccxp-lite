@@ -24,6 +24,7 @@
     createBrandImage,
     createBrandCopy,
     createBrandPartnerLink,
+    createSupportMenu,
     isDocumentComplete,
     cleanLegacyAttributes,
   } = shared;
@@ -126,8 +127,7 @@
       const content = hostDocument.createElement("main");
       content.className = "ccxp-lite-sidebar-content";
 
-      const footer = hostDocument.createElement("footer");
-      footer.className = "ccxp-lite-sidebar-footer";
+      const supportMenu = createSupportMenu(hostDocument, repoLink);
 
       brandGroup.append(brand);
       brandGroup.append(repoLink);
@@ -135,7 +135,7 @@
       header.append(search);
       shell.append(header);
       shell.append(content);
-      shell.append(footer);
+      shell.append(supportMenu);
 
       cleanLegacyAttributes(shell);
       hostBody.replaceChildren(shell);
@@ -150,10 +150,6 @@
         uiState.currentCategoryId = "";
         uiState.activeLeaf = undefined;
         rerenderBinding.render?.();
-      });
-
-      repoLink.addEventListener("click", () => {
-        window.open("https://github.com/NTHU-SA/ccxpLite", "_blank", "noopener,noreferrer");
       });
 
       hostBody.dataset.ccxpLiteSidebarApplied = "true";

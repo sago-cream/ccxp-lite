@@ -87,10 +87,6 @@
   scrollbar-gutter: stable both-edges;
 }
 
-.ccxp-lite-sidebar-footer {
-  display: none;
-}
-
 .ccxp-lite-sidebar-experiment-copy {
   display: none !important;
 }
