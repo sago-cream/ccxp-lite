@@ -103,40 +103,24 @@ html.ccxp-staff-shell .ccxp-staff-notices p {
 html.ccxp-staff-shell .ccxp-staff-notices p + p {
   margin-top: 8px;
 }
-html.ccxp-staff-shell .ccxp-staff-navigation > a {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 48px;
-  height: 48px;
-  background: var(--ccxp-lite-primary, #6d2875) !important;
-  color: #fff !important;
-  box-shadow: 0 2px 8px #0002 !important;
+html.ccxp-staff-shell .ccxp-staff-navigation {
+  position: static !important;
+  padding: 0;
+  margin: 0 0 16px;
+  z-index: auto;
 }
 html.ccxp-staff-shell .ccxp-staff-navigation > ul {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 4px;
-  width: max-content;
-  min-width: 180px;
-  max-width: calc(100vw - 48px);
-  left: auto;
-  right: 0;
-  bottom: 48px;
-  margin: 0 0 12px;
-  padding: 8px;
-  border: 1px solid var(--ccxp-lite-border, #e5e7eb);
-  border-radius: 8px;
-  background: var(--ccxp-lite-surface, #fff);
-  box-shadow: 0 4px 16px #0001;
-}
-html.ccxp-staff-shell .ccxp-staff-navigation[data-ccxp-staff-menu-open="false"] > ul {
-  display: none !important;
-}
-html.ccxp-staff-shell .ccxp-staff-navigation[data-ccxp-staff-menu-open="true"] > ul {
+  position: static !important;
+  display: flex !important;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin: 0;
+  padding: 0;
+  text-align: left;
   visibility: visible !important;
   opacity: 1 !important;
+  background: transparent;
+  box-shadow: none;
 }
 html.ccxp-staff-shell .ccxp-staff-navigation li {
   margin: 0;

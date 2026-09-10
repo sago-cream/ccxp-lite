@@ -102,47 +102,17 @@
     link.querySelector("i")?.setAttribute("aria-hidden", "true");
     return label;
   });
-  const setMenuOpen = (open: boolean) => {
-    if (navigation && trigger) {
-      navigation.dataset.ccxpStaffMenuOpen = String(open);
-      trigger.setAttribute("aria-expanded", String(open));
-    }
-  };
   const activateByKey = (event: KeyboardEvent) => {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
       (event.currentTarget as HTMLElement).click();
     }
   };
-  if (navigation && trigger && menu) {
+  if (navigation && menu) {
     navigation.classList.add("ccxp-staff-navigation");
-    menu.id ||= "ccxp-staff-navigation-links";
-    trigger.setAttribute("role", "button");
-    trigger.tabIndex = 0;
-    trigger.setAttribute("aria-controls", menu.id);
-    trigger.querySelector("i")?.setAttribute("aria-hidden", "true");
-    trigger.addEventListener("click", (event) => {
-      event.preventDefault();
-      setMenuOpen(trigger.getAttribute("aria-expanded") !== "true");
-    });
-    trigger.addEventListener("keydown", activateByKey);
-    navigation.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") {
-        setMenuOpen(false);
-        trigger.focus();
-      }
-    });
-    navigation.addEventListener("focusout", (event) => {
-      if (!(event.relatedTarget instanceof Node) || !navigation.contains(event.relatedTarget)) {
-        setMenuOpen(false);
-      }
-    });
-    document.addEventListener("click", (event) => {
-      if (event.target instanceof Node && !navigation.contains(event.target)) {
-        setMenuOpen(false);
-      }
-    });
-    setMenuOpen(false);
+    navigation.setAttribute("role", "navigation");
+    trigger?.remove();
+    title.after(navigation);
   }
   // Keep the original anchors in their host menu so delegated handlers still work.
   for (const link of links) {
@@ -151,9 +121,6 @@
       link.tabIndex = 0;
       link.addEventListener("keydown", activateByKey);
     }
-    link.addEventListener("click", () => {
-      setMenuOpen(false);
-    });
   }
   const save = () => {
     try {
@@ -164,16 +131,15 @@
   };
   const render = () => {
     heading.textContent = english ? "Staff history system" : "\u52A9\u7406\u6B77\u53F2\u7CFB\u7D71";
-    trigger?.setAttribute(
+    navigation?.setAttribute(
       "aria-label",
       english ? "Staff systems navigation" : "\u52A9\u7406\u7CFB\u7D71\u5C0E\u89BD",
     );
-    trigger?.setAttribute("title", english ? "Staff systems" : "\u7CFB\u7D71\u5C0E\u89BD");
     language.checked = english;
     noticeSummary.textContent = english ? "Notices & help" : "\u516C\u544A\u8207\u8AAA\u660E";
     announcement.textContent = english
-      ? "For the latest notices, open Notices in the floating menu at the bottom right."
-      : "\u6700\u65B0\u516C\u544A\u8ACB\u53C3\u95B1\u756B\u9762\u53F3\u4E0B\u65B9\u5FEB\u6377\u9215\u88E1\u7684\u3010\u516C\u544A\u4E8B\u9805\u3011\u3002";
+      ? "For the latest notices, open Notices in the navigation above."
+      : "\u6700\u65B0\u516C\u544A\u8ACB\u53C3\u95B1\u4E0A\u65B9\u5C0E\u89BD\u7684\u3010\u516C\u544A\u4E8B\u9805\u3011\u3002";
     troubleshooting.textContent = english
       ? "If the table appears blank, clear your browser cache and temporary files."
       : "\u82E5\u767C\u751F\u5217\u8868\u7A7A\u767D\uFF0C\u8ACB\u6E05\u9664\u700F\u89BD\u5668\u5FEB\u53D6\u53CA\u66AB\u5B58\u6A94\u6848\u3002";

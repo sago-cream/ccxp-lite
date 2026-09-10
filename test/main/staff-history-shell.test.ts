@@ -92,26 +92,15 @@ describe("Staff History shell", () => {
   });
 });
 
-test("ball menu opens by keyboard, closes on Escape and preserves focus", () => {
+test("moves the original menu into header navigation and removes the floating trigger", () => {
   const window = setup();
   const document = window.document as unknown as Document;
+  const menu = document.querySelector(".fixed-action-btn ul");
   loadModules(window, ["src/staff-history/shell.ts"]);
-  const trigger = document.querySelector<HTMLElement>(".fixed-action-btn > a");
-  if (!trigger) {
-    throw new Error("Missing menu fixture");
-  }
-  trigger.dispatchEvent(new window.KeyboardEvent("keydown", { key: "Enter" }) as unknown as Event);
-  expect(trigger.getAttribute("aria-expanded")).toBe("true");
-  document
-    .querySelector("#MD4")
-    ?.dispatchEvent(
-      new window.KeyboardEvent("keydown", { key: "Escape", bubbles: true }) as unknown as Event,
-    );
-  expect(trigger.getAttribute("aria-expanded")).toBe("false");
-  expect(document.activeElement).toBe(trigger);
-  trigger.click();
-  document.body.click();
-  expect(trigger.getAttribute("aria-expanded")).toBe("false");
+  const navigation = document.querySelector('[role="navigation"]');
+  expect(navigation?.previousElementSibling?.tagName).toBe("H4");
+  expect(navigation?.querySelector("ul")).toBe(menu);
+  expect(navigation?.querySelectorAll("a")).toHaveLength(4);
 });
 
 test("keeps startup guidance in the header without suppressing unrelated host alerts", async () => {
