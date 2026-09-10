@@ -148,12 +148,12 @@
     row.className = "ccxp-lite-batch-slot";
     field(row, "\u958B\u59CB", "time", start);
     field(row, "\u7D50\u675F", "time", end);
-    row.append(
-      button("\u79FB\u9664\u6B64\u6642\u6BB5", () => {
-        row.remove();
-        invalidate();
-      }),
-    );
+    const removeBtn = button("\u79FB\u9664\u6B64\u6642\u6BB5", () => {
+      row.remove();
+      invalidate();
+    });
+    removeBtn.className = "ccxp-lite-batch-remove-btn";
+    row.append(removeBtn);
     slots.append(row);
     invalidate();
   }
@@ -189,6 +189,31 @@
     from = field(dates, "\u958B\u59CB\u65E5\u671F", "date", initialDate);
     until = field(dates, "\u7D50\u675F\u65E5\u671F", "date", initialDate);
     settings.append(dates);
+    const weekdaySection = element("div");
+    weekdaySection.className = "ccxp-lite-batch-weekday-section";
+    const weekdayHeader = element("div");
+    weekdayHeader.className = "ccxp-lite-batch-weekday-header";
+    weekdayHeader.append(element("span", "\u5340\u9593\u5167\u6BCF\u9031\u91CD\u8907"));
+    const weekdayQuick = element("div");
+    weekdayQuick.className = "ccxp-lite-batch-quick-actions";
+    const setWeekdays = (indices: ReadonlySet<number>) => {
+      for (const input of weekdays.querySelectorAll<HTMLInputElement>("input")) {
+        input.checked = indices.has(Number(input.value));
+      }
+      invalidate();
+    };
+    weekdayQuick.append(
+      button("\u5DE5\u4F5C\u65E5", () => {
+        setWeekdays(new Set([1, 2, 3, 4, 5]));
+      }),
+      button("\u5168\u9078", () => {
+        setWeekdays(new Set([0, 1, 2, 3, 4, 5, 6]));
+      }),
+      button("\u6E05\u7A7A", () => {
+        setWeekdays(new Set());
+      }),
+    );
+    weekdayHeader.append(weekdayQuick);
     weekdays = element("div");
     weekdays.className = "ccxp-lite-batch-weekdays";
     for (const [index, day] of [
@@ -204,20 +229,28 @@
       input.value = String(index);
       input.checked = index > 0 && index < 6;
     }
-    settings.append(element("p", "\u5340\u9593\u5167\u6BCF\u9031\u91CD\u8907"), weekdays);
+    weekdaySection.append(weekdayHeader, weekdays);
+    settings.append(weekdaySection);
+    const extraWrap = element("div");
+    extraWrap.className = "ccxp-lite-batch-extra";
     extra = field(
-      settings,
+      extraWrap,
       "\u984D\u5916\u65E5\u671F\uFF08\u4EE5\u9017\u865F\u5206\u9694\uFF0C\u4F8B\u5982 2026-09-12, 2026-09-19\uFF09",
       "text",
     );
+    settings.append(extraWrap);
     slots = element("div");
+    slots.className = "ccxp-lite-batch-slots";
     settings.append(slots);
-    settings.append(
+    const actionsRow = element("div");
+    actionsRow.className = "ccxp-lite-batch-actions";
+    actionsRow.append(
       button("\uFF0B \u589E\u52A0\u6642\u6BB5", () => {
         addSlot("13:00", "17:00");
       }),
     );
-    settings.append(button("\u9810\u89BD\u767B\u9304\u6E05\u55AE", makePreview));
+    actionsRow.append(button("\u9810\u89BD\u767B\u9304\u6E05\u55AE", makePreview));
+    settings.append(actionsRow);
     preview = element("div");
     preview.className = "ccxp-lite-batch-preview";
     preview.addEventListener("change", updateSummary);
@@ -229,13 +262,18 @@
         status.textContent = String(error);
       });
     });
+    startButton.className = "ccxp-lite-batch-primary-btn";
     startButton.disabled = true;
     stopButton = button("\u5B8C\u6210\u76EE\u524D\u4E00\u7B46\u5F8C\u505C\u6B62", () => {
       stopped = true;
       stopButton.disabled = true;
     });
+    stopButton.className = "ccxp-lite-batch-stop-btn";
     stopButton.hidden = true;
-    panel.append(preview, status, startButton, stopButton);
+    const runActions = element("div");
+    runActions.className = "ccxp-lite-batch-run-actions";
+    runActions.append(startButton, stopButton);
+    panel.append(preview, status, runActions);
     settings.addEventListener("input", invalidate);
     document.addEventListener("input", (event) => {
       if (event.target instanceof Element && event.target.closest("#insForm")) {
