@@ -112,6 +112,15 @@
       "run_at": "document_idle",
       "js": ["staff-history/content.js", "staff-history/shell.js"],
       "css": ["staff-history/shell.css"]
+    },
+    {
+      "matches": [
+        "https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/PE/3/3000/PE30001.php*",
+        "https://ccxp.nthu.edu.tw/ccxp/INQUIRE/PE/3/3000/PE30001.php*"
+      ],
+      "run_at": "document_idle",
+      "js": ["staff-registration/content.js"],
+      "css": ["staff-registration/content.css"]
     }
   ]
 }
