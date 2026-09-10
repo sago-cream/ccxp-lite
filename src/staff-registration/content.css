@@ -212,3 +212,51 @@ html.ccxp-registration
     padding: 0;
   }
 }
+
+html.ccxp-registration #float_menu .ccxp-registration-info {
+  position: relative;
+}
+html.ccxp-registration #float_menu .ccxp-registration-info[hidden],
+html.ccxp-registration #ccxp-registration-reminders[hidden] {
+  display: none !important;
+}
+html.ccxp-registration .ccxp-registration-info > button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ccxp-lite-spacing-2xs, 4px);
+  min-height: 40px;
+  padding: 4px 0;
+  border: 0;
+  background: transparent;
+  color: var(--ccxp-lite-type-primary-link-color);
+  font: var(--ccxp-lite-type-utility);
+  cursor: pointer;
+}
+html.ccxp-registration #ccxp-registration-reminders {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 20;
+  width: min(440px, calc(100vw - 64px));
+  max-height: 60vh;
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding: var(--ccxp-lite-spacing-md, 16px);
+  border: 1px solid var(--ccxp-lite-border);
+  border-radius: var(--ccxp-lite-radius-input);
+  background: var(--ccxp-lite-surface);
+  box-shadow: 0 4px 16px var(--ccxp-lite-sidebar-divider-color);
+  text-align: left;
+  white-space: normal;
+  color: var(--ccxp-lite-type-body-color);
+  font: var(--ccxp-lite-type-body);
+}
+html.ccxp-registration .ccxp-registration-reminder + .ccxp-registration-reminder {
+  margin-top: var(--ccxp-lite-spacing-inset-sm, 12px);
+  padding-top: var(--ccxp-lite-spacing-inset-sm, 12px);
+  border-top: 1px solid var(--ccxp-lite-border);
+}
+html.ccxp-registration #ccxp-registration-reminders a {
+  color: var(--ccxp-lite-type-primary-link-color) !important;
+  font: var(--ccxp-lite-type-primary-link);
+}

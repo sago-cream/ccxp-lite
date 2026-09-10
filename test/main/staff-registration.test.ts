@@ -66,3 +66,37 @@ describe("Staff registration cleanup", () => {
     expect(document.querySelector("#grid td")?.textContent).toBe("Original record");
   });
 });
+
+test("collects startup reminders in the info popup and preserves unrelated alerts", async () => {
+  const window = setup();
+  const document = window.document as unknown as Document;
+  loadModules(window, ["src/staff-registration/content.ts"]);
+  const toast = document.createElement("div");
+  toast.className = "toast";
+  toast.textContent = "\u57FA\u672C\u5DE5\u8CC7 29,500";
+  const identity = document.createElement("div");
+  identity.className = "ns-box";
+  identity.innerHTML =
+    '<div class="ns-content"><div>\u5982\u6709\u7279\u6B8A\u8EAB\u4EFD<a href="identity.php">Identity</a></div></div>';
+  const link = identity.querySelector("a");
+  const alert = document.createElement("div");
+  alert.className = "toast";
+  alert.textContent = "Validation failed";
+  document.body.append(toast, identity, alert);
+  await window.happyDOM.waitUntilComplete();
+  const popup = document.querySelector<HTMLElement>("#ccxp-registration-reminders");
+  const button = document.querySelector<HTMLButtonElement>(".ccxp-registration-info > button");
+  expect(popup?.textContent).toContain("29,500");
+  expect(popup?.querySelector("a")).toBe(link);
+  expect(toast.isConnected).toBe(false);
+  expect(identity.isConnected).toBe(false);
+  expect(alert.isConnected).toBe(true);
+  expect(popup?.hidden).toBe(true);
+  button?.click();
+  expect(button?.getAttribute("aria-expanded")).toBe("true");
+  button?.dispatchEvent(
+    new window.KeyboardEvent("keydown", { key: "Escape", bubbles: true }) as unknown as Event,
+  );
+  expect(popup?.hidden).toBe(true);
+  expect(document.activeElement).toBe(button);
+});

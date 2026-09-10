@@ -58,6 +58,108 @@
     link.append(caption);
     return caption;
   });
+  const info = document.createElement("li");
+  info.className = "ccxp-registration-info";
+  const infoButton = document.createElement("button");
+  infoButton.type = "button";
+  infoButton.setAttribute("aria-controls", "ccxp-registration-reminders");
+  infoButton.setAttribute("aria-expanded", "false");
+  const icon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  icon.setAttribute("viewBox", "0 0 24 24");
+  icon.setAttribute("width", "16");
+  icon.setAttribute("height", "16");
+  icon.setAttribute("aria-hidden", "true");
+  const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  path.setAttribute("d", "M12 8h.01M11 12h1v5h1M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0");
+  path.setAttribute("fill", "none");
+  path.setAttribute("stroke", "currentColor");
+  path.setAttribute("stroke-width", "2");
+  path.setAttribute("stroke-linecap", "round");
+  icon.append(path);
+  const infoCaption = document.createElement("span");
+  infoButton.append(icon, infoCaption);
+  const reminders = document.createElement("div");
+  reminders.id = "ccxp-registration-reminders";
+  reminders.hidden = true;
+  info.append(infoButton, reminders);
+  navigation.querySelector("ul")?.append(info);
+  let pinned = false;
+  let hovered = false;
+  let suppressHover = false;
+  const syncInfo = () => {
+    const open = pinned || (hovered && !suppressHover);
+    reminders.hidden = !open;
+    infoButton.setAttribute("aria-expanded", String(open));
+  };
+  info.addEventListener("mouseenter", () => {
+    hovered = true;
+    suppressHover = false;
+    syncInfo();
+  });
+  info.addEventListener("mouseleave", () => {
+    hovered = false;
+    suppressHover = false;
+    syncInfo();
+  });
+  infoButton.addEventListener("click", () => {
+    pinned = !pinned;
+    suppressHover = !pinned;
+    syncInfo();
+  });
+  info.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      pinned = false;
+      suppressHover = true;
+      syncInfo();
+      infoButton.focus();
+    }
+  });
+  document.addEventListener("click", (event) => {
+    if (event.target instanceof Node && !info.contains(event.target)) {
+      pinned = false;
+      suppressHover = true;
+      syncInfo();
+    }
+  });
+  const captured = new Set<string>();
+  const collectReminders = () => {
+    for (const toast of document.querySelectorAll<HTMLElement>(".toast, .ns-box")) {
+      const text = toast.textContent.trim();
+      if (
+        !/\u57FA\u672C\u5DE5\u8CC7|\u6700\u65B0\u516C\u544A\u8ACB\u53C3\u95B1|\u5982\u6709\u7279\u6B8A\u8EAB\u4EFD/.test(
+          text,
+        )
+      ) {
+        continue;
+      }
+      if (!captured.has(text)) {
+        const item = document.createElement("div");
+        item.className = "ccxp-registration-reminder";
+        const content = toast.querySelector(".ns-content > div") ?? toast;
+        item.append(...content.childNodes);
+        for (const decoration of item.querySelectorAll("i, img")) {
+          decoration.remove();
+        }
+        if (text.includes("\u6700\u65B0\u516C\u544A\u8ACB\u53C3\u95B1")) {
+          item.textContent =
+            "\u6700\u65B0\u516C\u544A\u8ACB\u53C3\u95B1\u4E0A\u65B9\u5C0E\u89BD\u7684\u3010\u516C\u544A\u4E8B\u9805\u3011\u3002";
+        }
+        reminders.append(item);
+        captured.add(text);
+      }
+      toast.remove();
+    }
+    info.hidden = captured.size === 0;
+  };
+  const reminderObserver = new MutationObserver(collectReminders);
+  reminderObserver.observe(document.body, { childList: true, subtree: true });
+  collectReminders();
+  window.addEventListener("pagehide", (event) => {
+    if (!event.persisted) {
+      reminderObserver.disconnect();
+    }
+  });
   header.append(heading, navigation, languageLabel);
   form.before(header);
   title.classList.add("ccxp-registration-original-title");
@@ -192,6 +294,11 @@
       english ? "Staff systems navigation" : "\u52A9\u7406\u7CFB\u7D71\u5C0E\u89BD",
     );
     language.checked = english;
+    infoCaption.textContent = english ? "Reminders" : "\u63D0\u9192";
+    infoButton.setAttribute(
+      "aria-label",
+      english ? "Registration reminders" : "\u767B\u9304\u63D0\u9192",
+    );
     for (const { node, labels } of translations) {
       node.textContent = labels[english ? 1 : 0];
     }
