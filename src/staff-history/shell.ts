@@ -163,7 +163,7 @@
     }
   };
   const render = () => {
-    heading.textContent = english ? "Staff history" : "\u52A9\u7406\u6B77\u53F2";
+    heading.textContent = english ? "Staff history system" : "\u52A9\u7406\u6B77\u53F2\u7CFB\u7D71";
     trigger?.setAttribute(
       "aria-label",
       english ? "Staff systems navigation" : "\u52A9\u7406\u7CFB\u7D71\u5C0E\u89BD",

@@ -76,7 +76,7 @@ describe("Staff History shell", () => {
     ).toBe(false);
     expect(
       (window.document as unknown as Document).querySelector("h4 > span:first-child")?.textContent,
-    ).toBe("Staff history");
+    ).toBe("Staff history system");
     (
       (window.document as unknown as Document).querySelector(
         ".ccxp-staff-language",

@@ -222,8 +222,7 @@ html.ccxp-staff-shell .ccxp-staff-page .row.col {
 }
 html.ccxp-staff-shell .ccxp-staff-page footer,
 html.ccxp-staff-shell .ccxp-staff-page .page-footer {
-  background: transparent !important;
-  box-shadow: none;
+  display: none !important;
 }
 html.ccxp-staff-shell .ccxp-staff-toolbar :focus-visible,
 html.ccxp-staff-shell #A_HEAD:focus-visible,
