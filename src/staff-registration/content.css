@@ -1,5 +1,6 @@
 html.ccxp-registration body {
   animation: none !important;
+  padding-bottom: var(--ccxp-lite-spacing-xl, 32px);
 }
 html.ccxp-registration :is(.ccxp-registration-header, #smart-form),
 html.ccxp-registration :is(.ccxp-registration-header, #smart-form) * {
@@ -124,6 +125,9 @@ html.ccxp-registration .ccxp-registration-header :focus-visible {
 }
 html.ccxp-registration #smart-form > .tagline {
   max-width: 800px;
+  height: auto;
+  border: 0;
+  padding: 0 var(--ccxp-lite-spacing-inset-sm, 12px);
   margin: var(--ccxp-lite-spacing-lg, 24px) auto var(--ccxp-lite-spacing-md, 16px);
   text-align: left;
   color: var(--ccxp-lite-type-body-strong-color);
@@ -135,8 +139,12 @@ html.ccxp-registration #smart-form > .tagline::after {
   display: none;
 }
 html.ccxp-registration #smart-form > .tagline span {
+  position: static;
   padding: 0;
   background: transparent;
+  color: inherit;
+  font: inherit;
+  text-transform: none;
 }
 html.ccxp-registration #smart-form > .tagline i {
   display: none;
@@ -144,6 +152,14 @@ html.ccxp-registration #smart-form > .tagline i {
 html.ccxp-registration #smart-form > .ccxp-registration-row {
   max-width: 800px;
   margin: 0 auto var(--ccxp-lite-spacing-lg, 24px);
+}
+html.ccxp-registration
+  #smart-form
+  > .ccxp-registration-row:not(:has(> :not(.ccxp-registration-spacer, .hide))) {
+  display: none;
+}
+html.ccxp-registration #smart-form > hr {
+  display: none;
 }
 html.ccxp-registration #smart-form > .ccxp-registration-row:has(.k-grid) {
   max-width: none;
