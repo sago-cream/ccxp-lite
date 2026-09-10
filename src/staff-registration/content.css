@@ -1,0 +1,375 @@
+html.ccxp-registration body {
+  animation: none !important;
+  padding-bottom: var(--ccxp-lite-spacing-xl, 32px);
+}
+html.ccxp-registration .material-tooltip {
+  max-width: min(320px, calc(100vw - 32px));
+  min-height: 0;
+  padding: var(--ccxp-lite-spacing-inline-sm, 8px) var(--ccxp-lite-spacing-inset-sm, 12px);
+  margin: 0 !important;
+  border: 1px solid var(--ccxp-lite-border);
+  border-radius: var(--ccxp-lite-radius-input);
+  background: var(--ccxp-lite-surface-muted);
+  color: var(--ccxp-lite-type-body-muted-color);
+  font: var(--ccxp-lite-type-body-muted);
+  text-align: left;
+  text-shadow: none;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  box-shadow: none;
+  pointer-events: none;
+  animation: none !important;
+  transition: none !important;
+  transform: none !important;
+}
+html.ccxp-registration .material-tooltip .backdrop {
+  display: none !important;
+}
+html.ccxp-registration .waves-ripple {
+  display: none !important;
+}
+html.ccxp-registration .k-state-focused,
+html.ccxp-registration .k-state-focused > .k-select {
+  border-color: var(--ccxp-lite-border) !important;
+  box-shadow: none !important;
+  outline: none;
+}
+html.ccxp-registration :focus:not(:focus-visible) {
+  outline: none !important;
+}
+html.ccxp-registration #smart-form :focus-visible {
+  outline: 1px solid var(--ccxp-lite-type-body-muted-color);
+  outline-offset: 2px;
+}
+html.ccxp-registration #smart-form input[type="checkbox"]:focus-visible + label {
+  outline: 1px solid var(--ccxp-lite-type-body-muted-color);
+  outline-offset: 2px;
+}
+html.ccxp-registration :is(.ccxp-registration-header, #smart-form),
+html.ccxp-registration :is(.ccxp-registration-header, #smart-form) * {
+  text-shadow: none !important;
+}
+html.ccxp-registration body > .container.k-block {
+  width: auto;
+  max-width: none;
+  margin: var(--ccxp-lite-spacing-xl, 32px);
+  padding: 0;
+  border: 0;
+  background: var(--ccxp-lite-surface, #fff);
+  box-shadow: none;
+}
+html.ccxp-registration .ccxp-registration-header {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: var(--ccxp-lite-spacing-md, 16px);
+  margin-bottom: var(--ccxp-lite-spacing-xl, 32px);
+}
+html.ccxp-registration .ccxp-registration-header h1 {
+  margin: 0;
+  font: var(--ccxp-lite-type-page-title);
+  color: var(--ccxp-lite-type-page-title-color);
+}
+html.ccxp-registration #smart-form .ccxp-registration-original-title,
+html.ccxp-registration #smart-form > footer {
+  display: none !important;
+}
+html.ccxp-registration #float_menu {
+  position: static !important;
+  margin: 0;
+  padding: 0;
+  z-index: auto;
+}
+html.ccxp-registration #float_menu > ul {
+  position: static !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--ccxp-lite-spacing-2xs, 4px) var(--ccxp-lite-spacing-lg, 24px);
+  margin: 0;
+  padding: 0;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+html.ccxp-registration #float_menu li {
+  margin: 0;
+}
+html.ccxp-registration #float_menu li > a {
+  position: static !important;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ccxp-lite-spacing-2xs, 4px);
+  width: auto;
+  height: auto;
+  min-height: 40px;
+  padding: 4px 0;
+  border-radius: 0;
+  background: transparent !important;
+  color: var(--ccxp-lite-type-primary-link-color) !important;
+  font: var(--ccxp-lite-type-utility) !important;
+  text-transform: none;
+  box-shadow: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+html.ccxp-registration #float_menu li i {
+  width: 1em;
+  font-size: 1em;
+  line-height: 1;
+  color: inherit !important;
+}
+html.ccxp-registration .ccxp-registration-language {
+  justify-self: end;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ccxp-lite-spacing-inline-sm, 8px);
+  min-height: 40px;
+  font: var(--ccxp-lite-type-body);
+  color: var(--ccxp-lite-type-body-color);
+  cursor: pointer;
+}
+html.ccxp-registration .ccxp-registration-language input {
+  appearance: none !important;
+  position: relative;
+  left: auto !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  width: 32px;
+  height: 20px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--ccxp-lite-radius-full);
+  background: var(--ccxp-lite-border) !important;
+  cursor: pointer;
+}
+html.ccxp-registration .ccxp-registration-language input::before {
+  content: "";
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--ccxp-lite-text);
+}
+html.ccxp-registration .ccxp-registration-language input:checked {
+  background: var(--ccxp-lite-primary) !important;
+}
+html.ccxp-registration .ccxp-registration-language input:checked::before {
+  transform: translateX(12px);
+  background: var(--ccxp-lite-surface);
+}
+html.ccxp-registration .ccxp-registration-header :focus-visible {
+  outline: 2px solid var(--ccxp-lite-primary);
+  outline-offset: 4px;
+}
+html.ccxp-registration #smart-form > .tagline {
+  max-width: 800px;
+  height: auto;
+  border: 0;
+  padding: 0 var(--ccxp-lite-spacing-inset-sm, 12px);
+  margin: var(--ccxp-lite-spacing-xl, 32px) auto var(--ccxp-lite-spacing-md, 16px);
+  text-align: left;
+  color: var(--ccxp-lite-type-body-strong-color);
+  font: var(--ccxp-lite-type-body-strong);
+  text-transform: none;
+}
+html.ccxp-registration #smart-form > .ccxp-registration-row:has(#grid) {
+  margin-top: 48px;
+}
+html.ccxp-registration .ccxp-registration-choice-help {
+  box-sizing: border-box;
+  max-width: 800px;
+  margin: 0 auto var(--ccxp-lite-spacing-md, 16px);
+  padding: 0 var(--ccxp-lite-spacing-inset-sm, 12px);
+}
+html.ccxp-registration .ccxp-registration-choice-help a {
+  color: var(--ccxp-lite-type-body-muted-color) !important;
+  font: var(--ccxp-lite-type-body-muted) !important;
+}
+html.ccxp-registration .ccxp-registration-choices .ccxp-registration-field > br,
+html.ccxp-registration .ccxp-registration-choices .ccxp-registration-spacer {
+  display: none;
+}
+html.ccxp-registration .ccxp-registration-choices p {
+  margin: 0 0 var(--ccxp-lite-spacing-inline-sm, 8px);
+  min-height: 32px;
+}
+html.ccxp-registration .ccxp-registration-choices label:not(.field-label) {
+  min-height: 32px;
+  line-height: 32px;
+  vertical-align: middle;
+}
+html.ccxp-registration .ccxp-registration-choices label:not(.field-label)::before,
+html.ccxp-registration .ccxp-registration-choices label:not(.field-label)::after {
+  top: 6px;
+}
+html.ccxp-registration .ccxp-registration-choices :is(#T_HIRE, #T_HIRE_2, #T_LBU) {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  line-height: 32px;
+  vertical-align: middle;
+}
+html.ccxp-registration .ccxp-registration-choices :is(#T_HIRE, #T_HIRE_2, #T_LBU) i {
+  line-height: 1;
+}
+html.ccxp-registration #smart-form #grid {
+  margin-top: var(--ccxp-lite-spacing-md, 16px);
+}
+html.ccxp-registration #smart-form > .tagline::before,
+html.ccxp-registration #smart-form > .tagline::after {
+  display: none;
+}
+html.ccxp-registration #smart-form > .tagline span {
+  position: static;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-transform: none;
+}
+html.ccxp-registration #smart-form > .tagline i {
+  display: none;
+}
+html.ccxp-registration #smart-form > .ccxp-registration-row {
+  max-width: 800px;
+  margin: 0 auto var(--ccxp-lite-spacing-lg, 24px);
+}
+html.ccxp-registration
+  #smart-form
+  > .ccxp-registration-row:not(:has(> :not(.ccxp-registration-spacer, .hide))) {
+  display: none;
+}
+html.ccxp-registration #smart-form > hr {
+  display: none;
+}
+html.ccxp-registration #smart-form > .ccxp-registration-row:has(.k-grid) {
+  max-width: none;
+}
+html.ccxp-registration #smart-form .k-grid-header-wrap > table,
+html.ccxp-registration #smart-form .k-grid-content > table {
+  min-width: 1280px;
+}
+html.ccxp-registration #smart-form .ccxp-registration-row > .ccxp-registration-spacer {
+  display: none;
+}
+html.ccxp-registration #smart-form .ccxp-registration-row > .ccxp-registration-field {
+  width: 50%;
+  padding: 0 var(--ccxp-lite-spacing-inset-sm, 12px);
+  text-align: left;
+}
+html.ccxp-registration #smart-form .ccxp-registration-row > .ccxp-registration-wide {
+  width: 100%;
+}
+html.ccxp-registration #smart-form .field-label {
+  display: block;
+  margin-bottom: var(--ccxp-lite-spacing-inline-sm, 8px);
+  color: var(--ccxp-lite-type-body-strong-color);
+  font: var(--ccxp-lite-type-utility);
+}
+html.ccxp-registration #smart-form .waves-effect,
+html.ccxp-registration #smart-form .hoverable,
+html.ccxp-registration #smart-form .z-depth-3 {
+  box-shadow: none !important;
+}
+html.ccxp-registration #smart-form label[for^="I_SYS_"],
+html.ccxp-registration #smart-form label[for^="I_ORG_"] {
+  white-space: normal !important;
+}
+html.ccxp-registration #smart-form .fa-spin {
+  animation: none;
+}
+html.ccxp-registration #smart-form .ccxp-registration-field > a[href="#!"] {
+  display: block;
+  color: var(--ccxp-lite-type-body-muted-color) !important;
+  font: var(--ccxp-lite-type-body-muted);
+}
+html.ccxp-registration #smart-form :is(#PP_SUB, #PP_SUB2):not(.disabled) {
+  background: var(--ccxp-lite-primary) !important;
+  color: var(--ccxp-lite-surface) !important;
+}
+html.ccxp-registration #smart-form :is(#PP_SUB, #PP_SUB2) {
+  min-height: 40px;
+  border-radius: var(--ccxp-lite-radius-input);
+  box-shadow: none;
+}
+html.ccxp-registration
+  #smart-form
+  .k-grid
+  tbody
+  > tr:is(:hover, .k-state-hover, .k-state-selected)
+  > td {
+  color: var(--ccxp-lite-type-body-color) !important;
+  background: var(--ccxp-lite-surface-muted) !important;
+}
+@media (max-width: 1000px) {
+  html.ccxp-registration .ccxp-registration-header {
+    grid-template-columns: 1fr auto;
+  }
+  html.ccxp-registration #float_menu {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}
+@media (max-width: 640px) {
+  html.ccxp-registration body > .container.k-block {
+    margin: var(--ccxp-lite-spacing-md, 16px);
+  }
+  html.ccxp-registration #smart-form .ccxp-registration-row > .ccxp-registration-field {
+    width: 100%;
+    margin-bottom: var(--ccxp-lite-spacing-md, 16px);
+    padding: 0;
+  }
+}
+
+html.ccxp-registration #float_menu .ccxp-registration-info {
+  position: relative;
+}
+html.ccxp-registration #float_menu .ccxp-registration-info[hidden],
+html.ccxp-registration #ccxp-registration-reminders[hidden] {
+  display: none !important;
+}
+html.ccxp-registration .ccxp-registration-info > button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ccxp-lite-spacing-2xs, 4px);
+  min-height: 40px;
+  padding: 4px 0;
+  border: 0;
+  background: transparent;
+  color: var(--ccxp-lite-type-primary-link-color);
+  font: var(--ccxp-lite-type-utility);
+  cursor: pointer;
+}
+html.ccxp-registration #ccxp-registration-reminders {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 20;
+  width: min(440px, calc(100vw - 64px));
+  max-height: 60vh;
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding: var(--ccxp-lite-spacing-md, 16px);
+  border: 1px solid var(--ccxp-lite-border);
+  border-radius: var(--ccxp-lite-radius-input);
+  background: var(--ccxp-lite-surface);
+  box-shadow: 0 4px 16px var(--ccxp-lite-sidebar-divider-color);
+  text-align: left;
+  white-space: normal;
+  color: var(--ccxp-lite-type-body-color);
+  font: var(--ccxp-lite-type-body);
+}
+html.ccxp-registration .ccxp-registration-reminder + .ccxp-registration-reminder {
+  margin-top: var(--ccxp-lite-spacing-inset-sm, 12px);
+  padding-top: var(--ccxp-lite-spacing-inset-sm, 12px);
+  border-top: 1px solid var(--ccxp-lite-border);
+}
+html.ccxp-registration #ccxp-registration-reminders a {
+  color: var(--ccxp-lite-type-primary-link-color) !important;
+  font: var(--ccxp-lite-type-primary-link);
+}

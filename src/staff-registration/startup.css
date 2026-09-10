@@ -1,0 +1,16 @@
+/* Cover the legacy first paint until enhancement finishes. The CSS timeout also
+   releases the page if the content script fails or never runs. */
+html:not([data-ccxp-registration-ready])::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647;
+  background: #fff;
+  animation: ccxp-registration-reveal 0s 4s forwards;
+}
+@keyframes ccxp-registration-reveal {
+  to {
+    visibility: hidden;
+    pointer-events: none;
+  }
+}
