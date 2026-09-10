@@ -80,6 +80,8 @@ test("previews weekly dates, deduplicates extras, rejects overlaps and invalidat
     });
     await page.goto(endpoint);
     await page.addScriptTag({ content: source });
+    await page.addStyleTag({ path: "src/work-log/content.css" });
+    await page.setViewportSize({ width: 390, height: 844 });
     await page.locator("#ccxp-lite-batch summary").click();
     const dates = page.locator('#ccxp-lite-batch input[type="date"]');
     await dates.nth(0).fill("2026-09-07");
@@ -89,6 +91,11 @@ test("previews weekly dates, deduplicates extras, rejects overlaps and invalidat
       .getByRole("button", { name: "\u9810\u89BD\u767B\u9304\u6E05\u55AE", exact: true })
       .click();
     expect(await page.locator(".ccxp-lite-batch-preview input").count()).toBe(6);
+    expect(
+      await page
+        .locator("#ccxp-lite-batch")
+        .evaluate((panel) => panel.scrollWidth <= panel.clientWidth),
+    ).toBe(true);
     expect(await page.locator(".ccxp-lite-batch-preview").textContent()).toContain("2026-09-12");
     await page
       .getByRole("button", { name: "\uFF0B \u589E\u52A0\u6642\u6BB5", exact: true })
@@ -168,6 +175,98 @@ test("submits sequential native Big5 forms with fresh date tasks and guards comp
     ).toBe(true);
     expect(await page.locator(".ccxp-lite-batch-preview input:checked").count()).toBe(0);
     expect(posts).toHaveLength(4);
+  } finally {
+    await browser.close();
+  }
+}, 20_000);
+
+test.each(["reject", "uncertain", "stop"] as const)(
+  "stops safely on %s without submitting the following date",
+  async (mode) => {
+    const browser = await chromium.launch({ headless: true });
+    try {
+      const page = await browser.newPage();
+      page.setDefaultTimeout(5000);
+      const posts: string[] = [];
+      await page.route("**/*", async (route) => {
+        const body = route.request().postData() ?? "";
+        if (body !== "") {
+          posts.push(body);
+        }
+        const fields = new URLSearchParams(body);
+        const insert = body !== "" && fields.get("S_SUBMIT") !== "Loading Data";
+        if (mode === "stop" && insert) {
+          await page
+            .getByRole("button", {
+              name: "\u5B8C\u6210\u76EE\u524D\u4E00\u7B46\u5F8C\u505C\u6B62",
+              exact: true,
+            })
+            .click();
+        }
+        let html = fixture(fields, insert && mode === "stop");
+        if (mode === "reject") {
+          html = html.replace("</body>", "<script>window.rejectInsert = true;</script></body>");
+        }
+        await route.fulfill({ contentType: "text/html", body: html });
+      });
+      await page.goto(endpoint);
+      await page.addScriptTag({ content: source });
+      await page.locator("#ccxp-lite-batch summary").click();
+      await page.locator('#ccxp-lite-batch input[type="date"]').nth(1).fill("2026-09-11");
+      await page
+        .getByRole("button", { name: "\u9810\u89BD\u767B\u9304\u6E05\u55AE", exact: true })
+        .click();
+      await page
+        .getByRole("button", { name: "\u958B\u59CB\u6279\u6B21\u767B\u9304", exact: true })
+        .click();
+      await page.waitForFunction(
+        (expected) => document.querySelector('[role="status"]')?.textContent.includes(expected),
+        {
+          reject: "Rejected by host",
+          uncertain: "\u672A\u80FD\u78BA\u8A8D",
+          stop: "\u5DF2\u505C\u6B62",
+        }[mode],
+      );
+      expect(posts).toHaveLength(mode === "reject" ? 1 : 2);
+      expect(posts.some((body) => body.includes("I_TASK_DT_Day=11"))).toBe(false);
+      const journal = await page.evaluate(() =>
+        sessionStorage.getItem("ccxp-lite-work-log-batch-journal"),
+      );
+      expect(journal).toContain({ reject: "{}", stop: "done", uncertain: "pending" }[mode]);
+      expect(await page.locator('[name="I_TASK_NOTE"]').isEnabled()).toBe(true);
+      await page
+        .getByRole("button", { name: "\u9810\u89BD\u767B\u9304\u6E05\u55AE", exact: true })
+        .click();
+      expect(await page.locator(".ccxp-lite-batch-preview input:checked").count()).toBe(
+        mode === "reject" ? 2 : 1,
+      );
+    } finally {
+      await browser.close();
+    }
+  },
+  20_000,
+);
+
+test("rejects unsupported Big5 characters before submitting", async () => {
+  const browser = await chromium.launch({ headless: true });
+  try {
+    const page = await browser.newPage();
+    await page.route("**/*", async (route) => {
+      await route.fulfill({ contentType: "text/html", body: fixture() });
+    });
+    await page.goto(endpoint);
+    await page.addScriptTag({ content: source });
+    await page.locator("#ccxp-lite-batch summary").click();
+    await page.locator('[name="I_TASK_NOTE"]').fill("\u{1F600}");
+    await page
+      .getByRole("button", { name: "\u9810\u89BD\u767B\u9304\u6E05\u55AE", exact: true })
+      .click();
+    expect(await page.getByRole("status").textContent()).toContain("Big5");
+    expect(
+      await page
+        .getByRole("button", { name: "\u958B\u59CB\u6279\u6B21\u767B\u9304", exact: true })
+        .isDisabled(),
+    ).toBe(true);
   } finally {
     await browser.close();
   }

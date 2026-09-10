@@ -25,5 +25,11 @@ jobs:
       - name: Check
         run: bun run check
 
+      - name: Install browser test runtime
+        run: bunx playwright install --with-deps chromium
+
+      - name: Test native work-log submissions
+        run: bun run test:browser
+
       - name: Build extensions
         run: bun run build

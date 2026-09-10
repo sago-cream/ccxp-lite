@@ -23,6 +23,9 @@
     toSubmit?: CcxpLiteWrappedSubmit;
     setDay?: (form: string, prefix: string, condition: string) => void;
   };
+  class HostValidationError extends Error {
+    name = "HostValidationError";
+  }
   let running = false;
   let stopped = false;
   let plan: Plan | undefined;
@@ -467,7 +470,7 @@
     }
     try {
       if (host.toSubmit(form, action) !== true) {
-        throw new Error(
+        throw new HostValidationError(
           message === ""
             ? "\u6821\u65B9\u9A57\u8B49\u672A\u901A\u904E\uFF0C\u8ACB\u78BA\u8A8D\u65E5\u671F\u3001\u6642\u6BB5\u8207\u4EFB\u52D9\u8CC7\u6599\u3002"
             : message,
@@ -590,13 +593,29 @@
         journal[key] = "pending";
         sessionStorage.setItem(journalKey, JSON.stringify(journal));
         const response = await navigate(frame, () => {
-          submit(frame, "ins");
+          try {
+            submit(frame, "ins");
+          } catch (error) {
+            // A synchronous validation rejection never called native form.submit().
+            if (error instanceof HostValidationError) {
+              Reflect.deleteProperty(journal, key);
+              sessionStorage.setItem(journalKey, JSON.stringify(journal));
+            }
+            throw error;
+          }
         });
         if (!succeeded(response, entry, current)) {
+          const notices = [...response.scripts]
+            .flatMap((script) =>
+              [...script.textContent.matchAll(/alert\(['"]([^'"]+)['"]\)/gu)].map(
+                (match) => match[1],
+              ),
+            )
+            .join(" ");
           throw new Error(
             `\u672A\u80FD\u78BA\u8A8D ${entry.date} ${
               entry.start
-            } \u767B\u9304\u6210\u529F\uFF0C\u5DF2\u505C\u6B62\u3002\u8ACB\u5148\u67E5\u8A62\u7D00\u9304\u8207\u6821\u65B9\u63D0\u793A\u3002`,
+            } \u767B\u9304\u6210\u529F\uFF0C\u5DF2\u505C\u6B62\u3002\u8ACB\u5148\u67E5\u8A62\u7D00\u9304\u8207\u6821\u65B9\u63D0\u793A\u3002 ${notices}`,
           );
         }
         journal[key] = "done";
