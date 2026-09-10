@@ -34,7 +34,8 @@
         "menu/primitives/*.css",
         "menu/components/*.css",
         "menu/variants/*.css",
-        "work-log/page.js"
+        "work-log/page.js",
+        "work-log/batch.js"
       ],
       "matches": ["https://www.ccxp.nthu.edu.tw/*", "https://ccxp.nthu.edu.tw/*"]
     },

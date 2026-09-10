@@ -27,7 +27,8 @@
     "format:check": "bunx prettier . --check",
     "typecheck": "bunx tsc -b --noEmit tsconfig.json",
     "check": "bun run typecheck && bun run lint && bun run format:check && bun run test",
-    "prepare": "husky"
+    "prepare": "husky",
+    "test:browser": "bunx vitest run --config vitest.browser.config.mts"
   },
   "lint-staged": {
     "*.{ts,tsx,js,mjs,json,md,css}": [

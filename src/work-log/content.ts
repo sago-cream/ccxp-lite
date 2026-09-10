@@ -1,6 +1,6 @@
 (function injectCcxpLitePe14dPageScript() {
   // Transport responses must remain raw until imported into the visible document.
-  if (window.name === "ccxp-lite-pe14d-transport") {
+  if (window.name.startsWith("ccxp-lite-pe14d-")) {
     return;
   }
   const sharedDom = globalThis.CCXP_LITE?.sharedDom;
@@ -36,4 +36,10 @@
     }
   });
   document.documentElement.append(script);
+  const batchScript = document.createElement("script");
+  batchScript.src = runtimeApi.getURL("work-log/batch.js");
+  batchScript.addEventListener("load", () => {
+    batchScript.remove();
+  });
+  document.documentElement.append(batchScript);
 })();

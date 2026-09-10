@@ -87,10 +87,15 @@
     };
     const { originalTarget } = pendingSubmission;
     persistSnapshot(snapshot);
-    transportFrame.addEventListener("load", processTransportResponse, { once: true });
+    transportFrame.addEventListener("load", processTransportResponse);
     form.setAttribute("target", TRANSPORT_FRAME_NAME);
     try {
-      originalToSubmit.call(globalScope, form, actionName, actionValue);
+      const submitted = originalToSubmit.call(globalScope, form, actionName, actionValue);
+      // Legacy validation is synchronous and returns true only after form.submit().
+      if (submitted !== true) {
+        cleanupPendingSubmission();
+        clearStoredSnapshot();
+      }
     } catch {
       cleanupPendingSubmission();
       if (originalTarget === "") {
@@ -239,6 +244,9 @@
       fallbackToHardReload();
       return;
     }
+    if (responseDocument.URL === "about:blank") {
+      return;
+    }
     try {
       replaceVisibleBody(responseDocument);
       syncDocumentTitle(responseDocument);
@@ -290,6 +298,7 @@
       return;
     }
     pendingSubmission.cleanedUp = true;
+    pendingSubmission.frame.removeEventListener("load", processTransportResponse);
     pendingSubmission = undefined;
   }
 
