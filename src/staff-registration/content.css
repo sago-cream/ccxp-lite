@@ -1,6 +1,10 @@
 html.ccxp-registration body {
   animation: none !important;
 }
+html.ccxp-registration :is(.ccxp-registration-header, #smart-form),
+html.ccxp-registration :is(.ccxp-registration-header, #smart-form) * {
+  text-shadow: none !important;
+}
 html.ccxp-registration body > .container.k-block {
   width: auto;
   max-width: none;
@@ -140,6 +144,13 @@ html.ccxp-registration #smart-form > .tagline i {
 html.ccxp-registration #smart-form > .ccxp-registration-row {
   max-width: 800px;
   margin: 0 auto var(--ccxp-lite-spacing-lg, 24px);
+}
+html.ccxp-registration #smart-form > .ccxp-registration-row:has(.k-grid) {
+  max-width: none;
+}
+html.ccxp-registration #smart-form .k-grid-header-wrap > table,
+html.ccxp-registration #smart-form .k-grid-content > table {
+  min-width: 1280px;
 }
 html.ccxp-registration #smart-form .ccxp-registration-row > .ccxp-registration-spacer {
   display: none;

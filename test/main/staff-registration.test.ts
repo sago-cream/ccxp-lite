@@ -8,7 +8,7 @@ function setup() {
       <div class="tagline"><span>\u4EBA\u54E1\u8CC7\u8A0A Personal information</span></div>
       <div class="row"><div class="col s2">&nbsp;</div><div class="col s8">
         <label class="field-label" for="I_PJ_ID">\u57F7\u884C\u4EFB\u52D9\u8A08\u756B\u7DE8\u865F Mission Program Number</label>
-        <input id="I_PJ_ID" name="I_PJ_ID" value="existing-project">
+        <input id="I_PJ_ID" name="I_PJ_ID" value="existing-project"><input id="I_DETAIL" placeholder="Description (limit 100 words)"><p>student assistants (the rules in Ministry of Education)</p><p>employed assistants (the rules in Ministry of Labor)</p><p>I have read all the rules</p>
         <input type="checkbox" id="I_SYS_2" name="I_SYS" value="2"><label for="I_SYS_2">\u4EBA\u4E8B\u5BA4\u4EBA\u54E1\u8655\u7406\u8868</label>
         <input type="checkbox" id="CHK_RULES"><label for="CHK_RULES">Original consent wording</label>
         <button id="PP_SUB" type="submit" class="disabled">\u9001\u51FA Send</button>
@@ -56,7 +56,20 @@ describe("Staff registration cleanup", () => {
     const document = window.document as unknown as Document;
     loadModules(window, ["src/staff-registration/content.ts"]);
     expect(document.querySelector("h1")?.textContent).toBe("\u52A9\u7406\u767B\u9304\u7CFB\u7D71");
+    expect(document.querySelector("#smart-form")?.textContent).not.toContain(
+      "I have read all the rules",
+    );
+    expect(document.querySelector("#smart-form")?.textContent).not.toContain(
+      "the rules in Ministry",
+    );
+    expect(document.querySelector<HTMLInputElement>("#I_DETAIL")?.placeholder).toBe("Description");
     document.querySelector<HTMLInputElement>('[role="switch"]')?.click();
+    expect(document.querySelector("#smart-form")?.textContent).toContain(
+      "I have read all the rules",
+    );
+    expect(document.querySelector<HTMLInputElement>("#I_DETAIL")?.placeholder).toBe(
+      "Description (limit 100 words)",
+    );
     expect(document.querySelector('label[for="I_PJ_ID"]')?.textContent).toBe(
       "Mission program number",
     );

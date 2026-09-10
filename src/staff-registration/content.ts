@@ -232,6 +232,15 @@
     ["\u9001\u51FA Send", ["\u9001\u51FA", "Send"]],
     ["\u985E\u578B\u5C6C\u6027 Mission Type", ["\u985E\u578B\u5C6C\u6027", "Mission type"]],
   ]);
+  for (const text of [
+    "student assistants (the rules in Ministry of Education)",
+    "employed assistants (the rules in Ministry of Labor)",
+    "I have read all the rules",
+  ]) {
+    phrases.set(text, ["", text]);
+  }
+  const detail = form.querySelector<HTMLInputElement>("#I_DETAIL");
+  const detailPlaceholder = detail?.getAttribute("placeholder");
   const duplicateEnglish = new Set([
     "payment system (Receipt of Payment) in Accounting Office",
     "payment system in Personnel office",
@@ -294,6 +303,11 @@
       english ? "Staff systems navigation" : "\u52A9\u7406\u7CFB\u7D71\u5C0E\u89BD",
     );
     language.checked = english;
+    if (detail && detailPlaceholder !== null && detailPlaceholder !== undefined) {
+      detail.placeholder = english
+        ? detailPlaceholder
+        : detailPlaceholder.replace(/\s*\(limit 100 words\)/i, "");
+    }
     infoCaption.textContent = english ? "Reminders" : "\u63D0\u9192";
     infoButton.setAttribute(
       "aria-label",
