@@ -1,11 +1,12 @@
 (function registerCcxpLiteSidebarRuntime(globalScope: typeof globalThis) {
   const runtimeScope = globalScope;
   const namespace = runtimeScope.CCXP_LITE ?? {};
-  const { shared, sidebarState } = namespace;
-  if (!shared || !sidebarState) {
+  const { shared, sidebarState, uiLegacyStyle } = namespace;
+  if (!shared || !sidebarState || !uiLegacyStyle) {
     return;
   }
-  const { TOKENS, ensureThemeDocument, cleanLegacyAttributes } = shared;
+  const { TOKENS } = shared;
+  const { prepareLegacySurface } = uiLegacyStyle;
   const { getSidebarUiState, persistSidebarScroll } = sidebarState;
   const INITIAL_MAIN_URL_STORAGE_KEY =
     "ccxp-lite-sidebar-initial-main-url::/ccxp/INQUIRE/select_entry.php";
@@ -146,8 +147,7 @@
     if (!frameDocument) {
       return;
     }
-    ensureThemeDocument(frameDocument, "main");
-    cleanLegacyAttributes(frameDocument);
+    prepareLegacySurface(frameDocument, "main");
     frameDocument.body.classList.add(TOKENS.mainClass);
     // Force a style override as a last resort.
     frameDocument.body.style.setProperty("background-image", "none", "important");

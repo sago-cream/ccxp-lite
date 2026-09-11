@@ -80,4 +80,36 @@ describe("sidebar runtime", () => {
       "https://www.ccxp.nthu.edu.tw/start",
     );
   });
+
+  test("adapts visual inline priorities in embedded pages while preserving behavior styles", () => {
+    const { window } = createTestWindow();
+    const document = window.document as Document;
+    loadModules(window, menuModulePaths);
+    const sidebarRuntime = requireValue(window.CCXP_LITE.sidebarRuntime, "sidebarRuntime");
+    const destinationFrame = sidebarRuntime.createDestinationFrame(
+      document,
+      document,
+      { id: "legacy", label: "Legacy", href: "/legacy", target: "main" },
+      () => undefined,
+    );
+    document.body.append(destinationFrame);
+    const frameDocument = destinationFrame.contentDocument;
+    if (!frameDocument) {
+      throw new Error("Expected iframe document");
+    }
+    frameDocument.body.innerHTML =
+      '<div id="legacy" style="color: red !important; width: 11px !important; display: none !important">Legacy</div>';
+
+    destinationFrame.dispatchEvent(new Event("load"));
+
+    const legacy = frameDocument.querySelector<HTMLElement>("#legacy");
+    if (!legacy) {
+      throw new Error("Expected legacy element");
+    }
+    expect(legacy.style.getPropertyValue("color")).toBe("red");
+    expect(legacy.style.getPropertyPriority("color")).toBe("");
+    expect(legacy.style.getPropertyPriority("width")).toBe("");
+    expect(legacy.style.getPropertyPriority("display")).toBe("important");
+    expect(frameDocument.body.classList.contains("ccxp-lite-main-skin")).toBe(true);
+  });
 });

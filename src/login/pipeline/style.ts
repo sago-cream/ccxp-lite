@@ -2,11 +2,12 @@
   const runtimeScope = globalScope;
   const namespace = runtimeScope.CCXP_LITE ?? {};
   const { shared } = namespace;
-  if (!shared) {
+  const { uiLegacyStyle } = namespace;
+  if (!shared || !uiLegacyStyle) {
     return;
   }
 
-  const { ensureThemeDocument, cleanLegacyAttributes } = shared;
+  const { prepareLegacySurface } = uiLegacyStyle;
 
   function applyLoginTheme(
     targetDocument: Document,
@@ -14,9 +15,7 @@
       shell: HTMLElement;
     },
   ) {
-    ensureThemeDocument(targetDocument, "landing");
-    cleanLegacyAttributes(rewriteResult.shell);
-    cleanLegacyAttributes(targetDocument);
+    prepareLegacySurface(targetDocument, "landing", [rewriteResult.shell, targetDocument]);
     const targetBody = targetDocument.body;
     targetBody.replaceChildren(rewriteResult.shell);
     targetBody.style.setProperty("background-image", "none", "important");

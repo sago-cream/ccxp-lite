@@ -140,32 +140,34 @@
 
 .ccxp-lite-landing-lang ul,
 .ccxp-lite-landing-lang li {
-  margin: 0;
-  padding: 0;
-  list-style: none;
+  margin: 0 !important;
+  padding: 0 !important;
+  list-style: none !important;
 }
 
 .ccxp-lite-landing-lang ul.links {
-  width: auto;
-  display: inline-flex;
-  align-items: center;
+  width: auto !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  color: inherit !important;
+  font: inherit !important;
 }
 
 .ccxp-lite-landing-lang ul.links a,
 .ccxp-lite-landing-lang ul.links a:link,
 .ccxp-lite-landing-lang ul.links a:visited,
 .ccxp-lite-landing-lang ul.links a:active {
-  min-height: var(--ccxp-lite-size-control-height-sm);
-  color: var(--ccxp-lite-type-utility-color);
-  font: var(--ccxp-lite-type-utility);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
+  min-height: var(--ccxp-lite-size-control-height-sm) !important;
+  color: var(--ccxp-lite-type-utility-color) !important;
+  font: var(--ccxp-lite-type-utility) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
   transform: none !important;
-  text-decoration: none;
-  background: none;
-  border: none;
+  text-decoration: none !important;
+  background: none !important;
+  border: none !important;
 }
 
 .ccxp-lite-landing-lang ul.links a *,
@@ -183,18 +185,18 @@
 .ccxp-lite-landing-lang ul.links a:hover,
 .ccxp-lite-landing-lang ul.links a:active,
 .ccxp-lite-landing-lang ul.links a:focus-visible {
-  box-shadow: none;
-  color: var(--ccxp-lite-type-utility-color);
+  box-shadow: none !important;
+  color: var(--ccxp-lite-type-utility-color) !important;
   font: var(--ccxp-lite-type-utility) !important;
   transform: none !important;
   text-decoration: underline !important;
   background: none !important;
-  border: none;
+  border: none !important;
 }
 
 .ccxp-lite-landing-lang a {
-  color: var(--ccxp-lite-type-utility-color);
-  font: var(--ccxp-lite-type-utility);
+  color: var(--ccxp-lite-type-utility-color) !important;
+  font: var(--ccxp-lite-type-utility) !important;
 }
 
 .ccxp-lite-landing-links table {
