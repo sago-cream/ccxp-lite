@@ -85,8 +85,7 @@
     return undefined;
   }
 
-  // Match the login page's info popover interaction and shared CSS classes.
-  function createUpdateNotice(content: HTMLElement) {
+  function createFallbackUpdateNotice(content: HTMLElement) {
     const wrap = document.createElement("span");
     wrap.className = "ccxp-lite-account-guide-info ccxp-lite-work-log-notice";
     const button = document.createElement("button");
@@ -162,6 +161,27 @@
     return wrap;
   }
 
+  // Use the shared popover introduced by the UI component refactor when it is available. The
+  // fallback keeps work-log frames functional when the broader INQUIRE content script is absent.
+  function createUpdateNotice(content: HTMLElement) {
+    const shared = globalThis.CCXP_LITE?.uiPopover?.buildInfoPopoverContent(
+      document,
+      content,
+      "\u64CD\u4F5C\u8AAA\u660E",
+    );
+    if (!shared) {
+      return createFallbackUpdateNotice(content);
+    }
+    shared.classList.add("ccxp-lite-work-log-notice");
+    const button = shared.firstElementChild;
+    if (button instanceof HTMLButtonElement) {
+      const caption = document.createElement("span");
+      caption.className = "ccxp-lite-work-log-notice-label";
+      button.append(caption);
+    }
+    return shared;
+  }
+
   function selectSection(event: Event) {
     const input = event.currentTarget;
     if (input instanceof HTMLInputElement && input.checked) {
@@ -223,6 +243,130 @@
     label.dataset.recordZh = zh;
     label.dataset.recordEn = en;
     return label;
+  }
+
+  function renderDepartmentControlLabels() {
+    for (const [scope, inputName, selectName, idSuffix] of [
+      ["#insTask", "KI_SRV_ID", "I_SRV_ID", "add"],
+      ["#queForm", "KQ_SRV_ID", "Q_SRV_ID", "search"],
+    ]) {
+      const select = document.querySelector<HTMLSelectElement>(
+        `${scope} select[name="${selectName}"]`,
+      );
+      const cell = select?.closest("td");
+      const input = cell?.querySelector<HTMLInputElement>(
+        `input[type="text"][name="${inputName}"]`,
+      );
+      if (!select || !cell || !input) {
+        continue;
+      }
+      cell.classList.add("ccxp-lite-work-log-department-controls");
+      input.id ||= `ccxp-lite-work-log-department-code-${idSuffix}`;
+      select.id ||= `ccxp-lite-work-log-department-select-${idSuffix}`;
+      let codeLabel = cell.querySelector<HTMLLabelElement>(
+        ".ccxp-lite-work-log-department-code-label",
+      );
+      if (!codeLabel) {
+        codeLabel = document.createElement("label");
+        codeLabel.className = "ccxp-lite-work-log-department-code-label";
+        codeLabel.htmlFor = input.id;
+        input.before(codeLabel);
+      }
+      let selectLabel = cell.querySelector<HTMLLabelElement>(
+        ".ccxp-lite-work-log-department-select-label",
+      );
+      if (!selectLabel) {
+        selectLabel = document.createElement("label");
+        selectLabel.className = "ccxp-lite-work-log-department-select-label";
+        selectLabel.htmlFor = select.id;
+        select.before(selectLabel);
+      }
+      codeLabel.textContent = english
+        ? "Search by unit code"
+        : "\u4EE5\u55AE\u4F4D\u4EE3\u78BC\u641C\u5C0B";
+      selectLabel.textContent = english ? "Choose a unit" : "\u9078\u64C7\u55AE\u4F4D";
+    }
+  }
+
+  function renderApprovalFilters() {
+    const select = document.querySelector<HTMLSelectElement>('#queForm select[name="Q_PASS_MARK"]');
+    const cell = select?.closest("td");
+    const heading = cell?.closest("tr")?.querySelector<HTMLElement>("th");
+    if (!select || !cell || !heading || select.options.length < 3) {
+      return;
+    }
+    heading.id ||= "ccxp-lite-work-log-approval-heading";
+    heading.classList.add("ccxp-lite-work-log-approval-heading");
+    heading.textContent = english
+      ? "Filter by approval status"
+      : "\u4EE5\u5BE9\u6838\u72C0\u614B\u7BE9\u9078";
+    let filter = cell.querySelector<HTMLFieldSetElement>(".ccxp-lite-work-log-approval-filter");
+    if (!filter) {
+      const [allOption, approvedOption, unapprovedOption] = select.options;
+      filter = document.createElement("fieldset");
+      filter.className = "ccxp-lite-work-log-approval-filter";
+      filter.setAttribute("aria-labelledby", heading.id);
+      for (const [kind, option] of [
+        ["approved", approvedOption],
+        ["unapproved", unapprovedOption],
+      ] as const) {
+        const label = document.createElement("label");
+        const input = document.createElement("input");
+        input.type = "checkbox";
+        input.value = option.value;
+        input.dataset.ccxpLiteApprovalKind = kind;
+        input.defaultChecked = true;
+        const caption = document.createElement("span");
+        label.append(input, caption);
+        filter.append(label);
+      }
+      const inputs = filter.querySelectorAll<HTMLInputElement>('input[type="checkbox"]');
+      const approved = inputs[0];
+      const unapproved = inputs[1];
+      approved.checked = select.value === allOption.value || select.value === approvedOption.value;
+      unapproved.checked =
+        select.value === allOption.value || select.value === unapprovedOption.value;
+      filter.addEventListener("change", (event) => {
+        const changed = event.target;
+        if (!(changed instanceof HTMLInputElement)) {
+          return;
+        }
+        if (!approved.checked && !unapproved.checked) {
+          changed.checked = true;
+          return;
+        }
+        if (approved.checked && unapproved.checked) {
+          select.value = allOption.value;
+        } else {
+          select.value = approved.checked ? approvedOption.value : unapprovedOption.value;
+        }
+      });
+      select.classList.add("ccxp-lite-work-log-approval-select");
+      select.before(filter);
+    }
+    const approvedLabel = filter.querySelector<HTMLElement>(
+      '[data-ccxp-lite-approval-kind="approved"] + span',
+    );
+    const unapprovedLabel = filter.querySelector<HTMLElement>(
+      '[data-ccxp-lite-approval-kind="unapproved"] + span',
+    );
+    if (approvedLabel) {
+      approvedLabel.textContent = english ? "Approved" : "\u5DF2\u5BE9\u6838";
+    }
+    if (unapprovedLabel) {
+      unapprovedLabel.textContent = english ? "Not approved" : "\u672A\u5BE9\u6838";
+    }
+  }
+
+  function renderDateLabels() {
+    for (const input of document.querySelectorAll<HTMLInputElement>(
+      "input.ccxp-lite-native-date[data-ccxp-lite-date-label-zh]",
+    )) {
+      input.setAttribute(
+        "aria-label",
+        (english ? input.dataset.ccxpLiteDateLabelEn : input.dataset.ccxpLiteDateLabelZh) ?? "",
+      );
+    }
   }
 
   function simplifyRecords() {
@@ -378,20 +522,55 @@
       label.append(caption, toggle);
       nav.append(label);
       const manual = document.querySelector<HTMLAnchorElement>('a[href*="20141023_Manual.pdf"]');
+      const content = document.createElement("div");
+      content.id = "ccxp-lite-work-log-help-content";
       if (manual) {
-        nav.prepend(manual);
+        content.append(manual);
       }
-      document.body.prepend(nav);
+      const slides = document.querySelector<HTMLAnchorElement>('a[href*="goo.gl"]');
+      if (slides) {
+        content.append(slides);
+      }
       const notice = document.querySelector<HTMLElement>("#noticeDiv2");
       if (notice) {
-        nav.prepend(createUpdateNotice(notice));
+        const details = document.createElement("details");
+        const summary = document.createElement("summary");
+        summary.className = "ccxp-lite-work-log-update-label";
+        notice.style.removeProperty("display");
+        details.append(summary, notice);
+        content.append(details);
         document.querySelector("#noticeDiv")?.remove();
       }
+      const contact = document.querySelector("#divContact");
+      if (contact) {
+        while (contact.nextElementSibling?.tagName === "BR") {
+          contact.nextElementSibling.remove();
+        }
+        content.append(contact);
+      }
+      nav.insertBefore(createUpdateNotice(content), label);
+      const title = document.querySelector("#divTitle");
+      if (title) {
+        while (title.nextElementSibling?.tagName === "BR") {
+          title.nextElementSibling.remove();
+        }
+        const heading = document.createElement("h1");
+        heading.id = title.id;
+        heading.append(...title.childNodes);
+        title.replaceWith(heading);
+        nav.prepend(heading);
+      }
+      document.body.prepend(nav);
     }
     const manual = nav.querySelector<HTMLAnchorElement>('a[href*="20141023_Manual.pdf"]');
     if (manual) {
-      manual.textContent = english ? "Manual" : "\u64CD\u4F5C\u8AAA\u660E";
-      nav.prepend(manual);
+      manual.textContent = english ? "Manual (PDF)" : "\u64CD\u4F5C\u8AAA\u660E\uFF08PDF\uFF09";
+    }
+    const updateLabel = nav.querySelector(".ccxp-lite-work-log-update-label");
+    if (updateLabel) {
+      updateLabel.textContent = english
+        ? "2015 update notice"
+        : "104 \u5E74\u6539\u7248\u63D0\u9192";
     }
     for (const reminder of document.querySelectorAll<HTMLElement>("td > span")) {
       const text = reminder.textContent;
@@ -415,9 +594,16 @@
     }
     const noticeLabel = nav.querySelector(".ccxp-lite-work-log-notice-label");
     if (noticeLabel) {
-      noticeLabel.textContent = english
-        ? "2015 update notice"
-        : "104 \u5E74\u6539\u7248\u63D0\u9192";
+      noticeLabel.textContent = english ? "Instructions" : "\u64CD\u4F5C\u8AAA\u660E";
+    }
+    const noticeButton = nav.querySelector<HTMLButtonElement>(
+      ".ccxp-lite-work-log-notice > button",
+    );
+    if (noticeButton) {
+      noticeButton.setAttribute(
+        "aria-label",
+        english ? "Instructions" : "\u64CD\u4F5C\u8AAA\u660E",
+      );
     }
     nav.setAttribute("aria-label", english ? "Page navigation" : "\u9801\u9762\u5C0E\u89BD");
     const toggle = nav.querySelector<HTMLInputElement>("input");
@@ -471,6 +657,9 @@
       table.classList.add("ccxp-lite-work-log-form-fields");
       table.setAttribute("role", "presentation");
     }
+    renderDepartmentControlLabels();
+    renderApprovalFilters();
+    renderDateLabels();
     simplifyRecords();
     for (const label of document.querySelectorAll<HTMLElement>("[data-record-zh]")) {
       label.textContent = (english ? label.dataset.recordEn : label.dataset.recordZh) ?? "";
@@ -485,7 +674,7 @@
       if (
         !parent ||
         parent.closest(
-          "script, style, noscript, textarea, [contenteditable], [data-ccxp-lite-reminder], [data-record-zh], a[href*='20141023_Manual.pdf'], .ccxp-lite-work-log-language, .ccxp-lite-work-log-notice-label, #ccxp-lite-work-log-sections",
+          "script, style, noscript, textarea, [contenteditable], [data-ccxp-lite-reminder], [data-record-zh], a[href*='20141023_Manual.pdf'], .ccxp-lite-work-log-language, .ccxp-lite-work-log-notice-label, .ccxp-lite-work-log-update-label, .ccxp-lite-work-log-department-code-label, .ccxp-lite-work-log-department-select-label, .ccxp-lite-work-log-approval-heading, .ccxp-lite-work-log-approval-filter, #ccxp-lite-work-log-sections",
         )
       ) {
         continue;

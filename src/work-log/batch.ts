@@ -29,7 +29,6 @@
   let running = false;
   let stopped = false;
   let plan: Plan | undefined;
-  let built = false;
   let panel: HTMLDivElement;
   let multiple = false;
   let singleDates: HTMLDivElement;
@@ -37,8 +36,8 @@
   let settings: HTMLFieldSetElement;
   let status: HTMLParagraphElement;
   let stopButton: HTMLButtonElement;
-  let from: HTMLDivElement;
-  let until: HTMLDivElement;
+  let from: HTMLInputElement;
+  let until: HTMLInputElement;
   let weekdays: HTMLDivElement;
   let weekdayRow: HTMLTableRowElement;
   let stale = true;
@@ -128,11 +127,99 @@
     }
   }
 
+  function dateParts(form: HTMLFormElement, prefix: string) {
+    const parts = ["Year", "Month", "Day"].map((part) =>
+      form.querySelector<HTMLSelectElement>(`[name="${prefix}${part}"]`),
+    );
+    return parts.every((part) => part instanceof HTMLSelectElement)
+      ? (parts as [HTMLSelectElement, HTMLSelectElement, HTMLSelectElement])
+      : undefined;
+  }
+
+  function nativeDate(form: HTMLFormElement, prefix: string, zh: string, en: string) {
+    const existing = form.querySelector<HTMLInputElement>(
+      `input[data-ccxp-lite-date-prefix="${prefix}"]`,
+    );
+    if (existing) {
+      return existing;
+    }
+    const parts = dateParts(form, prefix);
+    if (!parts) {
+      return undefined;
+    }
+    const [year, month, day] = parts;
+    const years = [...year.options]
+      .map((option) => option.value)
+      .filter((yearValue) => /^\d{4}$/u.test(yearValue));
+    const input = element("input");
+    input.type = "date";
+    input.required = true;
+    input.className = "ccxp-lite-native-date";
+    input.dataset.ccxpLiteDatePrefix = prefix;
+    input.dataset.ccxpLiteDateLabelZh = zh;
+    input.dataset.ccxpLiteDateLabelEn = en;
+    input.setAttribute("aria-label", zh);
+    input.value = [year.value, month.value, day.value].join("-");
+    input.defaultValue = input.value;
+    input.min = `${years.at(0) ?? year.value}-01-01`;
+    input.max = `${years.at(-1) ?? year.value}-12-31`;
+    for (const select of parts) {
+      select.classList.add("ccxp-lite-native-date-source");
+      select.hidden = true;
+    }
+    input.addEventListener("change", () => {
+      if (!input.validity.valid) {
+        return;
+      }
+      const values = input.value.split("-");
+      year.value = values[0];
+      month.value = values[1];
+      (form.ownerDocument.defaultView as HostWindow | null)?.setDay?.(form.id, prefix, "onblur");
+      day.value = values[2];
+      day.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+    year.before(input);
+    return input;
+  }
+
+  function constrainRange(start: HTMLInputElement, end: HTMLInputElement) {
+    const rangeStart = start;
+    const rangeEnd = end;
+    const sync = () => {
+      if (rangeStart.value !== "" && (rangeEnd.value === "" || rangeEnd.value < rangeStart.value)) {
+        rangeEnd.value = rangeStart.value;
+      }
+      const initialMinimum = rangeEnd.dataset.ccxpLiteDateLimitMin;
+      rangeEnd.min = rangeStart.value === "" ? (initialMinimum ?? rangeEnd.min) : rangeStart.value;
+    };
+    rangeEnd.dataset.ccxpLiteDateLimitMin = rangeEnd.min;
+    rangeStart.addEventListener("change", sync);
+    rangeStart.form?.addEventListener("reset", () => {
+      globalThis.setTimeout(sync, 0, undefined);
+    });
+    sync();
+  }
+
+  function enhanceSearchDates() {
+    const form = document.querySelector<HTMLFormElement>("#queForm");
+    if (!form || form.dataset.ccxpLiteNativeDates === "true") {
+      return;
+    }
+    const start = nativeDate(form, "Q_TASK_A_DT_", "\u958B\u59CB\u65E5\u671F", "Start date");
+    const end = nativeDate(form, "Q_TASK_Z_DT_", "\u7D50\u675F\u65E5\u671F", "End date");
+    if (!start || !end) {
+      return;
+    }
+    form.dataset.ccxpLiteNativeDates = "true";
+    constrainRange(start, end);
+  }
+
   function build() {
     // Wait for all host date selects and their inline initialization to finish parsing.
     if (document.readyState === "loading") {
       return;
     }
+    enhanceSearchDates();
     if (document.querySelector(`#${id}`)) {
       return;
     }
@@ -142,71 +229,77 @@
     if (!form || !dateCell) {
       return;
     }
+    if (form.dataset.ccxpLiteBatchInstalled === "true") {
+      return;
+    }
+    const start = nativeDate(form, "I_TASK_DT_", "\u5DE5\u4F5C\u65E5\u671F", "Working date");
+    if (!start) {
+      return;
+    }
+    form.dataset.ccxpLiteBatchInstalled = "true";
     singleDates = element("div");
     singleDates.className = "ccxp-lite-single-date";
     singleDates.append(...dateCell.childNodes);
     dateCell.append(singleDates);
-    if (!built) {
-      built = true;
-      panel = element("div");
-      panel.id = id;
-      const modes = element("div");
-      modes.className = "ccxp-lite-date-modes";
-      modes.setAttribute("role", "group");
-      modes.setAttribute("aria-label", "\u5DE5\u4F5C\u65E5\u671F\u6A21\u5F0F");
-      for (const [index, title] of ["\u55AE\u65E5", "\u591A\u65E5"].entries()) {
-        const mode = button(title, selectMode(index === 1));
-        mode.setAttribute("aria-pressed", String(index === 0));
-        modes.append(mode);
-      }
-      settings = element("fieldset");
-      settings.hidden = true;
-      const dates = element("div");
-      dates.className = "ccxp-lite-batch-fields";
-      until = dateFields(form, "\u7D50\u675F\u65E5\u671F");
-      dates.append(element("span", "\uFF5E"), until);
-      weekdays = element("div");
-      weekdays.className = "ccxp-lite-batch-weekdays";
-      weekdays.setAttribute("role", "group");
-      weekdays.setAttribute("aria-label", "\u6BCF\u9031\u65E5\u671F");
-      for (const [index, day] of [
-        "\u65E5",
-        "\u4E00",
-        "\u4E8C",
-        "\u4E09",
-        "\u56DB",
-        "\u4E94",
-        "\u516D",
-      ].entries()) {
-        const input = field(weekdays, `\u9031${day}`, "checkbox");
-        input.value = String(index);
-        input.checked = index > 0 && index < 6;
-      }
-      weekdayRow = element("tr");
-      weekdayRow.id = "ccxp-lite-weekday-row";
-
-      const weekdayCell = element("td");
-      const weekdayLabel = element("div", "\u50C5\u767B\u9304\u4EE5\u4E0B\u661F\u671F");
-      weekdayLabel.id = "ccxp-lite-weekday-label";
-      weekdays.setAttribute("aria-labelledby", weekdayLabel.id);
-      weekdayCell.append(weekdayLabel, weekdays);
-      weekdayCell.colSpan = 2;
-      weekdayRow.append(weekdayCell);
-      settings.append(dates);
-      panel.append(modes, settings);
-      feedback = element("div");
-      feedback.id = "ccxp-lite-batch-feedback";
-      status = element("p");
-      status.setAttribute("role", "status");
-      status.setAttribute("aria-live", "polite");
-      stopButton = button("\u5B8C\u6210\u76EE\u524D\u4E00\u7B46\u5F8C\u505C\u6B62", () => {
-        stopped = true;
-        stopButton.disabled = true;
-      });
-      stopButton.hidden = true;
-      feedback.append(status, stopButton);
+    panel = element("div");
+    panel.id = id;
+    const modes = element("div");
+    modes.className = "ccxp-lite-date-modes";
+    modes.setAttribute("role", "group");
+    modes.setAttribute("aria-label", "\u5DE5\u4F5C\u65E5\u671F\u6A21\u5F0F");
+    for (const [index, title] of ["\u55AE\u65E5", "\u591A\u65E5"].entries()) {
+      const mode = button(title, selectMode(index === 1));
+      mode.setAttribute("aria-pressed", String(index === 0));
+      modes.append(mode);
     }
-    from = singleDates;
+    settings = element("fieldset");
+    settings.hidden = true;
+    const dates = element("div");
+    dates.className = "ccxp-lite-batch-fields";
+    until = dateField(form, "\u7D50\u675F\u65E5\u671F", "End date");
+    constrainRange(start, until);
+    dates.append(element("span", "\uFF5E"), until);
+    weekdays = element("div");
+    weekdays.className = "ccxp-lite-batch-weekdays";
+    weekdays.setAttribute("role", "group");
+    weekdays.setAttribute("aria-label", "\u6BCF\u9031\u65E5\u671F");
+    for (const [index, day] of [
+      "\u65E5",
+      "\u4E00",
+      "\u4E8C",
+      "\u4E09",
+      "\u56DB",
+      "\u4E94",
+      "\u516D",
+    ].entries()) {
+      const input = field(weekdays, `\u9031${day}`, "checkbox");
+      input.value = String(index);
+      input.checked = index > 0 && index < 6;
+    }
+    weekdayRow = element("tr");
+    weekdayRow.id = "ccxp-lite-weekday-row";
+
+    const weekdayCell = element("td");
+    const weekdayLabel = element("div", "\u50C5\u767B\u9304\u4EE5\u4E0B\u661F\u671F");
+    weekdayLabel.id = "ccxp-lite-weekday-label";
+    weekdays.setAttribute("aria-labelledby", weekdayLabel.id);
+    weekdayCell.append(weekdayLabel, weekdays);
+    weekdayCell.colSpan = 2;
+    weekdayRow.append(weekdayCell);
+    settings.append(dates);
+    panel.append(modes, settings);
+    feedback = element("div");
+    feedback.id = "ccxp-lite-batch-feedback";
+    status = element("p");
+    status.setAttribute("role", "status");
+    status.setAttribute("aria-live", "polite");
+    stopButton = button("\u5B8C\u6210\u76EE\u524D\u4E00\u7B46\u5F8C\u505C\u6B62", () => {
+      stopped = true;
+      stopButton.disabled = true;
+    });
+    stopButton.hidden = true;
+    feedback.append(status, stopButton);
+    from = start;
     singleDates.before(panel);
     settings.before(singleDates);
     dateCell.closest("tr")?.after(weekdayRow);
@@ -260,40 +353,24 @@
   document.addEventListener("click", intercept, true);
   document.addEventListener("submit", intercept, true);
 
-  function selectedDate(group: HTMLElement) {
-    return [...group.querySelectorAll("select")].map((select) => select.value).join("-");
+  function selectedDate(input: HTMLInputElement) {
+    return input.value;
   }
 
-  function dateFields(form: HTMLFormElement, title: string) {
-    const group = element("div");
-    group.className = "ccxp-lite-date-parts";
-    group.setAttribute("role", "group");
-    group.setAttribute("aria-label", title);
-    for (const [index, part] of ["Year", "Month", "Day"].entries()) {
-      const original = form.querySelector<HTMLSelectElement>(`[name="I_TASK_DT_${part}"]`);
-      const select = element("select");
-      select.setAttribute("aria-label", `${title}${["\u5E74", "\u6708", "\u65E5"][index]}`);
-      if (original) {
-        for (const option of original.options) {
-          select.append(new Option(option.text, option.value, false, option.selected));
-        }
-      }
-      group.append(select);
-    }
-    const updateDays = () => {
-      const [year, month, day] = group.querySelectorAll("select");
-      const count = new Date(Number(year.value), Number(month.value), 0).getDate();
-      const previous = Number(day.value);
-      day.replaceChildren(
-        ...Array.from({ length: count }, (_item, index) => {
-          const number = String(index + 1).padStart(2, "0");
-          return new Option(number, number, false, index + 1 === Math.min(previous, count));
-        }),
-      );
-    };
-    group.addEventListener("change", updateDays);
-    updateDays();
-    return group;
+  function dateField(form: HTMLFormElement, zh: string, en: string) {
+    const source = nativeDate(form, "I_TASK_DT_", "\u5DE5\u4F5C\u65E5\u671F", "Working date");
+    const input = element("input");
+    input.type = "date";
+    input.required = true;
+    input.className = "ccxp-lite-native-date";
+    input.dataset.ccxpLiteDateLabelZh = zh;
+    input.dataset.ccxpLiteDateLabelEn = en;
+    input.setAttribute("aria-label", zh);
+    input.value = source?.value ?? "";
+    input.defaultValue = input.value;
+    input.min = source?.min ?? "";
+    input.max = source?.max ?? "";
+    return input;
   }
 
   function dateValue(raw: string) {

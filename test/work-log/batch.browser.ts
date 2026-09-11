@@ -61,6 +61,14 @@ ${select("I_SRV_ID", ["DEPT"], "DEPT")}
 <input name="I_TASK_NOTE" value="__NOTE__" maxlength="15">
 <input type="submit" name="S_SUBMIT" value="Add" onclick="toSubmit(this.form, 'ins'); return false">
 </form>
+<div id="queTask"><form id="queForm"><table><tbody><tr><th>Work date</th><td>
+${select("Q_TASK_A_DT_Year", ["2026", "2027"], "2026")}
+${select("Q_TASK_A_DT_Month", numbers(12, 1), "09")}
+${select("Q_TASK_A_DT_Day", numbers(31, 1), "01")} \uFF5E
+${select("Q_TASK_Z_DT_Year", ["2026", "2027"], "2026")}
+${select("Q_TASK_Z_DT_Month", numbers(12, 1), "09")}
+${select("Q_TASK_Z_DT_Day", numbers(31, 1), "30")}
+</td></tr></tbody></table></form></div>
 <form id="listForm"><table>${success ? `<tr>${cells.map((cell) => `<td>${cell}</td>`).join("")}</tr>` : ""}</table></form>
 <script>
 window.toSubmit = function(form, action) {
@@ -92,17 +100,20 @@ test("switches date modes without changing native values and validates the share
     await page.getByRole("button", { name: "\u591A\u65E5", exact: true }).click();
     expect(await page.locator(".ccxp-lite-single-date").isVisible()).toBe(true);
     expect(await page.locator('[name="I_TASK_DT_Year"]').count()).toBe(1);
+    expect(await page.locator('[name="I_TASK_DT_Year"]').isHidden()).toBe(true);
+    expect(await page.getByLabel("\u5DE5\u4F5C\u65E5\u671F", { exact: true }).inputValue()).toBe(
+      "2026-09-10",
+    );
     expect(await page.locator("#ccxp-lite-weekday-row").isVisible()).toBe(true);
     expect(await page.locator("#ccxp-lite-weekday-label").textContent()).toBe(
       "\u50C5\u767B\u9304\u4EE5\u4E0B\u661F\u671F",
     );
-    await page.getByLabel("\u7D50\u675F\u65E5\u671F\u6708", { exact: true }).selectOption("01");
-    await page.getByLabel("\u7D50\u675F\u65E5\u671F\u65E5", { exact: true }).selectOption("31");
-    await page.getByLabel("\u7D50\u675F\u65E5\u671F\u6708", { exact: true }).selectOption("02");
-    expect(
-      await page.getByLabel("\u7D50\u675F\u65E5\u671F\u65E5", { exact: true }).inputValue(),
-    ).toBe("28");
-    await page.getByLabel("\u7D50\u675F\u65E5\u671F\u6708", { exact: true }).selectOption("09");
+    const endDate = page
+      .locator("#ccxp-lite-batch")
+      .getByLabel("\u7D50\u675F\u65E5\u671F", { exact: true });
+    expect(await endDate.getAttribute("min")).toBe("2026-09-10");
+    expect(await endDate.getAttribute("max")).toBe("2027-12-31");
+    await endDate.fill("2026-09-11");
 
     await page.locator('[name="I_TASK_Z_TM_Hour"]').selectOption("07");
     await page.getByRole("button", { name: "Add", exact: true }).click();
@@ -145,7 +156,10 @@ test("submits sequential native Big5 forms with fresh date tasks and guards comp
     await page.goto(endpoint);
     await page.addScriptTag({ content: source });
     await page.getByRole("button", { name: "\u591A\u65E5", exact: true }).click();
-    await page.getByLabel("\u7D50\u675F\u65E5\u671F\u65E5", { exact: true }).selectOption("11");
+    await page
+      .locator("#ccxp-lite-batch")
+      .getByLabel("\u7D50\u675F\u65E5\u671F", { exact: true })
+      .fill("2026-09-11");
     await page.getByRole("button", { name: "Add", exact: true }).click();
     await page.waitForFunction(
       () =>
@@ -202,7 +216,10 @@ test.each(["reject", "uncertain", "stop"] as const)(
       await page.goto(endpoint);
       await page.addScriptTag({ content: source });
       await page.getByRole("button", { name: "\u591A\u65E5", exact: true }).click();
-      await page.getByLabel("\u7D50\u675F\u65E5\u671F\u65E5", { exact: true }).selectOption("11");
+      await page
+        .locator("#ccxp-lite-batch")
+        .getByLabel("\u7D50\u675F\u65E5\u671F", { exact: true })
+        .fill("2026-09-11");
       await page.getByRole("button", { name: "Add", exact: true }).click();
       await page.waitForFunction(
         (expected) => document.querySelector('[role="status"]')?.textContent.includes(expected),
@@ -256,12 +273,92 @@ test("waits for host parsing before grouping and copying date controls", async (
     });
     await page.goto(endpoint);
     expect(await page.locator(".ccxp-lite-single-date select").count()).toBe(3);
+    expect(await page.locator('input[data-ccxp-lite-date-prefix="I_TASK_DT_"]').inputValue()).toBe(
+      "2026-09-10",
+    );
+    expect(await page.locator("#ccxp-lite-batch fieldset input[type=date]").inputValue()).toBe(
+      "2026-09-10",
+    );
+  } finally {
+    await browser.close();
+  }
+}, 20_000);
+
+test("does not create another date picker during a transient panel detach", async () => {
+  const browser = await chromium.launch({ headless: true });
+  try {
+    const page = await browser.newPage();
+    await page.route("**/*", async (route) => {
+      await route.fulfill({ contentType: "text/html", body: fixture() });
+    });
+    await page.goto(endpoint);
+    await page.addScriptTag({ content: source });
+    await page.getByRole("button", { name: "\u591A\u65E5", exact: true }).click();
+    await page.locator('[name="I_TASK_DT_Year"]').focus();
+    await page.evaluate(() => {
+      const form = document.querySelector("#insForm");
+      const panel = document.querySelector("#ccxp-lite-batch");
+      const dates = document.querySelector(".ccxp-lite-single-date");
+      const cell = panel?.closest("td");
+      if (!form || !panel || !dates || !cell) {
+        throw new Error("Missing enhanced date controls");
+      }
+      cell.append(dates);
+      panel.remove();
+      form.append(document.createTextNode(""));
+      (globalThis as typeof globalThis & { detachedBatchPanel?: Element }).detachedBatchPanel =
+        panel;
+    });
+    await page.waitForTimeout(0);
+    await page.evaluate(() => {
+      const panel = (globalThis as typeof globalThis & { detachedBatchPanel?: Element })
+        .detachedBatchPanel;
+      const dates = document.querySelector(".ccxp-lite-single-date");
+      const cell = dates?.closest("td");
+      const settings = panel?.querySelector("fieldset");
+      if (!panel || !dates || !cell || !settings) {
+        throw new Error("Missing detached date controls");
+      }
+      cell.prepend(panel);
+      settings.before(dates);
+    });
+    expect(await page.locator(".ccxp-lite-single-date").count()).toBe(1);
     expect(
-      await page.getByLabel("\u7D50\u675F\u65E5\u671F\u6708", { exact: true }).inputValue(),
-    ).toBe("09");
-    expect(
-      await page.getByLabel("\u7D50\u675F\u65E5\u671F\u65E5", { exact: true }).inputValue(),
-    ).toBe("10");
+      await page
+        .locator("#ccxp-lite-batch")
+        .getByLabel("\u7D50\u675F\u65E5\u671F", { exact: true })
+        .count(),
+    ).toBe(1);
+    expect(await page.locator("#ccxp-lite-batch input[type=date]").count()).toBe(2);
+    expect(await page.locator("#ccxp-lite-batch select").count()).toBe(3);
+  } finally {
+    await browser.close();
+  }
+}, 20_000);
+
+test("syncs native search dates to the legacy query fields", async () => {
+  const browser = await chromium.launch({ headless: true });
+  try {
+    const page = await browser.newPage();
+    await page.route("**/*", async (route) => {
+      await route.fulfill({ contentType: "text/html", body: fixture() });
+    });
+    await page.goto(endpoint);
+    await page.addScriptTag({ content: source });
+    const search = page.locator("#queForm");
+    const start = search.getByLabel("\u958B\u59CB\u65E5\u671F", { exact: true });
+    const end = search.getByLabel("\u7D50\u675F\u65E5\u671F", { exact: true });
+    expect(await start.inputValue()).toBe("2026-09-01");
+    expect(await end.inputValue()).toBe("2026-09-30");
+    await start.fill("2026-10-15");
+    expect(await end.getAttribute("min")).toBe("2026-10-15");
+    expect(await end.inputValue()).toBe("2026-10-15");
+    expect(await page.locator('[name="Q_TASK_A_DT_Month"]').inputValue()).toBe("10");
+    expect(await page.locator('[name="Q_TASK_A_DT_Day"]').inputValue()).toBe("15");
+    await end.fill("2026-10-20");
+    expect(await page.locator('[name="Q_TASK_Z_DT_Month"]').inputValue()).toBe("10");
+    expect(await page.locator('[name="Q_TASK_Z_DT_Day"]').inputValue()).toBe("20");
+    expect(await page.locator("#queForm .ccxp-lite-native-date-source:visible").count()).toBe(0);
   } finally {
     await browser.close();
   }

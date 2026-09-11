@@ -82,12 +82,12 @@ html[data-ccxp-lite-work-log-language] #divTitle > br {
 
 #ccxp-lite-work-log-nav .ccxp-lite-work-log-notice {
   margin-left: 0;
-  margin-right: auto;
+  margin-right: 0;
 }
 
 #ccxp-lite-work-log-nav .ccxp-lite-work-log-notice > button {
   width: auto;
-  height: 36px;
+  height: 40px;
   gap: var(--ccxp-lite-spacing-inline-sm, 6px);
   margin: 0;
   padding: 0;
@@ -100,8 +100,8 @@ html[data-ccxp-lite-work-log-language] #divTitle > br {
 
 #ccxp-lite-work-log-nav .ccxp-lite-work-log-notice > .ccxp-lite-account-guide-info-popup {
   top: 100%;
-  left: 0;
-  right: auto;
+  left: auto;
+  right: 0;
   width: min(440px, calc(100vw - 64px));
   max-height: 60vh;
   overflow-y: auto;
@@ -137,17 +137,22 @@ html[data-ccxp-lite-work-log-section="search"] #listForm {
   display: block !important;
 }
 
-#ccxp-lite-work-log-sections {
+#ccxp-lite-work-log-sections,
+#ccxp-lite-batch .ccxp-lite-date-modes {
   display: inline-flex;
   gap: 4px;
   padding: 4px;
-  margin-bottom: var(--ccxp-lite-spacing-lg, 24px);
   border: 1px solid var(--ccxp-lite-border);
   border-radius: var(--ccxp-lite-radius-sm, 6px);
   background: var(--ccxp-lite-surface-muted);
 }
 
-#ccxp-lite-work-log-sections label {
+#ccxp-lite-work-log-sections {
+  margin-bottom: var(--ccxp-lite-spacing-lg, 24px);
+}
+
+#ccxp-lite-work-log-sections label,
+#ccxp-lite-batch .ccxp-lite-date-modes button {
   position: relative;
   cursor: pointer;
 }
@@ -159,21 +164,28 @@ html[data-ccxp-lite-work-log-section="search"] #listForm {
   opacity: 0;
 }
 
-#ccxp-lite-work-log-sections span {
+#ccxp-lite-work-log-sections span,
+#ccxp-lite-batch .ccxp-lite-date-modes button {
   display: block;
   padding: 8px 20px;
+  min-height: 40px;
   border-radius: var(--ccxp-lite-radius-sm, 6px);
+  border: 0;
+  background: transparent;
+  box-shadow: none;
   color: var(--ccxp-lite-type-caption-color);
   font: var(--ccxp-lite-type-body);
 }
 
-#ccxp-lite-work-log-sections input:checked + span {
+#ccxp-lite-work-log-sections input:checked + span,
+#ccxp-lite-batch .ccxp-lite-date-modes button[aria-pressed="true"] {
   background: var(--ccxp-lite-surface);
   color: var(--ccxp-lite-type-primary-link-color);
   box-shadow: 0 1px 3px var(--ccxp-lite-border);
 }
 
-#ccxp-lite-work-log-sections input:focus-visible + span {
+#ccxp-lite-work-log-sections input:focus-visible + span,
+#ccxp-lite-batch .ccxp-lite-date-modes button:focus-visible {
   outline: 2px solid var(--ccxp-lite-primary-focus-border);
   outline-offset: 2px;
 }
@@ -229,10 +241,9 @@ html[data-ccxp-lite-work-log-language]
   color: var(--ccxp-lite-text-muted) !important;
 }
 
-html[data-ccxp-lite-work-log-language] #ccxp-lite-work-log-nav > a {
+html[data-ccxp-lite-work-log-language] #ccxp-lite-work-log-help-content > a {
   font: var(--ccxp-lite-work-log-utility) !important;
   color: var(--ccxp-lite-primary) !important;
-  margin-inline-end: auto;
   background: transparent !important;
 }
 
@@ -404,6 +415,14 @@ html[data-ccxp-lite-work-log-language] #insTask input[name="I_TASK_NOTE"] {
   width: min(100%, 42rem);
 }
 
+html[data-ccxp-lite-work-log-language] .ccxp-lite-native-date {
+  width: 11rem;
+}
+
+html[data-ccxp-lite-work-log-language] .ccxp-lite-native-date-source {
+  display: none !important;
+}
+
 html[data-ccxp-lite-work-log-language] #insTask td:has(input[name="I_TASK_NOTE"]) {
   white-space: normal !important;
 }
@@ -562,26 +581,15 @@ html[data-ccxp-lite-work-log-language]
 }
 
 #ccxp-lite-batch .ccxp-lite-date-modes {
-  display: flex;
-  gap: 4px;
   margin-bottom: 12px;
 }
 
 #ccxp-lite-batch .ccxp-lite-date-modes button {
-  min-height: 40px;
-  padding: 8px 16px;
-  border: 0;
-  border-radius: var(--ccxp-lite-radius-sm, 6px);
-  background: transparent;
-  box-shadow: none;
   color: var(--ccxp-lite-type-caption-color) !important;
-  font: var(--ccxp-lite-type-body);
-  cursor: pointer;
 }
 
 #ccxp-lite-batch .ccxp-lite-date-modes button[aria-pressed="true"] {
-  background: var(--ccxp-lite-surface-muted, #f5f7f9);
-  color: var(--ccxp-lite-primary, #a35bb0) !important;
+  color: var(--ccxp-lite-type-primary-link-color) !important;
 }
 
 #ccxp-lite-batch .ccxp-lite-batch-fields,
@@ -644,14 +652,16 @@ html[data-ccxp-lite-work-log-language]
 }
 
 #ccxp-lite-batch {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: max-content max-content;
+  justify-content: start;
   align-items: center;
   gap: 6px;
 }
 
 #ccxp-lite-batch .ccxp-lite-date-modes {
-  flex-basis: 100%;
+  grid-column: 1 / -1;
+  justify-self: start;
 }
 
 #ccxp-lite-batch > .ccxp-lite-single-date {
@@ -685,4 +695,143 @@ html[data-ccxp-lite-work-log-language]
 
 #ccxp-lite-weekday-row .ccxp-lite-batch-weekdays label {
   margin: 0;
+}
+
+#ccxp-lite-work-log-nav #divTitle {
+  flex: 1 1 360px;
+  margin: 0 auto 0 0;
+  text-align: left;
+  text-wrap: balance;
+}
+
+#ccxp-lite-work-log-nav #divTitle,
+#ccxp-lite-work-log-nav #divTitle span {
+  font-family: var(--ccxp-lite-font-brand) !important;
+  font-size: var(--ccxp-lite-font-size-sidebar-brand, 20px) !important;
+  letter-spacing: 0.01em;
+}
+
+#ccxp-lite-work-log-help-content > a {
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+}
+
+#ccxp-lite-work-log-help-content summary {
+  min-height: 40px;
+  align-content: center;
+  cursor: pointer;
+}
+
+#ccxp-lite-work-log-help-content #divContact {
+  margin-top: 12px;
+  margin-bottom: 0 !important;
+  text-align: left;
+  color: var(--ccxp-lite-text-muted);
+}
+
+html[data-ccxp-lite-work-log-language]
+  :is(#insTask, #queForm)
+  td.ccxp-lite-work-log-department-controls {
+  display: grid;
+  grid-template-columns: minmax(120px, 160px) minmax(0, 1fr);
+  gap: 6px 8px;
+}
+
+.ccxp-lite-work-log-department-controls > label {
+  color: var(--ccxp-lite-text-muted);
+  font: var(--ccxp-lite-type-caption);
+}
+
+.ccxp-lite-work-log-department-code-label {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.ccxp-lite-work-log-department-select-label {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.ccxp-lite-work-log-department-controls > input[type="text"] {
+  grid-column: 1;
+  grid-row: 2;
+  margin: 0 !important;
+}
+
+.ccxp-lite-work-log-department-controls > select {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.ccxp-lite-work-log-approval-select {
+  display: none !important;
+}
+
+html[data-ccxp-lite-work-log-language] #queForm fieldset.ccxp-lite-work-log-approval-filter {
+  display: flex;
+  flex-wrap: wrap;
+  width: fit-content;
+  gap: 8px 20px;
+  margin: 0;
+  padding: 0;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.ccxp-lite-work-log-approval-filter label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  color: var(--ccxp-lite-text);
+  font: var(--ccxp-lite-type-body);
+  cursor: pointer;
+}
+
+.ccxp-lite-work-log-approval-filter input[type="checkbox"] {
+  appearance: auto;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--ccxp-lite-primary, #a35bb0);
+}
+
+.ccxp-lite-work-log-approval-filter input[type="checkbox"]:focus-visible {
+  outline: 2px solid var(--ccxp-lite-primary, #a35bb0);
+  outline-offset: 3px;
+}
+
+@media (max-width: 560px) {
+  html[data-ccxp-lite-work-log-language]
+    :is(#insTask, #queForm)
+    td.ccxp-lite-work-log-department-controls {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ccxp-lite-work-log-department-controls > input[type="text"],
+  .ccxp-lite-work-log-department-controls > select {
+    grid-column: 1;
+  }
+
+  .ccxp-lite-work-log-department-code-label {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .ccxp-lite-work-log-department-controls > input[type="text"] {
+    grid-row: 2;
+  }
+
+  .ccxp-lite-work-log-department-select-label {
+    grid-column: 1;
+    grid-row: 3;
+    margin-top: 6px;
+  }
+
+  .ccxp-lite-work-log-department-controls > select {
+    grid-row: 4;
+  }
 }
