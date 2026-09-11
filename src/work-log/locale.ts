@@ -268,6 +268,76 @@
     }
   }
 
+  function renderApprovalFilters() {
+    const select = document.querySelector<HTMLSelectElement>('#queForm select[name="Q_PASS_MARK"]');
+    const cell = select?.closest("td");
+    const heading = cell?.closest("tr")?.querySelector<HTMLElement>("th");
+    if (!select || !cell || !heading || select.options.length < 3) {
+      return;
+    }
+    heading.id ||= "ccxp-lite-work-log-approval-heading";
+    heading.classList.add("ccxp-lite-work-log-approval-heading");
+    heading.textContent = english
+      ? "Filter by approval status"
+      : "\u4EE5\u5BE9\u6838\u72C0\u614B\u7BE9\u9078";
+    let filter = cell.querySelector<HTMLFieldSetElement>(".ccxp-lite-work-log-approval-filter");
+    if (!filter) {
+      const [allOption, approvedOption, unapprovedOption] = select.options;
+      filter = document.createElement("fieldset");
+      filter.className = "ccxp-lite-work-log-approval-filter";
+      filter.setAttribute("aria-labelledby", heading.id);
+      for (const [kind, option] of [
+        ["approved", approvedOption],
+        ["unapproved", unapprovedOption],
+      ] as const) {
+        const label = document.createElement("label");
+        const input = document.createElement("input");
+        input.type = "checkbox";
+        input.value = option.value;
+        input.dataset.ccxpLiteApprovalKind = kind;
+        input.defaultChecked = true;
+        const caption = document.createElement("span");
+        label.append(input, caption);
+        filter.append(label);
+      }
+      const inputs = filter.querySelectorAll<HTMLInputElement>('input[type="checkbox"]');
+      const approved = inputs[0];
+      const unapproved = inputs[1];
+      approved.checked = select.value === allOption.value || select.value === approvedOption.value;
+      unapproved.checked =
+        select.value === allOption.value || select.value === unapprovedOption.value;
+      filter.addEventListener("change", (event) => {
+        const changed = event.target;
+        if (!(changed instanceof HTMLInputElement)) {
+          return;
+        }
+        if (!approved.checked && !unapproved.checked) {
+          changed.checked = true;
+          return;
+        }
+        if (approved.checked && unapproved.checked) {
+          select.value = allOption.value;
+        } else {
+          select.value = approved.checked ? approvedOption.value : unapprovedOption.value;
+        }
+      });
+      select.classList.add("ccxp-lite-work-log-approval-select");
+      select.before(filter);
+    }
+    const approvedLabel = filter.querySelector<HTMLElement>(
+      '[data-ccxp-lite-approval-kind="approved"] + span',
+    );
+    const unapprovedLabel = filter.querySelector<HTMLElement>(
+      '[data-ccxp-lite-approval-kind="unapproved"] + span',
+    );
+    if (approvedLabel) {
+      approvedLabel.textContent = english ? "Approved" : "\u5DF2\u5BE9\u6838";
+    }
+    if (unapprovedLabel) {
+      unapprovedLabel.textContent = english ? "Not approved" : "\u672A\u5BE9\u6838";
+    }
+  }
+
   function simplifyRecords() {
     const table = document.querySelector<HTMLTableElement>("#listForm table");
     if (!table || table.dataset.ccxpLiteRecords === "true") {
@@ -548,6 +618,7 @@
       table.setAttribute("role", "presentation");
     }
     renderDepartmentControlLabels();
+    renderApprovalFilters();
     simplifyRecords();
     for (const label of document.querySelectorAll<HTMLElement>("[data-record-zh]")) {
       label.textContent = (english ? label.dataset.recordEn : label.dataset.recordZh) ?? "";
@@ -562,7 +633,7 @@
       if (
         !parent ||
         parent.closest(
-          "script, style, noscript, textarea, [contenteditable], [data-ccxp-lite-reminder], [data-record-zh], a[href*='20141023_Manual.pdf'], .ccxp-lite-work-log-language, .ccxp-lite-work-log-notice-label, .ccxp-lite-work-log-update-label, .ccxp-lite-work-log-department-code-label, .ccxp-lite-work-log-department-select-label, #ccxp-lite-work-log-sections",
+          "script, style, noscript, textarea, [contenteditable], [data-ccxp-lite-reminder], [data-record-zh], a[href*='20141023_Manual.pdf'], .ccxp-lite-work-log-language, .ccxp-lite-work-log-notice-label, .ccxp-lite-work-log-update-label, .ccxp-lite-work-log-department-code-label, .ccxp-lite-work-log-department-select-label, .ccxp-lite-work-log-approval-heading, .ccxp-lite-work-log-approval-filter, #ccxp-lite-work-log-sections",
         )
       ) {
         continue;

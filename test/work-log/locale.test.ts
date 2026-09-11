@@ -125,6 +125,45 @@ test("labels both working-department controls in each language", async () => {
   await window.happyDOM.close();
 });
 
+test("maps approval checkboxes to the native search field", async () => {
+  const { window } = createTestWindow(
+    '<div id="divTitle">Title</div><div id="insTask"></div><div id="queTask"><form id="queForm"><table><tr><th>\u662F\u5426\u5BE9\u6838</th><td><select name="Q_PASS_MARK"><option value="ALL" selected>\u4E0D\u5206\u662F\u5426\u5BE9\u6838\u5168\u90E8</option><option value="Y">\u662F</option><option value="N">\u5426</option></select></td></tr></table></form></div>',
+  );
+  const doc = window.document as unknown as Document;
+  loadModules(window, ["src/work-log/locale.ts"]);
+  doc.dispatchEvent(new Event("DOMContentLoaded"));
+  const native = requireValue(
+    doc.querySelector<HTMLSelectElement>('select[name="Q_PASS_MARK"]') ?? undefined,
+  );
+  const approved = requireValue(
+    doc.querySelector<HTMLInputElement>('[data-ccxp-lite-approval-kind="approved"]') ?? undefined,
+  );
+  const unapproved = requireValue(
+    doc.querySelector<HTMLInputElement>('[data-ccxp-lite-approval-kind="unapproved"]') ?? undefined,
+  );
+  expect(approved.checked).toBe(true);
+  expect(unapproved.checked).toBe(true);
+  expect(native.value).toBe("ALL");
+  approved.click();
+  expect(native.value).toBe("N");
+  approved.click();
+  expect(native.value).toBe("ALL");
+  unapproved.click();
+  expect(native.value).toBe("Y");
+  approved.click();
+  expect(approved.checked).toBe(true);
+  expect(native.value).toBe("Y");
+  const toggle = requireValue(doc.querySelector<HTMLInputElement>('[role="switch"]') ?? undefined);
+  toggle.click();
+  expect(doc.querySelector(".ccxp-lite-work-log-approval-heading")?.textContent).toBe(
+    "Filter by approval status",
+  );
+  expect(doc.querySelector(".ccxp-lite-work-log-approval-filter")?.textContent).toBe(
+    "ApprovedNot approved",
+  );
+  await window.happyDOM.close();
+});
+
 test("groups populated records and preserves controls in expandable details", async () => {
   const headers = [
     "Number",

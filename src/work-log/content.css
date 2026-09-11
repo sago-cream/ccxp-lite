@@ -751,6 +751,46 @@ html[data-ccxp-lite-work-log-language]
   grid-row: 2;
 }
 
+.ccxp-lite-work-log-approval-select {
+  display: none !important;
+}
+
+html[data-ccxp-lite-work-log-language] #queForm fieldset.ccxp-lite-work-log-approval-filter {
+  display: flex;
+  flex-wrap: wrap;
+  width: fit-content;
+  gap: 8px 20px;
+  margin: 0;
+  padding: 0;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.ccxp-lite-work-log-approval-filter label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  color: var(--ccxp-lite-text);
+  font: var(--ccxp-lite-type-body);
+  cursor: pointer;
+}
+
+.ccxp-lite-work-log-approval-filter input[type="checkbox"] {
+  appearance: auto;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--ccxp-lite-primary, #a35bb0);
+}
+
+.ccxp-lite-work-log-approval-filter input[type="checkbox"]:focus-visible {
+  outline: 2px solid var(--ccxp-lite-primary, #a35bb0);
+  outline-offset: 3px;
+}
+
 @media (max-width: 560px) {
   html[data-ccxp-lite-work-log-language]
     :is(#insTask, #queForm)
