@@ -393,7 +393,20 @@
       color: "var(--ccxp-lite-text)",
     });
     for (const entry of plan.entries) {
-      dates.append(element("li", `${entry.date}\u3000${entry.start}\u2013${entry.end}`));
+      const row = element("li");
+      Object.assign(row.style, {
+        display: "grid",
+        gridTemplateColumns: "10ch auto",
+        columnGap: "1em",
+        fontVariantNumeric: "tabular-nums",
+      });
+      // The host skin forces a CJK font on list items; use a numeric font with equal-width digits
+      // instead of relying on its optional tnum feature.
+      row.style.setProperty("font-family", "Arial, sans-serif", "important");
+      const date = element("time", entry.date);
+      const period = element("time", `${entry.start}\u2013${entry.end}`);
+      row.append(date, period);
+      dates.append(row);
     }
     view.dialog.insertBefore(dates, view.dialog.lastElementChild);
     view.dialog.style.maxHeight = "calc(100dvh - 48px)";

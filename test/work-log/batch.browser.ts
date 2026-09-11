@@ -176,6 +176,25 @@ test("submits sequential native Big5 forms with fresh date tasks and guards comp
     expect(await page.getByRole("dialog").textContent()).toContain("2026-09-10");
     expect(await page.getByRole("dialog").textContent()).toContain("2026-09-11");
     expect(await page.getByRole("dialog").textContent()).toContain("08:00\u201310:00");
+    const numericLayout = await page.getByRole("dialog").evaluate((dialog) => {
+      const cells = [...dialog.querySelectorAll("li time")];
+      const widths = Array.from({ length: 10 }, (_, digit) => {
+        const probe = document.createElement("time");
+        probe.textContent = String(digit);
+        cells[0].parentElement?.append(probe);
+        const range = document.createRange();
+        range.selectNodeContents(probe);
+        const { width } = range.getBoundingClientRect();
+        probe.remove();
+        return width;
+      });
+      return {
+        digitSpread: Math.max(...widths) - Math.min(...widths),
+        periodOffsets: [cells[1], cells[3]].map((cell) => cell.getBoundingClientRect().left),
+      };
+    });
+    expect(numericLayout.digitSpread).toBeLessThan(0.1);
+    expect(numericLayout.periodOffsets[0]).toBe(numericLayout.periodOffsets[1]);
     await page.getByRole("button", { name: "\u53D6\u6D88", exact: true }).click();
     expect(posts).toHaveLength(0);
     expect(await page.getByRole("dialog").count()).toBe(0);
