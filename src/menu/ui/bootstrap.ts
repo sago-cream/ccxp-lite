@@ -1,6 +1,11 @@
 (function registerCcxpLiteSidebarBootstrap(globalScope: typeof globalThis) {
   const runtimeScope = globalScope;
   const namespace = runtimeScope.CCXP_LITE ?? {};
+  if (!namespace.uiButtons || !namespace.uiRenderer) {
+    return;
+  }
+  const { createButton } = namespace.uiButtons;
+  const { createRenderer } = namespace.uiRenderer;
   const { shared, sidebarFavorites, sidebarData, sidebarState, sidebarUi, sidebarRuntime } =
     namespace;
   if (
@@ -88,18 +93,12 @@
 
     if (hostBody.dataset.ccxpLiteSidebarApplied !== "true") {
       const helperFrame = navDocument.querySelector<HTMLIFrameElement>("iframe[name='frame_7472']");
-      const shell = hostDocument.createElement("div");
-      shell.className = `${TOKENS.sidebarClass} ccxp-lite-app-shell`;
+      const dom = createRenderer(hostDocument);
+      const brandGroup = dom.element("div", { className: "ccxp-lite-sidebar-brand-group" });
 
-      const header = hostDocument.createElement("div");
-      header.className = "ccxp-lite-sidebar-header";
-
-      const brandGroup = hostDocument.createElement("div");
-      brandGroup.className = "ccxp-lite-sidebar-brand-group";
-
-      const brand = hostDocument.createElement("button");
-      brand.type = "button";
-      brand.className = "ccxp-lite-sidebar-brand ccxp-lite-sidebar-brand-button";
+      const brand = createButton(hostDocument, {
+        className: "ccxp-lite-sidebar-brand ccxp-lite-sidebar-brand-button",
+      });
       brand.setAttribute("aria-label", strings.sidebarResetHome);
       brand.setAttribute("title", strings.sidebarResetHome);
       brand.append(
@@ -124,18 +123,17 @@
 
       const search = createSidebarSearch(hostDocument, strings);
 
-      const content = hostDocument.createElement("main");
-      content.className = "ccxp-lite-sidebar-content";
-
       const supportMenu = createSupportMenu(hostDocument, repoLink);
-
-      brandGroup.append(brand);
-      brandGroup.append(repoLink);
-      header.append(brandGroup);
-      header.append(search);
-      shell.append(header);
-      shell.append(content);
-      shell.append(supportMenu);
+      dom.append(brandGroup, brand, repoLink);
+      const shell = dom.element(
+        "div",
+        { className: `${TOKENS.sidebarClass} ccxp-lite-app-shell` },
+        [
+          dom.element("div", { className: "ccxp-lite-sidebar-header" }, [brandGroup, search]),
+          dom.element("main", { className: "ccxp-lite-sidebar-content" }),
+          supportMenu,
+        ],
+      );
 
       cleanLegacyAttributes(shell);
       hostBody.replaceChildren(shell);

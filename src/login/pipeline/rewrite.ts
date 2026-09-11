@@ -1,6 +1,10 @@
 (function registerCcxpLiteLoginRewrite(globalScope: typeof globalThis) {
   const runtimeScope = globalScope;
   const namespace = runtimeScope.CCXP_LITE ?? {};
+  if (!namespace.uiLanguage) {
+    return;
+  }
+  const { createLanguageSelector } = namespace.uiLanguage;
   const { shared } = namespace;
   const { loginValidation, loginCaptcha, loginTabs, loginSupport, loginUi } = namespace;
   if (!shared || !loginValidation || !loginCaptcha || !loginTabs || !loginSupport || !loginUi) {
@@ -69,7 +73,6 @@
       targetDocument,
       "ccxp-lite-landing-brand ccxp-lite-sidebar-brand-group",
     );
-    const langSection = createSection(targetDocument, "ccxp-lite-landing-lang");
     const loginSection = createSection(targetDocument, "ccxp-lite-landing-login");
     const noticesSection = createSection(targetDocument, "ccxp-lite-landing-notices");
 
@@ -101,9 +104,7 @@
     });
     brandSection.append(repoLink);
 
-    if (languageLinks) {
-      langSection.append(languageLinks);
-    }
+    const langSection = createLanguageSelector(targetDocument, languageLinks);
 
     const supportMenu = createSupportMenu(targetDocument, repoLink);
 

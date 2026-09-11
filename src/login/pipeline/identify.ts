@@ -1,6 +1,10 @@
 (function registerCcxpLiteLoginIdentify(globalScope: typeof globalThis) {
   const runtimeScope = globalScope;
   const namespace = runtimeScope.CCXP_LITE ?? {};
+  if (!namespace.uiLanguage) {
+    return;
+  }
+  const { findLanguageLinks } = namespace.uiLanguage;
   const { shared, loginLocale, loginSupport } = namespace;
   if (!shared || !loginLocale || !loginSupport) {
     return;
@@ -25,7 +29,7 @@
 
     const tabNavigation = targetDocument.querySelector<HTMLElement>(".tab") ?? undefined;
     const tabContents = [...targetDocument.querySelectorAll<HTMLElement>(".tabcontent")];
-    const languageLinks = targetDocument.querySelector<HTMLElement>("ul.links") ?? undefined;
+    const languageLinks = findLanguageLinks(targetDocument);
     const announcementTable = findAnnouncementTable(targetDocument);
     const utilityLinks = findUtilityLinksTable(targetDocument);
     const cannotLoginLink = findCannotLoginLink(targetDocument, utilityLinks);

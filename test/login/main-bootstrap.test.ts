@@ -1,24 +1,10 @@
 import { describe, expect, test, vi } from "vitest";
 
 import { createLoginHtml } from "../helpers/login-fixtures.js";
-import { createTestWindow, loadModules } from "../helpers/module-loader.js";
+import { createTestWindow, loadModules, loginModulePaths } from "../helpers/module-loader.js";
 
 const loginBootstrapModulePaths = [
-  "src/shared/constants.ts",
-  "src/shared/locale.ts",
-  "src/shared/theme.ts",
-  "src/shared/brand.ts",
-  "src/shared/dom.ts",
-  "src/shared/analytics.ts",
-  "src/login/locale.ts",
-  "src/login/ui/support.ts",
-  "src/login/ui/tabs.ts",
-  "src/login/auth/validation.ts",
-  "src/login/ui/login.ts",
-  "src/login/auth/captcha.ts",
-  "src/login/pipeline/identify.ts",
-  "src/login/pipeline/rewrite.ts",
-  "src/login/pipeline/style.ts",
+  ...loginModulePaths,
   "src/login/pipeline/bootstrap.ts",
   "src/main/bootstrap.ts",
 ];
@@ -143,7 +129,7 @@ describe("main bootstrap login path", () => {
 
   test("skins standalone inquire pages when they open outside the frameset", async () => {
     const { window } = createTestWindow(
-      "<!doctype html><html lang='zh'><head></head><body><main>Standalone page</main></body></html>",
+      "<!doctype html><html lang='zh'><head></head><body><main style='color: red !important; width: 11px !important; display: none !important'>Standalone page</main></body></html>",
       "https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/JH/B/B.2/B.2.3/JHB23001.php?ACIXSTORE=test",
     );
 
@@ -155,9 +141,14 @@ describe("main bootstrap login path", () => {
 
     const document = window.document as unknown as Document;
     const body = document.body as HTMLBodyElement;
+    const main = document.querySelector<HTMLElement>("main");
 
     expect(body.classList.contains("ccxp-lite-main-skin")).toBe(true);
     expect(body.style.getPropertyValue("background-image")).toBe("none");
     expect(body.style.getPropertyValue("background-color")).toBe("var(--ccxp-lite-bg)");
+    expect(main?.style.getPropertyValue("color")).toBe("red");
+    expect(main?.style.getPropertyPriority("color")).toBe("");
+    expect(main?.style.getPropertyPriority("width")).toBe("");
+    expect(main?.style.getPropertyPriority("display")).toBe("important");
   });
 });

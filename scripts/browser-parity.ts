@@ -306,6 +306,7 @@ async function captureRevision(
       throw new Error("Missing sanitized navigation frame");
     }
     await navFrame.locator(".ccxp-lite-sidebar-shell").waitFor();
+    await navFrame.locator(".ccxp-lite-empty-row").waitFor();
     const classicScreenshot = path.join(revisionOutputDir, "sidebar-classic.png");
     await capturePage(page, classicScreenshot);
     screenshots["sidebar-classic"] = classicScreenshot;
