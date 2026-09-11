@@ -10,7 +10,13 @@ test("switches labels without changing form values and reapplies after a body re
     "beforeend",
     '<a href="20141023_Manual.pdf">Manual</a><div><a href="https://goo.gl/example">Slides</a></div><div id="divContact">\u64CD\u4F5C\u554F\u984C\u8ACB\u5148\u6D3D\u5DE5\u4F5C\u55AE\u4F4D\u5F8C\u6D3D\u4EBA\u4E8B\u5BA4</div>',
   );
-  loadModules(window, ["src/work-log/locale.ts"]);
+  loadModules(window, [
+    "src/shared/ui/renderer.ts",
+    "src/shared/ui/controller.ts",
+    "src/shared/ui/icons.ts",
+    "src/shared/ui/popover.ts",
+    "src/work-log/locale.ts",
+  ]);
   doc.dispatchEvent(new Event("DOMContentLoaded"));
   const toggle = requireValue(doc.querySelector<HTMLInputElement>('[role="switch"]') ?? undefined);
   expect(toggle.getAttribute("aria-checked")).toBe("false");
@@ -21,7 +27,9 @@ test("switches labels without changing form values and reapplies after a body re
     doc.querySelector<HTMLButtonElement>(".ccxp-lite-work-log-notice > button") ?? undefined,
   );
   const notice = requireValue(
-    doc.querySelector<HTMLElement>("#ccxp-lite-work-log-help-content") ?? undefined,
+    doc.querySelector<HTMLElement>(
+      ".ccxp-lite-work-log-notice > .ccxp-lite-account-guide-info-popup",
+    ) ?? undefined,
   );
   expect(doc.querySelector("#noticeDiv")).toBeNull();
   const nav = requireValue(doc.querySelector("#ccxp-lite-work-log-nav") ?? undefined);
@@ -31,6 +39,7 @@ test("switches labels without changing form values and reapplies after a body re
   expect(notice.querySelectorAll("a")).toHaveLength(2);
   expect(notice.querySelector("#divContact")).not.toBeNull();
   expect(notice.querySelector("details #noticeDiv2")).not.toBeNull();
+  expect(noticeButton.getAttribute("aria-label")).toBe("\u64CD\u4F5C\u8AAA\u660E");
   expect(notice.hidden).toBe(true);
   noticeButton.click();
   expect(notice.hidden).toBe(false);
@@ -45,6 +54,7 @@ test("switches labels without changing form values and reapplies after a body re
   expect(requireValue(doc.querySelector("form label") ?? undefined).textContent).toBe(
     "Working date",
   );
+  expect(noticeButton.getAttribute("aria-label")).toBe("Instructions");
   expect(requireValue(doc.querySelector("option") ?? undefined).textContent).toBe(
     "EJ03 - Department",
   );

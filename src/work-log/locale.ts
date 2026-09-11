@@ -85,8 +85,7 @@
     return undefined;
   }
 
-  // Match the login page's info popover interaction and shared CSS classes.
-  function createUpdateNotice(content: HTMLElement) {
+  function createFallbackUpdateNotice(content: HTMLElement) {
     const wrap = document.createElement("span");
     wrap.className = "ccxp-lite-account-guide-info ccxp-lite-work-log-notice";
     const button = document.createElement("button");
@@ -160,6 +159,27 @@
     };
     document.addEventListener("click", outsideClick);
     return wrap;
+  }
+
+  // Use the shared popover introduced by the UI component refactor when it is available. The
+  // fallback keeps work-log frames functional when the broader INQUIRE content script is absent.
+  function createUpdateNotice(content: HTMLElement) {
+    const shared = globalThis.CCXP_LITE?.uiPopover?.buildInfoPopoverContent(
+      document,
+      content,
+      "\u64CD\u4F5C\u8AAA\u660E",
+    );
+    if (!shared) {
+      return createFallbackUpdateNotice(content);
+    }
+    shared.classList.add("ccxp-lite-work-log-notice");
+    const button = shared.firstElementChild;
+    if (button instanceof HTMLButtonElement) {
+      const caption = document.createElement("span");
+      caption.className = "ccxp-lite-work-log-notice-label";
+      button.append(caption);
+    }
+    return shared;
   }
 
   function selectSection(event: Event) {
@@ -575,6 +595,15 @@
     const noticeLabel = nav.querySelector(".ccxp-lite-work-log-notice-label");
     if (noticeLabel) {
       noticeLabel.textContent = english ? "Instructions" : "\u64CD\u4F5C\u8AAA\u660E";
+    }
+    const noticeButton = nav.querySelector<HTMLButtonElement>(
+      ".ccxp-lite-work-log-notice > button",
+    );
+    if (noticeButton) {
+      noticeButton.setAttribute(
+        "aria-label",
+        english ? "Instructions" : "\u64CD\u4F5C\u8AAA\u660E",
+      );
     }
     nav.setAttribute("aria-label", english ? "Page navigation" : "\u9801\u9762\u5C0E\u89BD");
     const toggle = nav.querySelector<HTMLInputElement>("input");
