@@ -29,7 +29,6 @@
   let running = false;
   let stopped = false;
   let plan: Plan | undefined;
-  let built = false;
   let panel: HTMLDivElement;
   let multiple = false;
   let singleDates: HTMLDivElement;
@@ -142,70 +141,71 @@
     if (!form || !dateCell) {
       return;
     }
+    if (form.dataset.ccxpLiteBatchInstalled === "true") {
+      return;
+    }
+    form.dataset.ccxpLiteBatchInstalled = "true";
     singleDates = element("div");
     singleDates.className = "ccxp-lite-single-date";
     singleDates.append(...dateCell.childNodes);
     dateCell.append(singleDates);
-    if (!built) {
-      built = true;
-      panel = element("div");
-      panel.id = id;
-      const modes = element("div");
-      modes.className = "ccxp-lite-date-modes";
-      modes.setAttribute("role", "group");
-      modes.setAttribute("aria-label", "\u5DE5\u4F5C\u65E5\u671F\u6A21\u5F0F");
-      for (const [index, title] of ["\u55AE\u65E5", "\u591A\u65E5"].entries()) {
-        const mode = button(title, selectMode(index === 1));
-        mode.setAttribute("aria-pressed", String(index === 0));
-        modes.append(mode);
-      }
-      settings = element("fieldset");
-      settings.hidden = true;
-      const dates = element("div");
-      dates.className = "ccxp-lite-batch-fields";
-      until = dateFields(form, "\u7D50\u675F\u65E5\u671F");
-      dates.append(element("span", "\uFF5E"), until);
-      weekdays = element("div");
-      weekdays.className = "ccxp-lite-batch-weekdays";
-      weekdays.setAttribute("role", "group");
-      weekdays.setAttribute("aria-label", "\u6BCF\u9031\u65E5\u671F");
-      for (const [index, day] of [
-        "\u65E5",
-        "\u4E00",
-        "\u4E8C",
-        "\u4E09",
-        "\u56DB",
-        "\u4E94",
-        "\u516D",
-      ].entries()) {
-        const input = field(weekdays, `\u9031${day}`, "checkbox");
-        input.value = String(index);
-        input.checked = index > 0 && index < 6;
-      }
-      weekdayRow = element("tr");
-      weekdayRow.id = "ccxp-lite-weekday-row";
-
-      const weekdayCell = element("td");
-      const weekdayLabel = element("div", "\u50C5\u767B\u9304\u4EE5\u4E0B\u661F\u671F");
-      weekdayLabel.id = "ccxp-lite-weekday-label";
-      weekdays.setAttribute("aria-labelledby", weekdayLabel.id);
-      weekdayCell.append(weekdayLabel, weekdays);
-      weekdayCell.colSpan = 2;
-      weekdayRow.append(weekdayCell);
-      settings.append(dates);
-      panel.append(modes, settings);
-      feedback = element("div");
-      feedback.id = "ccxp-lite-batch-feedback";
-      status = element("p");
-      status.setAttribute("role", "status");
-      status.setAttribute("aria-live", "polite");
-      stopButton = button("\u5B8C\u6210\u76EE\u524D\u4E00\u7B46\u5F8C\u505C\u6B62", () => {
-        stopped = true;
-        stopButton.disabled = true;
-      });
-      stopButton.hidden = true;
-      feedback.append(status, stopButton);
+    panel = element("div");
+    panel.id = id;
+    const modes = element("div");
+    modes.className = "ccxp-lite-date-modes";
+    modes.setAttribute("role", "group");
+    modes.setAttribute("aria-label", "\u5DE5\u4F5C\u65E5\u671F\u6A21\u5F0F");
+    for (const [index, title] of ["\u55AE\u65E5", "\u591A\u65E5"].entries()) {
+      const mode = button(title, selectMode(index === 1));
+      mode.setAttribute("aria-pressed", String(index === 0));
+      modes.append(mode);
     }
+    settings = element("fieldset");
+    settings.hidden = true;
+    const dates = element("div");
+    dates.className = "ccxp-lite-batch-fields";
+    until = dateFields(form, "\u7D50\u675F\u65E5\u671F");
+    dates.append(element("span", "\uFF5E"), until);
+    weekdays = element("div");
+    weekdays.className = "ccxp-lite-batch-weekdays";
+    weekdays.setAttribute("role", "group");
+    weekdays.setAttribute("aria-label", "\u6BCF\u9031\u65E5\u671F");
+    for (const [index, day] of [
+      "\u65E5",
+      "\u4E00",
+      "\u4E8C",
+      "\u4E09",
+      "\u56DB",
+      "\u4E94",
+      "\u516D",
+    ].entries()) {
+      const input = field(weekdays, `\u9031${day}`, "checkbox");
+      input.value = String(index);
+      input.checked = index > 0 && index < 6;
+    }
+    weekdayRow = element("tr");
+    weekdayRow.id = "ccxp-lite-weekday-row";
+
+    const weekdayCell = element("td");
+    const weekdayLabel = element("div", "\u50C5\u767B\u9304\u4EE5\u4E0B\u661F\u671F");
+    weekdayLabel.id = "ccxp-lite-weekday-label";
+    weekdays.setAttribute("aria-labelledby", weekdayLabel.id);
+    weekdayCell.append(weekdayLabel, weekdays);
+    weekdayCell.colSpan = 2;
+    weekdayRow.append(weekdayCell);
+    settings.append(dates);
+    panel.append(modes, settings);
+    feedback = element("div");
+    feedback.id = "ccxp-lite-batch-feedback";
+    status = element("p");
+    status.setAttribute("role", "status");
+    status.setAttribute("aria-live", "polite");
+    stopButton = button("\u5B8C\u6210\u76EE\u524D\u4E00\u7B46\u5F8C\u505C\u6B62", () => {
+      stopped = true;
+      stopButton.disabled = true;
+    });
+    stopButton.hidden = true;
+    feedback.append(status, stopButton);
     from = singleDates;
     singleDates.before(panel);
     settings.before(singleDates);

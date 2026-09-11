@@ -266,3 +266,51 @@ test("waits for host parsing before grouping and copying date controls", async (
     await browser.close();
   }
 }, 20_000);
+
+test("does not create another date picker during a transient panel detach", async () => {
+  const browser = await chromium.launch({ headless: true });
+  try {
+    const page = await browser.newPage();
+    await page.route("**/*", async (route) => {
+      await route.fulfill({ contentType: "text/html", body: fixture() });
+    });
+    await page.goto(endpoint);
+    await page.addScriptTag({ content: source });
+    await page.getByRole("button", { name: "\u591A\u65E5", exact: true }).click();
+    await page.locator('[name="I_TASK_DT_Year"]').focus();
+    await page.evaluate(() => {
+      const form = document.querySelector("#insForm");
+      const panel = document.querySelector("#ccxp-lite-batch");
+      const dates = document.querySelector(".ccxp-lite-single-date");
+      const cell = panel?.closest("td");
+      if (!form || !panel || !dates || !cell) {
+        throw new Error("Missing enhanced date controls");
+      }
+      cell.append(dates);
+      panel.remove();
+      form.append(document.createTextNode(""));
+      (globalThis as typeof globalThis & { detachedBatchPanel?: Element }).detachedBatchPanel =
+        panel;
+    });
+    await page.waitForTimeout(0);
+    await page.evaluate(() => {
+      const panel = (globalThis as typeof globalThis & { detachedBatchPanel?: Element })
+        .detachedBatchPanel;
+      const dates = document.querySelector(".ccxp-lite-single-date");
+      const cell = dates?.closest("td");
+      const settings = panel?.querySelector("fieldset");
+      if (!panel || !dates || !cell || !settings) {
+        throw new Error("Missing detached date controls");
+      }
+      cell.prepend(panel);
+      settings.before(dates);
+    });
+    expect(await page.locator(".ccxp-lite-single-date").count()).toBe(1);
+    expect(
+      await page.locator('.ccxp-lite-date-parts[aria-label="\u7D50\u675F\u65E5\u671F"]').count(),
+    ).toBe(1);
+    expect(await page.locator("#ccxp-lite-batch select").count()).toBe(6);
+  } finally {
+    await browser.close();
+  }
+}, 20_000);
