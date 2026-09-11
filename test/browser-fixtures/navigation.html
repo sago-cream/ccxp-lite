@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8" />
+    <title>Sanitized CCXP navigation</title>
+  </head>
+  <body style="background: #f3ead7 !important; font-size: 18px !important">
+    <script type="application/x-ccxp-tree">
+      foldersTree = gFld("root", "");
+      aux0 = insFld(foldersTree, gFld("課程、成績 Courses, transcript", ""));
+      insDoc(aux0, gLnk(0, "學期成績", "grades.php"));
+      insDoc(aux0, gLnk(0, "課表查詢", "schedule.php"));
+      aux1 = insFld(foldersTree, gFld("校內其他系統", ""));
+      insDoc(aux1, gLnk(1, "外部系統", "https://example.com/"));
+    </script>
+    <div id="item1"><a href="grades.php" target="main">學期成績</a></div>
+    <iframe name="frame_7472" title="legacy helper"></iframe>
+  </body>
+</html>
