@@ -27,6 +27,7 @@
     name = "HostValidationError";
   }
   let running = false;
+  let confirming = false;
   let stopped = false;
   let plan: Plan | undefined;
   let panel: HTMLDivElement;
@@ -341,17 +342,101 @@
     }
     event.preventDefault();
     event.stopImmediatePropagation();
-    if (running) {
+    if (running || confirming) {
       return;
     }
     preparePlan();
-    run().catch((error: unknown) => {
+    confirmAndRun().catch((error: unknown) => {
       status.textContent = String(error);
     });
   }
   // Capture before the host's inline click handler or native submit transport.
   document.addEventListener("click", intercept, true);
   document.addEventListener("submit", intercept, true);
+
+  async function confirmAndRun() {
+    if (stale || !plan) {
+      return;
+    }
+    if (plan.entries.length === 0) {
+      await run();
+      return;
+    }
+    const createDialog = globalThis.CCXP_LITE?.sidebarDialogView?.createRemovePinnedDialog;
+    if (!createDialog) {
+      status.textContent =
+        "\u78BA\u8A8D\u8996\u7A97\u5C1A\u672A\u5C31\u7DD2\uFF0C\u8ACB\u91CD\u65B0\u6574\u7406\u5F8C\u518D\u8A66\u3002";
+      return;
+    }
+    confirming = true;
+    const view = createDialog(
+      document,
+      "",
+      {
+        sidebarRemovePinnedDialogTitlePrefix: "\u78BA\u8A8D\u591A\u65E5\u5DEE\u52E4",
+        sidebarRemovePinnedDialogTitleSuffix: "",
+        sidebarRemovePinnedDialogDescription: `\u5171 ${plan.entries.length} \u5929`,
+        sidebarRemovePinnedDialogCancel: "\u53D6\u6D88",
+        sidebarRemovePinnedDialogConfirm: "\u78BA\u8A8D\u9001\u51FA",
+      },
+      "secondary",
+    );
+    const dates = element("ul");
+    Object.assign(dates.style, {
+      margin: "0",
+      padding: "0",
+      listStyle: "none",
+      overflowY: "auto",
+      minHeight: "0",
+      font: "var(--ccxp-lite-type-body)",
+      color: "var(--ccxp-lite-text)",
+    });
+    for (const entry of plan.entries) {
+      dates.append(element("li", `${entry.date}\u3000${entry.start}\u2013${entry.end}`));
+    }
+    view.dialog.insertBefore(dates, view.dialog.lastElementChild);
+    view.dialog.style.maxHeight = "calc(100dvh - 48px)";
+    view.dialog.style.boxSizing = "border-box";
+    const previousFocus = document.activeElement;
+    const confirmed = await new Promise<boolean>((resolve) => {
+      const finish = (result: boolean) => {
+        view.overlay.remove();
+        if (previousFocus instanceof HTMLElement && previousFocus.isConnected) {
+          previousFocus.focus();
+        }
+        resolve(result);
+      };
+      view.keepButton.addEventListener("click", () => {
+        finish(false);
+      });
+      view.confirmButton.addEventListener("click", () => {
+        finish(true);
+      });
+      view.overlay.addEventListener("click", (event) => {
+        if (event.target === view.overlay) {
+          finish(false);
+        }
+      });
+      view.overlay.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          event.preventDefault();
+          finish(false);
+        } else if (event.key === "Tab") {
+          event.preventDefault();
+          (document.activeElement === view.keepButton
+            ? view.confirmButton
+            : view.keepButton
+          ).focus();
+        }
+      });
+      document.body.append(view.overlay);
+      view.keepButton.focus();
+    });
+    confirming = false;
+    if (confirmed) {
+      await run();
+    }
+  }
 
   function selectedDate(input: HTMLInputElement) {
     return input.value;

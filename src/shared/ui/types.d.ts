@@ -142,6 +142,7 @@ declare global {
         targetDocument: Document,
         itemName: string,
         strings: Readonly<Record<string, string>>,
+        variant?: "secondary" | "danger",
       ) => CcxpLiteRemovePinnedDialogView;
     };
     sidebarDialogController?: {
