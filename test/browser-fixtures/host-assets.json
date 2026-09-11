@@ -1,0 +1,90 @@
+{
+  "/style/PE2.css": {
+    "file": "host-assets/PE2.css",
+    "contentType": "text/css"
+  },
+  "/images/index_bg.jpg": {
+    "file": "host-assets/index_bg.jpg",
+    "contentType": "image/jpeg"
+  },
+  "/images/btn01.gif": {
+    "file": "host-assets/btn01.gif",
+    "contentType": "image/gif"
+  },
+  "/images/PE/header.png": {
+    "file": "host-assets/header.png",
+    "contentType": "image/png"
+  },
+  "/images/PE/footer.png": {
+    "file": "host-assets/footer.png",
+    "contentType": "image/png"
+  },
+  "/images/PE/content.png": {
+    "file": "host-assets/content.png",
+    "contentType": "image/png"
+  },
+  "/style/tgray.png": {
+    "file": "host-assets/tgray.png",
+    "contentType": "image/png"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/css/theme/jquery-ui-1.10.4.custom.min.css": {
+    "file": "host-assets/jquery-ui.css",
+    "contentType": "text/css"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/css/theme/images/animated-overlay.gif": {
+    "file": "host-assets/animated-overlay.gif",
+    "contentType": "image/gif"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/css/theme/images/ui-bg_flat_75_ffffff_40x100.png": {
+    "file": "host-assets/ui-bg_flat_75_ffffff_40x100.png",
+    "contentType": "image/png"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/css/theme/images/ui-bg_highlight-soft_50_3b5998_1x100.png": {
+    "file": "host-assets/ui-bg_highlight-soft_50_3b5998_1x100.png",
+    "contentType": "image/png"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/css/theme/images/ui-bg_highlight-soft_100_f6f6f6_1x100.png": {
+    "file": "host-assets/ui-bg_highlight-soft_100_f6f6f6_1x100.png",
+    "contentType": "image/png"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/css/theme/images/ui-bg_flat_55_3b5998_40x100.png": {
+    "file": "host-assets/ui-bg_flat_55_3b5998_40x100.png",
+    "contentType": "image/png"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/css/theme/images/ui-bg_flat_55_ffffff_40x100.png": {
+    "file": "host-assets/ui-bg_flat_55_ffffff_40x100.png",
+    "contentType": "image/png"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/css/theme/images/ui-icons_8b9dc3_256x240.png": {
+    "file": "host-assets/ui-icons_8b9dc3_256x240.png",
+    "contentType": "image/png"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/css/theme/images/ui-icons_dfe3ee_256x240.png": {
+    "file": "host-assets/ui-icons_dfe3ee_256x240.png",
+    "contentType": "image/png"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/css/theme/images/ui-icons_3b5998_256x240.png": {
+    "file": "host-assets/ui-icons_3b5998_256x240.png",
+    "contentType": "image/png"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/css/theme/images/ui-icons_ffffff_256x240.png": {
+    "file": "host-assets/ui-icons_ffffff_256x240.png",
+    "contentType": "image/png"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/css/theme/images/ui-icons_ff0084_256x240.png": {
+    "file": "host-assets/ui-icons_ff0084_256x240.png",
+    "contentType": "image/png"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/css/theme/images/ui-bg_flat_0_eeeeee_40x100.png": {
+    "file": "host-assets/ui-bg_flat_0_eeeeee_40x100.png",
+    "contentType": "image/png"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/css/theme/images/ui-bg_gloss-wave_0_aaaaaa_500x100.png": {
+    "file": "host-assets/ui-bg_gloss-wave_0_aaaaaa_500x100.png",
+    "contentType": "image/png"
+  },
+  "/img/back_3.jpg": {
+    "file": "host-assets/back_3.jpg",
+    "contentType": "image/jpeg"
+  }
+}

@@ -4,3 +4,6 @@ node_modules
 fixtures/ccxp-snapshot
 src/content.decaptcha.model.ts
 release-it*.config.cjs
+
+# Preserve vendored host assets byte-for-byte.
+test/browser-fixtures/host-assets/

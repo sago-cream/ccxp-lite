@@ -19,7 +19,7 @@
     "release:crx": "release-it --config release-it.crx.config.cjs",
     "release:firefox": "release-it --config release-it.firefox.config.cjs",
     "test": "bunx vitest run",
-    "test:browser-parity": "bun run scripts/browser-parity.ts",
+    "test:browser-parity": "bun build scripts/browser-parity.ts --target=node --packages=external --outfile .build/browser-parity.mjs && node .build/browser-parity.mjs",
     "test:unit": "bunx vitest run",
     "test:vitest": "bunx vitest run",
     "lint": "bunx eslint .",

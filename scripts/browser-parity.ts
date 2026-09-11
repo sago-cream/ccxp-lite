@@ -1,7 +1,17 @@
-import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { createHash } from "node:crypto";
+import {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  readdirSync,
+  statSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { parseArgs } from "node:util";
 import path from "node:path";
 import { tmpdir } from "node:os";
+import { assertWorkLogReady, routeWorkLogFixture, workLogPath } from "./work-log-fixtures.js";
 import pixelmatch from "pixelmatch";
 import type { BrowserContext, Frame, Page } from "playwright";
 import { chromium } from "playwright";
@@ -149,12 +159,18 @@ async function routeFixtures(context: BrowserContext) {
       await route.continue();
       return;
     }
+    if (await routeWorkLogFixture(route)) {
+      return;
+    }
     const fixtureName = fixtureByPath.get(requestUrl.pathname);
     if (requestUrl.origin === ccxpOrigin && fixtureName !== undefined) {
       await route.fulfill({
         status: 200,
         contentType: "text/html; charset=utf-8",
-        body: readFixture(fixtureName),
+        body:
+          fixtureName === "frameset.html" && requestUrl.searchParams.has("work-log")
+            ? readFixture(fixtureName).replace("xp03_m.htm", "PE/1/14D/PE14D1.php")
+            : readFixture(fixtureName),
       });
       return;
     }
@@ -230,10 +246,24 @@ async function capturePage(page: Page, outputPath: string) {
   });
 }
 
+function directoryDigest(directory: string): string {
+  const hash = createHash("sha256");
+  for (const name of readdirSync(directory, { recursive: true }).map(String).toSorted()) {
+    const file = path.join(directory, name);
+    if (statSync(file).isFile()) {
+      hash.update(name);
+      hash.update(readFileSync(file));
+    }
+  }
+  return hash.digest("hex");
+}
+
 async function captureRevision(
   label: string,
   extensionDir: string,
   outputDir: string,
+  workLogOnly: boolean,
+  recordVideo: boolean,
 ): Promise<CaptureResult> {
   const profileDir = path.join(tmpdir(), `ccxp-lite-parity-${label}-${process.pid}-${Date.now()}`);
   const revisionOutputDir = path.join(outputDir, label);
@@ -246,6 +276,7 @@ async function captureRevision(
     timezoneId: "Asia/Taipei",
     colorScheme: "light",
     reducedMotion: "reduce",
+    ...(recordVideo ? { recordVideo: { dir: revisionOutputDir, size: viewport } } : {}),
     args: [`--disable-extensions-except=${extensionDir}`, `--load-extension=${extensionDir}`],
   });
   const screenshots: Record<string, string> = {};
@@ -264,92 +295,173 @@ async function captureRevision(
     });
     const page = context.pages()[0] ?? (await context.newPage());
 
-    process.stdout.write(`[${label}] login\n`);
-    await page.goto(`${ccxpOrigin}/ccxp/INQUIRE/`, { waitUntil: "domcontentloaded" });
-    await page.locator("body[data-ccxp-lite-landing-applied='true']").waitFor();
-    const password = page.locator("input[name='passwd']");
-    await password.fill("parity-only");
-    await page.locator(".ccxp-lite-password-toggle").click();
-    if ((await password.getAttribute("type")) !== "text") {
-      throw new Error("Password visibility control did not preserve interaction behavior");
+    if (!workLogOnly) {
+      process.stdout.write(`[${label}] login\n`);
+      await page.goto(`${ccxpOrigin}/ccxp/INQUIRE/`, { waitUntil: "domcontentloaded" });
+      await page.locator("body[data-ccxp-lite-landing-applied='true']").waitFor();
+      const password = page.locator("input[name='passwd']");
+      await password.fill("parity-only");
+      await page.locator(".ccxp-lite-password-toggle").click();
+      if ((await password.getAttribute("type")) !== "text") {
+        throw new Error("Password visibility control did not preserve interaction behavior");
+      }
+      const loginScreenshot = path.join(revisionOutputDir, "login.png");
+      await capturePage(page, loginScreenshot);
+      screenshots.login = loginScreenshot;
+      styles.login = await collectStyles(page, loginProbes);
+
+      process.stdout.write(`[${label}] standalone\n`);
+      await page.goto(`${ccxpOrigin}/ccxp/INQUIRE/JH/B/B.2/B.2.3/JHB23001.php`, {
+        waitUntil: "domcontentloaded",
+      });
+      await page.locator("body.ccxp-lite-main-skin").waitFor();
+      const standaloneScreenshot = path.join(revisionOutputDir, "standalone.png");
+      await capturePage(page, standaloneScreenshot);
+      screenshots.standalone = standaloneScreenshot;
+      styles.standalone = await collectStyles(page, standaloneProbes);
+
+      process.stdout.write(`[${label}] sidebar classic\n`);
+      await page.goto(`${ccxpOrigin}/ccxp/INQUIRE/select_entry.php`, {
+        waitUntil: "commit",
+      });
+      await page.waitForFunction(() => {
+        const navFrame = document.querySelector("frame[src*='IN_INQ_STU.php']");
+        const navDocument = navFrame
+          ? (Reflect.get(navFrame, "contentDocument") as Document | undefined)
+          : undefined;
+        return (
+          navDocument?.querySelector<HTMLElement>("body")?.dataset.ccxpLiteSidebarApplied === "true"
+        );
+      });
+      const navFrame = page.frames().find((frame) => frame.url().includes("IN_INQ_STU.php"));
+      if (!navFrame) {
+        throw new Error("Missing sanitized navigation frame");
+      }
+      await navFrame.locator(".ccxp-lite-sidebar-shell").waitFor();
+      await navFrame.locator(".ccxp-lite-empty-row").waitFor();
+      const classicScreenshot = path.join(revisionOutputDir, "sidebar-classic.png");
+      await capturePage(page, classicScreenshot);
+      screenshots["sidebar-classic"] = classicScreenshot;
+      styles["sidebar-classic"] = await collectStyles(navFrame, sidebarProbes);
+
+      process.stdout.write(`[${label}] sidebar layered search\n`);
+      await page.locator(".ccxp-lite-sidebar-experiment-switch").click();
+      await page.waitForFunction(
+        () => document.querySelector("frameset[cols]")?.getAttribute("cols") === "*,0",
+      );
+      await navFrame
+        .locator(".ccxp-lite-sidebar-search-input")
+        .fill("\u586B\u5BEB\u6559\u5B78\u610F\u898B\u8ABF\u67E5");
+      await navFrame.locator(".ccxp-lite-row-button, .ccxp-lite-category-card").first().waitFor();
+      const layeredScreenshot = path.join(revisionOutputDir, "sidebar-layered-search.png");
+      await capturePage(page, layeredScreenshot);
+      screenshots["sidebar-layered-search"] = layeredScreenshot;
+      styles["sidebar-layered-search"] = await collectStyles(navFrame, sidebarProbes);
+
+      process.stdout.write(`[${label}] embedded destination\n`);
+      await navFrame.locator("button[title='\u6559\u5B78\u610F\u898B']").click();
+      await navFrame
+        .locator("button[title^='\u586B\u5BEB\u6559\u5B78\u610F\u898B\u8ABF\u67E5']")
+        .click();
+      await navFrame.locator(".ccxp-lite-destination-frame:not([hidden])").waitFor();
+      await navFrame
+        .frameLocator(".ccxp-lite-destination-frame:not([hidden])")
+        .getByText("The system is not available because it is not the period to open.", {
+          exact: false,
+        })
+        .waitFor();
+      const destinationScreenshot = path.join(revisionOutputDir, "embedded-destination.png");
+      await capturePage(page, destinationScreenshot);
+      screenshots["embedded-destination"] = destinationScreenshot;
+      styles["embedded-destination"] = await collectStyles(navFrame, destinationProbes);
     }
-    const loginScreenshot = path.join(revisionOutputDir, "login.png");
-    await capturePage(page, loginScreenshot);
-    screenshots.login = loginScreenshot;
-    styles.login = await collectStyles(page, loginProbes);
-
-    process.stdout.write(`[${label}] standalone\n`);
-    await page.goto(`${ccxpOrigin}/ccxp/INQUIRE/JH/B/B.2/B.2.3/JHB23001.php`, {
-      waitUntil: "domcontentloaded",
-    });
-    await page.locator("body.ccxp-lite-main-skin").waitFor();
-    const standaloneScreenshot = path.join(revisionOutputDir, "standalone.png");
-    await capturePage(page, standaloneScreenshot);
-    screenshots.standalone = standaloneScreenshot;
-    styles.standalone = await collectStyles(page, standaloneProbes);
-
-    process.stdout.write(`[${label}] sidebar classic\n`);
-    await page.goto(`${ccxpOrigin}/ccxp/INQUIRE/select_entry.php`, {
+    process.stdout.write(`[${label}] work-log (standalone and main frame)\n`);
+    await page.goto(`${ccxpOrigin}${workLogPath}`, { waitUntil: "domcontentloaded" });
+    styles["work-log-standalone-ready"] = await assertWorkLogReady(page);
+    const standaloneWorkLog = path.join(revisionOutputDir, "work-log-standalone.png");
+    await capturePage(page, standaloneWorkLog);
+    screenshots["work-log-standalone"] = standaloneWorkLog;
+    await page.goto(`${ccxpOrigin}/ccxp/INQUIRE/select_entry.php?work-log`, {
       waitUntil: "commit",
     });
-    await page.waitForFunction(() => {
-      const navFrame = document.querySelector("frame[src*='IN_INQ_STU.php']");
-      const navDocument = navFrame
-        ? (Reflect.get(navFrame, "contentDocument") as Document | undefined)
+    await page.waitForFunction((pathname) => {
+      const frame = document.querySelector('frame[name="main"]');
+      const doc = frame
+        ? (Reflect.get(frame, "contentDocument") as Document | undefined)
         : undefined;
-      return (
-        navDocument?.querySelector<HTMLElement>("body")?.dataset.ccxpLiteSidebarApplied === "true"
-      );
-    });
-    const navFrame = page.frames().find((frame) => frame.url().includes("IN_INQ_STU.php"));
-    if (!navFrame) {
-      throw new Error("Missing sanitized navigation frame");
+      return doc?.location.pathname === pathname;
+    }, workLogPath);
+    const mainFrame = page.frames().find((frame) => frame.url().includes(workLogPath));
+    if (!mainFrame) {
+      throw new Error("Missing work-log main frame");
     }
-    await navFrame.locator(".ccxp-lite-sidebar-shell").waitFor();
-    await navFrame.locator(".ccxp-lite-empty-row").waitFor();
-    const classicScreenshot = path.join(revisionOutputDir, "sidebar-classic.png");
-    await capturePage(page, classicScreenshot);
-    screenshots["sidebar-classic"] = classicScreenshot;
-    styles["sidebar-classic"] = await collectStyles(navFrame, sidebarProbes);
-
-    process.stdout.write(`[${label}] sidebar layered search\n`);
-    await page.locator(".ccxp-lite-sidebar-experiment-switch").click();
+    styles["work-log-framed-ready"] = await assertWorkLogReady(mainFrame);
     await page.waitForFunction(
-      () => document.querySelector("frameset[cols]")?.getAttribute("cols") === "*,0",
+      () => document.querySelector("frameset[cols]")?.getAttribute("cols") === "324,*",
     );
-    await navFrame
-      .locator(".ccxp-lite-sidebar-search-input")
-      .fill("\u586B\u5BEB\u6559\u5B78\u610F\u898B\u8ABF\u67E5");
-    await navFrame.locator(".ccxp-lite-row-button, .ccxp-lite-category-card").first().waitFor();
-    const layeredScreenshot = path.join(revisionOutputDir, "sidebar-layered-search.png");
-    await capturePage(page, layeredScreenshot);
-    screenshots["sidebar-layered-search"] = layeredScreenshot;
-    styles["sidebar-layered-search"] = await collectStyles(navFrame, sidebarProbes);
-
-    process.stdout.write(`[${label}] embedded destination\n`);
-    await navFrame.locator("button[title='\u6559\u5B78\u610F\u898B']").click();
-    await navFrame
-      .locator("button[title^='\u586B\u5BEB\u6559\u5B78\u610F\u898B\u8ABF\u67E5']")
-      .click();
-    await navFrame.locator(".ccxp-lite-destination-frame:not([hidden])").waitFor();
-    await navFrame
-      .frameLocator(".ccxp-lite-destination-frame:not([hidden])")
-      .getByText("The system is not available because it is not the period to open.", {
-        exact: false,
-      })
-      .waitFor();
-    const destinationScreenshot = path.join(revisionOutputDir, "embedded-destination.png");
-    await capturePage(page, destinationScreenshot);
-    screenshots["embedded-destination"] = destinationScreenshot;
-    styles["embedded-destination"] = await collectStyles(navFrame, destinationProbes);
-
+    await mainFrame.getByRole("button", { name: "\u591A\u65E5", exact: true }).click();
+    await mainFrame
+      .locator("#ccxp-lite-batch")
+      .getByLabel("\u7D50\u675F\u65E5\u671F", { exact: true })
+      .fill("2026-09-11");
+    const multiScreenshot = path.join(revisionOutputDir, "work-log-multiday.png");
+    await capturePage(page, multiScreenshot);
+    screenshots["work-log-multiday"] = multiScreenshot;
+    styles["work-log-multiday"] = await collectStyles(mainFrame, [
+      { name: "header", selector: "#ccxp-lite-work-log-nav", properties: visualProperties },
+      { name: "note", selector: '[name="I_TASK_NOTE"]', properties: visualProperties },
+      {
+        name: "submit",
+        selector: "#insTask .ccxp-lite-action-control-primary",
+        properties: visualProperties,
+      },
+    ]);
+    await mainFrame.locator('#insForm [name="S_SUBMIT"]').click();
+    await mainFrame.waitForFunction(
+      () =>
+        document.querySelector('[role="dialog"]') !== null ||
+        document.querySelector('[role="status"]')?.textContent.includes("\u6210\u529F 2 \u7B46"),
+    );
+    const submitScreenshot = path.join(revisionOutputDir, "work-log-submit.png");
+    await capturePage(page, submitScreenshot);
+    screenshots["work-log-submit"] = submitScreenshot;
+    if (recordVideo) {
+      await page.waitForTimeout(1000);
+    }
+    writeFileSync(
+      path.join(revisionOutputDir, "capture-manifest.json"),
+      `${JSON.stringify(
+        {
+          viewport,
+          locale: "zh-TW",
+          timezone: "Asia/Taipei",
+          extensionDigest: directoryDigest(extensionDir),
+          fixtureDigest: directoryDigest(fixtureRoot),
+          source: "test/browser-fixtures/work-log.provenance.json",
+          screenshots,
+          workLogOnly,
+          recordVideo,
+          pipeline:
+            "packaged extension; no injected extension modules, theme variables, or layout CSS",
+        },
+        undefined,
+        2,
+      )}\n`,
+    );
     writeFileSync(
       path.join(revisionOutputDir, "computed-styles.json"),
       `${JSON.stringify(styles, undefined, 2)}\n`,
     );
     return { screenshots, styles };
   } finally {
+    process.stdout.write(`[${label}] closing browser\n`);
+    await Promise.all(
+      context.pages().map(async (page) => {
+        await page.close();
+      }),
+    );
     await context.close();
+    process.stdout.write(`[${label}] browser closed\n`);
     rmSync(profileDir, { recursive: true, force: true });
   }
 }
@@ -414,6 +526,8 @@ async function main() {
       "base-extension": { type: "string", default: defaultExtensionDir },
       "head-extension": { type: "string", default: defaultExtensionDir },
       output: { type: "string", default: defaultOutputDir },
+      "work-log-only": { type: "boolean", default: false },
+      "record-video": { type: "boolean", default: false },
     },
     strict: true,
   });
@@ -424,8 +538,20 @@ async function main() {
   assertExtension(headExtensionDir);
   prepareOutputDirectory(outputDir);
 
-  const base = await captureRevision("base", baseExtensionDir, outputDir);
-  const head = await captureRevision("head", headExtensionDir, outputDir);
+  const base = await captureRevision(
+    "base",
+    baseExtensionDir,
+    outputDir,
+    values["work-log-only"],
+    values["record-video"],
+  );
+  const head = await captureRevision(
+    "head",
+    headExtensionDir,
+    outputDir,
+    values["work-log-only"],
+    values["record-video"],
+  );
   const failures = compareCaptures(base, head, outputDir);
   writeFileSync(
     path.join(outputDir, "report.json"),

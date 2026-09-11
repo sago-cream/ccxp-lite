@@ -16,3 +16,15 @@ Notes:
 - The ccxpDecaptcha project is a fork of nthu-ccxp-captcha.
 - This repository does NOT include any source code from the above projects.
 - Attribution is provided to acknowledge the origin of the training pipeline used to produce the model weights.
+
+---
+
+Browser test fixtures include host styling and images from NTHU CCXP:
+Source: https://www.ccxp.nthu.edu.tw/style/PE2.css
+The files under test/browser-fixtures/host-assets retain the host's stylesheet
+content for offline rendering tests; they are not used by the extension UI.
+
+The bundled jQuery UI 1.10.4 theme retains its upstream license header:
+Source: https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/PE/common/jquery-ui/css/theme/jquery-ui-1.10.4.custom.min.css
+License: MIT (https://jquery.org/license)
+Copyright: 2014 jQuery Foundation and other contributors

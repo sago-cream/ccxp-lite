@@ -1,0 +1,485 @@
+body 
+{
+ font-size:12px;
+ background: url(/images/index_bg.jpg) no-repeat top left;
+ background-attachment:fixed;
+ width:100%;
+}
+a {color: blue; text-decoration:none;}
+a:hover {color: red;}
+
+.input_box {font-family: "微軟正黑體,Arial";font-size: 12px;border:0px;border-bottom:#555555 1px dashed;}
+
+
+fieldset {
+	border:0;
+	padding:10px;
+	margin-bottom:
+	10px;background:#EEE;
+
+	border-radius: 8px;
+	-moz-border-radius: 8px;
+	-webkit-border-radius: 8px;
+   /*
+	background:-webkit-liner-gradient(top,#EEEEEE,#FFFFFF);
+	background:linear-gradient(top,#EFEFEF,#FFFFFF);
+	-*/
+	background: url(/images/index_bg.jpg) no-repeat top left;
+    background-attachment:fixed;
+	
+
+	box-shadow:3px 3px 10px #666;
+	-moz-box-shadow:3px 3px 10px #666;
+	-webkit-box-shadow:3px 3px 10px #666;
+
+	position:relative;
+	}
+
+legend {
+	padding:5px 10px;
+	background-color:#9966CC;
+	color:#fff;
+
+	border-radius:3px;
+	-moz-border-radius:3px;
+	-webkit-border-radius:3px;
+
+	box-shadow:2px 2px 4px #666;
+	-moz-box-shadow:2px 2px 4px #666;
+	-webkit-box-shadow:2px 2px 4px #666;
+
+	position:absolute;
+	left:10px;top:-11px;
+	}
+
+.datatable{
+	border: double #4162B6;
+	border-collapse: collapse;
+}
+
+.datatable caption{
+	text-align: left;
+	font: 12px Arial,"Times New Roman",serif;
+	color: #416D02;
+	font-weight: bold;
+}
+
+.datatable th{
+	border: 1px solid #ffffff;
+	font: 12px Arial,"Times New Roman",serif;
+	background-color: #4162B6;
+	color: #ffffff;
+	font-weight: bold;
+	text-align: center;
+	padding: 2px;
+}
+
+
+.datatable tr	{background-color: #FFFFFF;}
+.datatable tr.lineA	{background-color: #DFE7F2;}
+.datatable tr.lineB	{background-color: #FFCCFF;}
+.datatable tr.lineHead	{background-color: #FFC0CB;}
+.datatable td.lineHead	{background-color: #FFC0CB;}
+
+.datatable td{
+	border: 1px solid #4162B6;
+	font: 12px Arial,"Times New Roman",serif;
+	padding: 3px;
+	text-decoration: none;
+}
+
+.datatable a:link, .datatable a:visited{
+	text-decoration: none;
+	color: blue;
+}
+
+.datatable a:hover{
+	color: orange;
+	text-decoration: none;
+}
+
+select{
+	font-family: "Courier New", Arial, sans-serif;
+	padding: 0px;
+}	
+textarea{
+	font-family: Arial, sans-serif;
+}
+
+.txt{
+	background-color: #E3F2F7;
+	border: 1px solid #4162B6;
+	font-family:  "Courier New", Arial, sans-serif;
+}
+
+.H12{
+	  color: #4162B6;
+     font: 25px Arial,"微軟正黑體",serif;
+     margin: 0 0 1px 0;
+	  font-style: normal;
+	  font-weight: bolder;
+}
+
+
+.H13{
+	  color: #9966CC;
+     font: 25px Arial,"微軟正黑體",serif;
+     margin: 0 0 1px 0;
+	  font-style: normal;
+	  font-weight: bolder;
+}
+
+
+.H121{
+	  color: #FFFFFF;
+     font: 20px Arial,"微軟正黑體",serif;
+  	  margin: 0 0 1px 0;
+	  font-style: normal;
+	  font-weight: bolder;
+}
+
+
+.btn
+{
+   color: #000000;
+   font-size:12px;
+   font-family:Arial,sans-serif;
+   background-color:#999999;
+   background-image:url(../../images/btn01.gif);
+   border-style:solid;
+   border-color:#DDDDDD;
+   border-width:2px;
+   height:25px;
+   cursor: pointer;	
+}
+
+.btn:hover
+{
+   color: #000000;
+   font-size:12px;
+   font-family:Arial,sans-serif;
+   background-color:#999999;
+   background-image:url(../../images/btn01.gif);
+   border-style:inset;
+   border-color:#DDDDDD;
+   border-width:2px;
+   height:25px;
+   cursor: pointer;	
+}
+
+
+
+.btn2{
+   font-size:11px;
+   font-family:Verdana,sans-serif,Arial,"微軟正黑體";
+   font-weight:bold;
+   color:#888888;
+   background-color:#EEEEEE;
+   border-style:solid;
+   border-color:#BBBBBB;
+   border-width:1px;
+}
+
+
+.btn2:hover{
+   font-size:11px;
+   font-family:Verdana,sans-serif,Arial,"微軟正黑體";
+   font-weight:bold;
+   color:#4162B6;
+   background-color:#EEEEF4;
+   border-style:solid;
+   border-color:#4162B6;
+   border-width:1px;
+	 cursor: pointer;	
+}
+
+
+.btn3{
+   font-size:12px;
+   font-family:Arial,"Times New Roman",serif;
+   background-color:#CCDDCC;
+   border-top-style:solid;
+   border-top-color:#99AA99;
+   border-top-width:2px;
+   border-bottom-style:solid;
+   border-bottom-color:#99AA99;
+   border-bottom-width:2px;
+   border-left-style:solid;
+   border-left-color:#BBCCBB;
+   border-left-width:5px;
+   border-right-style:solid;
+   border-right-color:#BBCCBB;
+   border-right-width:5px;
+}
+
+
+.btn3:hover{
+   font-size:12px;
+   font-family:Arial,"Times New Roman",serif;
+   background-color:#CCE8CC;
+   border-top-style:solid;
+   border-top-color:#99AA99;
+   border-top-width:2px;
+   border-bottom-style:solid;
+   border-bottom-color:#99AA99;
+   border-bottom-width:2px;
+   border-left-style:solid;
+   border-left-color:#BBCCBB;
+   border-left-width:5px;
+   border-right-style:solid;
+   border-right-color:#BBCCBB;
+   border-right-width:5px;
+	cursor: pointer;	
+}
+
+.btnx{
+   font-size:11px;
+   font-family:Verdana,sans-serif,Arial,"微軟正黑體";
+   font-weight:bold;
+   color:#000000;
+   background-color:#D3C7E1;
+   border-style:solid;
+   border-color:#D3C7E1;
+   border-width:1px;
+   padding:3px;
+}
+
+
+.btnx:hover{
+   font-size:11px;
+   font-family:Verdana,sans-serif,Arial,"微軟正黑體";
+   font-weight:bold;
+   color:#FF0000;
+   background-color:#B29FCC;
+   border-style:solid;
+   border-color:#B29FCC;
+   border-width:1px;
+   cursor: pointer;	
+   padding:3px;
+}
+
+
+
+#ddblueblockmenu{
+border: 1px solid black;
+border-bottom-width: 0;
+width: 185px;
+}
+
+#ddblueblockmenu ul{
+margin: 0;
+padding: 0;
+list-style-type: none;
+font: normal 90% 'Trebuchet MS', 'Lucida Grande', Arial, sans-serif;
+}
+
+#ddblueblockmenu li a{
+display: block;
+padding: 3px 0;
+padding-left: 9px;
+width: 169px; /*185px minus all left/right paddings and margins*/
+text-decoration: none;
+color: white;
+background-color: #4162B6;
+border-bottom: 1px solid #90bade;
+border-left: 7px solid #191970;
+}
+
+* html #ddblueblockmenu li a{ /*IE only */
+width: 187px; /*IE 5*/
+w\idth: 169px; /*185px minus all left/right paddings and margins*/
+}
+
+#ddblueblockmenu li a:hover {
+background-color: #6F89CB;
+border-left-color: #1c64d1;
+}
+
+#ddblueblockmenu div.menutitle{
+color: white;
+border-bottom: 1px solid black;
+padding: 1px 0;
+padding-left: 5px;
+background-color: black;
+font: bold 90% 'Trebuchet MS', 'Lucida Grande', Arial, sans-serif;
+}
+
+.datatable4 {
+    border: double #B29FCC;
+	border-collapse: collapse;
+    font-family:"微軟正黑體","微軟正黑體";
+	font-size: 12px;
+	font-style: normal;
+	line-height: 13px;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	color: #000000;
+}
+.datatable4 caption {font-size: 1.0em; color: #F06; text-align: left; font-weight:bolder; line-height:20px;}
+.datatable4 td {background-color:#eef3f7; border: 1px solid #B29FCC; padding: 3px;}
+.datatable4 th {background-color:#9966CC; color:#FFFFFF; border: 1px solid #ffffff; padding: 3px; font-weight: bold;}
+.datatable4 tr.lineAX	{background-color: #FFFFCC;}
+.datatable4 tr:hover  td
+{
+    background-color:#FFFFCC;
+}
+
+
+
+
+.datatable5 {
+    border: double #B29FCC;
+	border-collapse: collapse;
+    font-family:"華康中黑體","微軟正黑體";
+	font-size: 12px;
+	font-style: normal;
+	line-height: 13px;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	color: #000000;
+}
+.datatable5 caption {font-size: 1.0em; color: #F06; text-align: left; font-weight:bolder; line-height:20px;}
+.datatable5 td {background-color:#eef3f7; border: 1px solid #B29FCC; padding: 3px;}
+.datatable5 th {background-color:#9966CC; color:#FFFFFF; border: 1px solid #ffffff; padding: 3px; font-weight: bold;}
+.datatable5 tr.lineAX	{background-color: #FFFFCC;}
+.datatable5 tr:hover td 
+{
+    background-color:#FFFFCC;
+}
+
+
+
+
+.detail_table {
+    border: double #B29FCC;
+	border-collapse: collapse;
+    font-family:"微軟正黑體","細明體";
+	font-size: 11px;
+	font-style: normal;
+	line-height: 10px;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	color: #000000;
+}
+.detail_table caption {font-size: 1.0em; color: #F06; text-align: left; font-weight:bolder; line-height:20px;}
+.detail_table td {background-color:#eef3f7; border: 1px solid #B29FCC; padding: 2px;}
+.detail_table th {background-color:#9966CC; color:#FFFFFF; border: 1px solid #ffffff; padding: 3px; font-weight: bold;}
+
+
+
+
+.print_tab{
+    border: 1px solid #B29FCC;
+	border-collapse: collapse;
+    font-family:"微軟正黑體","細明體";
+	font-size: 11px;
+	font-style: normal;
+	line-height: 20px;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	color: #000000;
+	padding: 5px;
+}
+.print_tab caption {font-size: 1.0em; color: #F06; text-align: left; font-weight:bolder; line-height:20px;}
+.print_tab td {background-color:#eef3f7; border: 1px solid #B29FCC; padding: 5px;line-height: 20px;;}
+.print_tab th {background-color:#9966CC; color:#FFFFFF; border: 1px solid #ffffff; padding: 5px; font-weight: bold;line-height: 20px;;}
+
+
+
+div#qTip {
+ font:bolder 12px 微軟正黑體,Verdana, Arial, Helvetica, sans-serif;
+ padding: 3px;
+ border: 1px solid #666;
+ border-right-width: 2px;
+ border-bottom-width: 2px;
+ display: none;
+ background: #9966CC;
+ color:#FFFFFF;
+ display: none;
+ text-align: left;
+ position: absolute;
+ z-index: 1000;
+}
+
+#header { 
+background:url(../../images/PE/header.png) no-repeat; 
+width:573px; 
+height:49px; 
+} 
+#footer { 
+background:url(../../images/PE/footer.png) no-repeat; 
+width:573px; 
+height:49px; 
+font:bolder 12px 微軟正黑體,Verdana, Arial, Helvetica, sans-serif;
+} 
+#content { 
+background:url(../../images/PE/content.png) repeat-y; 
+width:573px; 
+}
+
+@media print {
+.noprint {display:none}
+}
+
+
+
+#newspaper-a
+{
+	font-family: "微軟正黑體";
+	font-size: 12px;
+	margin: 5px;
+	text-align:  center;
+	border-collapse: collapse;
+	border: 1px solid ;
+}
+#newspaper-a th
+{
+	padding: 7px;
+	font-weight:bolder;
+	font-size: 12px;
+	color: #039;
+	border-bottom: 1px dashed ;
+	text-align:center;
+}
+#newspaper-a td
+{
+	padding: 7px ;
+	color: #669;
+	border-bottom: 1px  solid  #CCCCCC ;
+}
+#newspaper-a tbody tr:hover td
+{
+	color: #339;
+	background:  #d0dafd;
+}
+
+
+
+
+#newspaper-b
+{
+	font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+	font-size: 10px;
+	margin: 5px;
+	text-align:  center;
+	border-collapse: collapse;
+	border: 1px solid #69c;
+	background:url(tgray.png)
+}
+#newspaper-b th
+{
+	padding: 7px;
+	font-weight:bolder;
+	font-size: 12px;
+	color: #039;
+	text-align:center;
+}
+#newspaper-b td
+{
+	padding: 7px ;
+	color: #000;
+}
