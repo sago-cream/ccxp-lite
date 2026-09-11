@@ -29,12 +29,12 @@ interface CaptureResult {
 const fixtureByPath = new Map<string, string>([
   ["/ccxp/INQUIRE/", "login.html"],
   ["/ccxp/INQUIRE/grades.php", "main.html"],
-  ["/ccxp/INQUIRE/in_inq_stu.php", "navigation.html"],
+  ["/ccxp/INQUIRE/IN_INQ_STU.php", "navigation.html"],
   ["/ccxp/INQUIRE/JH/B/B.2/B.2.3/JHB23001.php", "standalone.html"],
   ["/ccxp/INQUIRE/schedule.php", "main.html"],
   ["/ccxp/INQUIRE/select_entry.php", "frameset.html"],
   ["/ccxp/INQUIRE/top.php", "top.html"],
-  ["/ccxp/INQUIRE/welcome.php", "main.html"],
+  ["/ccxp/INQUIRE/xp03_m.htm", "main.html"],
 ]);
 
 const visualProperties = [
@@ -90,18 +90,6 @@ const standaloneProbes: readonly Probe[] = [
     selector: "body",
     properties: visualProperties,
     inlinePriorities: ["background-color"],
-  },
-  {
-    name: "main",
-    selector: "#legacy-main",
-    properties: visualProperties,
-    inlinePriorities: ["color", "width"],
-  },
-  {
-    name: "query",
-    selector: "#query",
-    properties: visualProperties,
-    inlinePriorities: ["width", "border"],
   },
 ];
 
@@ -295,7 +283,7 @@ async function captureRevision(
       waitUntil: "commit",
     });
     await page.waitForFunction(() => {
-      const navFrame = document.querySelector("frame[src*='in_inq_stu.php']");
+      const navFrame = document.querySelector("frame[src*='IN_INQ_STU.php']");
       const navDocument = navFrame
         ? (Reflect.get(navFrame, "contentDocument") as Document | undefined)
         : undefined;
@@ -303,7 +291,7 @@ async function captureRevision(
         navDocument?.querySelector<HTMLElement>("body")?.dataset.ccxpLiteSidebarApplied === "true"
       );
     });
-    const navFrame = page.frames().find((frame) => frame.url().includes("in_inq_stu.php"));
+    const navFrame = page.frames().find((frame) => frame.url().includes("IN_INQ_STU.php"));
     if (!navFrame) {
       throw new Error("Missing sanitized navigation frame");
     }
@@ -318,7 +306,9 @@ async function captureRevision(
     await page.waitForFunction(
       () => document.querySelector("frameset[cols]")?.getAttribute("cols") === "*,0",
     );
-    await navFrame.locator(".ccxp-lite-sidebar-search-input").fill("\u5B78\u671F\u6210\u7E3E");
+    await navFrame
+      .locator(".ccxp-lite-sidebar-search-input")
+      .fill("\u586B\u5BEB\u6559\u5B78\u610F\u898B\u8ABF\u67E5");
     await navFrame.locator(".ccxp-lite-row-button, .ccxp-lite-category-card").first().waitFor();
     const layeredScreenshot = path.join(revisionOutputDir, "sidebar-layered-search.png");
     await capturePage(page, layeredScreenshot);
@@ -326,8 +316,10 @@ async function captureRevision(
     styles["sidebar-layered-search"] = await collectStyles(navFrame, sidebarProbes);
 
     process.stdout.write(`[${label}] embedded destination\n`);
-    await navFrame.locator("button[title='\u8AB2\u7A0B\u6210\u7E3E']").click();
-    await navFrame.locator("button[title='\u5B78\u671F\u6210\u7E3E']").click();
+    await navFrame.locator("button[title='\u6559\u5B78\u610F\u898B']").click();
+    await navFrame
+      .locator("button[title^='\u586B\u5BEB\u6559\u5B78\u610F\u898B\u8ABF\u67E5']")
+      .click();
     await navFrame.locator(".ccxp-lite-destination-frame:not([hidden])").waitFor();
     const destinationScreenshot = path.join(revisionOutputDir, "embedded-destination.png");
     await capturePage(page, destinationScreenshot);
