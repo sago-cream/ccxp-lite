@@ -5,6 +5,7 @@ on:
     branches:
       - main
   pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
 
 permissions:
   contents: read
@@ -33,3 +34,58 @@ jobs:
 
       - name: Build extensions
         run: bun run build
+
+  browser-parity:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out pull request
+        uses: actions/checkout@v7
+        with:
+          path: head
+
+      - name: Check out base revision
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          path: base
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install head dependencies
+        working-directory: head
+        run: bun install --frozen-lockfile
+
+      - name: Install base dependencies
+        working-directory: base
+        run: bun install --frozen-lockfile
+
+      - name: Install Chromium
+        working-directory: head
+        run: bunx playwright install --with-deps chromium
+
+      - name: Build packaged extensions
+        run: |
+          cd base && bun run build:crx
+          cd ../head && bun run build:crx
+
+      - name: Compare packaged browser output
+        id: browser-parity
+        env:
+          ALLOW_VISUAL_CHANGE: ${{ contains(github.event.pull_request.labels.*.name, 'accept-visual-change') }}
+        working-directory: head
+        run: >-
+          bun run test:browser-parity --
+          --base-extension ../base/dist/crx/unpacked
+          --head-extension dist/crx/unpacked
+          --output ../browser-parity
+
+      - name: Upload browser parity differences
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: browser-parity
+          path: browser-parity
+          if-no-files-found: ignore

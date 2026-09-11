@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8" />
+    <title>Sanitized CCXP login</title>
+    <style>
+      .inputtext {
+        margin: 5px;
+        border: 0;
+        border-bottom: 1px solid #555;
+        font-size: 1.2em;
+      }
+
+      .button {
+        margin: 4px 2px;
+        padding: 10px;
+        border: 0;
+        border-radius: 8px;
+        background-color: #7f1084;
+        color: white;
+        font-size: 16px;
+      }
+
+      .tab {
+        min-width: 30em;
+        overflow: hidden;
+      }
+
+      .tab button {
+        float: left;
+        padding: 7px 8px;
+        border: 0;
+        border-radius: 8px 8px 0 0;
+        background-color: #f1f1f1;
+        font-size: 17px;
+      }
+
+      .tab button.active {
+        background-color: #ccc;
+      }
+
+      .tabcontent {
+        display: none;
+        padding: 6px 12px;
+        border: 1px solid #ccc;
+        text-align: left;
+      }
+
+      h3,
+      ul {
+        margin-block: 0.1em;
+      }
+    </style>
+  </head>
+  <body bgcolor="#ffffff" topmargin="0" leftmargin="0" scroll="auto">
+    <table width="100%" border="0" cellpadding="0" cellspacing="0">
+      <tr>
+        <td width="200" valign="top">
+          <table width="100%" border="0" cellpadding="0" cellspacing="0">
+            <tr>
+              <td width="100%" height="40">
+                <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td width="100%" height="80">
+                      <img alt="" src="images/login_top.png" />
+                    </td>
+                  </tr>
+                </table>
+                <div
+                  style="margin-left: 0; background-image: url(&quot;images/login_mid.png&quot;)"
+                >
+                  <div style="margin-left: 1em">
+                    <b style="color: red"></b>
+                    <form name="form1" method="post" action="pre_select_entry.php">
+                      <span style="font-size: 1.2em">帳 號</span><br />
+                      <input
+                        required
+                        type="text"
+                        name="account"
+                        maxlength="26"
+                        style="width: 8em"
+                        class="inputtext"
+                      /><br />
+                      <span style="font-size: 1.2em">密 碼</span>
+                      <svg
+                        id="showPassword"
+                        style="display: inline"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 16 16"
+                      >
+                        <path d="M1 8h14M8 1v14" />
+                      </svg>
+                      <svg
+                        id="hidePassword"
+                        style="display: none"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 16 16"
+                      ></svg>
+                      <br />
+                      <input
+                        type="password"
+                        id="password"
+                        name="passwd"
+                        size="18"
+                        maxlength="18"
+                        style="width: 8em"
+                        class="inputtext"
+                      />
+                      <br />
+                      <span style="font-size: 1.2em">驗證碼</span>
+                      <input
+                        required
+                        type="text"
+                        name="passwd2"
+                        maxlength="6"
+                        class="inputtext"
+                        style="width: 6rem"
+                        autocomplete="off"
+                      />
+                      <br />
+                      <img alt="驗證碼" src="auth_img.php?pwdstr=sanitized-captcha" />
+                      <a href="auth_wav/auth_wav.php?pwdstr=sanitized-captcha">
+                        <img
+                          alt="語音驗證碼"
+                          src="auth_wav/sound_icon.png"
+                          width="30"
+                          height="30"
+                        />
+                      </a>
+                      <br />
+                      <input type="submit" name="Submit" value="登入" class="button" />
+                      &nbsp;&nbsp;&nbsp;
+                      <input type="reset" name="Submit2" value="清除" class="button" />
+                      <br />
+                      <a href="forget.php?lang=C"><font color="red">無法登入?</font></a>
+                    </form>
+                  </div>
+                  <div style="margin: 2px">
+                    <table width="93%" border="1" bordercolor="red">
+                      <tr>
+                        <td width="93%" align="center">
+                          <font color="red">請妥善保管帳號與密碼</font>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+                <input type="hidden" name="fnstr" value="sanitized-captcha" />
+              </td>
+            </tr>
+          </table>
+        </td>
+        <td width="100%" valign="top">
+          <table width="100%" bgcolor="#ffffff" border="0" cellpadding="0" cellspacing="0">
+            <tr>
+              <td width="100%" valign="top" colspan="3">
+                <table width="100%" height="40" border="0" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td align="right">清華大學 | 計通中心 | 校務資訊組</td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="tab">
+                  <button class="tablinks">學　生</button>
+                  <button class="tablinks">校　友</button>
+                  <button class="tablinks">教職員</button>
+                  <button class="tablinks">受款人(廠商)</button>
+                  <button class="tablinks">其　他</button>
+                  <button class="tablinks active" id="defaultOpen">提醒事項</button>
+                </div>
+                <div id="提醒事項" class="tabcontent" style="display: block">
+                  <h3>提醒事項</h3>
+                  <ul>
+                    <li>這是不含帳號或個人資料的測試提醒。</li>
+                    <li>登入問題請參閱「無法登入」說明。</li>
+                  </ul>
+                </div>
+                <a href="inquire_cpr.html">&gt;&gt; 服務電話 &lt;&lt;</a>
+              </td>
+              <td valign="top">
+                <ul class="links">
+                  <li><a href="?lang=english">English</a></li>
+                </ul>
+                <table width="500" border="0" cellpadding="3" cellspacing="0">
+                  <tr>
+                    <td height="20" colspan="2" class="board_item">系統公告</td>
+                  </tr>
+                  <tr>
+                    <td width="100" class="board_subject">日期</td>
+                    <td width="388" class="board_subject">新 聞 主 題</td>
+                  </tr>
+                  <tr>
+                    <td class="board_0">2026/09/11</td>
+                    <td class="board_0">這是不含個人資料的測試公告。</td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

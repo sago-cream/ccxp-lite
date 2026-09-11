@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8" />
+    <title>Sanitized CCXP navigation</title>
+  </head>
+  <body bgcolor="#ffffff">
+    <style>
+      body {
+        white-space: nowrap;
+      }
+    </style>
+    <a href="logout.php?ACIXSTORE=fixture" target="_top"
+      ><img src="/images/logout.gif" alt="登出管理系統" border="0" align="absmiddle" /></a
+    ><br />
+    <a href="inquire_cpr.html?ACIXSTORE=fixture" target="_blank" class="splink"
+      ><u>服務電話與訊息說明</u></a
+    ><br />
+    <script type="application/x-ccxp-tree">
+      foldersTree = gFld("<font size=2>校務資訊學生查詢系統</font>", "");
+      aux5 = insFld(foldersTree, gFld("<font size=2>教學意見<br>Comments about courses</font>", ""));
+      insDoc(aux5, gLnk(aux5, "<font size=2>填寫教學意見調查<br>Course evaluation</font>", "JH/B/B.2/B.2.3/JHB23001.php?ACIXSTORE=fixture"));
+      insDoc(aux5, gLnk(aux5, "<font size=2>綜合意見平均分數</font>", "JH/B/B.2/B.2.J.1/JHB2J101.php?ACIXSTORE=fixture"));
+      aux8 = insFld(foldersTree, gFld("<font size=2>課程、成績<br>Courses, transcript</font>", ""));
+      insDoc(aux8, gLnk(aux8, "<font size=2>成績查詢<br>Transcript</font>", "JH/8/R/6.3/JH8R63001.php?ACIXSTORE=fixture"));
+      insDoc(aux8, gLnk(aux8, "<font size=2>學士班學期成績通知單</font>", "JH/8/R/6.8/JH8R6801.php?ACIXSTORE=fixture"));
+    </script>
+    <iframe
+      name="frame_7472"
+      width="0"
+      height="0"
+      frameborder="0"
+      scrolling="no"
+      style="display: none"
+    ></iframe>
+  </body>
+</html>
