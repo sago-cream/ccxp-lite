@@ -5,6 +5,7 @@ on:
     branches:
       - main
   pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
 
 permissions:
   contents: read
@@ -37,6 +38,7 @@ jobs:
   browser-parity:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Check out pull request
         uses: actions/checkout@v7
@@ -71,7 +73,8 @@ jobs:
 
       - name: Compare packaged browser output
         id: browser-parity
-        continue-on-error: ${{ contains(github.event.pull_request.labels.*.name, 'accept-visual-change') }}
+        env:
+          ALLOW_VISUAL_CHANGE: ${{ contains(github.event.pull_request.labels.*.name, 'accept-visual-change') }}
         working-directory: head
         run: >-
           bun run test:browser-parity --
@@ -80,7 +83,7 @@ jobs:
           --output ../browser-parity
 
       - name: Upload browser parity differences
-        if: failure() || steps.browser-parity.outcome == 'failure'
+        if: always()
         uses: actions/upload-artifact@v6
         with:
           name: browser-parity

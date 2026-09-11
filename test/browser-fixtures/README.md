@@ -23,3 +23,11 @@ pixel diffs, computed-style JSON, and a report.
 Behavior-preserving changes should pass without updating fixtures or expectations. An intentional
 visual change can be reviewed from the uploaded artifacts and acknowledged by a maintainer with the
 `accept-visual-change` pull-request label.
+
+The label acknowledges screenshot/style differences only; missing elements and failed interactions
+still fail CI. Artifacts are uploaded on every run for inspection. Use explicit paths when comparing
+different builds: `bun run test:browser-parity --base-extension /path/to/base --head-extension
+/path/to/head --output /path/to/new-output-directory`. Unknown flags and existing output directories
+are rejected. This focused suite is a starting gate for #29, not proof of parity on every CCXP page:
+host media/external stylesheets, active evaluation forms, additional roles, and responsive layouts
+still need coverage before a broad visual refactor can be considered fully validated.

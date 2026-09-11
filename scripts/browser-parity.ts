@@ -1,4 +1,5 @@
-import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { parseArgs } from "node:util";
 import path from "node:path";
 import { tmpdir } from "node:os";
 import pixelmatch from "pixelmatch";
@@ -28,10 +29,8 @@ interface CaptureResult {
 
 const fixtureByPath = new Map<string, string>([
   ["/ccxp/INQUIRE/", "login.html"],
-  ["/ccxp/INQUIRE/grades.php", "main.html"],
   ["/ccxp/INQUIRE/IN_INQ_STU.php", "navigation.html"],
   ["/ccxp/INQUIRE/JH/B/B.2/B.2.3/JHB23001.php", "standalone.html"],
-  ["/ccxp/INQUIRE/schedule.php", "main.html"],
   ["/ccxp/INQUIRE/select_entry.php", "frameset.html"],
   ["/ccxp/INQUIRE/top.php", "top.html"],
   ["/ccxp/INQUIRE/xp03_m.htm", "main.html"],
@@ -120,11 +119,6 @@ const destinationProbes: readonly Probe[] = [
   },
 ];
 
-function readArgument(name: string, fallback: string) {
-  const index = process.argv.indexOf(name);
-  return index === -1 ? fallback : path.resolve(process.argv[index + 1]);
-}
-
 function readFixture(fileName: string) {
   return readFileSync(path.join(fixtureRoot, fileName), "utf8");
 }
@@ -142,15 +136,21 @@ function prepareOutputDirectory(outputDir: string) {
   if (outputDir === projectRoot || outputDir === path.parse(outputDir).root) {
     throw new Error(`Refusing to clear unsafe output directory: ${outputDir}`);
   }
-  rmSync(outputDir, { recursive: true, force: true });
+  if (existsSync(outputDir)) {
+    throw new Error(`Output directory already exists; choose a fresh --output path: ${outputDir}`);
+  }
   mkdirSync(outputDir, { recursive: true });
 }
 
 async function routeFixtures(context: BrowserContext) {
-  await context.route(`${ccxpOrigin}/**`, async (route) => {
+  await context.route("**/*", async (route) => {
     const requestUrl = new URL(route.request().url());
+    if (requestUrl.protocol === "chrome-extension:") {
+      await route.continue();
+      return;
+    }
     const fixtureName = fixtureByPath.get(requestUrl.pathname);
-    if (fixtureName !== undefined) {
+    if (requestUrl.origin === ccxpOrigin && fixtureName !== undefined) {
       await route.fulfill({
         status: 200,
         contentType: "text/html; charset=utf-8",
@@ -171,7 +171,17 @@ async function stabilize(page: Page) {
             "*, *::before, *::after { animation: none !important; transition: none !important; caret-color: transparent !important; }",
         })
         .catch(() => undefined);
-      await frame.evaluate(async () => await document.fonts.ready).catch(() => undefined);
+      await frame
+        .evaluate(
+          async () =>
+            await Promise.race([
+              document.fonts.ready,
+              new Promise((resolve) => {
+                setTimeout(resolve, 2000);
+              }),
+            ]),
+        )
+        .catch(() => undefined);
     }),
   );
   await page.waitForTimeout(100);
@@ -321,6 +331,12 @@ async function captureRevision(
       .locator("button[title^='\u586B\u5BEB\u6559\u5B78\u610F\u898B\u8ABF\u67E5']")
       .click();
     await navFrame.locator(".ccxp-lite-destination-frame:not([hidden])").waitFor();
+    await navFrame
+      .frameLocator(".ccxp-lite-destination-frame:not([hidden])")
+      .getByText("The system is not available because it is not the period to open.", {
+        exact: false,
+      })
+      .waitFor();
     const destinationScreenshot = path.join(revisionOutputDir, "embedded-destination.png");
     await capturePage(page, destinationScreenshot);
     screenshots["embedded-destination"] = destinationScreenshot;
@@ -391,9 +407,18 @@ function compareCaptures(
 }
 
 async function main() {
-  const baseExtensionDir = readArgument("--base-extension", defaultExtensionDir);
-  const headExtensionDir = readArgument("--head-extension", defaultExtensionDir);
-  const outputDir = readArgument("--output", defaultOutputDir);
+  const { values } = parseArgs({
+    args: process.argv.slice(2).filter((arg) => arg !== "--"),
+    options: {
+      "base-extension": { type: "string", default: defaultExtensionDir },
+      "head-extension": { type: "string", default: defaultExtensionDir },
+      output: { type: "string", default: defaultOutputDir },
+    },
+    strict: true,
+  });
+  const baseExtensionDir = path.resolve(values["base-extension"]);
+  const headExtensionDir = path.resolve(values["head-extension"]);
+  const outputDir = path.resolve(values.output);
   assertExtension(baseExtensionDir);
   assertExtension(headExtensionDir);
   prepareOutputDirectory(outputDir);
@@ -403,9 +428,13 @@ async function main() {
   const failures = compareCaptures(base, head, outputDir);
   writeFileSync(
     path.join(outputDir, "report.json"),
-    `${JSON.stringify({ failures }, undefined, 2)}\n`,
+    `${JSON.stringify({ baseExtensionDir, headExtensionDir, failures }, undefined, 2)}\n`,
   );
   if (failures.length > 0) {
+    if (process.env.ALLOW_VISUAL_CHANGE === "true") {
+      process.stdout.write(`Visual differences acknowledged:\n${failures.join("\n")}\n`);
+      return;
+    }
     throw new Error(
       `Browser parity failed:\n${failures.map((failure) => `- ${failure}`).join("\n")}`,
     );
