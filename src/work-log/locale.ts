@@ -338,6 +338,17 @@
     }
   }
 
+  function renderDateLabels() {
+    for (const input of document.querySelectorAll<HTMLInputElement>(
+      "input.ccxp-lite-native-date[data-ccxp-lite-date-label-zh]",
+    )) {
+      input.setAttribute(
+        "aria-label",
+        (english ? input.dataset.ccxpLiteDateLabelEn : input.dataset.ccxpLiteDateLabelZh) ?? "",
+      );
+    }
+  }
+
   function simplifyRecords() {
     const table = document.querySelector<HTMLTableElement>("#listForm table");
     if (!table || table.dataset.ccxpLiteRecords === "true") {
@@ -619,6 +630,7 @@
     }
     renderDepartmentControlLabels();
     renderApprovalFilters();
+    renderDateLabels();
     simplifyRecords();
     for (const label of document.querySelectorAll<HTMLElement>("[data-record-zh]")) {
       label.textContent = (english ? label.dataset.recordEn : label.dataset.recordZh) ?? "";

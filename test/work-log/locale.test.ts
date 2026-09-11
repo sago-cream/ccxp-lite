@@ -164,6 +164,22 @@ test("maps approval checkboxes to the native search field", async () => {
   await window.happyDOM.close();
 });
 
+test("translates native date control names", async () => {
+  const { window } = createTestWindow(
+    '<div id="divTitle">Title</div><div id="insTask"><input class="ccxp-lite-native-date" data-ccxp-lite-date-label-zh="\u5DE5\u4F5C\u65E5\u671F" data-ccxp-lite-date-label-en="Working date"></div><div id="queTask"></div>',
+  );
+  const doc = window.document as unknown as Document;
+  loadModules(window, ["src/work-log/locale.ts"]);
+  doc.dispatchEvent(new Event("DOMContentLoaded"));
+  const date = requireValue(
+    doc.querySelector<HTMLInputElement>(".ccxp-lite-native-date") ?? undefined,
+  );
+  expect(date.getAttribute("aria-label")).toBe("\u5DE5\u4F5C\u65E5\u671F");
+  requireValue(doc.querySelector<HTMLInputElement>('[role="switch"]') ?? undefined).click();
+  expect(date.getAttribute("aria-label")).toBe("Working date");
+  await window.happyDOM.close();
+});
+
 test("groups populated records and preserves controls in expandable details", async () => {
   const headers = [
     "Number",

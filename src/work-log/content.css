@@ -415,6 +415,14 @@ html[data-ccxp-lite-work-log-language] #insTask input[name="I_TASK_NOTE"] {
   width: min(100%, 42rem);
 }
 
+html[data-ccxp-lite-work-log-language] .ccxp-lite-native-date {
+  width: 11rem;
+}
+
+html[data-ccxp-lite-work-log-language] .ccxp-lite-native-date-source {
+  display: none !important;
+}
+
 html[data-ccxp-lite-work-log-language] #insTask td:has(input[name="I_TASK_NOTE"]) {
   white-space: normal !important;
 }
@@ -693,9 +701,14 @@ html[data-ccxp-lite-work-log-language]
   flex: 1 1 360px;
   margin: 0 auto 0 0;
   text-align: left;
-  font-family: var(--ccxp-lite-font-brand) !important;
-  letter-spacing: 0.01em;
   text-wrap: balance;
+}
+
+#ccxp-lite-work-log-nav #divTitle,
+#ccxp-lite-work-log-nav #divTitle span {
+  font-family: var(--ccxp-lite-font-brand) !important;
+  font-size: var(--ccxp-lite-font-size-sidebar-brand, 20px) !important;
+  letter-spacing: 0.01em;
 }
 
 #ccxp-lite-work-log-help-content > a {
