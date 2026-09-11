@@ -373,13 +373,13 @@
       document,
       "",
       {
-        sidebarRemovePinnedDialogTitlePrefix: "\u78BA\u8A8D\u591A\u65E5\u5DEE\u52E4",
+        sidebarRemovePinnedDialogTitlePrefix: "\u78BA\u8A8D\u767B\u9304\u65E5\u671F",
         sidebarRemovePinnedDialogTitleSuffix: "",
         sidebarRemovePinnedDialogDescription: `\u5171 ${plan.entries.length} \u5929`,
         sidebarRemovePinnedDialogCancel: "\u53D6\u6D88",
         sidebarRemovePinnedDialogConfirm: "\u78BA\u8A8D\u9001\u51FA",
       },
-      "secondary",
+      "primary",
     );
     const dates = element("ul");
     Object.assign(dates.style, {
@@ -389,6 +389,7 @@
       overflowY: "auto",
       minHeight: "0",
       font: "var(--ccxp-lite-type-body)",
+      fontVariantNumeric: "tabular-nums",
       color: "var(--ccxp-lite-text)",
     });
     for (const entry of plan.entries) {
