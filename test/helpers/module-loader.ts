@@ -126,21 +126,16 @@ export function requireElement<T extends Element>(
 }
 
 export const sharedModulePaths = [
+  ".build/design/tokens.js",
   "src/shared/constants.ts",
   "src/shared/locale.ts",
   "src/shared/theme.ts",
-  "src/shared/ui/renderer.ts",
-  "src/shared/ui/controller.ts",
-  "src/shared/ui/buttons.ts",
+  ".build/design/ui.js",
   "src/shared/brand.ts",
   "src/shared/dom.ts",
   "src/shared/ui/legacy-style.ts",
   "src/shared/analytics.ts",
-  "src/shared/ui/icons.ts",
-  "src/shared/ui/popover.ts",
-  "src/shared/ui/display.ts",
   "src/shared/ui/loading.ts",
-  "src/shared/ui/switch.ts",
   "src/shared/ui/language.ts",
 ];
 
@@ -150,7 +145,6 @@ export const menuModulePaths = [
   "src/menu/model/favorites.ts",
   "src/menu/model/data.ts",
   "src/menu/runtime.ts",
-  "src/menu/ui/dialog-view.ts",
   "src/menu/ui/dialog-controller.ts",
   "src/menu/ui/overlays.ts",
   "src/menu/ui/favorites.ts",
@@ -170,7 +164,6 @@ export const loginModulePaths = [
   "src/login/ui/support.ts",
   "src/login/ui/tabs.ts",
   "src/login/auth/validation.ts",
-  "src/login/ui/field-view.ts",
   "src/login/ui/form-adapter.ts",
   "src/login/ui/fields.ts",
   "src/login/ui/password.ts",

@@ -10,13 +10,7 @@ test("switches labels without changing form values and reapplies after a body re
     "beforeend",
     '<a href="20141023_Manual.pdf">Manual</a><div><a href="https://goo.gl/example">Slides</a></div><div id="divContact">\u64CD\u4F5C\u554F\u984C\u8ACB\u5148\u6D3D\u5DE5\u4F5C\u55AE\u4F4D\u5F8C\u6D3D\u4EBA\u4E8B\u5BA4</div>',
   );
-  loadModules(window, [
-    "src/shared/ui/renderer.ts",
-    "src/shared/ui/controller.ts",
-    "src/shared/ui/icons.ts",
-    "src/shared/ui/popover.ts",
-    "src/work-log/locale.ts",
-  ]);
+  loadModules(window, [".build/design/ui.js", "src/work-log/locale.ts"]);
   doc.dispatchEvent(new Event("DOMContentLoaded"));
   const toggle = requireValue(doc.querySelector<HTMLInputElement>('[role="switch"]') ?? undefined);
   expect(toggle.getAttribute("aria-checked")).toBe("false");

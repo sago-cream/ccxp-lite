@@ -35,6 +35,12 @@ jobs:
       - name: Build extensions
         run: bun run build
 
+      - name: Build component catalog
+        run: bun run storybook:build
+
+      - name: Check component catalog in Chromium
+        run: bun run test:design
+
   browser-parity:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest

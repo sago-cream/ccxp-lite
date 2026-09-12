@@ -3,6 +3,7 @@ node_modules/
 fixtures/ccxp-snapshot/
 dist/
 .build/
+storybook-static/
 .husky/_/
 .vscode/*
 !.vscode/extensions.json

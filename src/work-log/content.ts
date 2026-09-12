@@ -37,10 +37,9 @@
   });
   document.documentElement.append(script);
   for (const path of [
+    "shared/design-tokens.js",
     "shared/constants.js",
-    "shared/ui/renderer.js",
-    "shared/ui/buttons.js",
-    "menu/ui/dialog-view.js",
+    "shared/ui/library.js",
     "work-log/batch.js",
   ]) {
     const dependency = document.createElement("script");

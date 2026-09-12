@@ -1,6 +1,10 @@
 {
   "extends": "./tsconfig.base.json",
   "files": [],
-  "references": [{ "path": "./tsconfig.tools.json" }, { "path": "./tsconfig.src.json" }],
+  "references": [
+    { "path": "./tsconfig.tools.json" },
+    { "path": "./tsconfig.src.json" },
+    { "path": "./tsconfig.design.json" }
+  ],
   "exclude": ["dist", "node_modules", ".playwright-cli", "fixtures/ccxp-snapshot"]
 }

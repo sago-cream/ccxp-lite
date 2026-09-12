@@ -1,14 +1,18 @@
 # DOM UI architecture
 
 The extension uses three layers so legacy-page knowledge does not leak into reusable markup.
+The reusable implementations live in the private `@ccxp-lite/ui` workspace. See
+[design guidelines](../../../docs/design/guidelines.md) and
+[composition recipes](../../../docs/design/recipes.md).
+
 Every layer accepts the owning `Document`, allowing the same code to work in the login document,
 navigation frame, main frame, or top document while preserving node identity and event ownership.
 
-1. **Renderers** create extension-owned DOM. `shared/ui/renderer.ts` binds element creation to one
+1. **Renderers** create extension-owned DOM. `packages/ui/src/renderer.ts` binds element creation to one
    document; surface views describe markup with that renderer.
 2. **Adapters** inspect and mutate host-owned DOM. They normalize CCXP tables, move original form
    controls and language links, preserve host handlers, and resolve legacy navigation targets.
-3. **Controllers** own stateful behavior and cleanup. `shared/ui/controller.ts` groups listeners
+3. **Controllers** own stateful behavior and cleanup. `packages/ui/src/controller.ts` groups listeners
    and other cleanup behind one `destroy()` call; sidebar rerenders and dialogs use it directly.
 
 Renderers never query the host page. Adapters never hide host discovery inside generic element
@@ -17,35 +21,35 @@ window listener lifetimes.
 
 ## Where patterns live
 
-| Pattern                                                              | Module                                                   |
-| -------------------------------------------------------------------- | -------------------------------------------------------- |
-| Document-bound elements, fragments, attributes, data, and CSS values | `shared/ui/renderer.ts`                                  |
-| Listener and resource lifecycle                                      | `shared/ui/controller.ts`                                |
-| Buttons, icon-button construction, dialog button variants            | `shared/ui/buttons.ts`                                   |
-| Status switch presentation                                           | `shared/ui/switch.ts`                                    |
-| Existing language links and their container                          | `shared/ui/language.ts`                                  |
-| Help popover interaction                                             | `shared/ui/popover.ts`                                   |
-| Icons and their existing visual variants                             | `shared/ui/icons.ts`                                     |
-| Search field, labels, headings, breadcrumbs, empty states, skeletons | `shared/ui/display.ts`                                   |
-| Initial loading curtain                                              | `shared/ui/loading.ts`                                   |
-| Legacy inline-style adaptation and theme preparation                 | `shared/ui/legacy-style.ts`                              |
-| Brand lockups and partner link                                       | `shared/brand.ts`                                        |
-| Form fields, labels, account/password accessories                    | `login/ui/fields.ts`                                     |
-| Host login-form recognition and node migration                       | `login/ui/form-adapter.ts`                               |
-| Extension-owned login field markup                                   | `login/ui/field-view.ts`                                 |
-| Password visibility and legacy eye-icon cleanup                      | `login/ui/password.ts`                                   |
-| Submit actions, captcha audio, legacy image-button adaptation        | `login/ui/actions.ts`                                    |
-| Support links and header utilities                                   | `login/ui/links.ts`                                      |
-| Announcement entries and headings                                    | `login/ui/notices.ts`                                    |
-| Extension-owned announcement markup                                  | `login/ui/notice-view.ts`                                |
-| Account-guide content and examples                                   | `login/ui/tabs.ts`                                       |
-| Tree/disclosure rows, navigation cards, category blocks              | `menu/ui/navigation.ts`                                  |
-| Classic navigation view-model adaptation                             | `menu/ui/navigation-adapter.ts`                          |
-| Link and block favorite controls                                     | `menu/ui/favorites.ts`                                   |
-| Confirmation dialog, floating mounts, sidebar-mode changes           | `menu/ui/overlays.ts`                                    |
-| Confirmation dialog markup and lifecycle                             | `menu/ui/dialog-view.ts`, `menu/ui/dialog-controller.ts` |
-| Destination loading/error/retry/open/back behavior                   | `menu/ui/destination.ts`                                 |
-| Sidebar view composition and rerender lifecycle                      | `menu/ui/views.ts`, `menu/ui/controller.ts`              |
+| Pattern                                                              | Module                                                      |
+| -------------------------------------------------------------------- | ----------------------------------------------------------- |
+| Document-bound elements, fragments, attributes, data, and CSS values | `packages/ui/src/renderer.ts`                               |
+| Listener and resource lifecycle                                      | `packages/ui/src/controller.ts`                             |
+| Buttons, icon-button construction, dialog button variants            | `packages/ui/src/buttons.ts`                                |
+| Status switch presentation                                           | `packages/ui/src/switch.ts`                                 |
+| Existing language links and their container                          | `shared/ui/language.ts`                                     |
+| Help popover interaction                                             | `packages/ui/src/popover.ts`                                |
+| Icons and their existing visual variants                             | `packages/ui/src/icons.ts`                                  |
+| Search field, labels, headings, breadcrumbs, empty states, skeletons | `packages/ui/src/display.ts`                                |
+| Initial loading curtain                                              | `shared/ui/loading.ts`                                      |
+| Legacy inline-style adaptation and theme preparation                 | `shared/ui/legacy-style.ts`                                 |
+| Brand lockups and partner link                                       | `shared/brand.ts`                                           |
+| Form fields, labels, account/password accessories                    | `login/ui/fields.ts`                                        |
+| Host login-form recognition and node migration                       | `login/ui/form-adapter.ts`                                  |
+| Extension-owned login field markup                                   | `packages/ui/src/fields.ts`                                 |
+| Password visibility and legacy eye-icon cleanup                      | `login/ui/password.ts`                                      |
+| Submit actions, captcha audio, legacy image-button adaptation        | `login/ui/actions.ts`                                       |
+| Support links and header utilities                                   | `login/ui/links.ts`                                         |
+| Announcement entries and headings                                    | `login/ui/notices.ts`                                       |
+| Extension-owned announcement markup                                  | `login/ui/notice-view.ts`                                   |
+| Account-guide content and examples                                   | `login/ui/tabs.ts`                                          |
+| Tree/disclosure rows, navigation cards, category blocks              | `menu/ui/navigation.ts`                                     |
+| Classic navigation view-model adaptation                             | `menu/ui/navigation-adapter.ts`                             |
+| Link and block favorite controls                                     | `menu/ui/favorites.ts`                                      |
+| Confirmation dialog, floating mounts, sidebar-mode changes           | `menu/ui/overlays.ts`                                       |
+| Confirmation dialog markup and lifecycle                             | `packages/ui/src/dialog.ts`, `menu/ui/dialog-controller.ts` |
+| Destination loading/error/retry/open/back behavior                   | `menu/ui/destination.ts`                                    |
+| Sidebar view composition and rerender lifecycle                      | `menu/ui/views.ts`, `menu/ui/controller.ts`                 |
 
 `login/ui/login.ts`, `login/ui/support.ts`, and `menu/ui/controller.ts` retain the existing public
 surface interfaces. Interface types for the extracted modules are in `shared/ui/types.d.ts`.
@@ -53,6 +57,8 @@ surface interfaces. Interface types for the extracted modules are in `shared/ui/
 ## Reusing a control
 
 ```ts
+import { createRenderer } from "@ccxp-lite/ui";
+
 const dom = createRenderer(targetDocument);
 const save = dom.element("button", { className: existingButtonClass }, [
   dom.element("span", { className: labelClass, text: strings.save }),
@@ -88,6 +94,10 @@ For host-owned controls, preserve node identity whenever the existing implementa
 Language links and form fields are moved rather than cloned. Submit/image and utility-link
 adapters retain the existing attribute-copying rules and exceptions. Do not introduce a broad
 DOM replacement pass or change event propagation while extending a shared control.
+
+The build bundles `scripts/design-ui-entry.ts` into `shared/ui/library.js` and keeps the existing
+namespace contracts. ESM imports are for package and catalog code; unbundled extension adapters
+use the namespace. Shared popover CSS is also copied from the package by the build.
 
 The content-script order in `manifest.base.json` is part of the module contract. Add shared
 modules before their consumers, and keep the module lists in `test/helpers/module-loader.ts`

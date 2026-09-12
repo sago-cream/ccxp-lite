@@ -4,10 +4,9 @@ import ts from "typescript";
 import { expect, test } from "vitest";
 
 const source = [
+  ".build/design/tokens.js",
   "src/shared/constants.ts",
-  "src/shared/ui/renderer.ts",
-  "src/shared/ui/buttons.ts",
-  "src/menu/ui/dialog-view.ts",
+  ".build/design/ui.js",
   "src/work-log/batch.ts",
 ]
   .map(

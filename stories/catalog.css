@@ -1,0 +1,82 @@
+/* Catalog layout only. Component appearance comes from production styles. */
+body {
+  color: var(--ccxp-lite-text);
+  background: var(--ccxp-lite-bg);
+  font: var(--ccxp-lite-type-body);
+}
+
+.ds-surface,
+.ds-surface * {
+  box-sizing: border-box;
+}
+
+.ds-surface {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--ccxp-lite-spacing-lg);
+  width: 100%;
+  max-width: var(--ccxp-lite-landing-max-width);
+  margin-inline: auto;
+  padding: var(--ccxp-lite-spacing-lg);
+  font: var(--ccxp-lite-type-body);
+}
+
+.ds-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--ccxp-lite-spacing-inset-sm);
+}
+
+.ds-caption {
+  margin: 0;
+  color: var(--ccxp-lite-text-muted);
+  font: var(--ccxp-lite-type-body-muted);
+}
+
+.ds-token-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: var(--ccxp-lite-spacing-md);
+}
+
+.ds-token {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ccxp-lite-spacing-inline-sm);
+  min-width: 0;
+  padding: var(--ccxp-lite-spacing-md);
+  border: 1px solid var(--ccxp-lite-border);
+  border-radius: var(--ccxp-lite-radius-sm);
+}
+
+.ds-token code {
+  overflow-wrap: anywhere;
+  font-size: var(--ccxp-lite-font-size-utility);
+}
+
+.ds-swatch {
+  height: var(--ccxp-lite-size-control-height-md);
+  border: 1px solid var(--ccxp-lite-border);
+  border-radius: var(--ccxp-lite-radius-xs);
+}
+
+.ds-space-sample {
+  height: var(--ccxp-lite-spacing-md);
+  background: var(--ccxp-lite-primary);
+}
+
+.ds-popover-example {
+  min-height: 240px;
+}
+
+.ds-state-preview {
+  max-width: var(--ccxp-lite-dialog-width);
+}
+
+/* Bound live docs examples like the standalone canvases, including fixed dialog overlays. */
+.ds-docs-canvas .sb-story {
+  height: 420px;
+  overflow: auto;
+}

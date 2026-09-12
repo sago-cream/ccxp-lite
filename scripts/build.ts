@@ -128,18 +128,23 @@ function shouldCopyFirefoxSourceArchivePath(sourcePath: string, isDirectory: boo
   const normalizedPath = relativePath.split(path.sep).join("/");
   const ext = path.extname(sourcePath).toLowerCase();
   const allowedRootFiles = new Set([
+    ".prettierrc.json",
     "bun.lock",
     "LICENSE",
     "package.json",
     "README.md",
     "THIRD_PARTY_NOTICES",
     "tsconfig.base.json",
+    "tsconfig.design.json",
     "tsconfig.json",
     "tsconfig.src.json",
     "tsconfig.tools.json",
   ]);
   const allowedScriptFiles = new Set([
+    "scripts/build-design-system.mts",
     "scripts/build.ts",
+    "scripts/design-tokens-entry.ts",
+    "scripts/design-ui-entry.ts",
     "scripts/export_decaptcha_model.py",
     "scripts/export_oauth_decaptcha_model.py",
     "scripts/release.ts",
@@ -152,11 +157,18 @@ function shouldCopyFirefoxSourceArchivePath(sourcePath: string, isDirectory: boo
       normalizedPath === "src" ||
       (normalizedPath.startsWith("src/") && normalizedPath !== "src/assets") ||
       normalizedPath === "scripts" ||
-      normalizedPath.startsWith("scripts/")
+      normalizedPath.startsWith("scripts/") ||
+      normalizedPath === "packages" ||
+      (normalizedPath.startsWith("packages/") &&
+        !normalizedPath.split("/").includes("node_modules"))
     );
   }
 
   if (allowedRootFiles.has(relativePath)) {
+    return true;
+  }
+
+  if (normalizedPath.startsWith("packages/")) {
     return true;
   }
 
@@ -189,6 +201,13 @@ function writeManifest(outputPath: string) {
 }
 
 try {
+  const designBuild = spawnSync("bun", ["run", "scripts/build-design-system.mts"], {
+    cwd: projectRoot,
+    stdio: "inherit",
+  });
+  if (designBuild.status !== 0) {
+    throw new Error("Design system build failed");
+  }
   mkdirSync(distRoot, { recursive: true });
   mkdirSync(distDir, { recursive: true });
   mkdirSync(unpackedDir, { recursive: true });
@@ -284,6 +303,22 @@ try {
 
   copyTree(srcDir, stagingDir, shouldCopySourcePath);
   copyTree(srcDir, unpackedDir, shouldCopySourcePath);
+  for (const directory of [stagingDir, unpackedDir]) {
+    const uiDirectory = path.join(directory, "shared/ui");
+    mkdirSync(uiDirectory, { recursive: true });
+    copyFileSync(
+      path.join(projectRoot, ".build/design/ui.js"),
+      path.join(uiDirectory, "library.js"),
+    );
+    copyFileSync(
+      path.join(projectRoot, ".build/design/tokens.js"),
+      path.join(directory, "shared/design-tokens.js"),
+    );
+    copyFileSync(
+      path.join(projectRoot, "packages/ui/styles/popover.css"),
+      path.join(uiDirectory, "popover.css"),
+    );
+  }
   copyTree(
     compiledSrcDir,
     stagingDir,

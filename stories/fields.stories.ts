@@ -1,0 +1,64 @@
+import type { Meta, StoryObj } from "@storybook/html-vite";
+import { createFieldRow, createRenderer, mountInfoPopover } from "@ccxp-lite/ui";
+import { localized, surface, withCleanup } from "./helpers.js";
+
+interface Args {
+  disabled: boolean;
+  help: boolean;
+}
+const meta = {
+  title: "Components/Form field",
+  args: { disabled: false, help: false },
+  render: (args, context) => {
+    const dom = createRenderer(document);
+    const fieldId = `${context.id}-account`;
+    const mounted = args.help
+      ? mountInfoPopover(
+          document,
+          localized(
+            context.globals.locale,
+            "請輸入您的學號或帳號。",
+            "Enter your student ID or account.",
+          ),
+          localized(context.globals.locale, "帳號格式", "Account format"),
+        )
+      : undefined;
+    const row = createFieldRow(document, {
+      fieldId,
+      columnCount: 1,
+      labelText: localized(context.globals.locale, "帳號", "Account"),
+      accessory: mounted?.element,
+    });
+    const input = dom.element("input", {
+      attributes: { id: fieldId, type: "text", autocomplete: "username" },
+    });
+    input.disabled = args.disabled;
+    row.controlSlot.append(input);
+    const form = dom.element("form", { className: "ccxp-lite-login-form" }, [
+      dom.element("table", { className: "ccxp-lite-login-form-table" }, [
+        dom.element("tbody", {}, [row.element]),
+      ]),
+    ]);
+    const root = surface(dom.element("section", { className: "ccxp-lite-landing-login" }, [form]));
+    return withCleanup(root, () => mounted?.destroy());
+  },
+  parameters: {
+    i18n: {
+      description: {
+        component:
+          "渲染器負責標籤與控制項插槽。在 CCXP 中，表單適配器會將原始輸入框搬入插槽，保留其身分、名稱、值與事件處理函式。",
+      },
+    },
+    docs: {
+      description: {
+        component:
+          "The renderer owns the label and control slot. In CCXP, the form adapter moves the original input into that slot to preserve its identity, name, value, and handlers.",
+      },
+    },
+  },
+} satisfies Meta<Args>;
+export default meta;
+type Story = StoryObj<Args>;
+export const Account: Story = {};
+export const WithHelp: Story = { args: { help: true } };
+export const Disabled: Story = { args: { disabled: true } };
