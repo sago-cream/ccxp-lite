@@ -58,7 +58,7 @@
     "complete-lint": "^5.1.5",
     "eslint": "^9.25.1",
     "eslint-config-complete": "^4.1.4",
-    "happy-dom": "^18.0.1",
+    "happy-dom": "^20.8.9",
     "husky": "^9.1.7",
     "lint-staged": "^15.5.0",
     "pixelmatch": "^7.2.0",

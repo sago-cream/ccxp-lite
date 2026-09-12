@@ -1,3 +1,4 @@
+import { TestEvent } from "../helpers/dom-event.js";
 import { describe, expect, test } from "vitest";
 
 import { createSidebarShellHtml } from "../helpers/menu-fixtures.js";
@@ -104,7 +105,7 @@ describe("sidebar ui", () => {
       blockRow.querySelector(".ccxp-lite-favorite-toggle-block"),
       "Expected block favorite toggle",
     );
-    const clickEvent = new Event("click", { bubbles: true });
+    const clickEvent = new TestEvent("click", { bubbles: true });
     favoriteToggle.dispatchEvent(clickEvent);
 
     expect(sidebarFavorites.isFavoriteBlock(model.categories[0]?.blocks[0])).toBe(true);

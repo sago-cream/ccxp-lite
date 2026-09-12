@@ -1,3 +1,4 @@
+import { TestEvent } from "../helpers/dom-event.js";
 import { expect, test, vi } from "vitest";
 import { createTestWindow, loadModules, requireElement } from "../helpers/module-loader.js";
 
@@ -37,7 +38,7 @@ test("ignores the transport's initial blank load and prevents duplicate submissi
   const form = requireElement(doc.querySelector<HTMLFormElement>("form"));
   scope.toSubmit(form, "ins");
   const frame = requireElement(doc.querySelector<HTMLIFrameElement>("iframe"));
-  frame.dispatchEvent(new Event("load"));
+  frame.dispatchEvent(new TestEvent("load"));
   expect(doc.querySelector("form")).toBe(form);
   scope.toSubmit(form, "ins");
   expect(original).toHaveBeenCalledTimes(1);

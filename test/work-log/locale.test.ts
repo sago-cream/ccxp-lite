@@ -1,3 +1,4 @@
+import { TestEvent } from "../helpers/dom-event.js";
 import { expect, test } from "vitest";
 import { createTestWindow, loadModules, requireValue } from "../helpers/module-loader.js";
 
@@ -11,7 +12,7 @@ test("switches labels without changing form values and reapplies after a body re
     '<a href="20141023_Manual.pdf">Manual</a><div><a href="https://goo.gl/example">Slides</a></div><div id="divContact">\u64CD\u4F5C\u554F\u984C\u8ACB\u5148\u6D3D\u5DE5\u4F5C\u55AE\u4F4D\u5F8C\u6D3D\u4EBA\u4E8B\u5BA4</div>',
   );
   loadModules(window, [".build/design/ui.js", "src/work-log/locale.ts"]);
-  doc.dispatchEvent(new Event("DOMContentLoaded"));
+  doc.dispatchEvent(new TestEvent("DOMContentLoaded"));
   const toggle = requireValue(doc.querySelector<HTMLInputElement>('[role="switch"]') ?? undefined);
   expect(toggle.getAttribute("aria-checked")).toBe("false");
   expect(requireValue(doc.querySelector("form label") ?? undefined).textContent).toBe(
@@ -76,7 +77,7 @@ test("search reload opens returned records and preserves native submit values", 
   const first = createTestWindow(fixture).window;
   const doc = first.document as unknown as Document;
   loadModules(first, ["src/work-log/locale.ts"]);
-  doc.dispatchEvent(new Event("DOMContentLoaded"));
+  doc.dispatchEvent(new TestEvent("DOMContentLoaded"));
   requireValue(doc.querySelector<HTMLInputElement>('[role="switch"]') ?? undefined).click();
   const button = requireValue(
     doc.querySelector<HTMLInputElement>('[name="S_SUBMIT"]') ?? undefined,
@@ -84,7 +85,7 @@ test("search reload opens returned records and preserves native submit values", 
   let submittedValue = "";
   button.addEventListener("click", () => {
     submittedValue = button.value;
-    first.dispatchEvent(new Event("pagehide"));
+    first.dispatchEvent(new TestEvent("pagehide"));
   });
   button.click();
   expect(submittedValue).toBe("\u67E5\u8A62(Search)");
@@ -95,7 +96,7 @@ test("search reload opens returned records and preserves native submit values", 
   }
   const nextDoc = second.document as unknown as Document;
   loadModules(second, ["src/work-log/locale.ts"]);
-  nextDoc.dispatchEvent(new Event("DOMContentLoaded"));
+  nextDoc.dispatchEvent(new TestEvent("DOMContentLoaded"));
   expect(nextDoc.documentElement.dataset.ccxpLiteWorkLogSection).toBe("search");
   expect(nextDoc.documentElement.dataset.ccxpLiteWorkLogLanguage).toBe("en");
   expect(nextDoc.querySelector("#listForm")?.textContent).toBe("Returned record");
@@ -111,7 +112,7 @@ test("labels both working-department controls in each language", async () => {
   );
   const doc = window.document as unknown as Document;
   loadModules(window, ["src/work-log/locale.ts"]);
-  doc.dispatchEvent(new Event("DOMContentLoaded"));
+  doc.dispatchEvent(new TestEvent("DOMContentLoaded"));
   const cells = doc.querySelectorAll<HTMLElement>(".ccxp-lite-work-log-department-controls");
   expect(cells).toHaveLength(2);
   for (const cell of cells) {
@@ -135,7 +136,7 @@ test("maps approval checkboxes to the native search field", async () => {
   );
   const doc = window.document as unknown as Document;
   loadModules(window, ["src/work-log/locale.ts"]);
-  doc.dispatchEvent(new Event("DOMContentLoaded"));
+  doc.dispatchEvent(new TestEvent("DOMContentLoaded"));
   const native = requireValue(
     doc.querySelector<HTMLSelectElement>('select[name="Q_PASS_MARK"]') ?? undefined,
   );
@@ -174,7 +175,7 @@ test("translates native date control names", async () => {
   );
   const doc = window.document as unknown as Document;
   loadModules(window, ["src/work-log/locale.ts"]);
-  doc.dispatchEvent(new Event("DOMContentLoaded"));
+  doc.dispatchEvent(new TestEvent("DOMContentLoaded"));
   const date = requireValue(
     doc.querySelector<HTMLInputElement>(".ccxp-lite-native-date") ?? undefined,
   );
@@ -228,7 +229,7 @@ test("groups populated records and preserves controls in expandable details", as
     edits++;
   });
   loadModules(window, ["src/work-log/locale.ts"]);
-  doc.dispatchEvent(new Event("DOMContentLoaded"));
+  doc.dispatchEvent(new TestEvent("DOMContentLoaded"));
   const table = requireValue(doc.querySelector("table") ?? undefined);
   expect(table.rows[0].cells.length).toBe(5);
   expect(table.rows[1].cells.length).toBe(5);
@@ -271,7 +272,7 @@ test("supports results-only pages with merged total cells", async () => {
   );
   const doc = window.document as unknown as Document;
   loadModules(window, ["src/work-log/locale.ts"]);
-  doc.dispatchEvent(new Event("DOMContentLoaded"));
+  doc.dispatchEvent(new TestEvent("DOMContentLoaded"));
   const table = requireValue(doc.querySelector("table") ?? undefined);
   expect(table.rows[0].cells.length).toBe(5);
   expect(table.rows[1].cells[0].colSpan).toBe(5);
@@ -289,14 +290,14 @@ test("keeps transport responses raw and binds controls after importing them", as
   response.name = "ccxp-lite-pe14d-transport";
   const responseDoc = response.document as unknown as Document;
   loadModules(response, ["src/work-log/locale.ts", "src/work-log/content.ts"]);
-  responseDoc.dispatchEvent(new Event("DOMContentLoaded"));
+  responseDoc.dispatchEvent(new TestEvent("DOMContentLoaded"));
   expect(responseDoc.querySelector("nav")).toBeNull();
   expect(responseDoc.querySelector("script")).toBeNull();
   expect(responseDoc.querySelector("#ccxp-lite-work-log-sections")).toBeNull();
   const visible = createTestWindow(fixture).window;
   const doc = visible.document as unknown as Document;
   loadModules(visible, ["src/work-log/locale.ts"]);
-  doc.dispatchEvent(new Event("DOMContentLoaded"));
+  doc.dispatchEvent(new TestEvent("DOMContentLoaded"));
   doc.body.replaceWith(doc.importNode(responseDoc.body, true));
   await visible.happyDOM.waitUntilComplete();
   const language = requireValue(

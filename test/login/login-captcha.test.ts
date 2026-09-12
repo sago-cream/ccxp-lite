@@ -1,3 +1,4 @@
+import { TestEvent } from "../helpers/dom-event.js";
 import { describe, expect, test, vi } from "vitest";
 
 import {
@@ -118,7 +119,7 @@ describe("login captcha", () => {
     });
     loginCaptcha.enableCaptchaAutofill(document, document);
     setTimeout(() => {
-      image.dispatchEvent(new Event("error"));
+      image.dispatchEvent(new TestEvent("error"));
     }, 0);
     await flushPromises();
     await flushPromises();

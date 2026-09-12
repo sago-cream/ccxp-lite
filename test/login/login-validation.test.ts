@@ -1,3 +1,4 @@
+import { TestEvent } from "../helpers/dom-event.js";
 import { describe, expect, test, vi } from "vitest";
 import {
   createTestWindow,
@@ -41,7 +42,7 @@ describe("login validation", () => {
       document.querySelector<HTMLInputElement>("input[name='account']"),
       "account input",
     );
-    account.dispatchEvent(new Event("click"));
+    account.dispatchEvent(new TestEvent("click"));
     expect(reloadSpy).toHaveBeenCalled();
   });
   test("keeps fnstr in sync with the captcha image on submit and extracts with regex fallback", () => {
