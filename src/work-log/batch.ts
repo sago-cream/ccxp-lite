@@ -385,6 +385,7 @@
     Object.assign(dates.style, {
       margin: "0",
       padding: "0",
+      marginTop: "-12px",
       listStyle: "none",
       overflowY: "auto",
       minHeight: "0",
