@@ -1,0 +1,8 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { LocalizedMarkdown } from "./docs.js";
+import recipes from "../docs/design/recipes.md?raw";
+import recipesZh from "../docs/design/recipes.zh-TW.md?raw";
+
+<Meta title="Start here/Composition recipes" />
+
+<LocalizedMarkdown zh={recipesZh} en={recipes} />

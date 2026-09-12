@@ -1,0 +1,20 @@
+{
+  "name": "@ccxp-lite/ui",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./styles.css": "./styles.css",
+    "./renderer": "./src/renderer.ts",
+    "./controller": "./src/controller.ts",
+    "./buttons": "./src/buttons.ts",
+    "./icons": "./src/icons.ts",
+    "./display": "./src/display.ts",
+    "./switch": "./src/switch.ts",
+    "./popover": "./src/popover.ts",
+    "./fields": "./src/fields.ts",
+    "./dialog": "./src/dialog.ts",
+    "./types": "./types.d.ts"
+  }
+}

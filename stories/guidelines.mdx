@@ -1,0 +1,8 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { LocalizedMarkdown } from "./docs.js";
+import guidelines from "../docs/design/guidelines.md?raw";
+import guidelinesZh from "../docs/design/guidelines.zh-TW.md?raw";
+
+<Meta title="Start here/Design guidelines" />
+
+<LocalizedMarkdown zh={guidelinesZh} en={guidelines} />

@@ -625,6 +625,10 @@ declare global {
 
   interface CcxpLiteNamespace {
     shared?: CcxpLiteShared;
+    designTokens?: {
+      tokens: Readonly<Record<string, string>>;
+      cssVariables: Readonly<Record<string, string>>;
+    };
     sharedConstants?: CcxpLiteSharedConstants;
     sharedLocale?: CcxpLiteSharedLocale;
     sharedDom?: CcxpLiteSharedDom;

@@ -17,3 +17,10 @@
 - Consult `test/browser-fixtures/coverage.json` for the exact affected page and state. A listed
   module is not blanket coverage: add a sanitized legacy capture and its host assets for uncovered
   states. Keep unavailable role/period/widget states explicitly listed as gaps.
+
+## Design system
+
+- Read [design guidelines](docs/design/guidelines.md) before changing shared UI or tokens.
+- Reuse the local `@ccxp-lite/tokens` and `@ccxp-lite/ui` workspaces. Keep host adapters in feature directories.
+- Edit token source, then run `bun run design:build`; do not hand-edit generated token CSS.
+- Update relevant Storybook examples with shared UI changes and preserve packaged browser parity.

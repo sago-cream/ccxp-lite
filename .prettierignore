@@ -1,4 +1,6 @@
 dist
+.build
+storybook-static
 node_modules
 .playwright-cli
 fixtures/ccxp-snapshot

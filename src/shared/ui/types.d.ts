@@ -1,45 +1,18 @@
+import type * as Ui from "@ccxp-lite/ui/types";
+
 // Shared UI interfaces. Host discovery and feature state remain in their adapters.
 export type CcxpLiteUiModuleMarker = never;
 
 declare global {
-  type CcxpLiteDomChild = Node | string | number | false | null | undefined;
+  type CcxpLiteDomChild = Ui.CcxpLiteDomChild;
 
-  interface CcxpLiteDomElementOptions {
-    className?: string;
-    text?: string;
-    attributes?: Readonly<Record<string, string | number | boolean | undefined>>;
-    data?: Readonly<Record<string, string | number | boolean | undefined>>;
-    styleProperties?: Readonly<Record<string, string | undefined>>;
-  }
+  type CcxpLiteDomElementOptions = Ui.CcxpLiteDomElementOptions;
 
-  interface CcxpLiteDomRenderer {
-    readonly document: Document;
-    append: <T extends ParentNode & Node>(parent: T, ...children: readonly CcxpLiteDomChild[]) => T;
-    element: <K extends keyof HTMLElementTagNameMap>(
-      tagName: K,
-      options?: CcxpLiteDomElementOptions,
-      children?: readonly CcxpLiteDomChild[],
-    ) => HTMLElementTagNameMap[K];
-    fragment: (...children: readonly CcxpLiteDomChild[]) => DocumentFragment;
-  }
+  type CcxpLiteDomRenderer = Ui.CcxpLiteDomRenderer;
 
-  interface CcxpLiteUiController {
-    readonly signal: AbortSignal;
-    readonly destroyed: boolean;
-    listen: (
-      target: EventTarget,
-      type: string,
-      listener: EventListenerOrEventListenerObject,
-      options?: AddEventListenerOptions | boolean,
-    ) => void;
-    addCleanup: (cleanup: () => void) => void;
-    destroy: () => void;
-  }
+  type CcxpLiteUiController = Ui.CcxpLiteUiController;
 
-  interface CcxpLiteMounted<T extends Node> {
-    readonly element: T;
-    destroy: () => void;
-  }
+  type CcxpLiteMounted<T extends Node> = Ui.CcxpLiteMounted<T>;
 
   interface CcxpLiteLegacyLoginField {
     readonly fieldNode: Element;
@@ -47,10 +20,7 @@ declare global {
     readonly labelText: string;
   }
 
-  interface CcxpLiteLoginFieldRowView {
-    readonly element: HTMLTableRowElement;
-    readonly controlSlot: HTMLDivElement;
-  }
+  type CcxpLiteLoginFieldRowView = Ui.CcxpLiteLoginFieldRowView;
 
   interface CcxpLiteLoginFormRenderOptions {
     resolveLabel: (field: CcxpLiteLegacyLoginField, targetDocument: Document) => string;
@@ -66,12 +36,7 @@ declare global {
     readonly createAccessory: () => Node | undefined;
   }
 
-  interface CcxpLiteRemovePinnedDialogView {
-    readonly overlay: HTMLDivElement;
-    readonly dialog: HTMLDivElement;
-    readonly keepButton: HTMLElement;
-    readonly confirmButton: HTMLElement;
-  }
+  type CcxpLiteRemovePinnedDialogView = Ui.CcxpLiteRemovePinnedDialogView;
 
   interface CcxpLiteClassicSidebarViewModel {
     readonly items: readonly CcxpLiteSidebarCategoryNode[];

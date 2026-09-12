@@ -45,3 +45,13 @@ Rebuild after changing TypeScript. Test the affected CCXP pages with your own ac
 AI-assisted contributions are welcome, but write the pull request description in your own words, and review, understand, test, and take responsibility for every submitted line. Remove generated placeholders, irrelevant commentary, and unrelated changes before opening the pull request. Be prepared to explain your changes and respond to review feedback.
 
 By contributing, you agree that your contribution will be licensed under the [MIT License](LICENSE) and that you will follow our [Code of Conduct](CODE_OF_CONDUCT.md).
+
+## Shared design work
+
+Read the [design guidelines](docs/design/guidelines.md) and [recipes](docs/design/recipes.md).
+Use `bun run storybook` to inspect production components locally. Shared UI changes should update
+relevant stories and pass `bun run storybook:build` plus `bun run test:design`, in addition to the
+existing extension checks. Both design workspaces are private and release with this repository.
+
+Current accessibility follow-ups: purple/focus contrast, disabled button styling, reduced-motion
+support for skeletons, and focus containment in the remove-pinned dialog.
