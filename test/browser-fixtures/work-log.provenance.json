@@ -1,0 +1,28 @@
+{
+  "sourcePath": "/ccxp/INQUIRE/PE/1/14D/PE14D1.php",
+  "inspectedAt": "2026-09-12",
+  "sourceState": "Authenticated student, add form, no task for selected date, extension disabled",
+  "preserved": [
+    "center and insTask/queTask wrappers",
+    "datatable4 and initialized jQuery UI classes",
+    "bilingual labels and help",
+    "host inline CSS",
+    "PE2.css and jQuery UI CSS with referenced images",
+    "native date/time controls",
+    "main-frame embedding"
+  ],
+  "sanitized": [
+    "session parameters and hidden values",
+    "saved work note and selected department",
+    "department options reduced to placeholder and EI07",
+    "date/time frozen to 2026-09-10 08:00-10:00",
+    "empty task replaced by one explicitly synthetic task",
+    "original scripts and event handlers replaced with offline submit shim"
+  ],
+  "limitations": [
+    "No live task record was captured",
+    "Backend responses are simulated",
+    "Navigation is the captured student role; other roles remain unverified",
+    "One desktop viewport and student role"
+  ]
+}
