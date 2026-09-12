@@ -36,10 +36,19 @@
     }
   });
   document.documentElement.append(script);
-  const batchScript = document.createElement("script");
-  batchScript.src = runtimeApi.getURL("work-log/batch.js");
-  batchScript.addEventListener("load", () => {
-    batchScript.remove();
-  });
-  document.documentElement.append(batchScript);
+  for (const path of [
+    "shared/constants.js",
+    "shared/ui/renderer.js",
+    "shared/ui/buttons.js",
+    "menu/ui/dialog-view.js",
+    "work-log/batch.js",
+  ]) {
+    const dependency = document.createElement("script");
+    dependency.src = runtimeApi.getURL(path);
+    dependency.async = false;
+    dependency.addEventListener("load", () => {
+      dependency.remove();
+    });
+    document.documentElement.append(dependency);
+  }
 })();

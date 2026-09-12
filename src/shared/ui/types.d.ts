@@ -142,6 +142,7 @@ declare global {
         targetDocument: Document,
         itemName: string,
         strings: Readonly<Record<string, string>>,
+        variant?: "secondary" | "danger" | "primary",
       ) => CcxpLiteRemovePinnedDialogView;
     };
     sidebarDialogController?: {
@@ -223,7 +224,7 @@ declare global {
       createDialogActionButton: (
         targetDocument: Document,
         label: string,
-        variant: "secondary" | "danger",
+        variant: "secondary" | "danger" | "primary",
       ) => HTMLElement;
     };
     uiPopover?: {
