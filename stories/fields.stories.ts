@@ -30,6 +30,7 @@ const meta = {
       accessory: mounted?.element,
     });
     const input = dom.element("input", {
+      className: "inputtext",
       attributes: { id: fieldId, type: "text", autocomplete: "username" },
     });
     input.disabled = args.disabled;
