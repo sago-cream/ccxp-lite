@@ -1,76 +1,65 @@
-# Browser parity fixtures
+# Legacy browser fixtures
 
-These pages are sanitized, deterministic stand-ins for the CCXP login, frameset navigation, and
-standalone inquiry surfaces. They contain no live user or university data. The login fixture is
-derived from the live, logged-out CCXP DOM captured in a browser with CCXP Lite disabled; dynamic
-CAPTCHA values, media, announcements, and account-related content are replaced with inert examples.
+Use the actual legacy page structure and host assets for every affected visual surface. Two builds
+matching the same simplified mock does not prove fidelity to the live site.
 
-Authenticated fixtures were inspected through computer use on 2026-09-11 with CCXP Lite disabled:
-`frameset.html` preserves the live 130px/200px frame layout and route casing; `top.html` preserves
-the header tables with the idle timer frozen and its polling scripts removed; `main.html` is a
-trimmed `xp03_m.htm` service-announcement table with neutral text. `navigation.html` retains a
-focused subset of the live tree declarations (evaluation and course categories), removes tracking
-handlers and personal session parameters, and makes the tree script inert for extension parsing.
-`standalone.html` captures the actual course-evaluation closed-period response; it does not cover
-the evaluation form available during an open period. For these original fixtures, media are not bundled and requests are blocked
-by the harness. The work-log fixture below additionally bundles its host styles and images. These are reduced DOM fixtures, not complete archived copies of the site.
+`coverage.json` is the page inventory: source route, owning extension modules, captured state,
+sanitization, and explicit gaps. These fixtures were inspected with ccxpLite disabled. Login,
+student navigation, header, main service announcements, assistant registration, and assistant
+history were recaptured on 2026-09-12 with their complete DOM. Registration retains initialized
+Kendo controls and the grid; history retains expanded effective items and its initialized grids.
+Staff identities, dropdown options, and every grid data cell are replaced by synthetic values.
+Host scripts and polling are removed; widget snapshots do not simulate live Kendo behavior.
 
-`bun run test:browser-parity` loads the packaged base and head extensions against the same pages in
-Chromium. It compares screenshots with a small anti-aliasing tolerance and compares selected
-computed styles and inline `!important` priorities exactly. Failed CI runs upload both revisions,
-pixel diffs, computed-style JSON, and a report.
+The student navigation retains the full tree declarations and rendered DOM rather than a selected
+category subset. Session parameters are removed/replaced. The frame shell retains the original
+130px header and 200px navigation dimensions. The extension applies its own layout at runtime.
+Host CSS, images, and fonts are bundled at their source routes through `host-assets.json`.
+Duplicate assets share one local file. No private source captures are committed.
 
-Behavior-preserving changes should pass without updating fixtures or expectations. An intentional
-visual change can be reviewed from the uploaded artifacts and acknowledged by a maintainer with the
-`accept-visual-change` pull-request label.
+## Coverage and limits
 
-The label acknowledges screenshot/style differences only; missing elements and failed interactions
-still fail CI. Artifacts are uploaded on every run for inspection. Use explicit paths when comparing
-different builds: `bun run test:browser-parity --base-extension /path/to/base --head-extension
-/path/to/head --output /path/to/new-output-directory`. Unknown flags and existing output directories
-are rejected. This focused suite is a starting gate for #29, not proof of parity on every CCXP page:
-host media/external stylesheets, active evaluation forms, additional roles, and responsive layouts
-still need coverage before a broad visual refactor can be considered fully validated.
+The packaged-extension harness captures ten states: login, assistant registration, assistant
+history, standalone closed evaluation, classic sidebar, layered search, embedded closed evaluation,
+standalone work log, framed multi-day work log, and post-Add work log. It fails on missing visual
+assets, missing readiness markers, and failed interactions before comparing screenshots and styles.
+Tests also reject truncated captures and check synthetic staff grid rows and CSS asset references.
 
-## Work-log fidelity and PR captures
+This is representative coverage, not every possible CCXP route or state. OAuth authorization,
+non-student roles, active evaluation forms, responsive breakpoints, staff record-detail/editing,
+live widget loading, and real work-log task/validation variants remain explicit gaps. A change
+in one of those states needs its own live-derived fixture and verification before its PR media
+can be considered representative. Do not use the existence of another fixture for the same module
+as evidence that the affected state is covered.
 
-The original #30 suite covered five states: login, standalone closed evaluation, classic sidebar,
-layered search, and an embedded closed evaluation page. It did not cover `PE14D1.php`, its host CSS,
-its add/search panels, or batch submission. Comparing two builds on the same reduced fixture cannot
-prove that either screenshot resembles the live site.
+## What #30 missed
 
-Earlier #32 recordings were produced separately from the minimal submission-test form, loading
-selected source modules and injecting theme/layout CSS. That omitted `locale.js`, main bootstrap,
-`#insTask`, `.datatable4`, host CSS, and the main-frame context. Passing submission tests and the
-unrelated #30 gate therefore did not validate those recordings.
+The original #30 suite covered five reduced states and no work-log page. It compared packaged
+builds, but blocked unbundled host media/styles and did not establish fixture-versus-live fidelity.
+Earlier #32 recordings additionally used the minimal submission-test form, injected source modules,
+and theme/layout overrides. That omitted the real work-log wrappers, locale/main bootstrap, host
+CSS, and frame context. Submission tests and the unrelated parity gate could both pass while the
+recordings looked unlike the real page.
 
-`work-log.html` is derived from the extension-disabled live DOM inspected on 2026-09-12. Its
-provenance file documents sanitization and remaining limitations. It retains the original host
-wrappers, labels, classes, inline CSS, and linked stylesheet/image assets. It freezes initialized
-controls and replaces host scripts with a deterministic offline submission shim. The inspected date
-had no eligible task; the one fixture task is synthetic, not a captured employment record.
+`work-log.html` preserves the live add/search form structure and styles. Its separate provenance
+file records the synthetic eligible task and offline response shim. No real submissions occur.
 
-The command bundles the harness with Bun and runs it under Node. Bun 1.3.9 left video teardown
-pending after Chromium exited during local captures; Node completes the same run.
+## Capture and review
 
-The packaged-extension suite now captures standalone work-log, framed multi-day entry, and the result
-of pressing Add. It checks main-skin, language/header, real form wrappers, styled field dimensions,
-and action controls before capture. No source modules, fake runtime/theme, or layout CSS are injected.
-Animation/caret stabilization remains permitted. The router never forwards fixture form submissions.
-
-For PR evidence, build the exact base and head revisions, then run:
+Build the exact base and head packages, then run:
 
 ```sh
 bun run test:browser-parity -- --base-extension /path/to/base/dist/crx/unpacked \
-  --head-extension /path/to/head/dist/crx/unpacked --work-log-only --record-video \
-  --output /tmp/new-work-log-comparison
+  --head-extension /path/to/head/dist/crx/unpacked --output /tmp/new-comparison
 ```
 
-An intentional dialog change will produce a visual difference; review it and use
-`ALLOW_VISUAL_CHANGE=true` only to acknowledge that difference. Each revision includes screenshots,
-video (when requested), readiness/style evidence, and a manifest with package/fixture content hashes.
-Use these artifacts for PR media. Preserve the actual base recording when updating the head.
+Add `--work-log-only --record-video` for a work-log interaction recording. The script bundles with
+Bun and executes under Node because Bun 1.3.9 hung during persistent-browser video teardown.
+The output includes screenshots, computed styles, package/fixture hashes, viewport and provenance.
+No extension modules, theme variables, or layout CSS are injected; only animation/caret stabilization
+is permitted. Unknown flags and existing output directories are rejected.
 
-This adds work-log coverage, not complete CCXP coverage. The navigation fixture is still a reduced
-category set, the backend is simulated, and other roles, responsive sizes, real task details,
-validation dialogs, and returned record variants require their own live-derived cases.
+An intentional visual change may be acknowledged with `ALLOW_VISUAL_CHANGE=true` locally or the
+`accept-visual-change` PR label in CI. This only permits pixel/style differences; missing assets,
+elements, and interactions still fail. CI uploads artifacts on every run. For PR updates, retain
+the recording from the actual base commit and replace the head recording after visual changes.

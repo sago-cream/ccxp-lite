@@ -1,0 +1,97 @@
+{
+  "inspectedAt": "2026-09-12",
+  "captureMode": "Original DOM with ccxpLite disabled; initialized host widgets frozen; scripts removed except inert navigation declarations and explicit offline work-log shim",
+  "sanitization": [
+    "Credentials, account and identity values cleared",
+    "Session URL parameters replaced or removed",
+    "All staff grid data cells replaced with synthetic records",
+    "Staff dropdown options replaced with synthetic options",
+    "No live form submissions or host polling"
+  ],
+  "pages": [
+    {
+      "file": "login.html",
+      "path": "/ccxp/INQUIRE/index.php",
+      "owners": ["src/login/", "src/inquire/"],
+      "state": "Logged-out Chinese landing page, full notices and layout; synthetic CAPTCHA"
+    },
+    {
+      "file": "frameset.html",
+      "path": "/ccxp/INQUIRE/select_entry.php",
+      "owners": ["src/menu/"],
+      "state": "Original 130px header and 200px navigation frames"
+    },
+    {
+      "file": "navigation.html",
+      "path": "/ccxp/INQUIRE/IN_INQ_STU.php",
+      "owners": ["src/menu/"],
+      "state": "Complete student navigation DOM and tree declarations"
+    },
+    {
+      "file": "top.html",
+      "path": "/ccxp/INQUIRE/top.php",
+      "owners": ["src/menu/"],
+      "state": "Original header, polling removed"
+    },
+    {
+      "file": "main.html",
+      "path": "/ccxp/INQUIRE/xp03_m.htm",
+      "owners": ["src/main/"],
+      "state": "Complete public service-announcement page"
+    },
+    {
+      "file": "standalone.html",
+      "path": "/ccxp/INQUIRE/JH/B/B.2/B.2.3/JHB23001.php",
+      "owners": ["src/main/"],
+      "state": "Closed evaluation period, captured 2026-09-11 and observed again 2026-09-12"
+    },
+    {
+      "file": "work-log.html",
+      "path": "/ccxp/INQUIRE/PE/1/14D/PE14D1.php",
+      "owners": ["src/work-log/"],
+      "state": "Add/search form; synthetic eligible task and response; see work-log.provenance.json"
+    },
+    {
+      "file": "staff-registration.html",
+      "path": "/ccxp/INQUIRE/PE/3/3000/PE30001.php",
+      "owners": ["src/staff-registration/"],
+      "state": "Registration form and initialized Kendo grid; synthetic options and records"
+    },
+    {
+      "file": "staff-history.html",
+      "path": "/ccxp/INQUIRE/PE/3/3000/PE30003.php",
+      "owners": ["src/staff-history/"],
+      "state": "Effective-items panel expanded, initialized Kendo grids; synthetic records"
+    }
+  ],
+  "gaps": [
+    {
+      "owners": ["src/oauth/"],
+      "reason": "No OAuth authorization page captured; requires an actual client authorization flow"
+    },
+    {
+      "owners": ["src/main/"],
+      "reason": "Generic main styling affects other legacy destinations; these representative pages do not cover all routes"
+    },
+    {
+      "owners": ["src/menu/", "src/login/"],
+      "reason": "Only student role and Chinese legacy source captured; other role-specific navigation/landing states remain unverified"
+    },
+    {
+      "owners": ["src/staff-history/", "src/staff-registration/"],
+      "reason": "Snapshots validate rendered layout, not live Kendo data loading, menus, editing, or submission; record-detail state not certified"
+    },
+    {
+      "owners": ["src/main/"],
+      "reason": "Active course-evaluation form unavailable outside the evaluation period"
+    },
+    {
+      "owners": ["src/work-log/"],
+      "reason": "Real eligible tasks, server validation errors, and returned record variants not captured"
+    },
+    {
+      "owners": ["src/"],
+      "reason": "Desktop 1280x960 capture only; responsive breakpoints need separate evidence when changed"
+    }
+  ]
+}

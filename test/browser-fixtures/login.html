@@ -1,209 +1,513 @@
 <!doctype html>
-<html lang="zh">
+<html>
   <head>
     <meta charset="utf-8" />
-    <title>Sanitized CCXP login</title>
-    <style>
-      .inputtext {
-        margin: 5px;
-        border: 0;
-        border-bottom: 1px solid #555;
-        font-size: 1.2em;
-      }
-
-      .button {
-        margin: 4px 2px;
-        padding: 10px;
-        border: 0;
-        border-radius: 8px;
-        background-color: #7f1084;
-        color: white;
-        font-size: 16px;
-      }
-
-      .tab {
-        min-width: 30em;
-        overflow: hidden;
-      }
-
-      .tab button {
-        float: left;
-        padding: 7px 8px;
-        border: 0;
-        border-radius: 8px 8px 0 0;
-        background-color: #f1f1f1;
-        font-size: 17px;
-      }
-
-      .tab button.active {
-        background-color: #ccc;
-      }
-
-      .tabcontent {
-        display: none;
-        padding: 6px 12px;
-        border: 1px solid #ccc;
-        text-align: left;
-      }
-
-      h3,
-      ul {
-        margin-block: 0.1em;
-      }
-    </style>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>國立清華大學 -- 校務資訊系統 -</title>
+    <link href="/ccxp/INQUIRE/css/style.css" rel="stylesheet" type="text/css" />
   </head>
+
   <body bgcolor="#ffffff" topmargin="0" leftmargin="0" scroll="auto">
+    <table
+      width="100%"
+      border="0"
+      cellpadding="0"
+      cellspacing="0"
+      background="/ccxp/INQUIRE/images/ccxp_r1_c4.png"
+    >
+      <tbody>
+        <tr height="90">
+          <td width="100%">
+            <img src="/ccxp/INQUIRE/images/ccxp_r1_c1.png" border="0" /><img
+              src="/ccxp/INQUIRE/images/ccxp_r1_c2.png"
+              border="0"
+            /><img src="/ccxp/INQUIRE/images/ccxp_r1_c3.png" border="0" />
+          </td>
+        </tr>
+      </tbody>
+    </table>
     <table width="100%" border="0" cellpadding="0" cellspacing="0">
-      <tr>
-        <td width="200" valign="top">
-          <table width="100%" border="0" cellpadding="0" cellspacing="0">
-            <tr>
-              <td width="100%" height="40">
-                <table width="100%" border="0" cellpadding="0" cellspacing="0">
-                  <tr>
-                    <td width="100%" height="80">
-                      <img alt="" src="images/login_top.png" />
-                    </td>
-                  </tr>
-                </table>
-                <div
-                  style="margin-left: 0; background-image: url(&quot;images/login_mid.png&quot;)"
-                >
-                  <div style="margin-left: 1em">
-                    <b style="color: red"></b>
-                    <form name="form1" method="post" action="pre_select_entry.php">
-                      <span style="font-size: 1.2em">帳 號</span><br />
-                      <input
-                        required
-                        type="text"
-                        name="account"
-                        maxlength="26"
-                        style="width: 8em"
-                        class="inputtext"
-                      /><br />
-                      <span style="font-size: 1.2em">密 碼</span>
-                      <svg
-                        id="showPassword"
-                        style="display: inline"
-                        width="16"
-                        height="16"
-                        viewBox="0 0 16 16"
-                      >
-                        <path d="M1 8h14M8 1v14" />
-                      </svg>
-                      <svg
-                        id="hidePassword"
-                        style="display: none"
-                        width="16"
-                        height="16"
-                        viewBox="0 0 16 16"
-                      ></svg>
-                      <br />
-                      <input
-                        type="password"
-                        id="password"
-                        name="passwd"
-                        size="18"
-                        maxlength="18"
-                        style="width: 8em"
-                        class="inputtext"
-                      />
-                      <br />
-                      <span style="font-size: 1.2em">驗證碼</span>
-                      <input
-                        required
-                        type="text"
-                        name="passwd2"
-                        maxlength="6"
-                        class="inputtext"
-                        style="width: 6rem"
-                        autocomplete="off"
-                      />
-                      <br />
-                      <img alt="驗證碼" src="auth_img.php?pwdstr=sanitized-captcha" />
-                      <a href="auth_wav/auth_wav.php?pwdstr=sanitized-captcha">
-                        <img
-                          alt="語音驗證碼"
-                          src="auth_wav/sound_icon.png"
-                          width="30"
-                          height="30"
-                        />
-                      </a>
-                      <br />
-                      <input type="submit" name="Submit" value="登入" class="button" />
-                      &nbsp;&nbsp;&nbsp;
-                      <input type="reset" name="Submit2" value="清除" class="button" />
-                      <br />
-                      <a href="forget.php?lang=C"><font color="red">無法登入?</font></a>
-                    </form>
-                  </div>
-                  <div style="margin: 2px">
-                    <table width="93%" border="1" bordercolor="red">
-                      <tr>
-                        <td width="93%" align="center">
-                          <font color="red">請妥善保管帳號與密碼</font>
-                        </td>
-                      </tr>
+      <tbody>
+        <tr>
+          <td width="200" valign="top">
+            <!-- 登入區塊 -->
+            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+              <tbody>
+                <tr>
+                  <td width="100%" height="40">
+                    <style>
+                      .inputtext {
+                        font-size: 1.2em;
+                        border: 0px;
+                        border-bottom: #555555 1px solid;
+                        margin: 5px;
+                      }
+
+                      .button {
+                        background-color: #7f1084;
+                        font-size: 1.2em;
+                        border: none;
+                        color: white;
+                        padding: 10px;
+                        text-align: center;
+                        text-decoration: none;
+                        display: inline-block;
+                        font-size: 16px;
+                        margin: 4px 2px;
+                        cursor: pointer;
+                        border-radius: 8px;
+                      }
+                    </style>
+
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                      <tbody>
+                        <tr>
+                          <td width="100%" height="80">
+                            <img src="/ccxp/INQUIRE/images/login_top.png" />
+                          </td>
+                        </tr>
+                      </tbody>
                     </table>
-                  </div>
-                </div>
-                <input type="hidden" name="fnstr" value="sanitized-captcha" />
-              </td>
-            </tr>
-          </table>
-        </td>
-        <td width="100%" valign="top">
-          <table width="100%" bgcolor="#ffffff" border="0" cellpadding="0" cellspacing="0">
-            <tr>
-              <td width="100%" valign="top" colspan="3">
-                <table width="100%" height="40" border="0" cellpadding="0" cellspacing="0">
-                  <tr>
-                    <td align="right">清華大學 | 計通中心 | 校務資訊組</td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <div class="tab">
-                  <button class="tablinks">學　生</button>
-                  <button class="tablinks">校　友</button>
-                  <button class="tablinks">教職員</button>
-                  <button class="tablinks">受款人(廠商)</button>
-                  <button class="tablinks">其　他</button>
-                  <button class="tablinks active" id="defaultOpen">提醒事項</button>
-                </div>
-                <div id="提醒事項" class="tabcontent" style="display: block">
-                  <h3>提醒事項</h3>
-                  <ul>
-                    <li>這是不含帳號或個人資料的測試提醒。</li>
-                    <li>登入問題請參閱「無法登入」說明。</li>
-                  </ul>
-                </div>
-                <a href="inquire_cpr.html">&gt;&gt; 服務電話 &lt;&lt;</a>
-              </td>
-              <td valign="top">
-                <ul class="links">
-                  <li><a href="?lang=english">English</a></li>
-                </ul>
-                <table width="500" border="0" cellpadding="3" cellspacing="0">
-                  <tr>
-                    <td height="20" colspan="2" class="board_item">系統公告</td>
-                  </tr>
-                  <tr>
-                    <td width="100" class="board_subject">日期</td>
-                    <td width="388" class="board_subject">新 聞 主 題</td>
-                  </tr>
-                  <tr>
-                    <td class="board_0">2026/09/11</td>
-                    <td class="board_0">這是不含個人資料的測試公告。</td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-          </table>
-        </td>
-      </tr>
+
+                    <div
+                      style="
+                        margin-left: 0em;
+                        background-image: url(&quot;images/login_mid.png&quot;);
+                      "
+                    >
+                      <div style="margin-left: 1em">
+                        <b style="color: red"></b>
+                        <form name="form1" method="post" action="pre_select_entry.php">
+                          <span style="font-size: 1.2em">帳 號</span><br />
+                          <input
+                            required=""
+                            type="text"
+                            name="account"
+                            maxlength="26"
+                            style="width: 8em"
+                            class="inputtext"
+                            value=""
+                          /><br />
+                          <span style="font-size: 1.2em">密 碼</span>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            id="showPassword"
+                            style="display: inline"
+                            width="16"
+                            height="16"
+                            fill="currentColor"
+                            class="bi bi-eye"
+                            viewBox="0 0 16 16"
+                          >
+                            <path
+                              d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"
+                            ></path>
+                            <path
+                              d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"
+                            ></path>
+                          </svg>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            id="hidePassword"
+                            style="display: none"
+                            width="16"
+                            height="16"
+                            fill="currentColor"
+                            class="bi bi-eye-slash"
+                            viewBox="0 0 16 16"
+                          >
+                            <path
+                              d="M13.359 11.238C15.06 9.72 16 8 16 8s-3-5.5-8-5.5a7 7 0 0 0-2.79.588l.77.771A6 6 0 0 1 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755q-.247.248-.517.486z"
+                            ></path>
+                            <path
+                              d="M11.297 9.176a3.5 3.5 0 0 0-4.474-4.474l.823.823a2.5 2.5 0 0 1 2.829 2.829zm-2.943 1.299.822.822a3.5 3.5 0 0 1-4.474-4.474l.823.823a2.5 2.5 0 0 0 2.829 2.829"
+                            ></path>
+                            <path
+                              d="M3.35 5.47q-.27.24-.518.487A13 13 0 0 0 1.172 8l.195.288c.335.48.83 1.12 1.465 1.755C4.121 11.332 5.881 12.5 8 12.5c.716 0 1.39-.133 2.02-.36l.77.772A7 7 0 0 1 8 13.5C3 13.5 0 8 0 8s.939-1.721 2.641-3.238l.708.709zm10.296 8.884-12-12 .708-.708 12 12z"
+                            ></path>
+                          </svg>
+                          <br />
+                          <input
+                            type="password"
+                            id="password"
+                            name="passwd"
+                            size="18"
+                            maxlength="18"
+                            style="width: 8em"
+                            class="inputtext"
+                            value=""
+                          />
+                          <br />
+                          <span style="font-size: 1.2em">驗證碼</span>
+                          <input
+                            required=""
+                            type="text"
+                            name="passwd2"
+                            maxlength="6"
+                            class="inputtext"
+                            style="width: 6rem"
+                            autocomplete="off"
+                            value=""
+                          />
+                          <br />
+                          <img
+                            src='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="30"%3E%3Ctext x="4" y="22"%3E123456%3C/text%3E%3C/svg%3E'
+                          /><a href="auth_wav/auth_wav.php?fixture=fixture" target="_blank"
+                            ><img
+                              src="/ccxp/INQUIRE/auth_wav/sound_icon.png"
+                              width="30"
+                              height="30"
+                              alt="語音驗證碼"
+                          /></a>
+                          <br />
+                          <input
+                            type="submit"
+                            name="Submit"
+                            value="登入"
+                            class="button"
+                          />&nbsp;&nbsp;&nbsp;
+                          <input type="reset" name="Submit2" value="清除" class="button" />
+                          <br />
+                          <a href="forget.php?lang=C" target="_blank"
+                            ><font color="red">無法登入?</font></a
+                          >
+                          <br />
+                          <a href="https://punch.ccxp.nthu.edu.tw/"
+                            ><img
+                              width="150px"
+                              src="/ccxp/INQUIRE/images/punch.png"
+                              alt="簽到退" /></a
+                          ><br />
+                          <a href="https://sso.nd.nthu.edu.tw/index.do" target="_blank"
+                            ><img src="/ccxp/INQUIRE/images/ndPortal.png" alt="南大校區系統 Portal"
+                          /></a>
+                        </form>
+                      </div>
+                      <div style="margin: 2px">
+                        <table width="93%" border="1" bordercolor="red">
+                          <tbody>
+                            <tr>
+                              <td width="93%" align="center">
+                                <font color="red">
+                                  入侵他人帳號<br />重者會觸犯<b>刑法</b><br /><b>妨害電腦使用罪</b>
+                                </font>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <input type="hidden" name="fnstr" value="fixture" />
+
+                    <table width="90%" align="center" border="0" cellpadding="0" cellspacing="0">
+                      <tbody>
+                        <tr>
+                          <td width="100%" height="20" align="center" valign="middle"></td>
+                        </tr>
+                        <tr>
+                          <td width="100%" height="20" valign="middle" class="board_item">
+                            &nbsp;<img
+                              src="/ccxp/INQUIRE/images/arrow.gif"
+                              align="absmiddle"
+                            />&nbsp;月曆
+                          </td>
+                        </tr>
+                        <tr>
+                          <td width="100%" height="4" bgcolor="#333333"></td>
+                        </tr>
+                        <tr>
+                          <td width="100%" height="1" bgcolor="#FFFFFF"></td>
+                        </tr>
+                        <tr>
+                          <td width="100%" height="1" bgcolor="#666666"></td>
+                        </tr>
+                        <tr>
+                          <td width="100%" height="200" align="center" valign="middle">
+                            <table
+                              width="100%"
+                              height="200"
+                              border="0"
+                              cellpadding="0"
+                              cellspacing="0"
+                            >
+                              <tbody>
+                                <tr>
+                                  <td align="center" valign="top">
+                                    <iframe
+                                      src="calendar/cal.php"
+                                      frameborder="0"
+                                      width="100%"
+                                      height="100%"
+                                      scrolling="NO"
+                                    ></iframe>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td width="100%" height="1" bgcolor="#333333"></td>
+                        </tr>
+                        <tr>
+                          <td width="100%" height="1" bgcolor="#FFFFFF"></td>
+                        </tr>
+                        <tr>
+                          <td width="100%" height="10" bgcolor="#333333"></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                      <tbody>
+                        <tr>
+                          <td height="30">&nbsp;</td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <div align="center" id="twcaseal" class="MINI">
+                              <img src="/ccxp/INQUIRE/images/twca_i.gif" />
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+          <td width="100%" valign="top">
+            <table width="100%" bgcolor="#ffffff" border="0" cellpadding="0" cellspacing="0">
+              <!-- 主區塊上方超連結列 -->
+              <tbody>
+                <tr>
+                  <td width="100%" valign="top" colspan="3">
+                    <table
+                      width="100%"
+                      height="40"
+                      border="0"
+                      cellpadding="0"
+                      cellspacing="0"
+                      background="/ccxp/INQUIRE/images/ccxp_r2.png"
+                    >
+                      <tbody>
+                        <tr>
+                          <td width="10">&nbsp;</td>
+                          <td align="right" valign="middle" style="font-size: 16px">
+                            <a href="http://www.nthu.edu.tw/" target="_blank">清華大學</a
+                            >&nbsp;|&nbsp;
+                            <a href="https://ccc.site.nthu.edu.tw/?Lang=zh-tw" target="_blank"
+                              >計通中心</a
+                            >&nbsp;|&nbsp;
+                            <a href="https://aisccc.site.nthu.edu.tw/" target="_blank"
+                              >校務資訊組</a
+                            >
+                          </td>
+                          <td width="21" align="center">&nbsp;</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+                <!-- 主區塊下方 -->
+                <tr>
+                  <!-- 登入說明區塊 -->
+                  <td width="60%" style="min-width: 30em" valign="top" align="center">
+                    <style>
+                      /* Style the tab */
+                      .tab {
+                        overflow: hidden;
+                        border: 1px solid #ccc;
+                        border: none;
+                      }
+
+                      /* Style the buttons inside the tab */
+                      .tab button {
+                        background-color: #f1f1f1;
+                        float: left;
+                        outline: none;
+                        cursor: pointer;
+                        padding: 7px 8px;
+                        transition: 0.3s;
+                        font-size: 17px;
+                        border-top-left-radius: 8px;
+                        border-top-right-radius: 8px;
+                        border-left: 1px;
+                        border-right: 1px;
+                        border-top: none;
+                        border-bottom: none;
+                        border-color: #f0f0f0;
+                      }
+
+                      /* Change background color of buttons on hover */
+                      .tab button:hover {
+                        background-color: #ddd;
+                      }
+
+                      /* Create an active/current tablink class */
+                      .tab button.active {
+                        background-color: #ccc;
+                      }
+
+                      .tablinks {
+                      }
+
+                      /* Style the tab content */
+                      .tabcontent {
+                        display: none;
+                        padding: 6px 12px;
+                        border: 1px solid #ccc;
+                        text-align: left;
+                      }
+
+                      h3,
+                      ul {
+                        margin-block-start: 0.1em;
+                        margin-block-end: 0.1em;
+                      }
+                    </style>
+
+                    <!--�滩��砍�-->
+                    <!-- -->
+                    <div style="min-width: 30em" class="tab">
+                      <button class="tablinks">學　生</button>
+                      <button class="tablinks">校　友</button>
+                      <button class="tablinks">教職員</button>
+                      <button class="tablinks">受款人(廠商)</button>
+                      <button class="tablinks">其　他</button>
+                      <button class="tablinks active" id="defaultOpen">提醒事項</button>
+                    </div>
+                    <div id="學　生" class="tabcontent" style="display: none">
+                      <h3>學　生</h3>
+                      <ul>
+                        <li>
+                          學生(含交換生)之帳號為學號(<b>例:110061190、X1106099</b>)，首次登入請點選"<b>無法登入﹖</b>"、依說明啟用帳號。
+                        </li>
+                        <li>學生密碼若遺忘，請點選"<b>無法登入</b>"、依說明自行設定密碼。</li>
+                        <li>
+                          南大校區105年之前(含)入學學生帳號為學號(<b>例:210561190、209961190</b>)，密碼為<b>南大校區校園入口網</b>之密碼。
+                        </li>
+                        <li>
+                          南大校區105年之前(含)入學學生若遺忘密碼，請直接洽<b>南大校區計算機中心</b>。
+                        </li>
+                      </ul>
+                    </div>
+                    <div id="教職員" class="tabcontent" style="display: none">
+                      <h3>教職員</h3>
+                      <ul>
+                        <li>
+                          教職員工之帳號請輸入個人員工編號(<b>例:W09090</b>)，首次登入請點選"<b>無法登入﹖</b>"依說明啟用帳號。
+                        </li>
+                        <li>教職員工密碼若遺忘，請點選"<b>無法登入</b>"、依說明自行設定密碼。</li>
+                      </ul>
+                    </div>
+
+                    <div id="受款人(廠商)" class="tabcontent" style="display: none">
+                      <h3>受款人(廠商)</h3>
+                      <ul>
+                        <li>
+                          廠商之帳號為公司統一編號，首次登入請點選"<b>無法登入﹖</b>"、依說明啟用帳號。
+                        </li>
+                        <li>
+                          個人受款人之帳號為身分證字號，首次登入請點選"<b>無法登入﹖</b>"、依說明啟用帳號。
+                        </li>
+                        <li>
+                          廠商與個人受款人密碼若遺忘，請點選"<b>無法登入</b>"、依說明自行設定密碼。
+                        </li>
+                      </ul>
+                    </div>
+
+                    <div id="校　友" class="tabcontent" style="display: none">
+                      <h3>校　友</h3>
+                      <ul>
+                        <li>
+                          校友之帳號為學號(<b>例:102061190</b>)，首次登入請點選"<b>無法登入﹖</b>"依說明啟用帳號。
+                        </li>
+                        <li>校友若無法登入，請點選"<b>無法登入</b>"、依說明自行設定密碼。</li>
+                        <li>
+                          南大校區105年之前(含)入學之畢業校友帳號為學號(<b>例:210561190、209961190</b>)，密碼為<b>南大校區校園入口網</b>之密碼。
+                        </li>
+                        <li>
+                          南大校區105年之前(含)入學之畢業校友若遺忘密碼，請直接洽<b>南大校區計算機中心</b>。
+                        </li>
+                      </ul>
+                    </div>
+
+                    <div id="其　他" class="tabcontent" style="display: none">
+                      <h3>其　他</h3>
+                      <ul>
+                        <li>社會人士選課請使用 guest 登入。</li>
+                        <li>
+                          華語中心學員帳號是學號(如C1100088)，首次登入請點選"<b>無法登入</b>"、依說明啟用帳號。
+                        </li>
+                        <li>
+                          委託授權帳號格式如A11111-01，A11111是委託人員工編號，此類帳號由委託人設定後產生。
+                        </li>
+                      </ul>
+                    </div>
+
+                    <div id="提醒事項" class="tabcontent" style="display: block">
+                      <h3>提醒事項</h3>
+                      <ul>
+                        <li>
+                          為維護帳號安全，本系統將依資安規範，定期要求修改密碼(<font color="#900000"
+                            >密碼避免使用個人有關之資料，如生日、身分證字號、單位簡稱或電話號碼等</font
+                          >)，登入後可點選"<b>帳號相關設定</b>"進行密碼修改或關鍵欄位維護，並請妥慎保管。
+                        </li>
+                        <li>若登入時發生任何問題，請參閱 "<b>無法登入</b>"之說明。</li>
+                      </ul>
+                    </div>
+
+                    <!--�滚��-->
+                    <div align="right">
+                      <a href="inquire_cpr.html" target="_blank"
+                        ><font color="red">&gt;&gt; <u>服務電話</u> &lt;&lt;</font></a
+                      >
+                    </div>
+                    <br />
+                    <!--div align="left" style="border-style: solid;">
+
+<!--h3>因系統後端發生錯誤，系統將於2025/10/22 9:30-10:30 暫停服務</h3-->
+                    <!--Chrome使用者請注意是否有使用<a href="chrome://extensions/?id=ofpnmcalabcbjgholdjcjblkibolbppb">Monica擴充套件</a>，可能會造成本系統運作不正常，請先關閉或移除該套件後再使用。<br>
+<img src="data:image/png;base64,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">
+-->
+                  </td>
+                  <!-- 分隔線 -->
+                  <td width="3%" align="center" valign="valign">&nbsp;</td>
+                  <!-- 投票、新聞及廣告區 -->
+                  <td width="35%" valign="valign">
+                    <table border="0" cellpadding="0" cellspacing="0">
+                      <tbody>
+                        <tr>
+                          <td width="100%" height="20" valign="top">
+                            <table width="95%" border="0" cellpadding="0" cellspacing="0">
+                              <tbody>
+                                <tr>
+                                  <td width="100%" height="100%" align="right" valign="middle">
+                                    <ul class="links">
+                                      <li>
+                                        <a
+                                          href="/ccxp/INQUIRE/index.php?lang=english"
+                                          title="English"
+                                          >English</a
+                                        >
+                                      </li>
+                                    </ul>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </tbody>
     </table>
   </body>
 </html>

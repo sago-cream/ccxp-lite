@@ -86,5 +86,497 @@
   "/img/back_3.jpg": {
     "file": "host-assets/back_3.jpg",
     "contentType": "image/jpeg"
+  },
+  "/class.tree/ftv2/ftv2folderopen.gif": {
+    "file": "host-assets/f0fc5d194da7-ftv2folderopen.gif",
+    "contentType": "image/gif"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/css/w3.css": {
+    "file": "host-assets/69a798512fa4-w3.css",
+    "contentType": "text/css"
+  },
+  "/ccxp/INQUIRE/images/ccxp_r1_c1.png": {
+    "file": "host-assets/b9ad21f74794-ccxp_r1_c1.png",
+    "contentType": "image/png"
+  },
+  "/ccxp/INQUIRE/PE/3/3000/nthu.jpg": {
+    "file": "host-assets/126fc383e9f7-nthu.jpg",
+    "contentType": "image/jpeg"
+  },
+  "/class.tree/ftv2/ftv2pnode.gif": {
+    "file": "host-assets/a68132c181f7-ftv2pnode.gif",
+    "contentType": "image/gif"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/css/animate.min.css": {
+    "file": "host-assets/54ddd2efb566-animate.min.css",
+    "contentType": "text/css"
+  },
+  "/ccxp/INQUIRE/auth_wav/sound_icon.png": {
+    "file": "host-assets/d97167251986-sound_icon.png",
+    "contentType": "image/png"
+  },
+  "/ccxp/INQUIRE/images/ccxp_r1_c4.png": {
+    "file": "host-assets/6eddd62c5cbb-ccxp_r1_c4.png",
+    "contentType": "image/png"
+  },
+  "/ccxp/INQUIRE/images/ndPortal.png": {
+    "file": "host-assets/0331c8c7cf04-ndPortal.png",
+    "contentType": "image/png"
+  },
+  "/ccxp/INQUIRE/images/twca_i.gif": {
+    "file": "host-assets/7d2e707fd6b4-twca_i.gif",
+    "contentType": "image/gif"
+  },
+  "/ccxp/INQUIRE/JH/search_img.jpg": {
+    "file": "host-assets/25eff752ef20-search_img.jpg",
+    "contentType": "image/jpeg"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/kendoui/styles/kendo.bootstrap.min.css": {
+    "file": "host-assets/4d79252ea8e5-kendo.bootstrap.min.css",
+    "contentType": "text/css"
+  },
+  "/class.tree/ftv2/ftv2doc.gif": {
+    "file": "host-assets/163570fe83a9-ftv2doc.gif",
+    "contentType": "image/gif"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/NotificationStyles/css/normalize.css": {
+    "file": "host-assets/ac7e76709b2d-normalize.css",
+    "contentType": "text/css"
+  },
+  "/style/tree.css": {
+    "file": "host-assets/6f9661f345a4-tree.css",
+    "contentType": "text/css"
+  },
+  "/ccxp/INQUIRE/images/login_top.png": {
+    "file": "host-assets/021a150997f0-login_top.png",
+    "contentType": "image/png"
+  },
+  "/ccxp/UPDATE/PE/common/jquery-ui/font-awesome/css/font-awesome.min.css": {
+    "file": "host-assets/14090f0cef84-font-awesome.min.css",
+    "contentType": "text/css"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/kendoui/styles/kendo.common-bootstrap.min.css": {
+    "file": "host-assets/ebe41dcedbd2-kendo.common-bootstrap.min.css",
+    "contentType": "text/css"
+  },
+  "/ccxp/INQUIRE/images/arrow.gif": {
+    "file": "host-assets/2779736748e0-arrow.gif",
+    "contentType": "image/gif"
+  },
+  "/class.tree/ftv2/ftv2plastnode.gif": {
+    "file": "host-assets/2cb41f8da9b8-ftv2plastnode.gif",
+    "contentType": "image/gif"
+  },
+  "/ccxp/INQUIRE/PE/1/145/wood.png": {
+    "file": "host-assets/f4d7557f5c08-wood.png",
+    "contentType": "image/png"
+  },
+  "/class.tree/ftv2/ftv2blank.gif": {
+    "file": "host-assets/e7cf07738821-ftv2blank.gif",
+    "contentType": "image/gif"
+  },
+  "/ccxp/UPDATE/PE/common/kendoui/latest/styles/kendo.bootstrap.min.css": {
+    "file": "host-assets/70943e234ee3-kendo.bootstrap.min.css",
+    "contentType": "text/css"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/NotificationStyles/css/ns-style-other.css": {
+    "file": "host-assets/d7b5a40c32e8-ns-style-other.css",
+    "contentType": "text/css"
+  },
+  "/class.tree/ftv2/ftv2node.gif": {
+    "file": "host-assets/4fb999c43b8f-ftv2node.gif",
+    "contentType": "image/gif"
+  },
+  "/class.tree/ftv2/ftv2lastnode.gif": {
+    "file": "host-assets/8c9617c86add-ftv2lastnode.gif",
+    "contentType": "image/gif"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/NotificationStyles/css/ns-default.css": {
+    "file": "host-assets/a84daf64b0e7-ns-default.css",
+    "contentType": "text/css"
+  },
+  "/ccxp/UPDATE/PE/common/kendoui/latest/styles/kendo.common-bootstrap.min.css": {
+    "file": "host-assets/e1d2c20d9d0e-kendo.common-bootstrap.min.css",
+    "contentType": "text/css"
+  },
+  "/ccxp/INQUIRE/images/ccxp_r1_c3.png": {
+    "file": "host-assets/f26268220c4a-ccxp_r1_c3.png",
+    "contentType": "image/png"
+  },
+  "/ccxp/INQUIRE/images/ccxp_r2.png": {
+    "file": "host-assets/d39a7375938c-ccxp_r2.png",
+    "contentType": "image/png"
+  },
+  "/ccxp/INQUIRE/css/style.css": {
+    "file": "host-assets/721d6bc82339-style.css",
+    "contentType": "text/css"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/font-awesome/css/font-awesome.min.css": {
+    "file": "host-assets/14090f0cef84-font-awesome.min.css",
+    "contentType": "text/css"
+  },
+  "/class.tree/ftv2/ftv2folderclosed.gif": {
+    "file": "host-assets/1e7c32c36917-ftv2folderclosed.gif",
+    "contentType": "image/gif"
+  },
+  "/class.tree/ftv2/ftv2vertline.gif": {
+    "file": "host-assets/72878d8365b0-ftv2vertline.gif",
+    "contentType": "image/gif"
+  },
+  "/ccxp/INQUIRE/images/link.gif": {
+    "file": "host-assets/4abe68bae3b3-link.gif",
+    "contentType": "image/gif"
+  },
+  "/ccxp/INQUIRE/images/punch.png": {
+    "file": "host-assets/e49f33313723-punch.png",
+    "contentType": "image/png"
+  },
+  "/ccxp/UPDATE/PE/common/kendoui/latest/styles/kendo.common.min.css": {
+    "file": "host-assets/f1e215202e41-kendo.common.min.css",
+    "contentType": "text/css"
+  },
+  "/images/logout.gif": {
+    "file": "host-assets/6634f73ffe4f-logout.gif",
+    "contentType": "image/gif"
+  },
+  "/ccxp/INQUIRE/images/ccxp_r1_c2.png": {
+    "file": "host-assets/74f5eed375bc-ccxp_r1_c2.png",
+    "contentType": "image/png"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/materialize/css/materialize.min.css": {
+    "file": "host-assets/462a1bec8131-materialize.min.css",
+    "contentType": "text/css"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/kendoui/styles/fonts/DejaVu/DejaVuSans.ttf": {
+    "file": "host-assets/e5f725eb38b9-DejaVuSans.ttf",
+    "contentType": "font/ttf"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/materialize/font/roboto/Roboto-Thin.woff": {
+    "file": "host-assets/2c96ddf105ff-Roboto-Thin.woff",
+    "contentType": "font/woff"
+  },
+  "/ccxp/INQUIRE/images/bg_title.gif": {
+    "file": "host-assets/6d3f8d9509ce-bg_title.gif",
+    "contentType": "image/gif"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/materialize/font/roboto/Roboto-Bold.woff2": {
+    "file": "host-assets/d11ef66823ac-Roboto-Bold.woff2",
+    "contentType": "font/woff2"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/kendoui/styles/fonts/DejaVu/DejaVuSans-Bold.ttf": {
+    "file": "host-assets/b5794cbc4166-DejaVuSans-Bold.ttf",
+    "contentType": "font/ttf"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/materialize/font/roboto/Roboto-Thin.ttf": {
+    "file": "host-assets/e707db47b8b7-Roboto-Thin.ttf",
+    "contentType": "font/ttf"
+  },
+  "/images/tree_bg.jpg": {
+    "file": "host-assets/15febe013be4-tree_bg.jpg",
+    "contentType": "image/jpeg"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/kendoui/styles/fonts/DejaVu/DejaVuSansMono-Bold.ttf": {
+    "file": "host-assets/1c363e7be971-DejaVuSansMono-Bold.ttf",
+    "contentType": "font/ttf"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/materialize/font/roboto/Roboto-Light.ttf": {
+    "file": "host-assets/d72c86ba3a65-Roboto-Light.ttf",
+    "contentType": "font/ttf"
+  },
+  "/ccxp/UPDATE/PE/common/kendoui/latest/styles/Bootstrap/loading.gif": {
+    "file": "host-assets/b97b380aa845-loading.gif",
+    "contentType": "image/gif"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/font-awesome/fonts/fontawesome-webfont.svg": {
+    "file": "host-assets/b2703d5f01cb-fontawesome-webfont.svg",
+    "contentType": "image/svg+xml"
+  },
+  "/ccxp/UPDATE/PE/common/kendoui/latest/styles/fonts/DejaVu/DejaVuSansMono.ttf": {
+    "file": "host-assets/3810db43b181-DejaVuSansMono.ttf",
+    "contentType": "font/ttf"
+  },
+  "/ccxp/UPDATE/PE/common/kendoui/latest/styles/fonts/glyphs/WebComponentsIcons.ttf": {
+    "file": "host-assets/58aa7768ac47-WebComponentsIcons.ttf",
+    "contentType": "font/ttf"
+  },
+  "/ccxp/UPDATE/PE/common/kendoui/latest/styles/fonts/DejaVu/DejaVuSans-Oblique.ttf": {
+    "file": "host-assets/4cc35e34c34a-DejaVuSans-Oblique.ttf",
+    "contentType": "font/ttf"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/font-awesome/fonts/fontawesome-webfont.woff": {
+    "file": "host-assets/99ea6ec3d0be-fontawesome-webfont.woff",
+    "contentType": "font/woff"
+  },
+  "/ccxp/UPDATE/PE/common/kendoui/latest/styles/fonts/glyphs/WebComponentsIcons.svg": {
+    "file": "host-assets/bc8b41c7f554-WebComponentsIcons.svg",
+    "contentType": "image/svg+xml"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/materialize/font/material-design-icons/Material-Design-Icons.svg": {
+    "file": "host-assets/f5c325c90472-Material-Design-Icons.svg",
+    "contentType": "image/svg+xml"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/kendoui/styles/fonts/DejaVu/DejaVuSansMono.ttf": {
+    "file": "host-assets/3810db43b181-DejaVuSansMono.ttf",
+    "contentType": "font/ttf"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/materialize/font/roboto/Roboto-Medium.ttf": {
+    "file": "host-assets/bce51f73757d-Roboto-Medium.ttf",
+    "contentType": "font/ttf"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/kendoui/styles/textures/transtexture.png": {
+    "file": "host-assets/817d840ad728-transtexture.png",
+    "contentType": "image/png"
+  },
+  "/ccxp/UPDATE/PE/common/kendoui/latest/styles/fonts/DejaVu/DejaVuSansMono-Bold.ttf": {
+    "file": "host-assets/1c363e7be971-DejaVuSansMono-Bold.ttf",
+    "contentType": "font/ttf"
+  },
+  "/ccxp/UPDATE/PE/common/kendoui/latest/styles/textures/image-default.png": {
+    "file": "host-assets/b476791473d0-image-default.png",
+    "contentType": "image/png"
+  },
+  "/ccxp/UPDATE/PE/common/jquery-ui/font-awesome/fonts/fontawesome-webfont.eot": {
+    "file": "host-assets/5d805168ed94-fontawesome-webfont.eot",
+    "contentType": "application/vnd.ms-fontobject"
+  },
+  "/ccxp/UPDATE/PE/common/kendoui/latest/styles/Bootstrap/slider-v.gif": {
+    "file": "host-assets/f7699cc7afc4-slider-v.gif",
+    "contentType": "image/gif"
+  },
+  "/ccxp/UPDATE/PE/common/kendoui/latest/styles/Bootstrap/slider-h.gif": {
+    "file": "host-assets/fa389eccd1f1-slider-h.gif",
+    "contentType": "image/gif"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/kendoui/styles/Bootstrap/indeterminate.gif": {
+    "file": "host-assets/1228a4917f37-indeterminate.gif",
+    "contentType": "image/gif"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/materialize/font/roboto/Roboto-Bold.woff": {
+    "file": "host-assets/680d4da716e7-Roboto-Bold.woff",
+    "contentType": "font/woff"
+  },
+  "/ccxp/UPDATE/PE/common/kendoui/latest/styles/fonts/DejaVu/DejaVuSans.ttf": {
+    "file": "host-assets/e5f725eb38b9-DejaVuSans.ttf",
+    "contentType": "font/ttf"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/kendoui/styles/Bootstrap/markers_2x.png": {
+    "file": "host-assets/fc66238103fd-markers_2x.png",
+    "contentType": "image/png"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/kendoui/styles/Bootstrap/sprite_kpi.png": {
+    "file": "host-assets/34e2ee0f26cf-sprite_kpi.png",
+    "contentType": "image/png"
+  },
+  "/ccxp/UPDATE/PE/common/kendoui/latest/styles/fonts/DejaVu/DejaVuSerif-BoldItalic.ttf": {
+    "file": "host-assets/97238d25d4a8-DejaVuSerif-BoldItalic.ttf",
+    "contentType": "font/ttf"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/materialize/font/roboto/Roboto-Thin.woff2": {
+    "file": "host-assets/815aef50944f-Roboto-Thin.woff2",
+    "contentType": "font/woff2"
+  },
+  "/ccxp/UPDATE/PE/common/kendoui/latest/styles/fonts/DejaVu/DejaVuSansMono-Oblique.ttf": {
+    "file": "host-assets/34f484886ca3-DejaVuSansMono-Oblique.ttf",
+    "contentType": "font/ttf"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/materialize/font/roboto/Roboto-Medium.woff": {
+    "file": "host-assets/861317186fc3-Roboto-Medium.woff",
+    "contentType": "font/woff"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/kendoui/styles/Bootstrap/slider-v.gif": {
+    "file": "host-assets/f7699cc7afc4-slider-v.gif",
+    "contentType": "image/gif"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/kendoui/styles/Bootstrap/sprite.png": {
+    "file": "host-assets/dc5f38ade119-sprite.png",
+    "contentType": "image/png"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/materialize/font/roboto/Roboto-Regular.ttf": {
+    "file": "host-assets/289a92cfcecb-Roboto-Regular.ttf",
+    "contentType": "font/ttf"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/kendoui/styles/Bootstrap/loading.gif": {
+    "file": "host-assets/b97b380aa845-loading.gif",
+    "contentType": "image/gif"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/kendoui/styles/textures/hue.png": {
+    "file": "host-assets/a62592edc2ea-hue.png",
+    "contentType": "image/png"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/kendoui/styles/fonts/DejaVu/DejaVuSerif-Bold.ttf": {
+    "file": "host-assets/a5e966283e59-DejaVuSerif-Bold.ttf",
+    "contentType": "font/ttf"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/materialize/font/material-design-icons/Material-Design-Icons.woff2": {
+    "file": "host-assets/825bf51d9e67-Material-Design-Icons.woff2",
+    "contentType": "font/woff2"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/kendoui/styles/Bootstrap/sprite_kpi_2x.png": {
+    "file": "host-assets/4e6c91ec209f-sprite_kpi_2x.png",
+    "contentType": "image/png"
+  },
+  "/ccxp/UPDATE/PE/common/kendoui/latest/styles/Bootstrap/indeterminate.gif": {
+    "file": "host-assets/1228a4917f37-indeterminate.gif",
+    "contentType": "image/gif"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/kendoui/styles/fonts/DejaVu/DejaVuSerif-Italic.ttf": {
+    "file": "host-assets/3e00482e1a3e-DejaVuSerif-Italic.ttf",
+    "contentType": "font/ttf"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/materialize/font/material-design-icons/Material-Design-Icons.eot": {
+    "file": "host-assets/1cab1ec1730d-Material-Design-Icons.eot",
+    "contentType": "application/vnd.ms-fontobject"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/kendoui/styles/textures/transparency.png": {
+    "file": "host-assets/8eaefc195075-transparency.png",
+    "contentType": "image/png"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/kendoui/styles/fonts/DejaVu/DejaVuSansMono-BoldOblique.ttf": {
+    "file": "host-assets/363d0b2e4d0a-DejaVuSansMono-BoldOblique.ttf",
+    "contentType": "font/ttf"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/kendoui/styles/fonts/DejaVu/DejaVuSans-Oblique.ttf": {
+    "file": "host-assets/4cc35e34c34a-DejaVuSans-Oblique.ttf",
+    "contentType": "font/ttf"
+  },
+  "/ccxp/UPDATE/PE/common/kendoui/latest/styles/fonts/DejaVu/DejaVuSerif-Italic.ttf": {
+    "file": "host-assets/3e00482e1a3e-DejaVuSerif-Italic.ttf",
+    "contentType": "font/ttf"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/materialize/font/roboto/Roboto-Light.woff2": {
+    "file": "host-assets/934c87e1dee4-Roboto-Light.woff2",
+    "contentType": "font/woff2"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/font-awesome/fonts/fontawesome-webfont.eot": {
+    "file": "host-assets/5d805168ed94-fontawesome-webfont.eot",
+    "contentType": "application/vnd.ms-fontobject"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/kendoui/styles/Bootstrap/markers.png": {
+    "file": "host-assets/3f3eaffe5794-markers.png",
+    "contentType": "image/png"
+  },
+  "/ccxp/UPDATE/PE/common/jquery-ui/font-awesome/fonts/fontawesome-webfont.woff2": {
+    "file": "host-assets/b0592773eee2-fontawesome-webfont.woff2",
+    "contentType": "font/woff2"
+  },
+  "/ccxp/UPDATE/PE/common/kendoui/latest/styles/fonts/DejaVu/DejaVuSans-Bold.ttf": {
+    "file": "host-assets/b5794cbc4166-DejaVuSans-Bold.ttf",
+    "contentType": "font/ttf"
+  },
+  "/ccxp/UPDATE/PE/common/kendoui/latest/styles/fonts/glyphs/WebComponentsIcons.woff": {
+    "file": "host-assets/3a436f5a8e0e-WebComponentsIcons.woff",
+    "contentType": "font/woff"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/kendoui/styles/Bootstrap/loading-image.gif": {
+    "file": "host-assets/8f144801d96f-loading-image.gif",
+    "contentType": "image/gif"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/font-awesome/fonts/fontawesome-webfont.ttf": {
+    "file": "host-assets/fb07a7701439-fontawesome-webfont.ttf",
+    "contentType": "font/ttf"
+  },
+  "/ccxp/UPDATE/PE/common/jquery-ui/font-awesome/fonts/fontawesome-webfont.ttf": {
+    "file": "host-assets/fb07a7701439-fontawesome-webfont.ttf",
+    "contentType": "font/ttf"
+  },
+  "/ccxp/UPDATE/PE/common/kendoui/latest/styles/fonts/DejaVu/DejaVuSerif.ttf": {
+    "file": "host-assets/f94b4b5ccc2c-DejaVuSerif.ttf",
+    "contentType": "font/ttf"
+  },
+  "/ccxp/UPDATE/PE/common/kendoui/latest/styles/fonts/DejaVu/DejaVuSerif-Bold.ttf": {
+    "file": "host-assets/a5e966283e59-DejaVuSerif-Bold.ttf",
+    "contentType": "font/ttf"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/font-awesome/fonts/fontawesome-webfont.woff2": {
+    "file": "host-assets/b0592773eee2-fontawesome-webfont.woff2",
+    "contentType": "font/woff2"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/materialize/font/roboto/Roboto-Medium.woff2": {
+    "file": "host-assets/5c51eb7102ae-Roboto-Medium.woff2",
+    "contentType": "font/woff2"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/kendoui/styles/Bootstrap/sprite_2x.png": {
+    "file": "host-assets/ec81c69c639a-sprite_2x.png",
+    "contentType": "image/png"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/materialize/font/roboto/Roboto-Light.woff": {
+    "file": "host-assets/9ca337ec33c1-Roboto-Light.woff",
+    "contentType": "font/woff"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/kendoui/styles/Bootstrap/slider-h.gif": {
+    "file": "host-assets/fa389eccd1f1-slider-h.gif",
+    "contentType": "image/gif"
+  },
+  "/ccxp/UPDATE/PE/common/kendoui/latest/styles/Bootstrap/loading-image.gif": {
+    "file": "host-assets/8f144801d96f-loading-image.gif",
+    "contentType": "image/gif"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/kendoui/styles/Bootstrap/imagebrowser.png": {
+    "file": "host-assets/da1b7810224a-imagebrowser.png",
+    "contentType": "image/png"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/materialize/font/roboto/Roboto-Regular.woff2": {
+    "file": "host-assets/59020e1090e7-Roboto-Regular.woff2",
+    "contentType": "font/woff2"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/kendoui/styles/fonts/DejaVu/DejaVuSerif-BoldItalic.ttf": {
+    "file": "host-assets/97238d25d4a8-DejaVuSerif-BoldItalic.ttf",
+    "contentType": "font/ttf"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/kendoui/styles/fonts/DejaVu/DejaVuSans-BoldOblique.ttf": {
+    "file": "host-assets/c33112a8a1ea-DejaVuSans-BoldOblique.ttf",
+    "contentType": "font/ttf"
+  },
+  "/ccxp/UPDATE/PE/common/jquery-ui/font-awesome/fonts/fontawesome-webfont.svg": {
+    "file": "host-assets/b2703d5f01cb-fontawesome-webfont.svg",
+    "contentType": "image/svg+xml"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/materialize/font/material-design-icons/Material-Design-Icons.woff": {
+    "file": "host-assets/d68e76a5c189-Material-Design-Icons.woff",
+    "contentType": "font/woff"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/materialize/font/roboto/Roboto-Bold.ttf": {
+    "file": "host-assets/9198a8f61e81-Roboto-Bold.ttf",
+    "contentType": "font/ttf"
+  },
+  "/ccxp/UPDATE/PE/common/kendoui/latest/styles/fonts/glyphs/WebComponentsIcons.eot": {
+    "file": "host-assets/3a1eafcd9796-WebComponentsIcons.eot",
+    "contentType": "application/vnd.ms-fontobject"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/materialize/font/roboto/Roboto-Regular.woff": {
+    "file": "host-assets/0d3acf4e0a5c-Roboto-Regular.woff",
+    "contentType": "font/woff"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/kendoui/styles/fonts/DejaVu/DejaVuSansMono-Oblique.ttf": {
+    "file": "host-assets/34f484886ca3-DejaVuSansMono-Oblique.ttf",
+    "contentType": "font/ttf"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/materialize/font/material-design-icons/Material-Design-Icons.ttf": {
+    "file": "host-assets/7f1b785f5eca-Material-Design-Icons.ttf",
+    "contentType": "font/ttf"
+  },
+  "/ccxp/INQUIRE/PE/common/jquery-ui/kendoui/styles/fonts/DejaVu/DejaVuSerif.ttf": {
+    "file": "host-assets/f94b4b5ccc2c-DejaVuSerif.ttf",
+    "contentType": "font/ttf"
+  },
+  "/ccxp/UPDATE/PE/common/kendoui/latest/styles/fonts/DejaVu/DejaVuSansMono-BoldOblique.ttf": {
+    "file": "host-assets/363d0b2e4d0a-DejaVuSansMono-BoldOblique.ttf",
+    "contentType": "font/ttf"
+  },
+  "/ccxp/UPDATE/PE/common/jquery-ui/font-awesome/fonts/fontawesome-webfont.woff": {
+    "file": "host-assets/99ea6ec3d0be-fontawesome-webfont.woff",
+    "contentType": "font/woff"
+  },
+  "/ccxp/UPDATE/PE/common/kendoui/latest/styles/fonts/DejaVu/DejaVuSans-BoldOblique.ttf": {
+    "file": "host-assets/c33112a8a1ea-DejaVuSans-BoldOblique.ttf",
+    "contentType": "font/ttf"
+  },
+  "/ccxp/INQUIRE/PE/1/145/tgray.png": {
+    "file": "host-assets/d3a57f9b025d-tgray.png",
+    "contentType": "image/png"
+  },
+  "/ccxp/INQUIRE/images/login_mid.png": {
+    "file": "host-assets/7ff4c5337e20-login_mid.png",
+    "contentType": "image/png"
   }
 }

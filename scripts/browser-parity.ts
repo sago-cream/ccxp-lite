@@ -40,7 +40,10 @@ interface CaptureResult {
 const fixtureByPath = new Map<string, string>([
   ["/ccxp/INQUIRE/", "login.html"],
   ["/ccxp/INQUIRE/IN_INQ_STU.php", "navigation.html"],
+  ["/ccxp/INQUIRE/index.php", "login.html"],
   ["/ccxp/INQUIRE/JH/B/B.2/B.2.3/JHB23001.php", "standalone.html"],
+  ["/ccxp/INQUIRE/PE/3/3000/PE30001.php", "staff-registration.html"],
+  ["/ccxp/INQUIRE/PE/3/3000/PE30003.php", "staff-history.html"],
   ["/ccxp/INQUIRE/select_entry.php", "frameset.html"],
   ["/ccxp/INQUIRE/top.php", "top.html"],
   ["/ccxp/INQUIRE/xp03_m.htm", "main.html"],
@@ -152,7 +155,8 @@ function prepareOutputDirectory(outputDir: string) {
   mkdirSync(outputDir, { recursive: true });
 }
 
-async function routeFixtures(context: BrowserContext) {
+async function routeFixtures(context: BrowserContext): Promise<ReadonlySet<string>> {
+  const missingAssets = new Set<string>();
   await context.route("**/*", async (route) => {
     const requestUrl = new URL(route.request().url());
     if (requestUrl.protocol === "chrome-extension:") {
@@ -174,8 +178,12 @@ async function routeFixtures(context: BrowserContext) {
       });
       return;
     }
+    if (["font", "image", "stylesheet"].includes(route.request().resourceType())) {
+      missingAssets.add(requestUrl.origin + requestUrl.pathname);
+    }
     await route.abort("blockedbyclient");
   });
+  return missingAssets;
 }
 
 async function stabilize(page: Page) {
@@ -285,7 +293,7 @@ async function captureRevision(
   try {
     context.setDefaultTimeout(15_000);
     context.setDefaultNavigationTimeout(15_000);
-    await routeFixtures(context);
+    const missingAssets = await routeFixtures(context);
     await context.addInitScript(() => {
       try {
         localStorage.setItem("ccxp-lite-sidebar-variant", "classic");
@@ -310,6 +318,28 @@ async function captureRevision(
       screenshots.login = loginScreenshot;
       styles.login = await collectStyles(page, loginProbes);
 
+      /* eslint-disable no-await-in-loop -- Captures navigate the same page sequentially. */
+      for (const [name, route, ready] of [
+        [
+          "staff-registration",
+          "/ccxp/INQUIRE/PE/3/3000/PE30001.php",
+          "html[data-ccxp-registration-ready='true']",
+        ],
+        ["staff-history", "/ccxp/INQUIRE/PE/3/3000/PE30003.php", "html.ccxp-staff-shell"],
+      ]) {
+        process.stdout.write(`[${label}] ${name}\n`);
+        await page.goto(`${ccxpOrigin}${route}`, { waitUntil: "domcontentloaded" });
+        await page.locator(ready).waitFor({ state: "attached" });
+        await page.locator(".k-grid").first().waitFor();
+        const file = path.join(revisionOutputDir, `${name}.png`);
+        await capturePage(page, file);
+        screenshots[name] = file;
+        styles[name] = await collectStyles(page, [
+          { name: "grid", selector: ".k-grid", properties: visualProperties },
+        ]);
+      }
+
+      /* eslint-enable no-await-in-loop */
       process.stdout.write(`[${label}] standalone\n`);
       await page.goto(`${ccxpOrigin}/ccxp/INQUIRE/JH/B/B.2/B.2.3/JHB23001.php`, {
         waitUntil: "domcontentloaded",
@@ -359,7 +389,7 @@ async function captureRevision(
       styles["sidebar-layered-search"] = await collectStyles(navFrame, sidebarProbes);
 
       process.stdout.write(`[${label}] embedded destination\n`);
-      await navFrame.locator("button[title='\u6559\u5B78\u610F\u898B']").click();
+      await navFrame.locator("button[title^='\u6559\u5B78\u610F\u898B']").click();
       await navFrame
         .locator("button[title^='\u586B\u5BEB\u6559\u5B78\u610F\u898B\u8ABF\u67E5']")
         .click();
@@ -437,7 +467,7 @@ async function captureRevision(
           timezone: "Asia/Taipei",
           extensionDigest: directoryDigest(extensionDir),
           fixtureDigest: directoryDigest(fixtureRoot),
-          source: "test/browser-fixtures/work-log.provenance.json",
+          source: "test/browser-fixtures/coverage.json",
           screenshots,
           workLogOnly,
           recordVideo,
@@ -452,6 +482,9 @@ async function captureRevision(
       path.join(revisionOutputDir, "computed-styles.json"),
       `${JSON.stringify(styles, undefined, 2)}\n`,
     );
+    if (missingAssets.size > 0) {
+      throw new Error(`Missing host visual assets: ${[...missingAssets].join(", ")}`);
+    }
     return { screenshots, styles };
   } finally {
     process.stdout.write(`[${label}] closing browser\n`);

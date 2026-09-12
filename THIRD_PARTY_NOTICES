@@ -28,3 +28,10 @@ The bundled jQuery UI 1.10.4 theme retains its upstream license header:
 Source: https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/PE/common/jquery-ui/css/theme/jquery-ui-1.10.4.custom.min.css
 License: MIT (https://jquery.org/license)
 Copyright: 2014 jQuery Foundation and other contributors
+
+Additional legacy fixture assets are mapped to their original CCXP URL paths in
+host-assets.json: login/tree images, Materialize, Kendo UI theme styles and fonts,
+Font Awesome, Animate.css, W3.CSS, and notification styles. Existing vendor license
+headers are preserved verbatim. These snapshots are test resources only and are
+not included in extension packages. Kendo UI assets remain subject to their
+upstream Telerik/Progress license; this repository does not relicense them.

@@ -22,7 +22,7 @@
   "limitations": [
     "No live task record was captured",
     "Backend responses are simulated",
-    "Navigation contains a reduced category set",
+    "Navigation is the captured student role; other roles remain unverified",
     "One desktop viewport and student role"
   ]
 }
