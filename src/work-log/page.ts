@@ -50,6 +50,9 @@
         actionName?: string,
         actionValue?: string,
       ) {
+        if (actionName === "que") {
+          return submitSearch(originalToSubmit, form, actionValue);
+        }
         if (!shouldInterceptSubmission(form, actionName ?? "")) {
           return originalToSubmit.call(this, form, actionName, actionValue);
         }
@@ -61,6 +64,26 @@
       globalScope.setTimeout(installAttempt, 500, undefined);
     };
     installAttempt();
+  }
+
+  function submitSearch(
+    originalToSubmit: CcxpLiteWrappedSubmit,
+    form: HTMLFormElement,
+    actionValue?: string,
+  ) {
+    // The host calls form.submit(), which excludes submit buttons. Keep the server action
+    // independent of the translated label, and cancel the click's second/default submission.
+    const action = globalScope.document.createElement("input");
+    action.type = "hidden";
+    action.name = "S_SUBMIT";
+    action.value = "\u67E5\u8A62(Search)";
+    form.append(action);
+    try {
+      originalToSubmit.call(globalScope, form, "que", actionValue);
+    } finally {
+      action.remove();
+    }
+    return false;
   }
 
   function shouldInterceptSubmission(_form: HTMLFormElement, actionName: string) {
