@@ -12,14 +12,12 @@ const meta = {
   parameters: {
     docs: {
       description: {
-        component:
-          "Shared CSS variables for colors, spacing, surfaces, and typography. Copy their names directly into CSS; use the filter control to narrow the list. Values are generated from @ccxp-lite/tokens.",
+        component: "Use these names in CSS. Filter by token name.",
       },
     },
     i18n: {
       description: {
-        component:
-          "共用 CSS 變數涵蓋色彩、間距、表面與字體排版。變數名稱可直接複製到 CSS；使用 filter 設定可篩選清單。所有值皆由 @ccxp-lite/tokens 產生。",
+        component: "變數名稱可直接用於 CSS，透過 filter 依名稱篩選。",
       },
     },
   },

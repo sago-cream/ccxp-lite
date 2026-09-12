@@ -46,14 +46,12 @@ const meta = {
   parameters: {
     i18n: {
       description: {
-        component:
-          "渲染器負責標籤與控制項插槽。在 CCXP 中，表單適配器會將原始輸入框搬入插槽，保留其身分、名稱、值與事件處理函式。",
+        component: "標籤持續顯示，補充說明放在旁邊。",
       },
     },
     docs: {
       description: {
-        component:
-          "The renderer owns the label and control slot. In CCXP, the form adapter moves the original input into that slot to preserve its identity, name, value, and handlers.",
+        component: "Keep labels visible and place optional help beside them.",
       },
     },
   },

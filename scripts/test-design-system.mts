@@ -102,7 +102,7 @@ try {
   assert.equal(await open.evaluate((element) => element === document.activeElement), true);
   await open.click();
   await page.getByRole("button", { name: "Confirm", exact: true }).click();
-  assert.equal(await page.getByRole("status").textContent(), "Example confirmed.");
+  assert.equal(await page.getByRole("status").textContent(), "Confirmed.");
 
   const documentation = [
     [

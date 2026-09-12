@@ -70,18 +70,4 @@ export const LayoutSwitch: Story = {
       ),
     );
   },
-  parameters: {
-    i18n: {
-      description: {
-        story:
-          "同時展示兩種呈現狀態。儲存設定與框架導覽由側邊欄控制器負責，此範例不會更動儲存資料。",
-      },
-    },
-    docs: {
-      description: {
-        story:
-          "Both presentation states are shown. Persistence and frameset navigation belong to the sidebar controller; this specimen does not change storage.",
-      },
-    },
-  },
 };

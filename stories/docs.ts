@@ -86,12 +86,11 @@ export function LocalizedDocsPage() {
     undefined,
     createElement("h1", undefined, catalogLabel(locale, title)),
     description(first, "component"),
-    createElement("h2", undefined, catalogLabel(locale, "Examples")),
     ...stories.map((story) =>
       createElement(
         "section",
         { key: story.id, id: story.id },
-        createElement("h3", undefined, catalogLabel(locale, story.name)),
+        createElement("h2", undefined, catalogLabel(locale, story.name)),
         description(story, "story"),
         createElement(Canvas, { of: story.moduleExport, className: "ds-docs-canvas" }, undefined),
       ),

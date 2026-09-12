@@ -35,14 +35,12 @@ const meta = {
   parameters: {
     i18n: {
       description: {
-        component:
-          "游標移入可預覽說明，點擊可保持展開。按 Escape 或點擊外部可關閉。移除所屬視圖時，務必呼叫 destroy()。",
+        component: "游標移入可預覽，點擊可保持展開；按 Escape 或點擊外部可關閉。",
       },
     },
     docs: {
       description: {
-        component:
-          "Hover previews help; click pins it open. Escape and outside clicks dismiss it. Always call destroy() when the owning view is removed.",
+        component: "Hover to preview; click to keep open. Escape or an outside click dismisses it.",
       },
     },
   },

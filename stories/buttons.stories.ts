@@ -36,14 +36,12 @@ const meta = {
   parameters: {
     i18n: {
       description: {
-        component:
-          "主要按鈕用於送出等核心操作，次要按鈕用於取消，危險按鈕用於移除。這些按鈕與 CCXP 對話框共用同一份實作。停用狀態目前沿用既有外觀，但已停用原生啟動行為。",
+        component: "主要按鈕用於送出，次要按鈕用於取消，危險按鈕用於移除。",
       },
     },
     docs: {
       description: {
-        component:
-          "Use primary for the main commit action, secondary for cancel, and danger for removal. These are the same dialog buttons used by CCXP. Disabled currently retains the existing visual treatment; native activation is disabled.",
+        component: "Use primary for submission, secondary for cancel, and danger for removal.",
       },
     },
   },

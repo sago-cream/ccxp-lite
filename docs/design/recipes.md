@@ -1,13 +1,9 @@
 # Composition recipes
 
-The **Recipes / Composition** stories are interactive examples built from the production library.
-Their data and callbacks are inert. Follow these composition and ownership rules on CCXP pages.
-
 ## Field with help
 
-Use `createFieldRow` for the label and control slot and `mountInfoPopover` for concise help.
-Keep the label visible when help is closed. The adapter moves the original input into the slot,
-preserving its name, value, form association, and listeners. Dispose the help with its view.
+Keep the label visible and use help for optional detail. Move the original input into the control
+slot to preserve its form behavior. Call `help.destroy()` when removing the field.
 
 ```ts
 import { createFieldRow, mountInfoPopover } from "@ccxp-lite/ui";
@@ -20,53 +16,36 @@ const row = createFieldRow(doc, {
   accessory: help.element,
 });
 row.controlSlot.append(originalInput);
-// Append row.element to the existing form table and register help.destroy for cleanup.
+// Mount row.element in the form table; register help.destroy for cleanup.
 ```
 
-## Search toolbar with instructions
+## Search with instructions
 
-Use `createSidebarSearch` with a localized accessible name. Place supplemental instructions
-beside it with `mountInfoPopoverContent`. Keep essential instructions visible. The controller
-performs filtering and manages results. Move original language links through their host adapter.
+Use `createSidebarSearch` with an accessible name. Add optional help with
+`mountInfoPopoverContent`; keep essential instructions visible. The controller filters results.
 
-## Confirmation before a commit
+## Confirmation
 
-The shared view supplies title, description, and secondary/primary or danger actions. Its
-compatibility entry point is named `createRemovePinnedDialog`; work-log also uses it with primary
-actions and feature-owned content. Keep this API until a concrete consumer needs a new contract.
-
-The controller mounts in the correct document, focuses Cancel, handles Escape/backdrop/cancel,
-contains keyboard focus, restores the initiating control, and disposes listeners. Confirmation
-calls the owning feature; rendering the view never initiates a request.
-
-For work-log dates, use the validated plan after weekday filtering and duplicate checks. Preserve
-the date/time columns, Arial numeric treatment, and 12px gap below the count. Do not reproduce the
-batching or validation algorithm in the library or Storybook.
+Use `createRemovePinnedDialog` with a clear title, a consequence, and Cancel plus Confirm or Remove.
+Focus Cancel on open. Handle Escape and backdrop clicks, contain focus, and restore it on close.
+Validate in the feature controller before confirmation; submit only after the user confirms.
 
 ## Loading, empty, and error
 
-Use `createSkeletonStack` for placeholders, with a readable loading status and `aria-busy` on
-the changing region. Use `createEmptyState` for an empty result and its next step. Errors need a
-specific explanation and, when useful, a secondary Retry action. Keep retries, timeouts,
-navigation targets, and request cancellation in the destination controller.
+Pair `createSkeletonStack` with a loading status and `aria-busy`. Use `createEmptyState` to explain
+an empty result and its next step. Give errors a specific explanation and a Retry action when
+useful. Keep requests and retries in the feature controller.
 
-The Error and retry story uses an inert callback. Packaged extension tests cover real destination
-navigation behavior.
-
-## Applying tokens
+## Styles
 
 ```ts
 import "@ccxp-lite/tokens/tokens.css";
 import "@ccxp-lite/ui/styles.css";
 ```
 
-For a frame or another document, install styles there or apply the same generated token map:
+Install styles in each iframe document. To apply tokens programmatically:
 
 ```ts
 import { applyTokens } from "@ccxp-lite/tokens";
 applyTokens(frameDocument.documentElement);
 ```
-
-Add values in `packages/tokens/src/index.ts`, regenerate with `bun run design:build`, and inspect
-affected examples. The extension uses the classic bridge automatically; do not add ESM imports
-to unbundled content scripts.

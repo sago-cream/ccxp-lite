@@ -41,7 +41,6 @@ const labels: Readonly<Record<string, string>> = {
   Surfaces: "表面",
   Dialog: "對話框",
   Typography: "字體排版",
-  Examples: "範例",
   Controls: "互動設定",
 };
 

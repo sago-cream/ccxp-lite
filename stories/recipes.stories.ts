@@ -62,11 +62,7 @@ export const Confirmation: Story = {
       closeCurrent = close;
       dialogController.listen(view.keepButton, "click", close);
       dialogController.listen(view.confirmButton, "click", () => {
-        status.textContent = localized(
-          context.globals.locale,
-          "範例已確認。",
-          "Example confirmed.",
-        );
+        status.textContent = localized(context.globals.locale, "已確認。", "Confirmed.");
         close();
       });
       dialogController.listen(view.overlay, "click", (event) => {
@@ -99,14 +95,12 @@ export const Confirmation: Story = {
   parameters: {
     i18n: {
       description: {
-        story:
-          "使用正式對話框視圖與展示用控制器。「取消」、Escape 與背景點擊可關閉視窗；確認僅更新這個範例。工讀紀錄的驗證與送出留在功能控制器。",
+        story: "按「取消」、Escape 或點擊背景可關閉。",
       },
     },
     docs: {
       description: {
-        story:
-          "Production dialog view with an inert example controller. Cancel, Escape, and backdrop dismiss; confirmation only updates this example. Work-log validation and submission stay in the feature controller.",
+        story: "Cancel, Escape, or a backdrop click closes the dialog.",
       },
     },
   },
@@ -167,11 +161,7 @@ export const ErrorAndRetry: Story = {
     controller.listen(retry, "click", () => {
       panel.replaceChildren(
         dom.element("p", {
-          text: localized(
-            context.globals.locale,
-            "範例已重新載入。",
-            "Example loaded successfully.",
-          ),
+          text: localized(context.globals.locale, "已載入。", "Loaded."),
         }),
       );
     });

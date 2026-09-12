@@ -52,3 +52,6 @@ Read the [design guidelines](docs/design/guidelines.md) and [recipes](docs/desig
 Use `bun run storybook` to inspect production components locally. Shared UI changes should update
 relevant stories and pass `bun run storybook:build` plus `bun run test:design`, in addition to the
 existing extension checks. Both design workspaces are private and release with this repository.
+
+Current accessibility follow-ups: purple/focus contrast, disabled button styling, reduced-motion
+support for skeletons, and focus containment in the remove-pinned dialog.
