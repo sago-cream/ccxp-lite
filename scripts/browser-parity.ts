@@ -189,6 +189,11 @@ async function routeFixtures(context: BrowserContext): Promise<ReadonlySet<strin
 async function stabilize(page: Page) {
   await Promise.all(
     page.frames().map(async (frame) => {
+      await frame.waitForFunction(() =>
+        [...document.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]')].every(
+          (link) => link.disabled || link.sheet !== null,
+        ),
+      );
       await frame
         .addStyleTag({
           content:
@@ -330,6 +335,7 @@ async function captureRevision(
         process.stdout.write(`[${label}] ${name}\n`);
         await page.goto(`${ccxpOrigin}${route}`, { waitUntil: "domcontentloaded" });
         await page.locator(ready).waitFor({ state: "attached" });
+        await page.locator("body.ccxp-lite-main-skin").waitFor();
         await page.locator(".k-grid").first().waitFor();
         const file = path.join(revisionOutputDir, `${name}.png`);
         await capturePage(page, file);

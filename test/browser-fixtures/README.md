@@ -21,8 +21,9 @@ Duplicate assets share one local file. No private source captures are committed.
 
 The packaged-extension harness captures ten states: login, assistant registration, assistant
 history, standalone closed evaluation, classic sidebar, layered search, embedded closed evaluation,
-standalone work log, framed multi-day work log, and post-Add work log. It fails on missing visual
-assets, missing readiness markers, and failed interactions before comparing screenshots and styles.
+standalone work log, framed multi-day work log, and post-Add work log. It waits for the shared main skin as well as page-specific readiness and loaded stylesheets.
+It fails on missing visual assets, missing readiness markers, and failed interactions before
+comparing screenshots and styles.
 Tests also reject truncated captures and check synthetic staff grid rows and CSS asset references.
 
 This is representative coverage, not every possible CCXP route or state. OAuth authorization,
