@@ -1,0 +1,97 @@
+/* 使用相同BG，不重複且靠上靠左
+body {
+   background: url(/images/index_bg.jpg) no-repeat top left;
+}
+*/
+
+.header {
+	font-family: "標楷體";
+	font-size: 18pt;
+	color: #3D32A0;
+}
+table {
+padding-top: 2pt; padding-right: 2pt; padding-bottom: 2pt; padding-left: 2pt; border-style: ridge; border-top-width: 0.5pt; border-right-width: 0.5pt; border-bottom-width: 0.5pt; border-left-width: 0.5pt
+
+         
+}
+input {
+	font-size: 12pt
+}
+select {
+	font-size: 9 pt
+}
+.class1 {  background-color: #6699ff; font-size: 10pt; color: #ffffff}
+.class2 {  background-color: #f0f8ff; font-size: 10pt; color: #000099}
+.class3 {  background-color: #ffffee; font-size: 10pt; color: #000099; font-family: TW-Sung;}
+.class4 {  background-color: #ffffee; font-size: 14pt; color: #000099}
+
+.word {
+	font-family: "新細明體";
+	font-size: 10pt;
+
+}
+.description {
+	font-family: "新細明體";
+	font-size: 12pt;
+	font-weight: bold;
+}
+.newtable {
+padding-top: 1pt; padding-right: 1pt; padding-bottom: 1pt; padding-left: 1pt; border-style: ridge; border-top-width: 0.1pt; border-right-width: 0.1pt; border-bottom-width: 0.1pt; border-left-width: 0.1pt
+}
+
+.btn {
+	font-family: "新細明體";
+	font-size: 12pt;
+	color: #FFFFFF;
+	background-color: #6666FF;
+}
+
+.btn2 {
+	font-family: "新細明體";
+	font-size: 8pt;
+	color: #FFFFFF;
+	background-color: #6666FF;
+}
+
+/* 以下為20140226新建 Added By Jeff Lin */
+/* 表格相關樣式 */
+.tb_style_new
+{
+    /*padding-top: 2pt; padding-right: 2pt; padding-bottom: 2pt; padding-left: 2pt; border-top-width: 0.5pt; border-right-width: 0.5pt; border-bottom-width: 0.5pt; border-left-width: 0.5pt;*/
+    empty-cells:show; border:medium solid rgb(101,132,143);
+}
+.tr_cross_1
+{
+    background-color:rgb(220,204,228);
+}
+.tr_cross_2
+{
+    background-color:rgb(255,255,255);
+}
+.caption_style
+{
+    background-color:rgb(235,177,90);
+}
+.th_style
+{
+    background-color:rgb(235,177,90);
+}
+/*標題相關樣式*/
+.header1 {
+	font-family: "標楷體";
+	font-size: 18pt;
+    font-weight: bold;
+	color: rgb(64,64,57);
+}
+.header2 {
+	font-family: "標楷體";
+	font-size: 16pt;
+	color: rgb(64,64,57);
+}
+
+/*共用 body style*/
+body
+{
+    background-image: url("/img/back_3.jpg");
+    color: rgb(64,64,57);
+}

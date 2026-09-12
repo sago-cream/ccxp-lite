@@ -578,5 +578,13 @@
   "/ccxp/INQUIRE/images/login_mid.png": {
     "file": "host-assets/7ff4c5337e20-login_mid.png",
     "contentType": "image/png"
+  },
+  "/ccxp/INQUIRE/JH/mod/auth_img/auth_img.php": {
+    "file": "host-assets/1bc7243cd24e-auth_img.png",
+    "contentType": "image/png"
+  },
+  "/style/JH/JH.css": {
+    "file": "host-assets/e650a56fc577-JH.css",
+    "contentType": "text/css"
   }
 }

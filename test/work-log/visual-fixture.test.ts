@@ -80,6 +80,18 @@ test("legacy visual fixtures are complete, inert, and use synthetic staff record
       expect(row.textContent).toContain("TEST000001");
       expect(row.matches('[data-uid="fixture"]')).toBe(true);
     }
+    if (file === "staff-registration.html") {
+      const fields = [...window.document.querySelectorAll(".k-grid thead th")].map((header) =>
+        header instanceof window.HTMLElement ? header.dataset.field : undefined,
+      );
+      for (const row of rows) {
+        const cells = [...row.querySelectorAll("td")];
+        expect(cells[fields.indexOf("PJ_ID")]?.textContent).toBe("TEST000001");
+        expect(cells[fields.indexOf("AMT")]?.textContent).toBe("1,600");
+        expect(cells[fields.indexOf("S_DATE")]?.textContent).toBe("2026/09/01");
+        expect(cells[fields.indexOf("E_DATE")]?.textContent).toBe("2026/09/30");
+      }
+    }
     for (const input of window.document.querySelectorAll("input[type='hidden']")) {
       expect(input.getAttribute("value")).toBe("fixture");
     }

@@ -19,16 +19,23 @@ Duplicate assets share one local file. No private source captures are committed.
 
 ## Coverage and limits
 
-The packaged-extension harness captures ten states: login, assistant registration, assistant
-history, standalone closed evaluation, classic sidebar, layered search, embedded closed evaluation,
-standalone work log, framed multi-day work log, and post-Add work log. It waits for the shared main skin as well as page-specific readiness and loaded stylesheets.
+The packaged-extension harness captures fifteen states: login; assistant registration in Chinese,
+with English/reminders open, and scrolled to records; assistant history; the course directory,
+curriculum query, and keyword query in the main frame; standalone closed evaluation; classic sidebar;
+layered search; embedded closed evaluation; standalone work log; framed multi-day work log; and
+post-Add work log. The public query pages were navigated live and captured on 2026-09-12 to exercise
+the broad styles on native tables, links, and controls outside the dedicated extension modules.
+The harness waits for the shared main skin as well as page-specific readiness and loaded stylesheets.
 It fails on missing visual assets, missing readiness markers, and failed interactions before
 comparing screenshots and styles.
 Tests also reject truncated captures and check synthetic staff grid rows and CSS asset references.
 
 This is representative coverage, not every possible CCXP route or state. OAuth authorization,
 non-student roles, active evaluation forms, responsive breakpoints, staff record-detail/editing,
-live widget loading, and real work-log task/validation variants remain explicit gaps. A change
+live widget loading, transient registration notices, and real work-log task/validation variants
+remain explicit gaps. The registration snapshot retains the special-identity notice; the live
+popover also contained wage and latest-notice messages that had expired before the raw DOM capture.
+A change
 in one of those states needs its own live-derived fixture and verification before its PR media
 can be considered representative. Do not use the existence of another fixture for the same module
 as evidence that the affected state is covered.

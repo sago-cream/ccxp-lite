@@ -55,13 +55,31 @@
       "file": "staff-registration.html",
       "path": "/ccxp/INQUIRE/PE/3/3000/PE30001.php",
       "owners": ["src/staff-registration/"],
-      "state": "Registration form and initialized Kendo grid; synthetic options and records"
+      "state": "Registration form and initialized Kendo grid; synthetic options and typed records; special-identity reminder retained; Chinese, English/reminder-open, and scrolled-records captures"
     },
     {
       "file": "staff-history.html",
       "path": "/ccxp/INQUIRE/PE/3/3000/PE30003.php",
       "owners": ["src/staff-history/"],
       "state": "Effective-items panel expanded, initialized Kendo grids; synthetic records"
+    },
+    {
+      "file": "course-hub.html",
+      "path": "/ccxp/INQUIRE/JH/6/JH62.htm",
+      "owners": ["src/main/", "src/shared/"],
+      "state": "Public course-query directory: legacy linked table in main frame"
+    },
+    {
+      "file": "curriculum.html",
+      "path": "/ccxp/INQUIRE/JH/6/6.2/6.2.9/JH629001.php",
+      "owners": ["src/main/", "src/shared/"],
+      "state": "Public curriculum query: semester and department selects in main frame"
+    },
+    {
+      "file": "keyword.html",
+      "path": "/ccxp/INQUIRE/JH/6/6.2/6.2.I/JH62i001.php",
+      "owners": ["src/main/", "src/shared/"],
+      "state": "Public course/teacher keyword query: native inputs and table layout in main frame"
     }
   ],
   "gaps": [
@@ -79,7 +97,7 @@
     },
     {
       "owners": ["src/staff-history/", "src/staff-registration/"],
-      "reason": "Snapshots validate rendered layout, not live Kendo data loading, menus, editing, or submission; record-detail state not certified"
+      "reason": "Snapshots validate rendered layout, not live Kendo data loading, menus, editing, or submission; record-detail state not certified. Registration wage and latest-notice toasts expired before raw capture; only the special-identity reminder is retained."
     },
     {
       "owners": ["src/main/"],
@@ -93,5 +111,6 @@
       "owners": ["src/"],
       "reason": "Desktop 1280x960 capture only; responsive breakpoints need separate evidence when changed"
     }
-  ]
+  ],
+  "liveAudit": "2026-09-12: navigated registration with ccxpLite enabled, verified header, reminder contents and English switch; navigated public course directory, curriculum and keyword forms. Public query HTML retrieved from those same routes without session data."
 }

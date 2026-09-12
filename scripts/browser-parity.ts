@@ -41,6 +41,9 @@ const fixtureByPath = new Map<string, string>([
   ["/ccxp/INQUIRE/", "login.html"],
   ["/ccxp/INQUIRE/IN_INQ_STU.php", "navigation.html"],
   ["/ccxp/INQUIRE/index.php", "login.html"],
+  ["/ccxp/INQUIRE/JH/6/6.2/6.2.9/JH629001.php", "curriculum.html"],
+  ["/ccxp/INQUIRE/JH/6/6.2/6.2.I/JH62i001.php", "keyword.html"],
+  ["/ccxp/INQUIRE/JH/6/JH62.htm", "course-hub.html"],
   ["/ccxp/INQUIRE/JH/B/B.2/B.2.3/JHB23001.php", "standalone.html"],
   ["/ccxp/INQUIRE/PE/3/3000/PE30001.php", "staff-registration.html"],
   ["/ccxp/INQUIRE/PE/3/3000/PE30003.php", "staff-history.html"],
@@ -168,14 +171,19 @@ async function routeFixtures(context: BrowserContext): Promise<ReadonlySet<strin
     }
     const fixtureName = fixtureByPath.get(requestUrl.pathname);
     if (requestUrl.origin === ccxpOrigin && fixtureName !== undefined) {
-      await route.fulfill({
-        status: 200,
-        contentType: "text/html; charset=utf-8",
-        body:
-          fixtureName === "frameset.html" && requestUrl.searchParams.has("work-log")
-            ? readFixture(fixtureName).replace("xp03_m.htm", "PE/1/14D/PE14D1.php")
-            : readFixture(fixtureName),
-      });
+      let html = readFixture(fixtureName);
+      if (fixtureName === "frameset.html") {
+        if (requestUrl.searchParams.has("work-log")) {
+          html = html.replace("xp03_m.htm", "PE/1/14D/PE14D1.php");
+        } else {
+          const requested = requestUrl.searchParams.get("page");
+          const destination = [...fixtureByPath].find(([, file]) => file === `${requested}.html`);
+          if (destination) {
+            html = html.replace("xp03_m.htm", destination[0]);
+          }
+        }
+      }
+      await route.fulfill({ status: 200, contentType: "text/html; charset=utf-8", body: html });
       return;
     }
     if (["font", "image", "stylesheet"].includes(route.request().resourceType())) {
@@ -343,8 +351,38 @@ async function captureRevision(
         styles[name] = await collectStyles(page, [
           { name: "grid", selector: ".k-grid", properties: visualProperties },
         ]);
+        if (name === "staff-registration") {
+          await page.getByRole("switch", { name: "English", exact: true }).check();
+          await page.getByRole("button", { name: "Registration reminders", exact: true }).click();
+          await page.locator("#ccxp-registration-reminders").waitFor();
+          const reminders = path.join(revisionOutputDir, "staff-registration-reminders.png");
+          await capturePage(page, reminders);
+          screenshots["staff-registration-reminders"] = reminders;
+          await page
+            .getByRole("button", { name: "Registration reminders", exact: true })
+            .press("Escape");
+          await page.getByRole("switch", { name: "English", exact: true }).uncheck();
+          await page.locator(".k-grid").first().scrollIntoViewIfNeeded();
+          const records = path.join(revisionOutputDir, "staff-registration-records.png");
+          await capturePage(page, records);
+          screenshots["staff-registration-records"] = records;
+        }
       }
 
+      for (const name of ["course-hub", "curriculum", "keyword"]) {
+        process.stdout.write(`[${label}] ${name} in main frame\n`);
+        await page.goto(`${ccxpOrigin}/ccxp/INQUIRE/select_entry.php?page=${name}`, {
+          waitUntil: "load",
+        });
+        const scope = page.frameLocator('frame[name="main"]');
+        await scope.locator("body.ccxp-lite-main-skin").waitFor();
+        await page.waitForFunction(
+          () => document.querySelector("frameset[cols]")?.getAttribute("cols") === "324,*",
+        );
+        const file = path.join(revisionOutputDir, `${name}.png`);
+        await capturePage(page, file);
+        screenshots[name] = file;
+      }
       /* eslint-enable no-await-in-loop */
       process.stdout.write(`[${label}] standalone\n`);
       await page.goto(`${ccxpOrigin}/ccxp/INQUIRE/JH/B/B.2/B.2.3/JHB23001.php`, {
