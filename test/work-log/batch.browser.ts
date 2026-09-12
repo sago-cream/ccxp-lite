@@ -3,9 +3,20 @@ import { chromium } from "playwright";
 import ts from "typescript";
 import { expect, test } from "vitest";
 
-const source = ts.transpileModule(fs.readFileSync("src/work-log/batch.ts", "utf8"), {
-  compilerOptions: { target: ts.ScriptTarget.ES2023, module: ts.ModuleKind.None },
-}).outputText;
+const source = [
+  "src/shared/constants.ts",
+  "src/shared/ui/renderer.ts",
+  "src/shared/ui/buttons.ts",
+  "src/menu/ui/dialog-view.ts",
+  "src/work-log/batch.ts",
+]
+  .map(
+    (path) =>
+      ts.transpileModule(fs.readFileSync(path, "utf8"), {
+        compilerOptions: { target: ts.ScriptTarget.ES2023, module: ts.ModuleKind.None },
+      }).outputText,
+  )
+  .join("\n");
 const endpoint = "https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/PE/1/14D/PE14D1.php";
 
 const numbers = (count: number, offset = 0) =>
@@ -161,6 +172,34 @@ test("submits sequential native Big5 forms with fresh date tasks and guards comp
       .getByLabel("\u7D50\u675F\u65E5\u671F", { exact: true })
       .fill("2026-09-11");
     await page.getByRole("button", { name: "Add", exact: true }).click();
+    expect(posts).toHaveLength(0);
+    expect(await page.getByRole("dialog").textContent()).toContain("2026-09-10");
+    expect(await page.getByRole("dialog").textContent()).toContain("2026-09-11");
+    expect(await page.getByRole("dialog").textContent()).toContain("08:00\u201310:00");
+    const numericLayout = await page.getByRole("dialog").evaluate((dialog) => {
+      const cells = [...dialog.querySelectorAll("li time")];
+      const widths = Array.from({ length: 10 }, (_, digit) => {
+        const probe = document.createElement("time");
+        probe.textContent = String(digit);
+        cells[0].parentElement?.append(probe);
+        const range = document.createRange();
+        range.selectNodeContents(probe);
+        const { width } = range.getBoundingClientRect();
+        probe.remove();
+        return width;
+      });
+      return {
+        digitSpread: Math.max(...widths) - Math.min(...widths),
+        periodOffsets: [cells[1], cells[3]].map((cell) => cell.getBoundingClientRect().left),
+      };
+    });
+    expect(numericLayout.digitSpread).toBeLessThan(0.1);
+    expect(numericLayout.periodOffsets[0]).toBe(numericLayout.periodOffsets[1]);
+    await page.getByRole("button", { name: "\u53D6\u6D88", exact: true }).click();
+    expect(posts).toHaveLength(0);
+    expect(await page.getByRole("dialog").count()).toBe(0);
+    await page.getByRole("button", { name: "Add", exact: true }).click();
+    await page.getByRole("button", { name: "\u78BA\u8A8D\u9001\u51FA", exact: true }).click();
     await page.waitForFunction(
       () =>
         document.querySelector('[role="status"]')?.textContent.includes("\u6210\u529F 2 \u7B46"),
@@ -221,6 +260,7 @@ test.each(["reject", "uncertain", "stop"] as const)(
         .getByLabel("\u7D50\u675F\u65E5\u671F", { exact: true })
         .fill("2026-09-11");
       await page.getByRole("button", { name: "Add", exact: true }).click();
+      await page.getByRole("button", { name: "\u78BA\u8A8D\u9001\u51FA", exact: true }).click();
       await page.waitForFunction(
         (expected) => document.querySelector('[role="status"]')?.textContent.includes(expected),
         {

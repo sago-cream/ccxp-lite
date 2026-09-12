@@ -10,6 +10,7 @@
     targetDocument: Document,
     itemName: string,
     strings: Readonly<Record<string, string>>,
+    variant: "secondary" | "danger" | "primary" = "danger",
   ): CcxpLiteRemovePinnedDialogView {
     const dom = createRenderer(targetDocument);
     const titleId = `ccxp-lite-remove-pinned-title-${Date.now()}`;
@@ -22,7 +23,7 @@
     const confirmButton = createDialogActionButton(
       targetDocument,
       strings.sidebarRemovePinnedDialogConfirm,
-      "danger",
+      variant,
     );
     const actions = dom.element(
       "div",

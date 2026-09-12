@@ -35,7 +35,11 @@
         "menu/components/*.css",
         "menu/variants/*.css",
         "work-log/page.js",
-        "work-log/batch.js"
+        "work-log/batch.js",
+        "shared/constants.js",
+        "shared/ui/renderer.js",
+        "shared/ui/buttons.js",
+        "menu/ui/dialog-view.js"
       ],
       "matches": ["https://www.ccxp.nthu.edu.tw/*", "https://ccxp.nthu.edu.tw/*"]
     },

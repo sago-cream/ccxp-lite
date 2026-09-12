@@ -42,7 +42,7 @@
   function createDialogActionButton(
     targetDocument: Document,
     label: string,
-    variant: "secondary" | "danger",
+    variant: "secondary" | "danger" | "primary",
   ): HTMLElement {
     const button = createButton(targetDocument);
     button.textContent = label;
@@ -57,10 +57,12 @@
       transition: "background-color 120ms ease, border-color 120ms ease, color 120ms ease",
       outline: "none",
     };
-    if (variant === "danger") {
+    if (variant === "danger" || variant === "primary") {
+      const color =
+        variant === "danger" ? "var(--ccxp-lite-type-danger-color)" : "var(--ccxp-lite-primary)";
       Object.assign(button.style, baseStyles, {
-        borderColor: "var(--ccxp-lite-type-danger-color)",
-        backgroundColor: "var(--ccxp-lite-type-danger-color)",
+        borderColor: color,
+        backgroundColor: color,
         color: "var(--ccxp-lite-surface)",
       });
       button.addEventListener("mouseenter", () => {
