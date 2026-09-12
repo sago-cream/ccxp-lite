@@ -1,3 +1,4 @@
+import { TestEvent } from "../helpers/dom-event.js";
 import { afterEach, describe, expect, test, vi } from "vitest";
 
 import { createSidebarModel, createSidebarShellHtml } from "../helpers/menu-fixtures.js";
@@ -37,8 +38,8 @@ describe("destination lifetime", () => {
     const frame = runtime.createDestinationFrame(document, document, link, status);
     expect(frame.src).toBe("https://www.ccxp.nthu.edu.tw/grades");
     expect(frame.hidden).toBe(true);
-    frame.dispatchEvent(new Event("load"));
-    frame.dispatchEvent(new Event("load"));
+    frame.dispatchEvent(new TestEvent("load"));
+    frame.dispatchEvent(new TestEvent("load"));
     vi.advanceTimersByTime(9000);
     expect(status.mock.calls).toEqual([["loading"], ["ready"]]);
     expect(frame.hidden).toBe(false);
@@ -51,14 +52,14 @@ describe("destination lifetime", () => {
     const firstStatus = vi.fn<(status: "loading" | "ready" | "error") => void>();
     const first = runtime.createDestinationFrame(document, document, link, firstStatus);
     vi.advanceTimersByTime(8000);
-    first.dispatchEvent(new Event("load"));
+    first.dispatchEvent(new TestEvent("load"));
     expect(firstStatus.mock.calls).toEqual([["loading"], ["error"]]);
     expect(first.hidden).toBe(true);
     const nextStatus = vi.fn<(status: "loading" | "ready" | "error") => void>();
     const next = runtime.createDestinationFrame(document, document, link, nextStatus);
-    first.dispatchEvent(new Event("load"));
+    first.dispatchEvent(new TestEvent("load"));
     expect(nextStatus.mock.calls).toEqual([["loading"]]);
-    next.dispatchEvent(new Event("load"));
+    next.dispatchEvent(new TestEvent("load"));
     expect(nextStatus.mock.calls).toEqual([["loading"], ["ready"]]);
     runtime.disposeDestination(document);
   });
@@ -75,8 +76,8 @@ describe("destination lifetime", () => {
     const frame = runtime.createDestinationFrame(document, document, link, status);
     runtime.disposeDestination(document);
     runtime.disposeDestination(document);
-    legacy.dispatchEvent(new Event("load"));
-    frame.dispatchEvent(new Event("load"));
+    legacy.dispatchEvent(new TestEvent("load"));
+    frame.dispatchEvent(new TestEvent("load"));
     vi.advanceTimersByTime(9000);
     expect(status.mock.calls).toEqual([["loading"]]);
     expect(frame.src).toBe("https://www.ccxp.nthu.edu.tw/grades");
@@ -93,10 +94,10 @@ describe("destination lifetime", () => {
     document.body.append(legacy);
     const status = vi.fn<(status: "loading" | "ready" | "error") => void>();
     const frame = runtime.createDestinationFrame(document, document, link, status);
-    legacy.dispatchEvent(new Event("load"));
+    legacy.dispatchEvent(new TestEvent("load"));
     expect(frame.src).toBe("https://www.ccxp.nthu.edu.tw/redirect");
     expect(status.mock.calls).toEqual([["loading"]]);
-    frame.dispatchEvent(new Event("load"));
+    frame.dispatchEvent(new TestEvent("load"));
     expect(status.mock.calls).toEqual([["loading"], ["ready"]]);
     runtime.disposeDestination(document);
   });
@@ -108,13 +109,13 @@ describe("destination lifetime", () => {
     for (const cleanup of window.CCXP_LITE.cleanupTasks ?? []) {
       cleanup();
     }
-    frame.dispatchEvent(new Event("load"));
+    frame.dispatchEvent(new TestEvent("load"));
     vi.advanceTimersByTime(9000);
     expect(status.mock.calls).toEqual([["loading"]]);
     expect(vi.getTimerCount()).toBe(0);
   });
 
-  test("sidebar retry replaces the frame and back disposes it", () => {
+  test("sidebar retry replaces the frame and back disposes it", async () => {
     const { window, document, link } = setupDestination();
     const state = requireValue(window.CCXP_LITE.sidebarState).getSidebarUiState(document);
     state.sidebarVariant = "layered";
@@ -136,14 +137,14 @@ describe("destination lifetime", () => {
       document.querySelector<HTMLIFrameElement>(".ccxp-lite-destination-frame"),
     );
     expect(next).not.toBe(first);
-    next.dispatchEvent(new Event("load"));
+    next.dispatchEvent(new TestEvent("load"));
     expect(next.hidden).toBe(false);
     requireElement(document.querySelector<HTMLButtonElement>(".ccxp-lite-back-button")).click();
     expect(document.querySelector(".ccxp-lite-destination-frame")).toBeNull();
     expect(state.activeLeaf).toBeUndefined();
-    first.dispatchEvent(new Event("load"));
-    next.dispatchEvent(new Event("load"));
-    vi.advanceTimersByTime(9000);
+    first.dispatchEvent(new TestEvent("load"));
+    next.dispatchEvent(new TestEvent("load"));
+    await vi.advanceTimersByTimeAsync(9000);
     expect(document.querySelector(".ccxp-lite-destination-error")).toBeNull();
     expect(vi.getTimerCount()).toBe(0);
   });

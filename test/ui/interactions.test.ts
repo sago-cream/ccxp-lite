@@ -1,3 +1,4 @@
+import { TestEvent } from "../helpers/dom-event.js";
 import { describe, expect, test, vi } from "vitest";
 import { createLoginHtml } from "../helpers/login-fixtures.js";
 import { createSidebarModel, createSidebarShellHtml } from "../helpers/menu-fixtures.js";
@@ -52,12 +53,12 @@ describe("extracted UI interactions", () => {
     );
     expect(button.getAttribute("aria-controls")).toBe(popup.id);
     expect(popup.hidden).toBe(true);
-    wrap.dispatchEvent(new Event("mouseenter"));
+    wrap.dispatchEvent(new TestEvent("mouseenter"));
     expect(popup.hidden).toBe(false);
-    wrap.dispatchEvent(new Event("mouseleave"));
+    wrap.dispatchEvent(new TestEvent("mouseleave"));
     expect(popup.hidden).toBe(true);
     button.click();
-    wrap.dispatchEvent(new Event("mouseleave"));
+    wrap.dispatchEvent(new TestEvent("mouseleave"));
     expect(popup.hidden).toBe(false);
     popup.click();
     expect(button.getAttribute("aria-expanded")).toBe("true");
@@ -135,11 +136,11 @@ describe("extracted UI interactions", () => {
       document.querySelector<HTMLInputElement>(".ccxp-lite-sidebar-search-input"),
     );
     input.value = "nothing-matches";
-    input.dispatchEvent(new Event("input", { bubbles: true }));
+    input.dispatchEvent(new TestEvent("input", { bubbles: true }));
     expect(state.searchQuery).toBe("nothing-matches");
     expect(document.querySelector(".ccxp-lite-empty")).not.toBeNull();
     input.value = "";
-    input.dispatchEvent(new Event("input", { bubbles: true }));
+    input.dispatchEvent(new TestEvent("input", { bubbles: true }));
     expect(document.querySelector('button[title="Courses & Grades"]')).not.toBeNull();
     expect(input.dataset.ccxpLiteSearchBound).toBe("true");
   });
@@ -354,7 +355,7 @@ describe("extracted UI interactions", () => {
       expect(frame.hidden).toBe(true);
       expect(error.hidden).toBe(true);
       if (outcome === "success") {
-        frame.dispatchEvent(new Event("load"));
+        frame.dispatchEvent(new TestEvent("load"));
         expect(frame.hidden).toBe(false);
         expect(loading.hidden).toBe(true);
         requireValue(timers[0])();

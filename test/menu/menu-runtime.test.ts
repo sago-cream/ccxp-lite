@@ -1,3 +1,4 @@
+import { TestEvent } from "../helpers/dom-event.js";
 import { describe, expect, test, vi } from "vitest";
 import {
   createTestWindow,
@@ -100,7 +101,7 @@ describe("sidebar runtime", () => {
     frameDocument.body.innerHTML =
       '<div id="legacy" style="color: red !important; width: 11px !important; display: none !important">Legacy</div>';
 
-    destinationFrame.dispatchEvent(new Event("load"));
+    destinationFrame.dispatchEvent(new TestEvent("load"));
 
     const legacy = frameDocument.querySelector<HTMLElement>("#legacy");
     if (!legacy) {
