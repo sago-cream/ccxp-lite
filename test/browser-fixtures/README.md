@@ -15,6 +15,7 @@ The student navigation retains the full tree declarations and rendered DOM rathe
 category subset. Session parameters are removed/replaced. The frame shell retains the original
 130px header and 200px navigation dimensions. The extension applies its own layout at runtime.
 Host CSS, images, and fonts are bundled at their source routes through `host-assets.json`.
+Big5 HTML and stylesheets are transcoded to UTF-8 together to preserve Chinese font names.
 Duplicate assets share one local file. No private source captures are committed.
 
 ## Coverage and limits
@@ -35,8 +36,7 @@ non-student roles, active evaluation forms, responsive breakpoints, staff record
 live widget loading, transient registration notices, and real work-log task/validation variants
 remain explicit gaps. The registration snapshot retains the special-identity notice; the live
 popover also contained wage and latest-notice messages that had expired before the raw DOM capture.
-A change
-in one of those states needs its own live-derived fixture and verification before its PR media
+A change in one of those states needs its own live-derived fixture and verification before its PR media
 can be considered representative. Do not use the existence of another fixture for the same module
 as evidence that the affected state is covered.
 

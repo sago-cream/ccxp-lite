@@ -1,11 +1,11 @@
-/* ¨Ï¥Î¬Û¦PBG¡A¤£­«½Æ¥B¾a¤W¾a¥ª
+/* ä½¿ç”¨ç›¸åŒBGï¼Œä¸é‡è¤‡ä¸”é ä¸Šé å·¦
 body {
    background: url(/images/index_bg.jpg) no-repeat top left;
 }
 */
 
 .header {
-	font-family: "¼Ğ·¢Åé";
+	font-family: "æ¨™æ¥·é«”";
 	font-size: 18pt;
 	color: #3D32A0;
 }
@@ -26,12 +26,12 @@ select {
 .class4 {  background-color: #ffffee; font-size: 14pt; color: #000099}
 
 .word {
-	font-family: "·s²Ó©úÅé";
+	font-family: "æ–°ç´°æ˜é«”";
 	font-size: 10pt;
 
 }
 .description {
-	font-family: "·s²Ó©úÅé";
+	font-family: "æ–°ç´°æ˜é«”";
 	font-size: 12pt;
 	font-weight: bold;
 }
@@ -40,21 +40,21 @@ padding-top: 1pt; padding-right: 1pt; padding-bottom: 1pt; padding-left: 1pt; bo
 }
 
 .btn {
-	font-family: "·s²Ó©úÅé";
+	font-family: "æ–°ç´°æ˜é«”";
 	font-size: 12pt;
 	color: #FFFFFF;
 	background-color: #6666FF;
 }
 
 .btn2 {
-	font-family: "·s²Ó©úÅé";
+	font-family: "æ–°ç´°æ˜é«”";
 	font-size: 8pt;
 	color: #FFFFFF;
 	background-color: #6666FF;
 }
 
-/* ¥H¤U¬°20140226·s«Ø Added By Jeff Lin */
-/* ªí®æ¬ÛÃö¼Ë¦¡ */
+/* ä»¥ä¸‹ç‚º20140226æ–°å»º Added By Jeff Lin */
+/* è¡¨æ ¼ç›¸é—œæ¨£å¼ */
 .tb_style_new
 {
     /*padding-top: 2pt; padding-right: 2pt; padding-bottom: 2pt; padding-left: 2pt; border-top-width: 0.5pt; border-right-width: 0.5pt; border-bottom-width: 0.5pt; border-left-width: 0.5pt;*/
@@ -76,20 +76,20 @@ padding-top: 1pt; padding-right: 1pt; padding-bottom: 1pt; padding-left: 1pt; bo
 {
     background-color:rgb(235,177,90);
 }
-/*¼ĞÃD¬ÛÃö¼Ë¦¡*/
+/*æ¨™é¡Œç›¸é—œæ¨£å¼*/
 .header1 {
-	font-family: "¼Ğ·¢Åé";
+	font-family: "æ¨™æ¥·é«”";
 	font-size: 18pt;
     font-weight: bold;
 	color: rgb(64,64,57);
 }
 .header2 {
-	font-family: "¼Ğ·¢Åé";
+	font-family: "æ¨™æ¥·é«”";
 	font-size: 16pt;
 	color: rgb(64,64,57);
 }
 
-/*¦@¥Î body style*/
+/*å…±ç”¨ body style*/
 body
 {
     background-image: url("/img/back_3.jpg");
