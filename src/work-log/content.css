@@ -511,24 +511,8 @@ html[data-ccxp-lite-work-log-language] :is(#insTask, #queForm) {
 html[data-ccxp-lite-work-log-language] :is(#insTask, #queForm) table.ccxp-lite-work-log-form-fields,
 html[data-ccxp-lite-work-log-language]
   :is(#insTask, #queForm)
-  table.ccxp-lite-work-log-form-fields
-  > :is(tbody, tr),
-html[data-ccxp-lite-work-log-language]
-  :is(#insTask, #queForm)
-  table.ccxp-lite-work-log-form-fields
-  > tbody
-  > tr,
-html[data-ccxp-lite-work-log-language]
-  :is(#insTask, #queForm)
-  table.ccxp-lite-work-log-form-fields
-  > :is(tbody, tr)
-  > :is(tr, th, td),
-html[data-ccxp-lite-work-log-language]
-  :is(#insTask, #queForm)
-  table.ccxp-lite-work-log-form-fields
-  > tbody
-  > tr
-  > :is(th, td) {
+  .ccxp-lite-work-log-form-fields
+  :is(tbody, tr, th, td) {
   display: block;
   box-sizing: border-box;
   width: 100% !important;
@@ -551,12 +535,7 @@ html[data-ccxp-lite-work-log-language]
   margin-top: var(--ccxp-lite-spacing-lg, 24px) !important;
 }
 
-html[data-ccxp-lite-work-log-language]
-  :is(#insTask, #queForm)
-  .ccxp-lite-work-log-form-fields
-  > tbody
-  > tr
-  > th {
+html[data-ccxp-lite-work-log-language] :is(#insTask, #queForm) .ccxp-lite-work-log-form-fields th {
   margin-bottom: var(--ccxp-lite-spacing-sm, 8px) !important;
   font: var(--ccxp-lite-work-log-label) !important;
 }
@@ -564,9 +543,7 @@ html[data-ccxp-lite-work-log-language]
 html[data-ccxp-lite-work-log-language]
   :is(#insTask, #queForm)
   .ccxp-lite-work-log-form-fields
-  > tbody
-  > tr
-  > th
+  th
   > br {
   display: none;
 }
@@ -585,16 +562,14 @@ html[data-ccxp-lite-work-log-language] :is(#insTask, #queForm) .ccxp-lite-work-l
 html[data-ccxp-lite-work-log-language]
   :is(#insTask, #queForm)
   .ccxp-lite-work-log-form-fields
-  > tbody
-  > tr
-  > th
+  th
   :is(label, span, b, strong) {
   font: inherit !important;
   color: inherit !important;
 }
 
 /* Assistant Registration System task information table */
-html[data-ccxp-lite-work-log-language] #insTask #trLabSerial > td {
+html[data-ccxp-lite-work-log-language] #insTask #trLabSerial:has(table) > td {
   overflow-x: auto;
   max-width: 100%;
 }
