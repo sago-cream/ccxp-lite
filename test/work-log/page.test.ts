@@ -109,9 +109,14 @@ test.each(["\u67E5\u8A62", "Search"])(
       target.submit();
       return true;
     };
+    const searched = vi.fn();
+    doc.addEventListener("ccxp-lite-work-log-searched", () => {
+      searched(undefined);
+    });
     loadModules(window, ["src/work-log/page.ts"]);
     expect(scope.toSubmit(form, "que")).toBe(false);
     expect(nativeSubmit).toHaveBeenCalledTimes(1);
+    expect(searched).toHaveBeenCalledTimes(1);
     expect(form.querySelectorAll('[name="S_SUBMIT"]')).toHaveLength(1);
     expect(form.getAttribute("accept-charset")).toBe("big5");
     expect(doc.querySelector("iframe")).toBeNull();
@@ -131,10 +136,15 @@ test("search validation rejection cleans up the action and allows retry", () => 
     toSubmit: (form: HTMLFormElement, action: string) => unknown;
   };
   scope.toSubmit = original;
+  const searched = vi.fn();
+  doc.addEventListener("ccxp-lite-work-log-searched", () => {
+    searched(undefined);
+  });
   loadModules(window, ["src/work-log/page.ts"]);
   expect(scope.toSubmit(form, "que")).toBe(false);
   expect(scope.toSubmit(form, "que")).toBe(false);
   expect(original).toHaveBeenCalledTimes(2);
+  expect(searched).not.toHaveBeenCalled();
   expect(form.querySelectorAll('[name="S_SUBMIT"]')).toHaveLength(1);
   window.close();
 });

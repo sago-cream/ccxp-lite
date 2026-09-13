@@ -420,7 +420,7 @@
       (row) => row.cells.length >= 5 && row.cells[0].tagName === "TD",
     );
     records.hidden = !hasSearched && !populated && Boolean(document.querySelector("#queForm"));
-    // The host's dated blue caption can be outside the results form.
+    // Replace the legacy dated caption without touching result cells or form controls.
     for (const caption of document.querySelectorAll<HTMLElement>(
       "#listForm .H12, #listForm font, #listForm h2, #listForm h3, #listForm caption",
     )) {
