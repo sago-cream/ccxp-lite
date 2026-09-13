@@ -1,3 +1,4 @@
+import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import {
   existsSync,
@@ -35,6 +36,7 @@ type Probe = Readonly<{
 interface CaptureResult {
   readonly screenshots: Readonly<Record<string, string>>;
   readonly styles: Readonly<Record<string, unknown>>;
+  readonly searchFormBottom: number;
 }
 
 const fixtureByPath = new Map<string, string>([
@@ -285,6 +287,7 @@ async function captureRevision(
   outputDir: string,
   workLogOnly: boolean,
   recordVideo: boolean,
+  expectSearchResultsChange: boolean,
 ): Promise<CaptureResult> {
   const profileDir = path.join(tmpdir(), `ccxp-lite-parity-${label}-${process.pid}-${Date.now()}`);
   const revisionOutputDir = path.join(outputDir, label);
@@ -302,6 +305,11 @@ async function captureRevision(
   });
   const screenshots: Record<string, string> = {};
   const styles: Record<string, unknown> = {};
+  const recordingSteps: Array<{ name: string; time: number }> = [];
+  const recordingStart = Date.now();
+  const markRecordingStep = (name: string) => {
+    recordingSteps.push({ name, time: (Date.now() - recordingStart) / 1000 });
+  };
 
   try {
     context.setDefaultTimeout(15_000);
@@ -455,22 +463,88 @@ async function captureRevision(
     const standaloneWorkLog = path.join(revisionOutputDir, "work-log-standalone.png");
     await capturePage(page, standaloneWorkLog);
     screenshots["work-log-standalone"] = standaloneWorkLog;
+    if (recordVideo) {
+      markRecordingStep("Open Search hours");
+      await page.waitForTimeout(2000);
+    }
     await page.locator('#ccxp-lite-work-log-sections input[value="search"]').check();
     await page.waitForTimeout(500);
+    const searchFormBottom = await page
+      .locator("#queForm")
+      .evaluate((form) => Math.ceil(form.getBoundingClientRect().bottom));
+    if (expectSearchResultsChange) {
+      assert.equal(
+        await page.locator("#listForm").isVisible(),
+        label === "base",
+        "Initial empty results should only be visible in the base extension",
+      );
+    }
+    markRecordingStep("Before searching");
     const initialSearch = path.join(revisionOutputDir, "work-log-search-initial.png");
     await capturePage(page, initialSearch);
     screenshots["work-log-search-initial"] = initialSearch;
+    if (recordVideo) {
+      await page.waitForTimeout(4500);
+      await page.locator('#queForm input[type="submit"]').hover();
+      markRecordingStep("Click Search");
+      await page.waitForTimeout(1500);
+    }
     await page.locator('#queForm input[type="submit"]').click();
     await page.locator('html[data-ccxp-lite-work-log-section="search"] #listForm').waitFor();
     await page.locator("body.ccxp-lite-main-skin").waitFor();
     await page.waitForTimeout(500);
+    if (expectSearchResultsChange && label === "head") {
+      const heading = page.locator("#listForm h2");
+      assert.equal(await heading.textContent(), "\u641C\u5C0B\u7D50\u679C");
+      assert.equal(await page.locator("#listForm .H12").isVisible(), false);
+      const typography = await heading.evaluate((element) => {
+        const section = document.querySelector("#queForm th");
+        if (!section) {
+          throw new Error("Missing section label");
+        }
+        const actual = getComputedStyle(element);
+        const expected = getComputedStyle(section);
+        return (
+          actual.fontSize === expected.fontSize &&
+          actual.fontWeight === expected.fontWeight &&
+          actual.color === expected.color
+        );
+      });
+      assert.equal(typography, true, "Results heading must match section-label typography");
+    }
+    markRecordingStep("Search completed - no matching records");
     const emptySearch = path.join(revisionOutputDir, "work-log-search-empty.png");
     await capturePage(page, emptySearch);
     screenshots["work-log-search-empty"] = emptySearch;
+    // Moving the table beneath a shorter heading changes raster rounding at its edges. Compare its
+    // actual content and computed layout instead of its absolute pixel position.
+    styles["work-log-search-table"] = {
+      layout: await collectStyles(page, [
+        { name: "table", selector: "#listForm table", properties: visualProperties },
+        { name: "header", selector: "#listForm th", properties: visualProperties },
+        { name: "cell", selector: "#listForm td", properties: visualProperties },
+      ]),
+      content: await page.locator("#listForm table").textContent(),
+    };
+    if (recordVideo) {
+      await page.waitForTimeout(5000);
+      await page.locator('#ccxp-lite-work-log-nav [role="switch"]').hover();
+      markRecordingStep("Switch to English");
+      await page.waitForTimeout(1500);
+    }
     await page.locator('#ccxp-lite-work-log-nav [role="switch"]').click();
+    if (expectSearchResultsChange && label === "head") {
+      assert.equal(await page.locator("#listForm h2").textContent(), "Search results");
+      assert.equal(await page.locator("#listForm").isVisible(), true);
+    }
+    markRecordingStep("English results heading");
     const englishSearch = path.join(revisionOutputDir, "work-log-search-english.png");
     await capturePage(page, englishSearch);
     screenshots["work-log-search-english"] = englishSearch;
+    if (recordVideo) {
+      await page.waitForTimeout(5000);
+    }
+    markRecordingStep("Search demonstration ends");
     await page.locator('#ccxp-lite-work-log-nav [role="switch"]').click();
     await page.locator('#ccxp-lite-work-log-sections input[value="add"]').check();
     const departmentInput = page.locator('[name="KI_SRV_ID"]');
@@ -543,6 +617,7 @@ async function captureRevision(
           screenshots,
           workLogOnly,
           recordVideo,
+          recordingSteps,
           pipeline:
             "packaged extension; no injected extension modules, theme variables, or layout CSS",
         },
@@ -557,7 +632,7 @@ async function captureRevision(
     if (missingAssets.size > 0) {
       throw new Error(`Missing host visual assets: ${[...missingAssets].join(", ")}`);
     }
-    return { screenshots, styles };
+    return { screenshots, styles, searchFormBottom };
   } finally {
     process.stdout.write(`[${label}] closing browser\n`);
     await Promise.all(
@@ -571,11 +646,21 @@ async function captureRevision(
   }
 }
 
-function compareScreenshot(basePath: string, headPath: string, diffPath: string) {
+function compareScreenshot(
+  basePath: string,
+  headPath: string,
+  diffPath: string,
+  preserveAbove?: number,
+) {
   const base = PNG.sync.read(readFileSync(basePath));
   const head = PNG.sync.read(readFileSync(headPath));
   if (base.width !== head.width || base.height !== head.height) {
     return { differentPixels: Number.POSITIVE_INFINITY, ratio: 1 };
+  }
+  if (preserveAbove !== undefined) {
+    // Only the results area may intentionally change. Keep the search form and navigation strict.
+    base.data.fill(0, base.width * preserveAbove * 4);
+    head.data.fill(0, head.width * preserveAbove * 4);
   }
   const diff = new PNG({ width: base.width, height: base.height });
   const differentPixels = pixelmatch(base.data, head.data, diff.data, base.width, base.height, {
@@ -594,8 +679,17 @@ function compareCaptures(
   base: CaptureResult,
   head: CaptureResult,
   outputDir: string,
+  expectSearchResultsChange: boolean,
 ): readonly string[] {
   const failures: string[] = [];
+  if (base.searchFormBottom !== head.searchFormBottom) {
+    failures.push("search form boundary changed");
+  }
+  const expectedResultsViews = new Set([
+    "work-log-search-empty",
+    "work-log-search-english",
+    "work-log-search-initial",
+  ]);
   if (
     JSON.stringify(Object.keys(base.screenshots).toSorted()) !==
     JSON.stringify(Object.keys(head.screenshots).toSorted())
@@ -611,6 +705,9 @@ function compareCaptures(
       basePath,
       headPath,
       path.join(outputDir, "diff", `${name}.png`),
+      expectSearchResultsChange && expectedResultsViews.has(name)
+        ? base.searchFormBottom
+        : undefined,
     );
     if (difference.ratio > maximumPixelDifferenceRatio) {
       failures.push(
@@ -633,6 +730,7 @@ async function main() {
       output: { type: "string", default: defaultOutputDir },
       "work-log-only": { type: "boolean", default: false },
       "record-video": { type: "boolean", default: false },
+      "expect-search-results-change": { type: "boolean", default: false },
     },
     strict: true,
   });
@@ -649,6 +747,7 @@ async function main() {
     outputDir,
     values["work-log-only"],
     values["record-video"],
+    values["expect-search-results-change"],
   );
   const head = await captureRevision(
     "head",
@@ -656,11 +755,12 @@ async function main() {
     outputDir,
     values["work-log-only"],
     values["record-video"],
+    values["expect-search-results-change"],
   );
-  const failures = compareCaptures(base, head, outputDir);
+  const failures = compareCaptures(base, head, outputDir, values["expect-search-results-change"]);
   writeFileSync(
     path.join(outputDir, "report.json"),
-    `${JSON.stringify({ baseExtensionDir, headExtensionDir, failures }, undefined, 2)}\n`,
+    `${JSON.stringify({ baseExtensionDir, headExtensionDir, expectSearchResultsChange: values["expect-search-results-change"], searchFormBottom: base.searchFormBottom, failures }, undefined, 2)}\n`,
   );
   if (failures.length > 0) {
     if (process.env.ALLOW_VISUAL_CHANGE === "true") {
