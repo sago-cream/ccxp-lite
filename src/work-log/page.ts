@@ -53,6 +53,9 @@
         if (actionName === "que") {
           return submitSearch(originalToSubmit, form, actionValue);
         }
+        if (actionName === "del") {
+          return submitDelete(originalToSubmit, form, actionValue);
+        }
         if (!shouldInterceptSubmission(form, actionName ?? "")) {
           return originalToSubmit.call(this, form, actionName, actionValue);
         }
@@ -80,6 +83,26 @@
     form.append(action);
     try {
       originalToSubmit.call(globalScope, form, "que", actionValue);
+    } finally {
+      action.remove();
+    }
+    return false;
+  }
+
+  function submitDelete(
+    originalToSubmit: CcxpLiteWrappedSubmit,
+    form: HTMLFormElement,
+    actionValue?: string,
+  ) {
+    // The host calls form.submit(), which excludes submit buttons. Keep the server action
+    // independent of the translated label, and cancel the click's second/default submission.
+    const action = globalScope.document.createElement("input");
+    action.type = "hidden";
+    action.name = "S_SUBMIT";
+    action.value = "\u522A\u9664(Delete)";
+    form.append(action);
+    try {
+      originalToSubmit.call(globalScope, form, "del", actionValue);
     } finally {
       action.remove();
     }

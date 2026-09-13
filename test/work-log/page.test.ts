@@ -138,3 +138,70 @@ test("search validation rejection cleans up the action and allows retry", () => 
   expect(form.querySelectorAll('[name="S_SUBMIT"]')).toHaveLength(1);
   window.close();
 });
+
+test.each(["\u522A\u9664", "Delete"])(
+  "delete posts canonical action with the selected serial (%s)",
+  (label) => {
+    const { window } = createTestWindow(
+      `<form id="listForm" method="post" accept-charset="big5">
+      <input type="hidden" name="ACIXSTORE" value="fixture">
+      <input type="hidden" id="S_SERIAL" name="S_SERIAL" value="">
+      <input type="hidden" id="S_QUEFORM" name="S_QUEFORM" value="">
+      <input type="submit" name="S_SUBMIT" value="${label}">
+    </form>`,
+      "https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/PE/1/14D/PE14D1.php",
+    );
+    const doc = window.document as unknown as Document;
+    const form = requireElement(doc.querySelector<HTMLFormElement>("form"));
+    const nativeSubmit = vi.fn(() => {
+      const posted = new window.FormData(form);
+      expect(posted.getAll("S_SUBMIT")).toEqual(["\u522A\u9664(Delete)"]);
+      expect(posted.get("S_SERIAL")).toBe("2256548");
+      expect(posted.get("S_QUEFORM")).toBe("Q_TASK_A_DT_Year=>2026");
+      expect(posted.get("ACIXSTORE")).toBe("fixture");
+    });
+    form.submit = nativeSubmit;
+    const scope = window as unknown as {
+      toSubmit: (form: HTMLFormElement, action: string, serial?: string) => unknown;
+    };
+    scope.toSubmit = (target, _action, serial) => {
+      const serialInput = target.querySelector<HTMLInputElement>('[name="S_SERIAL"]');
+      if (serialInput && serial !== undefined && serial !== "") {
+        serialInput.value = serial;
+      }
+      const queInput = target.querySelector<HTMLInputElement>('[name="S_QUEFORM"]');
+      if (queInput) {
+        queInput.value = "Q_TASK_A_DT_Year=>2026";
+      }
+      target.submit();
+      return true;
+    };
+    loadModules(window, ["src/work-log/page.ts"]);
+    expect(scope.toSubmit(form, "del", "2256548")).toBe(false);
+    expect(nativeSubmit).toHaveBeenCalledTimes(1);
+    expect(form.querySelectorAll('[name="S_SUBMIT"]')).toHaveLength(1);
+    expect(form.getAttribute("accept-charset")).toBe("big5");
+    expect(doc.querySelector("iframe")).toBeNull();
+    window.close();
+  },
+);
+
+test("delete cancellation cleans up the action and allows retry", () => {
+  const { window } = createTestWindow(
+    '<form id="listForm"><input type="submit" name="S_SUBMIT" value="Delete"></form>',
+    "https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/PE/1/14D/PE14D1.php",
+  );
+  const doc = window.document as unknown as Document;
+  const form = requireElement(doc.querySelector<HTMLFormElement>("form"));
+  const original = vi.fn(() => false);
+  const scope = window as unknown as {
+    toSubmit: (form: HTMLFormElement, action: string, serial?: string) => unknown;
+  };
+  scope.toSubmit = original;
+  loadModules(window, ["src/work-log/page.ts"]);
+  expect(scope.toSubmit(form, "del", "2256548")).toBe(false);
+  expect(scope.toSubmit(form, "del", "2256548")).toBe(false);
+  expect(original).toHaveBeenCalledTimes(2);
+  expect(form.querySelectorAll('[name="S_SUBMIT"]')).toHaveLength(1);
+  window.close();
+});
