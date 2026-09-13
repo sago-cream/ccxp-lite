@@ -82,11 +82,19 @@ jobs:
         env:
           ALLOW_VISUAL_CHANGE: ${{ contains(github.event.pull_request.labels.*.name, 'accept-visual-change') }}
         working-directory: head
-        run: >-
-          bun run test:browser-parity --
-          --base-extension ../base/dist/crx/unpacked
-          --head-extension dist/crx/unpacked
-          --output ../browser-parity
+        run: |
+          expected_changes=()
+          # Use behavioral assertions only while introducing the results section.
+          # Once it exists in the base, subsequent PRs use strict pixel parity again.
+          if ! grep -q 'function renderResults()' ../base/src/work-log/locale.ts &&
+             grep -q 'function renderResults()' src/work-log/locale.ts; then
+            expected_changes+=(--expect-search-results-change)
+          fi
+          bun run test:browser-parity -- \
+            --base-extension ../base/dist/crx/unpacked \
+            --head-extension dist/crx/unpacked \
+            --output ../browser-parity \
+            "${expected_changes[@]}"
 
       - name: Upload browser parity differences
         if: always()
