@@ -1,4 +1,5 @@
-import { mkdtempSync, rmSync } from "node:fs";
+import { existsSync, mkdtempSync, rmSync } from "node:fs";
+import { spawnSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { chromium } from "playwright";
@@ -9,9 +10,20 @@ import {
   workLogPath,
 } from "../../scripts/work-log-fixtures.js";
 
+function ensurePackagedExtension(): string {
+  const extension = path.resolve("dist/crx/unpacked");
+  if (!existsSync(path.join(extension, "manifest.json"))) {
+    const result = spawnSync("bun", ["run", "build:crx"], { stdio: "inherit" });
+    if (result.status !== 0) {
+      throw new Error("Failed to build unpacked extension for browser test");
+    }
+  }
+  return extension;
+}
+
 test("packaged department search shows results while typing and keeps dates in both tabs", async () => {
   const profile = mkdtempSync(path.join(tmpdir(), "ccxp-unit-search-"));
-  const extension = path.resolve("dist/crx/unpacked");
+  const extension = ensurePackagedExtension();
   const context = await chromium.launchPersistentContext(profile, {
     channel: "chromium",
     headless: true,
@@ -76,7 +88,7 @@ test("packaged department search shows results while typing and keeps dates in b
 
 test("packaged department search works inside a nested CCXP frame", async () => {
   const profile = mkdtempSync(path.join(tmpdir(), "ccxp-unit-frame-"));
-  const extension = path.resolve("dist/crx/unpacked");
+  const extension = ensurePackagedExtension();
   const context = await chromium.launchPersistentContext(profile, {
     channel: "chromium",
     headless: true,

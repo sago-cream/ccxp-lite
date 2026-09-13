@@ -328,8 +328,8 @@
         select.before(selectLabel);
       }
       codeLabel.textContent = english
-        ? "Search by unit code or name"
-        : "\u4EE5\u4EE3\u78BC\u6216\u540D\u7A31\u641C\u5C0B";
+        ? "Search by unit code"
+        : "\u4EE5\u55AE\u4F4D\u4EE3\u78BC\u641C\u5C0B";
       selectLabel.textContent = english ? "Choose a unit" : "\u9078\u64C7\u55AE\u4F4D";
     }
   }
