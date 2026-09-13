@@ -6,6 +6,7 @@ export default [
   {
     ignores: [
       ".build/**",
+      ".pr-media/**",
       ".playwright-cli/**",
       "dist/**",
       "storybook-static/**",
