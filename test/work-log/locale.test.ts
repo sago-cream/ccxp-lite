@@ -116,16 +116,18 @@ test("labels both working-department controls in each language", async () => {
   const cells = doc.querySelectorAll<HTMLElement>(".ccxp-lite-work-log-department-controls");
   expect(cells).toHaveLength(2);
   for (const cell of cells) {
-    expect(cell.querySelectorAll("label")).toHaveLength(2);
-    expect(cell.querySelector("label")?.textContent).toBe(
-      "\u4EE5\u55AE\u4F4D\u4EE3\u78BC\u641C\u5C0B",
+    expect(cell.querySelectorAll("label")).toHaveLength(0);
+    expect(cell.querySelector("input")?.getAttribute("aria-labelledby")).toBe(
+      cell.closest("tr")?.querySelector("th")?.id,
     );
-    expect(cell.querySelector("label:last-of-type")?.textContent).toBe("\u9078\u64C7\u55AE\u4F4D");
+    expect(cell.querySelector("select")?.getAttribute("aria-label")).toBe(
+      "\u9078\u64C7\u55AE\u4F4D",
+    );
   }
   requireValue(doc.querySelector<HTMLInputElement>('[role="switch"]') ?? undefined).click();
   for (const cell of cells) {
-    expect(cell.querySelector("label")?.textContent).toBe("Search by unit code");
-    expect(cell.querySelector("label:last-of-type")?.textContent).toBe("Choose a unit");
+    expect(cell.querySelectorAll("label")).toHaveLength(0);
+    expect(cell.querySelector("select")?.getAttribute("aria-label")).toBe("Choose a unit");
   }
   await window.happyDOM.close();
 });

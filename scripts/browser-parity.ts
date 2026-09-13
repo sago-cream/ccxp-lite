@@ -455,6 +455,16 @@ async function captureRevision(
     const standaloneWorkLog = path.join(revisionOutputDir, "work-log-standalone.png");
     await capturePage(page, standaloneWorkLog);
     screenshots["work-log-standalone"] = standaloneWorkLog;
+    const departmentInput = page.locator('[name="KI_SRV_ID"]');
+    await departmentInput.fill("");
+    await departmentInput.focus();
+    const departmentScreenshot = path.join(revisionOutputDir, "work-log-department-results.png");
+    await capturePage(page, departmentScreenshot);
+    screenshots["work-log-department-results"] = departmentScreenshot;
+    await departmentInput.fill("EU0A");
+    const filteredScreenshot = path.join(revisionOutputDir, "work-log-department-filtered.png");
+    await capturePage(page, filteredScreenshot);
+    screenshots["work-log-department-filtered"] = filteredScreenshot;
     await page.goto(`${ccxpOrigin}/ccxp/INQUIRE/select_entry.php?work-log`, {
       waitUntil: "commit",
     });

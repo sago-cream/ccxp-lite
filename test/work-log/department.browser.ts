@@ -50,14 +50,23 @@ test("packaged department search shows results while typing and keeps dates in b
     const addDate = page.locator('input[data-ccxp-lite-date-prefix="I_TASK_DT_"]');
     await addDate.fill("2026-09-09");
     const addSearch = page.locator('[name="KI_SRV_ID"]');
-    await addSearch.fill("\u7AF9\u5E2B");
-    expect(await page.locator('[name="I_SRV_ID"]').getAttribute("size")).toBe("2");
-    expect(await page.locator('[name="I_SRV_ID"] option:not([hidden])').allTextContents()).toEqual([
-      "EU0A - \u7AF9\u5E2B\u6559\u80B2\u5B78\u9662",
-    ]);
+    expect(await page.locator('[name="I_SRV_ID"]').isVisible()).toBe(false);
+    expect(await addSearch.inputValue()).toContain("EI07");
+    await addSearch.focus();
+    const results = page.locator('[role="listbox"]').first();
+    expect(await results.isVisible()).toBe(true);
+    const inputBounds = await addSearch.boundingBox();
+    const listBounds = await results.boundingBox();
+    expect(listBounds?.width).toBe(inputBounds?.width);
+    expect(listBounds?.y).toBeCloseTo((inputBounds?.y ?? 0) + (inputBounds?.height ?? 0) + 4);
+    expect(listBounds?.height).toBeLessThanOrEqual(240);
+    await addSearch.fill("");
+    await addSearch.pressSequentially("college", { delay: 60 });
+    await addSearch.press("ArrowDown");
     await addSearch.press("Enter");
+    expect(await addSearch.inputValue()).toContain("EU0A");
+    expect(await results.isVisible()).toBe(false);
     expect(await page.locator('[name="I_SRV_ID"]').inputValue()).toBe("EU0A");
-    await page.locator('[name="I_SRV_ID"]').selectOption("EU0A");
     expect(await addDate.inputValue()).toBe("2026-09-09");
     expect(await page.locator('[name="I_TASK_DT_Day"]').inputValue()).toBe("09");
     await page.getByRole("radio", { name: "\u67E5\u8A62\u5DE5\u6642", exact: true }).check();
@@ -66,19 +75,17 @@ test("packaged department search shows results while typing and keeps dates in b
     await start.fill("2026-09-02");
     await end.fill("2026-09-08");
     const search = page.locator('[name="KQ_SRV_ID"]');
-    await search.fill("college of education");
-    expect(await page.locator('[name="Q_SRV_ID"] option:not([hidden])').allTextContents()).toEqual([
-      "EU0A - \u7AF9\u5E2B\u6559\u80B2\u5B78\u9662",
-    ]);
-    await search.press("Enter");
+    await search.fill("EU0A");
+    await page.locator('#queForm [role="option"]').click();
     expect(await page.locator('[name="Q_SRV_ID"]').inputValue()).toBe("EU0A");
-    await page.locator('[name="Q_SRV_ID"]').selectOption("EU0A");
+    expect(await search.inputValue()).toContain("EU0A");
     expect(await start.inputValue()).toBe("2026-09-02");
     expect(await end.inputValue()).toBe("2026-09-08");
     await search.fill("not a department");
-    expect(await page.locator('#queForm [role="status"]').textContent()).toContain("0");
+    await end.focus();
+    expect(await search.inputValue()).toContain("EU0A");
     await search.fill("");
-    expect(await page.locator('[name="Q_SRV_ID"]').inputValue()).toBe("EU0A");
+    expect(await page.locator('[name="Q_SRV_ID"]').inputValue()).toBe("");
     expect(posts).toBe(0);
   } finally {
     await context.close();
@@ -122,16 +129,14 @@ test("packaged department search works inside a nested CCXP frame", async () => 
     const searchInput = frame.locator('[name="KI_SRV_ID"]');
     const select = frame.locator('[name="I_SRV_ID"]');
     await searchInput.waitFor();
-    await searchInput.fill("\u7AF9\u5E2B");
-    expect(await select.getAttribute("size")).toBe("2");
-    expect(await select.locator("option:not([hidden])").allTextContents()).toEqual([
-      "EU0A - \u7AF9\u5E2B\u6559\u80B2\u5B78\u9662",
-    ]);
-    expect(
-      await frame.locator(".ccxp-lite-work-log-department-status").first().textContent(),
-    ).toContain("1");
+    expect(await select.isVisible()).toBe(false);
+    await searchInput.focus();
+    const listId = await searchInput.getAttribute("aria-controls");
+    expect(await frame.locator(`[id="${listId}"] [role="option"]`).count()).toBe(2);
+    await searchInput.fill("EU0A");
     await searchInput.press("Enter");
     expect(await select.inputValue()).toBe("EU0A");
+    expect(await searchInput.inputValue()).toContain("EU0A");
   } finally {
     await context.close();
     rmSync(profile, { recursive: true, force: true });

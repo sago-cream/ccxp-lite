@@ -54,9 +54,8 @@ declare global {
       mountSearchSelect: (
         input: HTMLInputElement,
         select: HTMLSelectElement,
-        status: HTMLElement,
-        resultLabel: (count: number) => string,
         searchText?: (option: HTMLOptionElement) => string,
+        emptyLabel?: () => string,
       ) => { destroy: () => void; refresh: () => void };
     };
     uiRenderer?: {

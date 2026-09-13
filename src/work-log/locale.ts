@@ -249,8 +249,8 @@
     return label;
   }
 
-  function departmentResultLabel(count: number) {
-    return english ? `${count} matching units` : `${count} \u500B\u7B26\u5408\u7684\u55AE\u4F4D`;
+  function departmentEmptyLabel() {
+    return english ? "No matching units" : "\u67E5\u7121\u7B26\u5408\u7684\u55AE\u4F4D";
   }
 
   function departmentSearchText(option: HTMLOptionElement) {
@@ -291,46 +291,22 @@
         // Replace the host's four-character code-only lookup, which clears name searches.
         input.removeAttribute("onkeyup");
         input.removeAttribute("maxlength");
-        const status = document.createElement("span");
-        status.className = "ccxp-lite-work-log-department-status";
-        status.id = `${input.id}-status`;
-        status.setAttribute("role", "status");
-        input.setAttribute("aria-controls", select.id);
-        input.setAttribute("aria-describedby", status.id);
-        cell.append(status);
         departmentSearches.set(
           select,
-          searchUi.mountSearchSelect(
-            input,
-            select,
-            status,
-            departmentResultLabel,
-            departmentSearchText,
-          ),
+          searchUi.mountSearchSelect(input, select, departmentSearchText, departmentEmptyLabel),
         );
       }
-      let codeLabel = cell.querySelector<HTMLLabelElement>(
-        ".ccxp-lite-work-log-department-code-label",
-      );
-      if (!codeLabel) {
-        codeLabel = document.createElement("label");
-        codeLabel.className = "ccxp-lite-work-log-department-code-label";
-        codeLabel.htmlFor = input.id;
-        input.before(codeLabel);
+      const heading = cell.closest("tr")?.querySelector<HTMLElement>("th");
+      if (heading) {
+        heading.id ||= `ccxp-lite-work-log-department-heading-${idSuffix}`;
+        input.setAttribute("aria-labelledby", heading.id);
+      } else {
+        input.setAttribute(
+          "aria-label",
+          english ? "Working department" : "\u5DE5\u4F5C\u55AE\u4F4D",
+        );
       }
-      let selectLabel = cell.querySelector<HTMLLabelElement>(
-        ".ccxp-lite-work-log-department-select-label",
-      );
-      if (!selectLabel) {
-        selectLabel = document.createElement("label");
-        selectLabel.className = "ccxp-lite-work-log-department-select-label";
-        selectLabel.htmlFor = select.id;
-        select.before(selectLabel);
-      }
-      codeLabel.textContent = english
-        ? "Search by unit code"
-        : "\u4EE5\u55AE\u4F4D\u4EE3\u78BC\u641C\u5C0B";
-      selectLabel.textContent = english ? "Choose a unit" : "\u9078\u64C7\u55AE\u4F4D";
+      select.setAttribute("aria-label", english ? "Choose a unit" : "\u9078\u64C7\u55AE\u4F4D");
     }
   }
 

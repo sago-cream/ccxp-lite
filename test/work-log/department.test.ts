@@ -19,57 +19,45 @@ test.each(["I", "Q"])(
     const input = requireElement(doc.querySelector<HTMLInputElement>(`[name="K${prefix}_SRV_ID"]`));
     const select = requireElement(doc.querySelector<HTMLSelectElement>("select"));
     const date = requireElement(doc.querySelector<HTMLInputElement>('[name="date"]'));
-    const originalSize = select.size;
+    expect(select.hidden).toBe(true);
+    expect(input.value).toContain("EM05");
+    const suggestions = requireElement(
+      doc.querySelector<HTMLElement>(`[id="${input.getAttribute("aria-controls")}"]`),
+    );
+    expect(input.hasAttribute("list")).toBe(false);
+    expect(suggestions.hidden).toBe(true);
+    input.focus();
+    expect(suggestions.hidden).toBe(false);
+    expect(suggestions.querySelectorAll('[role="option"]')).toHaveLength(2);
     date.value = "2026-09-09";
-    const search = (query: string) => {
-      input.value = query;
-      input.dispatchEvent(new TestEvent("input", { bubbles: true }));
-      return [...select.options].filter((option) => !option.hidden).map((option) => option.value);
-    };
-    expect(input.hasAttribute("maxlength")).toBe(false);
-    expect(input.hasAttribute("onkeyup")).toBe(false);
-    expect(search("\u7AF9\u5E2B")).toEqual(["EU0A"]);
-    expect(select.size).toBeGreaterThan(1);
+    input.value = "college";
+    input.dispatchEvent(new TestEvent("input", { bubbles: true }));
+    expect(suggestions.querySelectorAll('[role="option"]')).toHaveLength(1);
     expect(select.value).toBe("EM05");
-    expect(search(" eu0 ")).toEqual(["EU0A"]);
-    expect(search("college of education")).toEqual(["EU0A"]);
-    const selectEnter = new window.KeyboardEvent("keydown", {
-      key: "Enter",
-      cancelable: true,
-      bubbles: true,
-    });
-    input.dispatchEvent(selectEnter as unknown as Event);
-    expect(selectEnter.defaultPrevented).toBe(true);
-    expect(select.value).toBe("EU0A");
-    select.dispatchEvent(new TestEvent("change", { bubbles: true }));
-    const enter = new window.KeyboardEvent("keydown", {
-      key: "Enter",
-      cancelable: true,
-      bubbles: true,
-    });
+    const enter = new window.KeyboardEvent("keydown", { key: "Enter", cancelable: true });
     input.dispatchEvent(enter as unknown as Event);
     expect(enter.defaultPrevented).toBe(true);
-    expect(date.value).toBe("2026-09-09");
-    expect(search("no matching unit")).toEqual([]);
-    expect(doc.querySelector('[role="status"]')?.textContent).toContain("0");
-    expect(search("")).toEqual(["", "EM05", "EU0A"]);
     expect(select.value).toBe("EU0A");
-    expect(select.size).toBe(originalSize);
-    const composingEnter = new window.KeyboardEvent("keydown", {
-      key: "Enter",
-      isComposing: true,
-      cancelable: true,
-    });
-    input.dispatchEvent(composingEnter as unknown as Event);
-    expect(composingEnter.defaultPrevented).toBe(false);
-    search("\u7AF9\u5E2B");
-    requireElement(doc.querySelector<HTMLInputElement>('[role="switch"]')).click();
-    expect(doc.querySelector('[role="status"]')?.textContent).toBe("1 matching units");
+    expect(input.value).toContain("EU0A");
+    expect(suggestions.hidden).toBe(true);
+    expect(date.value).toBe("2026-09-09");
+    input.value = "not a unit";
+    input.dispatchEvent(new TestEvent("input", { bubbles: true }));
+    expect(suggestions.querySelector('[role="status"]')).not.toBeNull();
+    input.dispatchEvent(new TestEvent("blur"));
+    expect(suggestions.hidden).toBe(true);
+    expect(input.value).toContain("EU0A");
+    input.value = "";
+    input.dispatchEvent(new TestEvent("input", { bubbles: true }));
+    expect(select.value).toBe("");
+    expect(suggestions.querySelectorAll('[role="option"]')).toHaveLength(2);
+    requireElement(suggestions.querySelector<HTMLElement>('[role="option"]')).click();
+    expect(select.value).toBe("EM05");
+    expect(suggestions.hidden).toBe(true);
     requireElement(input.form).reset();
     await Promise.resolve();
-    expect(input.value).toBe("");
+    expect(input.value).toContain("EM05");
     expect(select.value).toBe("EM05");
-    expect([...select.options].every((option) => !option.hidden)).toBe(true);
     await window.happyDOM.close();
   },
 );
