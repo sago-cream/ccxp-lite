@@ -99,7 +99,8 @@ test("search reload opens returned records and preserves native submit values", 
   nextDoc.dispatchEvent(new TestEvent("DOMContentLoaded"));
   expect(nextDoc.documentElement.dataset.ccxpLiteWorkLogSection).toBe("search");
   expect(nextDoc.documentElement.dataset.ccxpLiteWorkLogLanguage).toBe("en");
-  expect(nextDoc.querySelector("#listForm")?.textContent).toBe("Returned record");
+  expect(nextDoc.querySelector("#listForm")?.textContent).toBe("Search resultsReturned record");
+  expect(nextDoc.querySelector<HTMLElement>("#listForm")?.hidden).toBe(false);
   expect(nextDoc.querySelector("#queTask #listForm")).not.toBeNull();
   expect(nextDoc.querySelectorAll("#ccxp-lite-work-log-sections input")).toHaveLength(2);
   await first.happyDOM.close();
@@ -437,5 +438,19 @@ test("translates task information table headers when toggling English", async ()
     "\u4EFB\u52D9\u5167\u5BB9",
   ]);
 
+  await window.happyDOM.close();
+});
+
+test("hides unsearched empty results and replaces the dated host caption", async () => {
+  const { window } = createTestWindow(
+    '<div id="divTitle">Title</div><div id="insTask"></div><div id="queTask"><form id="queForm"></form><form id="listForm"><p class="H12" style="font-size:20px">1150901\u81F31150930\u7684\u67E5\u8A62\u7D50\u679C(Search Result from 1150901 to 1150930)</p><table><tr><th>Date</th></tr><tr><td>0</td></tr></table></form></div>',
+  );
+  const doc = window.document as unknown as Document;
+  loadModules(window, ["src/work-log/locale.ts"]);
+  doc.dispatchEvent(new TestEvent("DOMContentLoaded"));
+  requireValue(doc.querySelector<HTMLInputElement>('[value="search"]') ?? undefined).click();
+  expect(doc.querySelector<HTMLElement>("#listForm")?.hidden).toBe(true);
+  expect(doc.querySelector<HTMLElement>("p.H12")?.hidden).toBe(true);
+  expect(doc.querySelector("#listForm h2")?.textContent).toBe("\u641C\u5C0B\u7D50\u679C");
   await window.happyDOM.close();
 });

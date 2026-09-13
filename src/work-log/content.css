@@ -991,3 +991,14 @@ html[data-ccxp-lite-work-log-language] #queForm fieldset.ccxp-lite-work-log-appr
     grid-column: 1;
   }
 }
+
+html[data-ccxp-lite-work-log-language] #listForm[hidden] {
+  display: none !important;
+}
+
+html[data-ccxp-lite-work-log-language] #listForm .ccxp-lite-work-log-results-heading {
+  margin: 0 0 var(--ccxp-lite-spacing-sm, 8px);
+  color: var(--ccxp-lite-text);
+  font: var(--ccxp-lite-work-log-label) !important;
+  text-align: left;
+}

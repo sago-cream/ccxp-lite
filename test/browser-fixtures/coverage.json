@@ -49,7 +49,7 @@
       "file": "work-log.html",
       "path": "/ccxp/INQUIRE/PE/1/14D/PE14D1.php",
       "owners": ["src/work-log/"],
-      "state": "Add/search form; synthetic eligible task and response; see work-log.provenance.json"
+      "state": "Add/search form; synthetic eligible task and response; see work-log.provenance.json; search before submission and empty search response with live-captured H12 caption (2026-09-13)"
     },
     {
       "file": "staff-registration.html",

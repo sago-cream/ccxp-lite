@@ -82,7 +82,9 @@
     action.value = "\u67E5\u8A62(Search)";
     form.append(action);
     try {
-      originalToSubmit.call(globalScope, form, "que", actionValue);
+      if (originalToSubmit.call(globalScope, form, "que", actionValue) === true) {
+        globalScope.document.dispatchEvent(new Event("ccxp-lite-work-log-searched"));
+      }
     } finally {
       action.remove();
     }

@@ -7,16 +7,23 @@
   let activeSection = "add";
   const navigationKey = `ccxp-lite-work-log-view:${globalThis.location.pathname}`;
   let searching = false;
+  let hasSearched = false;
   try {
     const saved = sessionStorage.getItem(navigationKey);
     sessionStorage.removeItem(navigationKey);
     if (saved !== null && saved !== "") {
-      const state = JSON.parse(saved) as { section?: string; english?: boolean; time?: number };
+      const state = JSON.parse(saved) as {
+        section?: string;
+        english?: boolean;
+        time?: number;
+        hasSearched?: boolean;
+      };
       if (Date.now() - (state.time ?? 0) < 60_000) {
         if (["add", "records", "search"].includes(state.section ?? "")) {
           activeSection = state.section === "records" ? "search" : (state.section ?? "add");
         }
         english = state.english === true;
+        hasSearched = state.hasSearched === true;
       }
     }
   } catch {
@@ -29,6 +36,7 @@
         JSON.stringify({
           section: searching ? "search" : activeSection,
           english,
+          hasSearched: hasSearched || searching,
           time: Date.now(),
         }),
       );
@@ -398,6 +406,38 @@
         "aria-label",
         (english ? input.dataset.ccxpLiteDateLabelEn : input.dataset.ccxpLiteDateLabelZh) ?? "",
       );
+    }
+  }
+
+  function renderResults() {
+    const records = document.querySelector<HTMLElement>("#listForm");
+    const table = records?.querySelector<HTMLTableElement>("table");
+    if (!records || !table) {
+      return;
+    }
+    // Returned records must remain accessible even without a saved navigation state.
+    const populated = [...table.rows].some(
+      (row) => row.cells.length >= 5 && row.cells[0].tagName === "TD",
+    );
+    records.hidden = !hasSearched && !populated && Boolean(document.querySelector("#queForm"));
+    // The host's dated blue caption can be outside the results form.
+    for (const caption of document.querySelectorAll<HTMLElement>(
+      "#listForm .H12, #listForm font, #listForm h2, #listForm h3, #listForm caption",
+    )) {
+      if (
+        !caption.closest("#queForm, #insTask") &&
+        /Search Result from|\u7684\u67E5\u8A62\u7D50\u679C/u.test(caption.textContent)
+      ) {
+        caption.hidden = true;
+      }
+    }
+    let heading = records.querySelector<HTMLElement>(".ccxp-lite-work-log-results-heading");
+    if (!heading) {
+      heading = document.createElement("h2");
+      heading.className = "ccxp-lite-work-log-results-heading";
+      heading.dataset.recordZh = "\u641C\u5C0B\u7D50\u679C";
+      heading.dataset.recordEn = "Search results";
+      table.before(heading);
     }
   }
 
@@ -786,6 +826,7 @@
     renderDepartmentControlLabels();
     renderApprovalFilters();
     renderDateLabels();
+    renderResults();
     simplifyRecords();
     simplifyTaskInformation();
     for (const label of document.querySelectorAll<HTMLElement>("[data-record-zh]")) {
@@ -936,6 +977,9 @@
       render();
     });
   }
+  document.addEventListener("ccxp-lite-work-log-searched", () => {
+    hasSearched = true;
+  });
   document.addEventListener("click", prepareSubmission, true);
   document.addEventListener("submit", prepareSubmission, true);
   const observer = new MutationObserver(render);
