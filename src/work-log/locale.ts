@@ -55,8 +55,18 @@
       "If hours are incomplete, the system will email a reminder. Salary is withheld until hours are completed and will then be paid through the supplemental payroll process.",
 
     "\u300C\u52A9\u7406\u767B\u9304\u7CFB\u7D71\u300D\u4EFB\u52D9\u8CC7\u8A0A": "Task information",
+    "\u4EFB\u52D9\u8CC7\u8A0A": "Task information",
     "\u300C\u52A9\u7406\u767B\u9304\u7CFB\u7D71\u300D\u5E8F\u865F":
       "Assistant Registration System serial number",
+    "\u6B64\u7B46\u5DE5\u6642\u8CC7\u6599\u6B78\u5C6C": "Task assignment",
+    "\u4EFB\u52D9\u985E\u578B\u5C6C\u6027": "Task type",
+    "\u5831\u652F\u7CFB\u7D71": "Reimbursement system",
+    "\u8A08\u756B\u7DE8\u865F": "Project number",
+    "\u4EFB\u52D9\u958B\u59CB\u65E5\u671F": "Task start date",
+    "\u4EFB\u52D9\u7D50\u675F\u65E5\u671F": "Task end date",
+    "\u61C9\u586B\u6642\u6578": "Required hours",
+    "\u672C\u6708\u5DF2\u6838\u6642\u6578": "Approved hours this month",
+    "\u4EFB\u52D9\u5167\u5BB9": "Task description",
     "\u986F\u793A\u300C104/9/24\u6539\u7248\u63D0\u9192\u300D\uFF08\u7B2C\u4E00\u6B21\u64CD\u4F5C\u524D\u8ACB\u52D9\u5FC5\u8A73\u95B1\uFF09":
       "Show September 24, 2015 update notice (please read before first use)",
     "\u96B1\u85CF\u300C104/9/24\u6539\u7248\u63D0\u9192\u300D\uFF08\u7B2C\u4E00\u6B21\u64CD\u4F5C\u524D\u8ACB\u52D9\u5FC5\u8A73\u95B1\uFF09":
@@ -518,6 +528,100 @@
     }
   }
 
+  function simplifyTaskInformation() {
+    const taskRow = document.querySelector<HTMLTableRowElement>("#insTask #trLabSerial");
+    const table = taskRow?.querySelector<HTMLTableElement>("table");
+    if (!taskRow || !table || table.dataset.ccxpLiteTaskGrid === "true") {
+      return;
+    }
+    const dataRows = [...table.querySelectorAll("tr")].filter(
+      (r) => r.querySelectorAll("td").length >= 10,
+    );
+    if (dataRows.length === 0) {
+      return;
+    }
+    table.dataset.ccxpLiteTaskGrid = "true";
+    table.setAttribute("hidden", "");
+
+    let container = taskRow.querySelector<HTMLDivElement>(".ccxp-lite-task-grid");
+    if (!container) {
+      container = document.createElement("div");
+      container.className = "ccxp-lite-task-grid";
+      table.after(container);
+    }
+    container.textContent = "";
+
+    const fieldDefinitions: Array<{
+      index: number;
+      zh: string;
+      en: string;
+      full?: boolean;
+    }> = [
+      { index: 2, zh: "\u4EFB\u52D9\u985E\u578B\u5C6C\u6027", en: "Task type" },
+      { index: 3, zh: "\u5831\u652F\u7CFB\u7D71", en: "Reimbursement system" },
+      { index: 4, zh: "\u8A08\u756B\u7DE8\u865F", en: "Project number" },
+      { index: 5, zh: "\u4EFB\u52D9\u958B\u59CB\u65E5\u671F", en: "Task start date" },
+      { index: 6, zh: "\u4EFB\u52D9\u7D50\u675F\u65E5\u671F", en: "Task end date" },
+      { index: 7, zh: "\u61C9\u586B\u6642\u6578", en: "Required hours" },
+      { index: 8, zh: "\u672C\u6708\u5DF2\u6838\u6642\u6578", en: "Approved hours this month" },
+      { index: 9, zh: "\u4EFB\u52D9\u5167\u5BB9", en: "Task description", full: true },
+    ];
+
+    for (const row of dataRows) {
+      const cells = [...row.querySelectorAll("td")];
+      const card = document.createElement("div");
+      card.className = "ccxp-lite-task-card";
+
+      const radio = cells[0].querySelector<HTMLInputElement>('input[type="radio"]');
+      const headerLabel = document.createElement("label");
+      headerLabel.className = "ccxp-lite-task-card-header";
+      if (radio) {
+        headerLabel.append(radio);
+      }
+      const headerTitle = document.createElement("span");
+      headerTitle.className = "ccxp-lite-task-card-title";
+      headerTitle.append(
+        recordLabel("\u6B64\u7B46\u5DE5\u6642\u8CC7\u6599\u6B78\u5C6C", "Task assignment"),
+      );
+      headerLabel.append(headerTitle);
+
+      const serialNumber = cells[1].textContent.trim();
+      if (serialNumber !== "") {
+        const serialBadge = document.createElement("span");
+        serialBadge.className = "ccxp-lite-task-card-serial";
+        serialBadge.textContent = `#${serialNumber}`;
+        headerLabel.append(serialBadge);
+      }
+      card.append(headerLabel);
+
+      const dl = document.createElement("dl");
+      dl.className = "ccxp-lite-task-card-fields";
+      for (const field of fieldDefinitions) {
+        const item = document.createElement("div");
+        item.className = "ccxp-lite-task-card-field";
+        if (field.full === true) {
+          item.classList.add("ccxp-lite-task-card-field-full");
+        }
+        const dt = document.createElement("dt");
+        dt.append(recordLabel(field.zh, field.en));
+        const dd = document.createElement("dd");
+        const cell = cells[field.index];
+        const val = cell.textContent.trim();
+        dd.textContent = val === "" ? "\u2014" : val;
+        item.append(dt, dd);
+        dl.append(item);
+      }
+      card.append(dl);
+      card.addEventListener("click", (event) => {
+        if (radio && event.target !== radio && !radio.checked) {
+          radio.checked = true;
+          radio.dispatchEvent(new Event("change", { bubbles: true }));
+        }
+      });
+      container.append(card);
+    }
+  }
+
   function render() {
     observer.disconnect();
     if (!document.querySelector("#divTitle, #listForm table")) {
@@ -683,6 +787,7 @@
     renderApprovalFilters();
     renderDateLabels();
     simplifyRecords();
+    simplifyTaskInformation();
     for (const label of document.querySelectorAll<HTMLElement>("[data-record-zh]")) {
       label.textContent = (english ? label.dataset.recordEn : label.dataset.recordZh) ?? "";
     }

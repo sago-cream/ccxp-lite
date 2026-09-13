@@ -348,3 +348,94 @@ test("does not mark nested tables inside form cells as presentation form fields"
   expect(nestedTable?.getAttribute("role")).toBeNull();
   await window.happyDOM.close();
 });
+
+test("translates task information table headers when toggling English", async () => {
+  const fixture =
+    '<div id="divTitle">Title</div>' +
+    '<div id="insTask">' +
+    "<form>" +
+    "<table>" +
+    "<tbody>" +
+    '<tr id="trLabSerial">' +
+    "<th>\u4EFB\u52D9\u8CC7\u8A0A</th>" +
+    "<td>" +
+    "<table>" +
+    "<thead>" +
+    "<tr>" +
+    "<th>\u6B64\u7B46\u5DE5\u6642\u8CC7\u6599\u6B78\u5C6C</th>" +
+    "<th>\u300C\u52A9\u7406\u767B\u9304\u7CFB\u7D71\u300D\u5E8F\u865F</th>" +
+    "<th>\u4EFB\u52D9\u985E\u578B\u5C6C\u6027</th>" +
+    "<th>\u5831\u652F\u7CFB\u7D71</th>" +
+    "<th>\u8A08\u756B\u7DE8\u865F</th>" +
+    "<th>\u4EFB\u52D9\u958B\u59CB\u65E5\u671F</th>" +
+    "<th>\u4EFB\u52D9\u7D50\u675F\u65E5\u671F</th>" +
+    "<th>\u61C9\u586B\u6642\u6578</th>" +
+    "<th>\u672C\u6708\u5DF2\u6838\u6642\u6578</th>" +
+    "<th>\u4EFB\u52D9\u5167\u5BB9</th>" +
+    "</tr>" +
+    "</thead>" +
+    "</table>" +
+    "</td>" +
+    "</tr>" +
+    "</tbody>" +
+    "</table>" +
+    "</form>" +
+    "</div>";
+  const { window } = createTestWindow(fixture);
+  const doc = window.document as unknown as Document;
+  loadModules(window, [".build/design/ui.js", "src/work-log/locale.ts"]);
+  doc.dispatchEvent(new TestEvent("DOMContentLoaded"));
+
+  const toggle = requireValue(doc.querySelector<HTMLInputElement>('[role="switch"]') ?? undefined);
+  const getHeaders = () =>
+    [...doc.querySelectorAll("#trLabSerial th")].map((th) => th.textContent.trim());
+
+  // Default Chinese.
+  expect(getHeaders()).toEqual([
+    "\u4EFB\u52D9\u8CC7\u8A0A",
+    "\u6B64\u7B46\u5DE5\u6642\u8CC7\u6599\u6B78\u5C6C",
+    "\u300C\u52A9\u7406\u767B\u9304\u7CFB\u7D71\u300D\u5E8F\u865F",
+    "\u4EFB\u52D9\u985E\u578B\u5C6C\u6027",
+    "\u5831\u652F\u7CFB\u7D71",
+    "\u8A08\u756B\u7DE8\u865F",
+    "\u4EFB\u52D9\u958B\u59CB\u65E5\u671F",
+    "\u4EFB\u52D9\u7D50\u675F\u65E5\u671F",
+    "\u61C9\u586B\u6642\u6578",
+    "\u672C\u6708\u5DF2\u6838\u6642\u6578",
+    "\u4EFB\u52D9\u5167\u5BB9",
+  ]);
+
+  // Switch to English.
+  toggle.click();
+  expect(getHeaders()).toEqual([
+    "Task information",
+    "Task assignment",
+    "Assistant Registration System serial number",
+    "Task type",
+    "Reimbursement system",
+    "Project number",
+    "Task start date",
+    "Task end date",
+    "Required hours",
+    "Approved hours this month",
+    "Task description",
+  ]);
+
+  // Switch back to Chinese.
+  toggle.click();
+  expect(getHeaders()).toEqual([
+    "\u4EFB\u52D9\u8CC7\u8A0A",
+    "\u6B64\u7B46\u5DE5\u6642\u8CC7\u6599\u6B78\u5C6C",
+    "\u300C\u52A9\u7406\u767B\u9304\u7CFB\u7D71\u300D\u5E8F\u865F",
+    "\u4EFB\u52D9\u985E\u578B\u5C6C\u6027",
+    "\u5831\u652F\u7CFB\u7D71",
+    "\u8A08\u756B\u7DE8\u865F",
+    "\u4EFB\u52D9\u958B\u59CB\u65E5\u671F",
+    "\u4EFB\u52D9\u7D50\u675F\u65E5\u671F",
+    "\u61C9\u586B\u6642\u6578",
+    "\u672C\u6708\u5DF2\u6838\u6642\u6578",
+    "\u4EFB\u52D9\u5167\u5BB9",
+  ]);
+
+  await window.happyDOM.close();
+});
