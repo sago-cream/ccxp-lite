@@ -1,12 +1,13 @@
 ## Browser & Chrome
 
-- For TS-based Chrome extensions, rebuild after changes
+- After runtime changes, run `bun run build:crx` and sync `dist/crx/unpacked` to the
+  directory shown under Chrome extension Details → Loaded from.
 
 ## PR visual evidence
 
 - Use the packaged extension and a live-derived fixture for the affected page. Run
   `bun run test:browser-parity` with explicit base/head extension paths; use `--work-log-only
---record-video` for work-log PR recordings.
+--record-video` for work-log PR recordings; match the parity options in `.github/workflows/ci.yml`.
 - Behavior fixtures in `test/work-log/batch.browser.ts` are not visual fixtures. Do not publish
   screenshots from them or inject selected extension modules, theme stubs, or layout overrides
   to make a capture look plausible.
@@ -24,3 +25,8 @@
 - Reuse the local `@ccxp-lite/tokens` and `@ccxp-lite/ui` workspaces. Keep host adapters in feature directories.
 - Edit token source, then run `bun run design:build`; do not hand-edit generated token CSS.
 - Update relevant Storybook examples with shared UI changes and preserve packaged browser parity.
+
+## Releases
+
+- When asked to release, run `bun run release <version> --ci --no-github.draft` from clean,
+  updated `main`, then verify the published tag and all configured assets.
