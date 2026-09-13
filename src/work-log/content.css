@@ -511,8 +511,24 @@ html[data-ccxp-lite-work-log-language] :is(#insTask, #queForm) {
 html[data-ccxp-lite-work-log-language] :is(#insTask, #queForm) table.ccxp-lite-work-log-form-fields,
 html[data-ccxp-lite-work-log-language]
   :is(#insTask, #queForm)
-  .ccxp-lite-work-log-form-fields
-  :is(tbody, tr, th, td) {
+  table.ccxp-lite-work-log-form-fields
+  > :is(tbody, tr),
+html[data-ccxp-lite-work-log-language]
+  :is(#insTask, #queForm)
+  table.ccxp-lite-work-log-form-fields
+  > tbody
+  > tr,
+html[data-ccxp-lite-work-log-language]
+  :is(#insTask, #queForm)
+  table.ccxp-lite-work-log-form-fields
+  > :is(tbody, tr)
+  > :is(tr, th, td),
+html[data-ccxp-lite-work-log-language]
+  :is(#insTask, #queForm)
+  table.ccxp-lite-work-log-form-fields
+  > tbody
+  > tr
+  > :is(th, td) {
   display: block;
   box-sizing: border-box;
   width: 100% !important;
@@ -535,7 +551,12 @@ html[data-ccxp-lite-work-log-language]
   margin-top: var(--ccxp-lite-spacing-lg, 24px) !important;
 }
 
-html[data-ccxp-lite-work-log-language] :is(#insTask, #queForm) .ccxp-lite-work-log-form-fields th {
+html[data-ccxp-lite-work-log-language]
+  :is(#insTask, #queForm)
+  .ccxp-lite-work-log-form-fields
+  > tbody
+  > tr
+  > th {
   margin-bottom: var(--ccxp-lite-spacing-sm, 8px) !important;
   font: var(--ccxp-lite-work-log-label) !important;
 }
@@ -543,7 +564,9 @@ html[data-ccxp-lite-work-log-language] :is(#insTask, #queForm) .ccxp-lite-work-l
 html[data-ccxp-lite-work-log-language]
   :is(#insTask, #queForm)
   .ccxp-lite-work-log-form-fields
-  th
+  > tbody
+  > tr
+  > th
   > br {
   display: none;
 }
@@ -562,10 +585,105 @@ html[data-ccxp-lite-work-log-language] :is(#insTask, #queForm) .ccxp-lite-work-l
 html[data-ccxp-lite-work-log-language]
   :is(#insTask, #queForm)
   .ccxp-lite-work-log-form-fields
-  th
+  > tbody
+  > tr
+  > th
   :is(label, span, b, strong) {
   font: inherit !important;
   color: inherit !important;
+}
+
+/* Assistant Registration System task information table */
+html[data-ccxp-lite-work-log-language] #insTask #trLabSerial > td {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+html[data-ccxp-lite-work-log-language] #insTask #trLabSerial table {
+  display: table !important;
+  width: 100% !important;
+  min-width: 580px;
+  border-collapse: collapse !important;
+  border-spacing: 0 !important;
+  background: var(--ccxp-lite-surface, #ffffff) !important;
+  border: 1px solid var(--ccxp-lite-border, rgba(31, 41, 51, 0.12)) !important;
+  border-radius: var(--ccxp-lite-radius-input, 8px) !important;
+  overflow: hidden !important;
+}
+
+html[data-ccxp-lite-work-log-language] #insTask #trLabSerial table :is(thead, tbody) {
+  display: table-row-group !important;
+}
+
+html[data-ccxp-lite-work-log-language] #insTask #trLabSerial table tr {
+  display: table-row !important;
+  width: auto !important;
+  height: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+}
+
+html[data-ccxp-lite-work-log-language] #insTask #trLabSerial table tr + tr {
+  margin-top: 0 !important;
+}
+
+html[data-ccxp-lite-work-log-language] #insTask #trLabSerial table :is(th, td) {
+  display: table-cell !important;
+  width: auto !important;
+  height: auto !important;
+  padding: 8px 12px !important;
+  margin: 0 !important;
+  vertical-align: middle !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--ccxp-lite-border, rgba(31, 41, 51, 0.12)) !important;
+  font: var(--ccxp-lite-work-log-body, 14px/1.4 sans-serif) !important;
+  text-align: center !important;
+  white-space: nowrap;
+}
+
+html[data-ccxp-lite-work-log-language] #insTask #trLabSerial table th {
+  background: var(--ccxp-lite-surface-muted, #f5f7f9) !important;
+  font: var(--ccxp-lite-type-caption-strong, 700 14px/1.4 sans-serif) !important;
+  color: var(--ccxp-lite-text-muted, #52606d) !important;
+  margin-bottom: 0 !important;
+}
+
+html[data-ccxp-lite-work-log-language] #insTask #trLabSerial table td {
+  font-variant-numeric: tabular-nums;
+  color: var(--ccxp-lite-text, #111827) !important;
+}
+
+html[data-ccxp-lite-work-log-language] #insTask #trLabSerial table :is(th, td):last-child {
+  text-align: start !important;
+  white-space: normal;
+  min-width: 140px;
+}
+
+html[data-ccxp-lite-work-log-language] #insTask #trLabSerial table tr:last-child :is(th, td) {
+  border-bottom: 0 !important;
+}
+
+html[data-ccxp-lite-work-log-language] #insTask #trLabSerial table tr:hover td {
+  background: var(--ccxp-lite-primary-hover-surface, rgba(159, 95, 165, 0.06));
+}
+
+html[data-ccxp-lite-work-log-language]
+  #insTask
+  #trLabSerial
+  table
+  tr:has(input[type="radio"]:checked)
+  td {
+  background: var(--ccxp-lite-lab-active-surface, rgba(159, 95, 165, 0.14));
+}
+
+html[data-ccxp-lite-work-log-language] #insTask #trLabSerial table input[type="radio"] {
+  appearance: auto;
+  accent-color: var(--ccxp-lite-primary, #9f5fa5);
+  cursor: pointer;
+  margin: 0 !important;
+  vertical-align: middle;
 }
 
 /* Multi-day entry expands only the existing work-date field. */

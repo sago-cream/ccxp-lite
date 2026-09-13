@@ -315,3 +315,36 @@ test("keeps transport responses raw and binds controls after importing them", as
   await visible.happyDOM.close();
   await response.happyDOM.close();
 });
+
+test("does not mark nested tables inside form cells as presentation form fields", async () => {
+  const fixture =
+    '<div id="divTitle">Title</div>' +
+    '<div id="insTask">' +
+    "<form>" +
+    "<table>" +
+    "<tbody>" +
+    '<tr id="trLabSerial">' +
+    "<th>\u4EFB\u52D9\u8CC7\u8A0A</th>" +
+    "<td>" +
+    '<table id="nestedTaskTable">' +
+    "<tr><th>\u5E8F\u865F</th><th>\u4EFB\u52D9</th></tr>" +
+    "<tr><td>1</td><td>Test</td></tr>" +
+    "</table>" +
+    "</td>" +
+    "</tr>" +
+    "</tbody>" +
+    "</table>" +
+    "</form>" +
+    "</div>";
+  const { window } = createTestWindow(fixture);
+  const doc = window.document as unknown as Document;
+  loadModules(window, [".build/design/ui.js", "src/work-log/locale.ts"]);
+  doc.dispatchEvent(new TestEvent("DOMContentLoaded"));
+  const formTable = doc.querySelector("#insTask form > table");
+  const nestedTable = doc.querySelector("#nestedTaskTable");
+  expect(formTable?.classList.contains("ccxp-lite-work-log-form-fields")).toBe(true);
+  expect(formTable?.getAttribute("role")).toBe("presentation");
+  expect(nestedTable?.classList.contains("ccxp-lite-work-log-form-fields")).toBe(false);
+  expect(nestedTable?.getAttribute("role")).toBeNull();
+  await window.happyDOM.close();
+});

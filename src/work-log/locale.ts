@@ -673,7 +673,7 @@
     for (const table of document.querySelectorAll<HTMLTableElement>(
       "#insTask table, #queForm table",
     )) {
-      if (table.closest("#listForm")) {
+      if (table.closest("#listForm") || table.parentElement?.closest("table")) {
         continue;
       }
       table.classList.add("ccxp-lite-work-log-form-fields");
