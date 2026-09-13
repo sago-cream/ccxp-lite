@@ -756,12 +756,23 @@ html[data-ccxp-lite-work-log-language]
 .ccxp-lite-work-log-department-controls > input[type="text"] {
   grid-column: 1;
   grid-row: 2;
+  align-self: start;
   margin: 0 !important;
 }
 
 .ccxp-lite-work-log-department-controls > select {
   grid-column: 2;
   grid-row: 2;
+}
+
+.ccxp-lite-work-log-department-status {
+  grid-column: 1 / -1;
+  color: var(--ccxp-lite-text-muted);
+  font: var(--ccxp-lite-type-caption);
+}
+
+.ccxp-lite-work-log-department-status:empty {
+  display: none;
 }
 
 .ccxp-lite-work-log-approval-select {

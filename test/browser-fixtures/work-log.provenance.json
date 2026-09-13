@@ -14,7 +14,7 @@
   "sanitized": [
     "session parameters and hidden values",
     "saved work note and selected department",
-    "department options reduced to placeholder and EI07",
+    "department options reduced to placeholder, EI07, and EU0A; EU0A code and Chinese label verified in live DOM on 2026-09-13, English label used as a bilingual search specimen",
     "date/time frozen to 2026-09-10 08:00-10:00",
     "empty task replaced by one explicitly synthetic task",
     "original scripts and event handlers replaced with offline submit shim"

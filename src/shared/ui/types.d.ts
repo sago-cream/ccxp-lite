@@ -50,6 +50,15 @@ declare global {
   }
 
   interface CcxpLiteNamespace {
+    uiSearchSelect?: {
+      mountSearchSelect: (
+        input: HTMLInputElement,
+        select: HTMLSelectElement,
+        status: HTMLElement,
+        resultLabel: (count: number) => string,
+        searchText?: (option: HTMLOptionElement) => string,
+      ) => { destroy: () => void; refresh: () => void };
+    };
     uiRenderer?: {
       createRenderer: (targetDocument: Document) => CcxpLiteDomRenderer;
     };

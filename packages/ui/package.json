@@ -14,6 +14,7 @@
     "./switch": "./src/switch.ts",
     "./popover": "./src/popover.ts",
     "./fields": "./src/fields.ts",
+    "./search-select": "./src/search-select.ts",
     "./dialog": "./src/dialog.ts",
     "./types": "./types.d.ts"
   }

@@ -39,6 +39,10 @@
   const originals = new WeakMap<Text, string>();
   const rendered = new WeakMap<Text, string>();
   const buttonLabels = new WeakMap<HTMLInputElement, string>();
+  const departmentSearches = new Map<
+    HTMLSelectElement,
+    { destroy: () => void; refresh: () => void }
+  >();
   const translations: Record<string, string> = {
     "\u672C\u6B21\u6539\u7248\u914D\u5408\u300C\u52A9\u7406\u767B\u9304\u7CFB\u7D71\u300D\u9032\u884C\u8ABF\u6574\uFF0C\u5167\u5BB9\u5982\u4E0B\uFF1A":
       "This update integrates the Assistant Registration System:",
@@ -245,7 +249,26 @@
     return label;
   }
 
+  function departmentResultLabel(count: number) {
+    return english ? `${count} matching units` : `${count} \u500B\u7B26\u5408\u7684\u55AE\u4F4D`;
+  }
+
+  function departmentSearchText(option: HTMLOptionElement) {
+    // Locale rendering can precede mounting; search both original languages in either UI locale.
+    return [...option.childNodes]
+      .map((node) => (node instanceof Text ? (originals.get(node) ?? node.data) : node.textContent))
+      .join("");
+  }
+
   function renderDepartmentControlLabels() {
+    for (const [select, mounted] of departmentSearches) {
+      if (select.isConnected) {
+        mounted.refresh();
+      } else {
+        mounted.destroy();
+        departmentSearches.delete(select);
+      }
+    }
     for (const [scope, inputName, selectName, idSuffix] of [
       ["#insTask", "KI_SRV_ID", "I_SRV_ID", "add"],
       ["#queForm", "KQ_SRV_ID", "Q_SRV_ID", "search"],
@@ -263,6 +286,29 @@
       cell.classList.add("ccxp-lite-work-log-department-controls");
       input.id ||= `ccxp-lite-work-log-department-code-${idSuffix}`;
       select.id ||= `ccxp-lite-work-log-department-select-${idSuffix}`;
+      const searchUi = globalThis.CCXP_LITE?.uiSearchSelect;
+      if (searchUi && document.readyState !== "loading" && !departmentSearches.has(select)) {
+        // Replace the host's four-character code-only lookup, which clears name searches.
+        input.removeAttribute("onkeyup");
+        input.removeAttribute("maxlength");
+        const status = document.createElement("span");
+        status.className = "ccxp-lite-work-log-department-status";
+        status.id = `${input.id}-status`;
+        status.setAttribute("role", "status");
+        input.setAttribute("aria-controls", select.id);
+        input.setAttribute("aria-describedby", status.id);
+        cell.append(status);
+        departmentSearches.set(
+          select,
+          searchUi.mountSearchSelect(
+            input,
+            select,
+            status,
+            departmentResultLabel,
+            departmentSearchText,
+          ),
+        );
+      }
       let codeLabel = cell.querySelector<HTMLLabelElement>(
         ".ccxp-lite-work-log-department-code-label",
       );
@@ -282,8 +328,8 @@
         select.before(selectLabel);
       }
       codeLabel.textContent = english
-        ? "Search by unit code"
-        : "\u4EE5\u55AE\u4F4D\u4EE3\u78BC\u641C\u5C0B";
+        ? "Search by unit code or name"
+        : "\u4EE5\u4EE3\u78BC\u6216\u540D\u7A31\u641C\u5C0B";
       selectLabel.textContent = english ? "Choose a unit" : "\u9078\u64C7\u55AE\u4F4D";
     }
   }
@@ -674,7 +720,7 @@
       if (
         !parent ||
         parent.closest(
-          "script, style, noscript, textarea, [contenteditable], [data-ccxp-lite-reminder], [data-record-zh], a[href*='20141023_Manual.pdf'], .ccxp-lite-work-log-language, .ccxp-lite-work-log-notice-label, .ccxp-lite-work-log-update-label, .ccxp-lite-work-log-department-code-label, .ccxp-lite-work-log-department-select-label, .ccxp-lite-work-log-approval-heading, .ccxp-lite-work-log-approval-filter, #ccxp-lite-work-log-sections",
+          "script, style, noscript, textarea, [contenteditable], [data-ccxp-lite-reminder], [data-record-zh], a[href*='20141023_Manual.pdf'], .ccxp-lite-work-log-language, .ccxp-lite-work-log-notice-label, .ccxp-lite-work-log-update-label, .ccxp-lite-work-log-department-code-label, .ccxp-lite-work-log-department-select-label, .ccxp-lite-work-log-department-status, .ccxp-lite-work-log-approval-heading, .ccxp-lite-work-log-approval-filter, #ccxp-lite-work-log-sections",
         )
       ) {
         continue;

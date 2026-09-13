@@ -26,7 +26,7 @@ export async function routeWorkLogFixture(route: Route): Promise<boolean> {
   }
   let html = readFileSync(path.join(fixtureRoot, "work-log.html"), "utf8");
   const fields = new URLSearchParams(route.request().postData() ?? "");
-  if (fields.get("S_SUBMIT") !== "Loading Data" && fields.has("I_LAB_SERIAL")) {
+  if (!(fields.get("S_SUBMIT") ?? "").includes("Loading Data") && fields.has("I_LAB_SERIAL")) {
     // Deterministic offline response only. Never forward a form to CCXP.
     const date = `${Number(fields.get("I_TASK_DT_Year")) - 1911}${fields.get("I_TASK_DT_Month")}${fields.get("I_TASK_DT_Day")}`;
     const cells = [

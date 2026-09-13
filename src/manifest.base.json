@@ -111,7 +111,7 @@
         "https://ccxp.nthu.edu.tw/ccxp/INQUIRE/PE/1/14D/*"
       ],
       "run_at": "document_start",
-      "js": ["work-log/locale.js", "work-log/content.js"],
+      "js": ["shared/ui/library.js", "work-log/locale.js", "work-log/content.js"],
       "all_frames": true,
       "css": ["work-log/content.css"]
     },

@@ -7,6 +7,7 @@ import * as switchControl from "@ccxp-lite/ui/switch";
 import * as popover from "@ccxp-lite/ui/popover";
 import * as fields from "@ccxp-lite/ui/fields";
 import * as dialog from "@ccxp-lite/ui/dialog";
+import { mountSearchSelect } from "@ccxp-lite/ui/search-select";
 
 globalThis.CCXP_LITE ??= {};
 const namespace = globalThis.CCXP_LITE;
@@ -18,6 +19,7 @@ namespace.uiDisplay = display;
 namespace.uiSwitch = switchControl;
 namespace.loginFieldView = fields;
 namespace.sidebarDialogView = dialog;
+namespace.uiSearchSelect = { mountSearchSelect };
 function registerPopover<T extends Node>(mounted: {
   element: T;
   destroy: () => void;

@@ -7,4 +7,5 @@ export * from "./switch.js";
 export * from "./popover.js";
 export * from "./fields.js";
 export * from "./dialog.js";
+export * from "./search-select.js";
 export type * from "../types.js";

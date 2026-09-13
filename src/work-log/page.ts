@@ -112,6 +112,14 @@
     persistSnapshot(snapshot);
     transportFrame.addEventListener("load", processTransportResponse);
     form.setAttribute("target", TRANSPORT_FRAME_NAME);
+    const action = globalScope.document.createElement("input");
+    action.type = "hidden";
+    action.name = "S_SUBMIT";
+    action.value = "\u8B80\u53D6\u300C\u52A9\u7406\u767B\u9304\u7CFB\u7D71\u300D(Loading Data)";
+    if (actionName === "getLabInsList") {
+      // Native form.submit() excludes the button whose value the host uses as its action.
+      form.append(action);
+    }
     try {
       const submitted = originalToSubmit.call(globalScope, form, actionName, actionValue);
       // Legacy validation is synchronous and returns true only after form.submit().
@@ -127,6 +135,7 @@
         form.setAttribute("target", originalTarget);
       }
     } finally {
+      action.remove();
       globalScope.setTimeout(
         () => {
           if (originalTarget === "") {
@@ -271,7 +280,15 @@
       return;
     }
     try {
-      replaceVisibleBody(responseDocument);
+      const nextTasks = responseDocument.querySelector("#trLabSerial");
+      const currentTasks = globalScope.document.querySelector("#trLabSerial");
+      if (currentSubmission.actionName === "getLabInsList" && nextTasks && currentTasks) {
+        // Loading tasks after a date blur must not reset dates, search filters, or edits made while
+        // the request was in flight by replacing the entire form/body.
+        currentTasks.replaceWith(globalScope.document.importNode(nextTasks, true));
+      } else {
+        replaceVisibleBody(responseDocument);
+      }
       syncDocumentTitle(responseDocument);
       restoreAfterPatchedUpdate(currentSubmission.snapshot);
       clearStoredSnapshot();

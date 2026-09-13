@@ -2,6 +2,41 @@ import { TestEvent } from "../helpers/dom-event.js";
 import { expect, test, vi } from "vitest";
 import { createTestWindow, loadModules, requireElement } from "../helpers/module-loader.js";
 
+test("task refresh posts the loading action and preserves the live form while replacing tasks", () => {
+  const url = "https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/PE/1/14D/PE14D1.php";
+  const { window } = createTestWindow(
+    '<form id="insForm"><input name="I_TASK_DT_Day" value="10"><input name="I_SRV_ID" value="EM05"><input type="submit" name="S_SUBMIT" value="Add"><table><tr id="trLabSerial"><td>Old task</td></tr></table></form>',
+    url,
+  );
+  const response = createTestWindow(
+    '<form id="insForm"><input name="I_TASK_DT_Day" value="13"><table><tr id="trLabSerial"><td>New task</td></tr></table></form>',
+    url,
+  );
+  const doc = window.document as unknown as Document;
+  const form = requireElement(doc.querySelector<HTMLFormElement>("form"));
+  const scope = window as unknown as { toSubmit: CcxpLiteWrappedSubmit };
+  scope.toSubmit = (target) => {
+    expect(new window.FormData(target).getAll("S_SUBMIT")).toEqual([
+      "\u8B80\u53D6\u300C\u52A9\u7406\u767B\u9304\u7CFB\u7D71\u300D(Loading Data)",
+    ]);
+    return true;
+  };
+  loadModules(window, ["src/work-log/page.ts"]);
+  scope.toSubmit(form, "getLabInsList");
+  const unit = requireElement(form.querySelector<HTMLInputElement>('[name="I_SRV_ID"]'));
+  unit.value = "EU0A";
+  const frame = requireElement(doc.querySelector<HTMLIFrameElement>("iframe"));
+  Object.defineProperty(frame, "contentDocument", { value: response.window.document });
+  frame.dispatchEvent(new TestEvent("load"));
+  expect(doc.querySelector("form")).toBe(form);
+  expect(doc.querySelector("#trLabSerial")?.textContent).toBe("New task");
+  expect(new window.FormData(form).get("I_TASK_DT_Day")).toBe("10");
+  expect(unit.value).toBe("EU0A");
+  expect(form.querySelectorAll('[name="S_SUBMIT"]')).toHaveLength(1);
+  window.close();
+  response.window.close();
+});
+
 test("allows another attempt after host validation rejects a submission", () => {
   const { window } = createTestWindow(
     '<form id="insForm" accept-charset="big5"></form>',

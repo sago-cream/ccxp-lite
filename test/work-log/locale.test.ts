@@ -118,13 +118,13 @@ test("labels both working-department controls in each language", async () => {
   for (const cell of cells) {
     expect(cell.querySelectorAll("label")).toHaveLength(2);
     expect(cell.querySelector("label")?.textContent).toBe(
-      "\u4EE5\u55AE\u4F4D\u4EE3\u78BC\u641C\u5C0B",
+      "\u4EE5\u4EE3\u78BC\u6216\u540D\u7A31\u641C\u5C0B",
     );
     expect(cell.querySelector("label:last-of-type")?.textContent).toBe("\u9078\u64C7\u55AE\u4F4D");
   }
   requireValue(doc.querySelector<HTMLInputElement>('[role="switch"]') ?? undefined).click();
   for (const cell of cells) {
-    expect(cell.querySelector("label")?.textContent).toBe("Search by unit code");
+    expect(cell.querySelector("label")?.textContent).toBe("Search by unit code or name");
     expect(cell.querySelector("label:last-of-type")?.textContent).toBe("Choose a unit");
   }
   await window.happyDOM.close();
