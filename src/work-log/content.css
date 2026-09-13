@@ -569,6 +569,10 @@ html[data-ccxp-lite-work-log-language]
 }
 
 /* Assistant Registration System task information table */
+html[data-ccxp-lite-work-log-language] #insTask #trLabSerial:has(table) > th {
+  margin-bottom: var(--ccxp-lite-spacing-md, 16px) !important;
+}
+
 html[data-ccxp-lite-work-log-language] #insTask #trLabSerial:has(table) > td {
   overflow-x: auto;
   max-width: 100%;
@@ -578,7 +582,7 @@ html[data-ccxp-lite-work-log-language] #insTask #trLabSerial table {
   display: table !important;
   width: 100% !important;
   min-width: 580px;
-  border-collapse: collapse !important;
+  border-collapse: separate !important;
   border-spacing: 0 !important;
   background: var(--ccxp-lite-surface, #ffffff) !important;
   border: 1px solid var(--ccxp-lite-border, rgba(31, 41, 51, 0.12)) !important;
@@ -613,6 +617,7 @@ html[data-ccxp-lite-work-log-language] #insTask #trLabSerial table :is(th, td) {
   vertical-align: middle !important;
   border: 0 !important;
   border-bottom: 1px solid var(--ccxp-lite-border, rgba(31, 41, 51, 0.12)) !important;
+  border-right: 1px solid var(--ccxp-lite-border, rgba(31, 41, 51, 0.12)) !important;
   font: var(--ccxp-lite-work-log-body, 14px/1.4 sans-serif) !important;
   text-align: center !important;
   white-space: nowrap;
@@ -631,12 +636,13 @@ html[data-ccxp-lite-work-log-language] #insTask #trLabSerial table td {
 }
 
 html[data-ccxp-lite-work-log-language] #insTask #trLabSerial table :is(th, td):last-child {
+  border-right: 0 !important;
   text-align: start !important;
   white-space: normal;
   min-width: 140px;
 }
 
-html[data-ccxp-lite-work-log-language] #insTask #trLabSerial table tr:last-child :is(th, td) {
+html[data-ccxp-lite-work-log-language] #insTask #trLabSerial table tr:last-child td {
   border-bottom: 0 !important;
 }
 

@@ -151,6 +151,38 @@ test("packaged extension displays assistant task table horizontally without vert
     }
     expect(Math.round(firstCellBox.y)).toBe(Math.round(secondCellBox.y));
     expect(secondCellBox.x).toBeGreaterThan(firstCellBox.x);
+
+    // Assert table borders, column and row dividers, and spacing below the label.
+    const tableDetails = await page.locator("#trLabSerial").evaluate((row) => {
+      const label = row.querySelector(":scope > th");
+      const table = row.querySelector("table");
+      const th0 = table?.querySelector("th:first-child");
+      const thLast = table?.querySelector("th:last-child");
+      const td0 = table?.querySelector("td:first-child");
+      const tdLast = table?.querySelector("td:last-child");
+      if (!label || !table || !th0 || !thLast || !td0 || !tdLast) {
+        throw new Error("Missing table test elements");
+      }
+      const labelBox = label.getBoundingClientRect();
+      const tableBox = table.getBoundingClientRect();
+      return {
+        spacingToTable: tableBox.top - labelBox.bottom,
+        tableBorderTopWidth: getComputedStyle(table).borderTopWidth,
+        th0BorderRightWidth: getComputedStyle(th0).borderRightWidth,
+        th0BorderBottomWidth: getComputedStyle(th0).borderBottomWidth,
+        thLastBorderRightWidth: getComputedStyle(thLast).borderRightWidth,
+        td0BorderRightWidth: getComputedStyle(td0).borderRightWidth,
+        tdLastBorderRightWidth: getComputedStyle(tdLast).borderRightWidth,
+      };
+    });
+
+    expect(tableDetails.spacingToTable).toBeGreaterThanOrEqual(16);
+    expect(tableDetails.tableBorderTopWidth).toBe("1px");
+    expect(tableDetails.th0BorderRightWidth).toBe("1px");
+    expect(tableDetails.th0BorderBottomWidth).toBe("1px");
+    expect(tableDetails.thLastBorderRightWidth).toBe("0px");
+    expect(tableDetails.td0BorderRightWidth).toBe("1px");
+    expect(tableDetails.tdLastBorderRightWidth).toBe("0px");
   } finally {
     await context.close();
     rmSync(profile, { recursive: true, force: true });
