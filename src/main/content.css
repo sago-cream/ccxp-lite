@@ -396,7 +396,7 @@ html[data-ccxp-lite-scope="main"] .ccxp-home-wordmark {
   text-align: center;
   font-family: Arial, sans-serif !important;
   font-size: clamp(48px, 7vw, 76px);
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1.15;
   letter-spacing: -0.01em;
 }

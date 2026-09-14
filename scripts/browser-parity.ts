@@ -436,9 +436,12 @@ async function captureRevision(
       await navFrame.locator(".ccxp-lite-sidebar-shell").waitFor();
       await navFrame.locator(".ccxp-lite-empty-row").waitFor();
       markRecordingStep("homepage-start");
+      if (recordVideo) {
+        await page.waitForTimeout(1500);
+      }
       const hasHome = (await navFrame.locator("#ccxp-lite-profile-mode").count()) > 0;
       if (hasHome) {
-        await assertHome(page, navFrame);
+        await assertHome(page, navFrame, recordVideo);
       }
       const classicScreenshot = path.join(revisionOutputDir, "sidebar-classic.png");
       await capturePage(page, classicScreenshot);
@@ -448,6 +451,9 @@ async function captureRevision(
       process.stdout.write(`[${label}] sidebar layered search\n`);
       if ((await navFrame.locator("#ccxp-lite-profile-mode").count()) > 0) {
         await navFrame.locator(".ccxp-lite-profile-trigger").click();
+        if (recordVideo) {
+          await page.waitForTimeout(1500);
+        }
         await navFrame.locator("#ccxp-lite-profile-mode").selectOption("layered");
       } else {
         await page.locator(".ccxp-lite-sidebar-experiment-switch").click();
@@ -464,10 +470,13 @@ async function captureRevision(
       screenshots["sidebar-layered-search"] = layeredScreenshot;
       styles["sidebar-layered-search"] = await collectStyles(navFrame, sidebarProbes);
 
+      if (recordVideo) {
+        await page.waitForTimeout(1500);
+      }
+      markRecordingStep("homepage-end");
       if (hasHome) {
         await assertMenuProfile(page, navFrame);
       }
-      markRecordingStep("homepage-end");
       process.stdout.write(`[${label}] embedded destination\n`);
       await navFrame.locator("button[title^='\u6559\u5B78\u610F\u898B']").click();
       await navFrame

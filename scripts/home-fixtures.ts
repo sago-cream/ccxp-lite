@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import type { Frame, Page } from "playwright";
 
-export async function assertProfile(page: Page, nav: Frame): Promise<void> {
+export async function assertProfile(page: Page, nav: Frame, recordVideo = false): Promise<void> {
   const profile = nav.locator(".ccxp-lite-sidebar-profile");
   await profile.getByText("\u6E2C\u8A66\u540C\u5B78", { exact: true }).waitFor();
   assert.equal(await profile.locator(".ccxp-lite-profile-avatar").textContent(), "ST");
@@ -9,6 +9,9 @@ export async function assertProfile(page: Page, nav: Frame): Promise<void> {
   const popup = profile.locator(".ccxp-lite-profile-popover");
   assert.equal(await popup.isVisible(), false);
   await trigger.click();
+  if (recordVideo) {
+    await page.waitForTimeout(1200);
+  }
   await profile.locator("label").click({ position: { x: 3, y: 3 } });
   assert.equal(await popup.isVisible(), true, "Label clicks must not dismiss the popup");
   const logout = profile.locator(".ccxp-lite-profile-logout");
@@ -17,6 +20,9 @@ export async function assertProfile(page: Page, nav: Frame): Promise<void> {
   const before = await logout.boundingBox();
   await logout.hover();
   assert.deepEqual(await logout.boundingBox(), before, "Legacy link hover must not move logout");
+  if (recordVideo) {
+    await page.waitForTimeout(1200);
+  }
   await logout.press("Escape");
   assert.equal(await popup.isVisible(), false);
   await trigger.click();
@@ -33,7 +39,7 @@ export async function assertProfile(page: Page, nav: Frame): Promise<void> {
   assert.deepEqual(gap, { above: 16, below: 16 });
 }
 
-export async function assertHome(page: Page, nav: Frame): Promise<void> {
+export async function assertHome(page: Page, nav: Frame, recordVideo = false): Promise<void> {
   const main = page.frames().find((frame) => frame.name() === "main");
   assert.ok(main);
   await main.locator(".ccxp-home-wordmark").waitFor();
@@ -43,9 +49,12 @@ export async function assertHome(page: Page, nav: Frame): Promise<void> {
   });
   await help.click();
   assert.equal(await main.locator(".ccxp-home-info li").count(), 4);
+  if (recordVideo) {
+    await page.waitForTimeout(1500);
+  }
   await help.press("Escape");
   assert.equal(await main.locator(".ccxp-home-info ul").isVisible(), false);
-  await assertProfile(page, nav);
+  await assertProfile(page, nav, recordVideo);
   const input = main.locator(".ccxp-home-search > input");
   const favorites = main.locator("#ccxp-home-cards");
   const before = await favorites.innerHTML();
@@ -54,6 +63,9 @@ export async function assertHome(page: Page, nav: Frame): Promise<void> {
   assert.equal(await favorites.innerHTML(), before, "Search must not replace favorites");
   await input.press("ArrowDown");
   assert.equal(await main.locator(".ccxp-home-search-result:focus").count(), 1);
+  if (recordVideo) {
+    await page.waitForTimeout(1500);
+  }
   await input.press("Escape");
   assert.equal(await main.locator(".ccxp-home-search-results").isVisible(), false);
   await input.fill("");
