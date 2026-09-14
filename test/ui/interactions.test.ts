@@ -86,7 +86,7 @@ describe("extracted UI interactions", () => {
     expect(document.activeElement).not.toBe(button);
   });
 
-  test("switch rerenders once, persists mode, resets navigation, and mounts only once", async () => {
+  test("profile mode selection rerenders once, persists mode, and resets navigation", async () => {
     const { document, window, state, ui, strings } = await setupMenu();
     state.sidebarVariant = "classic";
     state.currentCategoryId = "category-courses";
@@ -94,21 +94,24 @@ describe("extracted UI interactions", () => {
     const rerender = vi.fn<() => void>();
     ui.mountSidebarVariantSwitch(document, state, strings, rerender);
     ui.mountSidebarVariantSwitch(document, state, strings, rerender);
-    expect(document.querySelectorAll(".ccxp-lite-sidebar-experiment-switch")).toHaveLength(1);
-    requireElement(
-      document.querySelector<HTMLButtonElement>(".ccxp-lite-sidebar-experiment-switch"),
-    ).click();
+    expect(document.querySelectorAll(".ccxp-lite-sidebar-profile")).toHaveLength(1);
+    const mode = requireElement(
+      document.querySelector<HTMLSelectElement>("#ccxp-lite-profile-mode"),
+    );
+    mode.value = "layered";
+    mode.dispatchEvent(new (window.Event as unknown as typeof Event)("change"));
     expect(state.sidebarVariant).toBe("layered");
     expect(state.currentCategoryId).toBe("");
     expect(state.activeLeaf).toBeUndefined();
     expect(window.localStorage.getItem("ccxp-lite-sidebar-variant")).toBe("layered");
     expect(rerender).toHaveBeenCalledTimes(1);
     ui.mountSidebarVariantSwitch(document, state, strings, rerender);
-    const button = requireElement(
-      document.querySelector<HTMLButtonElement>(".ccxp-lite-sidebar-experiment-switch"),
+    const nextMode = requireElement(
+      document.querySelector<HTMLSelectElement>("#ccxp-lite-profile-mode"),
     );
-    expect(button.getAttribute("aria-label")).toBe(strings.sidebarSwitchToClassic);
-    button.click();
+    expect(nextMode.value).toBe("layered");
+    nextMode.value = "classic";
+    nextMode.dispatchEvent(new (window.Event as unknown as typeof Event)("change"));
     expect(state.sidebarVariant).toBe("classic");
     expect(rerender).toHaveBeenCalledTimes(2);
   });
@@ -291,22 +294,19 @@ describe("extracted UI interactions", () => {
     expect(form.querySelectorAll("#continue-action")).toHaveLength(1);
   });
 
-  test("classic switch mounts in the top document and moves back for layered mode", async () => {
+  test("profile stays in the sidebar document and moves into the menu header", async () => {
     const { document, ui, state, strings } = await setupMenu();
-    const { window: child } = createTestWindow();
-    const childDocument = child.document as Document;
     state.sidebarVariant = "classic";
-    ui.mountSidebarVariantSwitch(childDocument, state, strings, () => undefined);
-    expect(document.querySelector(".ccxp-lite-sidebar-experiment-switch")?.ownerDocument).toBe(
-      document,
-    );
-    expect(childDocument.querySelector(".ccxp-lite-sidebar-experiment-switch")).toBeNull();
+    ui.mountSidebarVariantSwitch(document, state, strings, () => undefined);
+    expect(
+      document.querySelector(".ccxp-lite-sidebar-shell > .ccxp-lite-sidebar-profile"),
+    ).not.toBeNull();
     state.sidebarVariant = "layered";
-    ui.mountSidebarVariantSwitch(childDocument, state, strings, () => undefined);
-    expect(document.querySelector(".ccxp-lite-sidebar-experiment-switch")).toBeNull();
-    expect(childDocument.querySelector(".ccxp-lite-sidebar-experiment-switch")?.ownerDocument).toBe(
-      childDocument,
-    );
+    ui.mountSidebarVariantSwitch(document, state, strings, () => undefined);
+    expect(
+      document.querySelector(".ccxp-lite-sidebar-header > .ccxp-lite-sidebar-profile"),
+    ).not.toBeNull();
+    expect(document.querySelectorAll(".ccxp-lite-sidebar-profile")).toHaveLength(1);
   });
 
   test("confirmation uses the wider main frame and rejects a duplicate dialog", async () => {

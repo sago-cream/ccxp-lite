@@ -5,9 +5,9 @@ export function createSidebarShellHtml(): string {
       <head></head>
       <body>
         <div class="ccxp-lite-sidebar-shell">
-          <label class="ccxp-lite-sidebar-search">
+          <div class="ccxp-lite-sidebar-header"><label class="ccxp-lite-sidebar-search">
             <input class="ccxp-lite-sidebar-search-input" type="search" />
-          </label>
+          </label></div>
           <main class="ccxp-lite-sidebar-content"></main>
           <footer class="ccxp-lite-sidebar-footer"></footer>
         </div>

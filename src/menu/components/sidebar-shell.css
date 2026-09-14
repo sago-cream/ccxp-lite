@@ -209,24 +209,6 @@
   color: #fff;
   background: var(--ccxp-lite-brand);
 }
-.ccxp-lite-profile-copy {
-  flex: 1;
-  min-width: 0;
-  display: grid;
-  gap: 4px;
-}
-.ccxp-lite-profile-copy strong {
-  font: var(--ccxp-lite-type-body-strong);
-}
-.ccxp-lite-profile-copy span {
-  font: var(--ccxp-lite-type-caption);
-  color: var(--ccxp-lite-text-muted);
-}
-.ccxp-lite-profile-copy > * {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
 .ccxp-lite-profile-trigger {
   display: flex;
   align-items: center;

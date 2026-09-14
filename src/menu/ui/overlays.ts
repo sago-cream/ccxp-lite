@@ -32,6 +32,7 @@
     Promise<{ name: string; account: string; initials: string } | undefined>
   >();
   const profileCleanups = new WeakMap<Document, () => void>();
+  const registeredDocuments = new WeakSet<Document>();
 
   async function loadProfile(targetDocument: Document) {
     const cached = profileRequests.get(targetDocument);
@@ -258,7 +259,14 @@
       contentController?.destroy();
     };
     profileCleanups.set(targetDocument, cleanup);
-    app.shared?.addCleanupTask(cleanup);
+    if (!registeredDocuments.has(targetDocument)) {
+      registeredDocuments.add(targetDocument);
+      app.shared?.addCleanupTask(() => {
+        profileCleanups.get(targetDocument)?.();
+        profileCleanups.delete(targetDocument);
+        registeredDocuments.delete(targetDocument);
+      });
+    }
     const mount =
       state.sidebarVariant === "layered"
         ? shell?.querySelector(".ccxp-lite-sidebar-header")

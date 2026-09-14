@@ -90,6 +90,10 @@ jobs:
              grep -q 'function renderResults()' src/work-log/locale.ts; then
             expected_changes+=(--expect-search-results-change)
           fi
+          if ! grep -q 'function mountHomeSearch' ../base/src/main/bootstrap.ts &&
+             grep -q 'function mountHomeSearch' src/main/bootstrap.ts; then
+            expected_changes+=(--expect-home-change)
+          fi
           bun run test:browser-parity -- \
             --base-extension ../base/dist/crx/unpacked \
             --head-extension dist/crx/unpacked \

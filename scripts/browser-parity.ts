@@ -14,6 +14,7 @@ import path from "node:path";
 import { tmpdir } from "node:os";
 import { assertWorkLogReady, routeWorkLogFixture, workLogPath } from "./work-log-fixtures.js";
 import pixelmatch from "pixelmatch";
+import { assertHome, assertHomeFavorites, assertMenuProfile } from "./home-fixtures.js";
 import type { BrowserContext, Frame, Page } from "playwright";
 import { chromium } from "playwright";
 import { PNG } from "pngjs";
@@ -166,6 +167,16 @@ async function routeFixtures(context: BrowserContext): Promise<ReadonlySet<strin
     const requestUrl = new URL(route.request().url());
     if (requestUrl.protocol === "chrome-extension:") {
       await route.continue();
+      return;
+    }
+    if (
+      requestUrl.origin === ccxpOrigin &&
+      requestUrl.pathname === "/ccxp/INQUIRE/JH/4/4.19/JH4j002.php"
+    ) {
+      await route.fulfill({
+        contentType: "text/html",
+        body: readFileSync(path.join(fixtureRoot, "profile-header.big5")),
+      });
       return;
     }
     if (await routeWorkLogFixture(route)) {
@@ -403,9 +414,12 @@ async function captureRevision(
       styles.standalone = await collectStyles(page, standaloneProbes);
 
       process.stdout.write(`[${label}] sidebar classic\n`);
-      await page.goto(`${ccxpOrigin}/ccxp/INQUIRE/select_entry.php`, {
-        waitUntil: "commit",
-      });
+      await page.goto(
+        `${ccxpOrigin}/ccxp/INQUIRE/select_entry.php?ACIXSTORE=fixture&hint=123456789`,
+        {
+          waitUntil: "commit",
+        },
+      );
       await page.waitForFunction(() => {
         const navFrame = document.querySelector("frame[src*='IN_INQ_STU.php']");
         const navDocument = navFrame
@@ -421,13 +435,23 @@ async function captureRevision(
       }
       await navFrame.locator(".ccxp-lite-sidebar-shell").waitFor();
       await navFrame.locator(".ccxp-lite-empty-row").waitFor();
+      markRecordingStep("homepage-start");
+      const hasHome = (await navFrame.locator("#ccxp-lite-profile-mode").count()) > 0;
+      if (hasHome) {
+        await assertHome(page, navFrame);
+      }
       const classicScreenshot = path.join(revisionOutputDir, "sidebar-classic.png");
       await capturePage(page, classicScreenshot);
       screenshots["sidebar-classic"] = classicScreenshot;
       styles["sidebar-classic"] = await collectStyles(navFrame, sidebarProbes);
 
       process.stdout.write(`[${label}] sidebar layered search\n`);
-      await page.locator(".ccxp-lite-sidebar-experiment-switch").click();
+      if ((await navFrame.locator("#ccxp-lite-profile-mode").count()) > 0) {
+        await navFrame.locator(".ccxp-lite-profile-trigger").click();
+        await navFrame.locator("#ccxp-lite-profile-mode").selectOption("layered");
+      } else {
+        await page.locator(".ccxp-lite-sidebar-experiment-switch").click();
+      }
       await page.waitForFunction(
         () => document.querySelector("frameset[cols]")?.getAttribute("cols") === "*,0",
       );
@@ -440,6 +464,10 @@ async function captureRevision(
       screenshots["sidebar-layered-search"] = layeredScreenshot;
       styles["sidebar-layered-search"] = await collectStyles(navFrame, sidebarProbes);
 
+      if (hasHome) {
+        await assertMenuProfile(page, navFrame);
+      }
+      markRecordingStep("homepage-end");
       process.stdout.write(`[${label}] embedded destination\n`);
       await navFrame.locator("button[title^='\u6559\u5B78\u610F\u898B']").click();
       await navFrame
@@ -604,6 +632,18 @@ async function captureRevision(
     if (recordVideo) {
       await page.waitForTimeout(1000);
     }
+    if (!workLogOnly) {
+      await page.goto(
+        `${ccxpOrigin}/ccxp/INQUIRE/select_entry.php?ACIXSTORE=fixture&hint=123456789`,
+        { waitUntil: "load" },
+      );
+      const nav = page.frames().find((frame) => frame.url().includes("IN_INQ_STU.php"));
+      assert.ok(nav);
+      await nav.locator(".ccxp-lite-sidebar-shell").waitFor();
+      if ((await nav.locator("#ccxp-lite-profile-mode").count()) > 0) {
+        await assertHomeFavorites(page, nav);
+      }
+    }
     writeFileSync(
       path.join(revisionOutputDir, "capture-manifest.json"),
       `${JSON.stringify(
@@ -651,6 +691,7 @@ function compareScreenshot(
   headPath: string,
   diffPath: string,
   preserveAbove?: number,
+  maskSidebar = false,
 ) {
   const base = PNG.sync.read(readFileSync(basePath));
   const head = PNG.sync.read(readFileSync(headPath));
@@ -661,6 +702,18 @@ function compareScreenshot(
     // Only the results area may intentionally change. Keep the search form and navigation strict.
     base.data.fill(0, base.width * preserveAbove * 4);
     head.data.fill(0, head.width * preserveAbove * 4);
+  }
+  if (maskSidebar) {
+    // The sidebar and removed bottom-right mode toggle are the only allowed regions on otherwise
+    // unchanged main-frame destinations.
+    for (const png of [base, head]) {
+      for (let y = 0; y < png.height; y++) {
+        png.data.fill(0, y * png.width * 4, (y * png.width + 325) * 4);
+        if (y >= png.height - 64) {
+          png.data.fill(0, (y * png.width + png.width - 240) * 4, (y + 1) * png.width * 4);
+        }
+      }
+    }
   }
   const diff = new PNG({ width: base.width, height: base.height });
   const differentPixels = pixelmatch(base.data, head.data, diff.data, base.width, base.height, {
@@ -680,6 +733,7 @@ function compareCaptures(
   head: CaptureResult,
   outputDir: string,
   expectSearchResultsChange: boolean,
+  expectHomeChange: boolean,
 ): readonly string[] {
   const failures: string[] = [];
   if (base.searchFormBottom !== head.searchFormBottom) {
@@ -696,8 +750,20 @@ function compareCaptures(
   ) {
     failures.push("captured screenshot set changed");
   }
+  const redesignedViews = new Set([
+    "embedded-destination",
+    "sidebar-classic",
+    "sidebar-layered-search",
+  ]);
+  const framedViews = new Set([
+    "course-hub",
+    "curriculum",
+    "keyword",
+    "work-log-multiday",
+    "work-log-submit",
+  ]);
   for (const [name, basePath] of Object.entries(base.screenshots)) {
-    if (!Object.hasOwn(head.screenshots, name)) {
+    if (!Object.hasOwn(head.screenshots, name) || (expectHomeChange && redesignedViews.has(name))) {
       continue;
     }
     const headPath = head.screenshots[name];
@@ -708,6 +774,7 @@ function compareCaptures(
       expectSearchResultsChange && expectedResultsViews.has(name)
         ? base.searchFormBottom
         : undefined,
+      expectHomeChange && framedViews.has(name),
     );
     if (difference.ratio > maximumPixelDifferenceRatio) {
       failures.push(
@@ -715,7 +782,29 @@ function compareCaptures(
       );
     }
   }
-  if (JSON.stringify(base.styles) !== JSON.stringify(head.styles)) {
+  const normalizedStyles = (styles: CaptureResult["styles"]) =>
+    JSON.stringify(styles, (key, value: unknown) => {
+      if (!expectHomeChange) {
+        return value;
+      }
+      if (key === "sidebar-classic" || key === "sidebar-layered-search") {
+        return undefined;
+      }
+      if (key === "tagName" && value === "NAV") {
+        return "HEADER";
+      }
+      // The removed reserved scrollbar gutter widens the menu destination by 30px.
+      if (key === "embedded-destination") {
+        const probes = structuredClone(value) as Record<
+          string,
+          { properties: Record<string, string> }
+        >;
+        delete probes.frame.properties.width;
+        return probes;
+      }
+      return value;
+    });
+  if (normalizedStyles(base.styles) !== normalizedStyles(head.styles)) {
     failures.push("computed styles or inline priorities changed");
   }
   return failures;
@@ -731,6 +820,7 @@ async function main() {
       "work-log-only": { type: "boolean", default: false },
       "record-video": { type: "boolean", default: false },
       "expect-search-results-change": { type: "boolean", default: false },
+      "expect-home-change": { type: "boolean", default: false },
     },
     strict: true,
   });
@@ -757,10 +847,16 @@ async function main() {
     values["record-video"],
     values["expect-search-results-change"],
   );
-  const failures = compareCaptures(base, head, outputDir, values["expect-search-results-change"]);
+  const failures = compareCaptures(
+    base,
+    head,
+    outputDir,
+    values["expect-search-results-change"],
+    values["expect-home-change"],
+  );
   writeFileSync(
     path.join(outputDir, "report.json"),
-    `${JSON.stringify({ baseExtensionDir, headExtensionDir, expectSearchResultsChange: values["expect-search-results-change"], searchFormBottom: base.searchFormBottom, failures }, undefined, 2)}\n`,
+    `${JSON.stringify({ baseExtensionDir, headExtensionDir, expectHomeChange: values["expect-home-change"], expectSearchResultsChange: values["expect-search-results-change"], searchFormBottom: base.searchFormBottom, failures }, undefined, 2)}\n`,
   );
   if (failures.length > 0) {
     if (process.env.ALLOW_VISUAL_CHANGE === "true") {

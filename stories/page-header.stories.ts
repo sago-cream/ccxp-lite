@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/html-vite";
 import { createPageHeader, mountInfoPopover } from "@ccxp-lite/ui";
-import { localized, withCleanup } from "./helpers.js";
+import { localized, surface, withCleanup } from "./helpers.js";
 
 const meta = {
   title: "Components/Page header",
@@ -24,7 +24,7 @@ const meta = {
     if (args.open) {
       button?.click();
     }
-    return withCleanup(header, help.destroy);
+    return withCleanup(surface(header), help.destroy);
   },
 } satisfies Meta<{ open: boolean }>;
 export default meta;
