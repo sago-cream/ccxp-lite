@@ -436,8 +436,9 @@ async function captureRevision(
       await navFrame.locator(".ccxp-lite-sidebar-shell").waitFor();
       await navFrame.locator(".ccxp-lite-empty-row").waitFor();
       if (recordVideo) {
-        // Flush the initial framed-page paint before recording interactions.
-        await page.screenshot();
+        // Use the same settled animation/font state as the paired screenshots.
+        await stabilize(page);
+        await page.screenshot({ animations: "disabled" });
       }
       markRecordingStep("homepage-start");
       if (recordVideo) {
