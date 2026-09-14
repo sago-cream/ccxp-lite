@@ -435,6 +435,10 @@ async function captureRevision(
       }
       await navFrame.locator(".ccxp-lite-sidebar-shell").waitFor();
       await navFrame.locator(".ccxp-lite-empty-row").waitFor();
+      if (recordVideo) {
+        // Flush the initial framed-page paint before recording interactions.
+        await page.screenshot();
+      }
       markRecordingStep("homepage-start");
       if (recordVideo) {
         await page.waitForTimeout(1500);
