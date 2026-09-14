@@ -198,6 +198,7 @@ function getCategoryIconShapes(iconName: string): ReadonlyArray<
         }
     >
   > = {
+    x: ["M18 6 6 18", "m6 6 12 12"],
     "log-out": ["m16 17 5-5-5-5", "M21 12H9", "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"],
     "circle-user-round": [
       "M17.925 20.056a6 6 0 0 0-11.851.001",

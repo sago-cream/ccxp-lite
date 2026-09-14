@@ -411,7 +411,18 @@
       : "\u641C\u5C0B\u7CFB\u7D71\u529F\u80FD";
     input.setAttribute("aria-label", input.placeholder);
     input.setAttribute("aria-controls", "ccxp-home-search-results");
-    search.append(uiIcons.createSearchIcon(targetDocument), input);
+    const clear = uiButtons.createButton(targetDocument, {
+      className: "ccxp-home-search-clear",
+      ariaLabel: english ? "Clear search" : "\u6E05\u9664\u641C\u5C0B",
+      icon: uiIcons.createCategoryIcon(targetDocument, "x"),
+      onClick: () => {
+        input.value = "";
+        renderSearch();
+        input.focus();
+      },
+    });
+    clear.hidden = true;
+    search.append(uiIcons.createSearchIcon(targetDocument), input, clear);
     const results = targetDocument.createElement("div");
     results.id = "ccxp-home-search-results";
     results.className = "ccxp-home-search-results";
@@ -425,6 +436,7 @@
       const navDocument = findFrames().nav?.contentDocument;
       const model = navDocument ? sidebarData.buildSidebarModel(navDocument, strings) : undefined;
       const query = input.value.trim();
+      clear.hidden = input.value === "";
       results.textContent = "";
       results.hidden = query === "" || !model;
       if (query === "" || !model || !navDocument) {
@@ -491,7 +503,10 @@
     const recentCards = targetDocument.createElement("div");
     recentCards.className = "ccxp-home-cards";
     recentSection.append(recentHeading, recentCards);
-    content.append(wordmark, search, section, recentSection);
+    const searchSlot = targetDocument.createElement("div");
+    searchSlot.className = "ccxp-home-search-slot";
+    searchSlot.append(search);
+    content.append(wordmark, searchSlot, section, recentSection);
     const strings = sharedLib.getLocalizedStrings(english ? "en" : "zh");
     const render = () => {
       const navDocument = findFrames().nav?.contentDocument;
