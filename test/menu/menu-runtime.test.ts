@@ -8,6 +8,39 @@ import {
 } from "../helpers/module-loader.js";
 
 describe("sidebar runtime", () => {
+  test("keeps eight distinct recent functions in most-recent order", () => {
+    const { window } = createTestWindow();
+    loadModules(window, menuModulePaths);
+    const runtime = requireValue(window.CCXP_LITE.sidebarRuntime, "sidebarRuntime");
+    const favorites = requireValue(window.CCXP_LITE.sidebarFavorites, "sidebarFavorites");
+    vi.spyOn(window, "open").mockImplementation((() => undefined) as unknown as typeof window.open);
+    const listener = vi.fn<(value: undefined) => void>();
+    const unsubscribe = runtime.subscribeRecentFunctions(() => {
+      listener(undefined);
+    });
+    const links = Array.from({ length: 10 }, (_unused, index) => ({
+      id: String(index),
+      label: `Function ${index}`,
+      href: `/function-${index}`,
+      target: "_blank",
+    }));
+    for (const link of links) {
+      runtime.openLeafInNewTab(link, window.document);
+    }
+    expect(runtime.getRecentFunctionIds()).toEqual(
+      links
+        .slice(2)
+        .toReversed()
+        .map((link) => favorites.createLinkId(link)),
+    );
+    runtime.openLeafInNewTab(links[4], window.document);
+    expect(runtime.getRecentFunctionIds()[0]).toBe(favorites.createLinkId(links[4]));
+    expect(runtime.getRecentFunctionIds()).toHaveLength(8);
+    expect(listener).toHaveBeenCalledTimes(11);
+    unsubscribe();
+    runtime.openLeafInNewTab(links[0], window.document);
+    expect(listener).toHaveBeenCalledTimes(11);
+  });
   test("detects external-only routes and opens them in a new tab", () => {
     const { window } = createTestWindow();
     loadModules(window, menuModulePaths);

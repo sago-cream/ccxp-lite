@@ -72,6 +72,11 @@
     );
     const targetDocumentElement = targetDocument.documentElement;
     targetDocumentElement.dataset.ccxpLiteLoadingReady = "true";
+    // Explicitly reveal legacy frames: Chromium can retain their hidden paint state after removing
+    // the loading stylesheet without a frame-level style change.
+    for (const frame of targetDocument.querySelectorAll<HTMLElement>("frameset, frame")) {
+      frame.style.visibility = "visible";
+    }
     const targetBody = targetDocument.querySelector("body");
     if (targetBody) {
       targetBody.dataset.ccxpLiteLoadingReady = "true";

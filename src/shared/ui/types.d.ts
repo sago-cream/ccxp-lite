@@ -225,6 +225,7 @@ declare global {
       ) => HTMLSpanElement;
     };
     uiDisplay?: {
+      createPageHeader: (targetDocument: Document) => HTMLElement;
       createSidebarSearch: (
         targetDocument: Document,
         strings: Readonly<Record<string, string>>,

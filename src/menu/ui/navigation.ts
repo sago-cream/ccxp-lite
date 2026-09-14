@@ -27,6 +27,8 @@
   const { createFavoriteToggle, createBlockFavoriteToggle } = namespace.sidebarFavoriteControls;
   const { createClassicViewModel } = namespace.sidebarNavigationAdapter;
 
+  const categoryIcons = new WeakMap<Document, Map<string, string>>();
+
   function createClassicSidebarView(
     targetDocument: Document,
     navDocument: Document,
@@ -35,6 +37,21 @@
     strings: Readonly<Record<string, string>>,
     rerender: () => void,
   ) {
+    const icons = new Map<string, string>();
+    for (const category of [model.favorites, ...model.categories]) {
+      const icon = category.icon ?? "folder";
+      icons.set(category.id, icon);
+      for (const link of category.links ?? []) {
+        icons.set(link.id, icon);
+      }
+      for (const block of category.blocks) {
+        icons.set(block.id, icon);
+        for (const link of block.links) {
+          icons.set(link.id, icon);
+        }
+      }
+    }
+    categoryIcons.set(targetDocument, icons);
     const sidebarList = createRenderer(targetDocument).element("aside", {
       className: "ccxp-lite-sidebar-list",
     });
@@ -131,15 +148,14 @@
       "--ccxp-lite-row-depth",
       String(getClassicSidebarIndentLevel(group.kind, depth)),
     );
-    if (group.kind === "category") {
-      button.append(
-        dom.element("span", { className: "ccxp-lite-row-leading" }, [
-          createCategoryIcon(targetDocument, group.icon ?? "folder"),
-        ]),
-      );
-    } else if (depth > 0) {
-      button.append(createClassicRowLeadingSpacer(targetDocument));
-    }
+    button.append(
+      dom.element("span", { className: "ccxp-lite-row-leading" }, [
+        createCategoryIcon(
+          targetDocument,
+          categoryIcons.get(targetDocument)?.get(group.id) ?? "folder",
+        ),
+      ]),
+    );
     button.append(createRowLabel(targetDocument, group.label, false));
     button.append(
       createClassicTrailingActions(targetDocument, group, isExpanded, strings, rerender),
@@ -172,6 +188,7 @@
   ) {
     const children = createRenderer(targetDocument).element("div", {
       className: "ccxp-lite-link-list ccxp-lite-link-list-layer",
+      attributes: { "data-guide-anchor": "icon" },
       styleProperties: { "--ccxp-lite-tree-depth": String(depth + 1) },
     });
     if (!areFavoritesLoaded() && group.kind === "category" && group.id === "category-favorites") {
@@ -260,9 +277,14 @@
       "--ccxp-lite-row-depth",
       String(getClassicSidebarIndentLevel("link", depth)),
     );
-    if (depth > 0) {
-      button.append(createClassicRowLeadingSpacer(targetDocument));
-    }
+    button.append(
+      createRenderer(targetDocument).element("span", { className: "ccxp-lite-row-leading" }, [
+        createCategoryIcon(
+          targetDocument,
+          categoryIcons.get(targetDocument)?.get(linkItem.id) ?? "folder",
+        ),
+      ]),
+    );
     button.append(
       createRowLabel(targetDocument, linkItem.label, isExternalLinkTarget(linkItem, navDocument)),
     );
@@ -291,7 +313,7 @@
     if (kind === "category") {
       return 0;
     }
-    return Math.max(0, depth - 1);
+    return Math.max(0, depth);
   }
 
   function createClassicRowLeadingSpacer(targetDocument: Document): HTMLElement {

@@ -13,11 +13,10 @@
   gap: 0;
   min-width: 0;
   overflow: hidden;
-  padding-inline: 0;
+  padding-inline: var(--ccxp-lite-spacing-inset-md);
   height: auto;
   min-height: 0;
   max-height: none;
-  scrollbar-gutter: stable both-edges;
 }
 
 .ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-variant="classic"] .ccxp-lite-sidebar-brand-group {
@@ -25,14 +24,14 @@
   flex: 0 0 auto;
   align-items: center;
   min-width: 0;
-  gap: var(--ccxp-lite-spacing-brand-inline);
+  gap: var(--ccxp-lite-spacing-inline-sm);
 }
 
 .ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-variant="classic"] .ccxp-lite-sidebar-brand {
   display: grid;
   grid-template-columns: var(--ccxp-lite-size-sidebar-brand-logo) minmax(0, 1fr);
   align-items: center;
-  gap: var(--ccxp-lite-spacing-brand-inline);
+  gap: var(--ccxp-lite-spacing-inline-sm);
   padding-block: var(--ccxp-lite-spacing-inset-sm);
   font-family: var(--ccxp-lite-font-brand);
   font-size: var(--ccxp-lite-font-size-sidebar-brand);
@@ -56,7 +55,7 @@
   position: relative;
   display: flex;
   align-items: center;
-  gap: var(--ccxp-lite-spacing-brand-inline);
+  gap: var(--ccxp-lite-spacing-inline-sm);
   max-width: none;
   margin: 0 0 var(--ccxp-lite-spacing-inset-md);
   padding: var(--ccxp-lite-sidebar-row-padding-y) var(--ccxp-lite-sidebar-row-padding-x);
@@ -93,7 +92,7 @@
 }
 
 .ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-variant="classic"] .ccxp-lite-sidebar-content {
-  padding: 0 0 var(--ccxp-lite-spacing-inset-md);
+  padding: 0 var(--ccxp-lite-spacing-inset-md) var(--ccxp-lite-spacing-inset-md);
   overflow-x: hidden;
 }
 
@@ -119,6 +118,10 @@
   overflow-x: hidden;
 }
 
+.ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-variant="classic"] .ccxp-lite-link-list-layer {
+  font: var(--ccxp-lite-type-nav);
+}
+
 .ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-variant="classic"]
   .ccxp-lite-link-list-layer::before {
   content: "";
@@ -127,7 +130,7 @@
   bottom: 0;
   left: calc(
     var(--ccxp-lite-sidebar-row-padding-x) +
-      ((var(--ccxp-lite-tree-depth, 1) - 1) * var(--ccxp-lite-sidebar-tree-indent-step)) +
+      ((var(--ccxp-lite-tree-depth, 1) - 1) * var(--ccxp-lite-spacing-lg)) +
       (var(--ccxp-lite-size-sidebar-category-leading) / 2) -
       (var(--ccxp-lite-size-sidebar-guide-line) / 2)
   );
@@ -141,14 +144,14 @@
   position: relative;
   display: flex;
   align-items: center;
-  gap: var(--ccxp-lite-spacing-brand-inline);
+  gap: var(--ccxp-lite-spacing-xs);
   width: 100%;
   min-width: 0;
   max-width: 100%;
-  padding: var(--ccxp-lite-spacing-inline-sm) var(--ccxp-lite-sidebar-row-padding-x);
+  padding: 6px var(--ccxp-lite-sidebar-row-padding-x);
   padding-left: calc(
     var(--ccxp-lite-sidebar-row-padding-x) +
-      (var(--ccxp-lite-row-depth, 0) * var(--ccxp-lite-sidebar-tree-indent-step))
+      (var(--ccxp-lite-row-depth, 0) * var(--ccxp-lite-spacing-lg))
   );
   padding-right: calc(
     var(--ccxp-lite-sidebar-row-padding-x) + var(--ccxp-lite-size-sidebar-category-leading) +
@@ -189,7 +192,7 @@
 
 .ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-variant="classic"]
   .ccxp-lite-category:has(> .ccxp-lite-row-button[aria-expanded="true"]) {
-  margin-bottom: var(--ccxp-lite-spacing-sm);
+  margin-bottom: var(--ccxp-lite-spacing-2xs);
 }
 
 .ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-variant="classic"]
@@ -239,14 +242,14 @@
   justify-content: center;
   width: var(--ccxp-lite-size-sidebar-category-leading);
   height: var(--ccxp-lite-size-sidebar-category-leading);
-  color: inherit;
+  color: var(--ccxp-lite-text-muted);
   margin-left: 0;
 }
 
 .ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-variant="classic"] .ccxp-lite-chevron {
   width: var(--ccxp-lite-size-sidebar-category-leading);
   height: var(--ccxp-lite-size-sidebar-category-leading);
-  color: currentColor;
+  color: var(--ccxp-lite-text-muted);
   transform: none;
   transition: transform 120ms ease;
 }
@@ -283,4 +286,11 @@
 .ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-variant="classic"]
   .ccxp-lite-favorite-toggle-block[data-ccxp-lite-favorite-state="partial"] {
   color: color-mix(in srgb, var(--ccxp-lite-brand) 60%, var(--ccxp-lite-text-muted));
+}
+
+.ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-variant="classic"]
+  .ccxp-lite-category
+  > .ccxp-lite-row-button
+  > .ccxp-lite-row-leading {
+  color: var(--ccxp-lite-brand);
 }

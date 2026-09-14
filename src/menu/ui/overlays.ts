@@ -10,40 +10,11 @@
   ) {
     return;
   }
-  const { ensureThemeDocument } = namespace.shared;
+
+  const app = namespace;
   const { setPersistedSidebarVariant, persistSidebarScroll } = namespace.sidebarState;
-  const { createStatusSwitch } = namespace.uiSwitch;
-  const { createLabIcon } = namespace.uiIcons;
   const { createRenderer } = namespace.uiRenderer;
   const { showRemovePinnedDialog } = namespace.sidebarDialogController;
-
-  function createSidebarVariantSwitch(
-    targetDocument: Document,
-    state: CcxpLiteSidebarState,
-    strings: Readonly<Record<string, string>>,
-    rerender: () => void,
-  ): HTMLElement {
-    const isLayered = state.sidebarVariant === "layered";
-    const button = createStatusSwitch(targetDocument, {
-      mode: state.sidebarVariant,
-      actionLabel: isLayered ? strings.sidebarSwitchToClassic : strings.sidebarSwitchToLayered,
-      label: strings.sidebarExperimentPersistentLabel,
-      status: isLayered ? strings.sidebarExperimentOn : strings.sidebarExperimentOff,
-      icon: createLabIcon(targetDocument),
-    });
-    button.addEventListener("click", () => {
-      const nextState = state;
-      nextState.sidebarVariant = setPersistedSidebarVariant(
-        nextState.sidebarVariant === "classic" ? "layered" : "classic",
-      );
-      syncTopLevelFramesetLayout(nextState.sidebarVariant);
-      nextState.activeLeaf = undefined;
-      nextState.currentCategoryId = "";
-      persistSidebarScroll(targetDocument, "root");
-      rerender();
-    });
-    return button;
-  }
 
   function syncTopLevelFramesetLayout(variant: "classic" | "layered") {
     try {
@@ -56,92 +27,252 @@
     }
   }
 
+  const profileRequests = new WeakMap<
+    Document,
+    Promise<{ name: string; account: string; initials: string } | undefined>
+  >();
+  const profileCleanups = new WeakMap<Document, () => void>();
+
+  async function loadProfile(targetDocument: Document) {
+    const cached = profileRequests.get(targetDocument);
+    if (cached) {
+      return await cached;
+    }
+    const request = (async () => {
+      try {
+        const topDocument = targetDocument.defaultView?.top?.document;
+        const topUrl = new URL(topDocument?.URL ?? targetDocument.URL);
+        const session = topUrl.searchParams.get("ACIXSTORE");
+        if (session === null || session === "") {
+          return undefined;
+        }
+        const url = new URL("/ccxp/INQUIRE/JH/4/4.19/JH4j002.php", targetDocument.URL);
+        url.searchParams.set("ACIXSTORE", session);
+        const response = await fetch(url, {
+          credentials: "same-origin",
+          signal: AbortSignal.timeout(10_000),
+        });
+        if (!response.ok) {
+          return undefined;
+        }
+        const bytes = await response.arrayBuffer();
+        const preview = new TextDecoder().decode(bytes);
+        const charset =
+          response.headers.get("content-type")?.match(/charset\s*=\s*["']?([\w-]+)/iu)?.[1] ??
+          preview.match(/<meta[^>]+charset\s*=\s*["']?([\w-]+)/iu)?.[1] ??
+          "utf8";
+        const page = new DOMParser().parseFromString(
+          new TextDecoder(charset).decode(bytes),
+          "text/html",
+        );
+        const read = (label: string) => {
+          const cell = [...page.querySelectorAll("td")].find(
+            (item) => item.textContent.trim() === label,
+          );
+          return cell?.nextElementSibling?.textContent.trim() ?? "";
+        };
+        const account = read("\u5B78\u865F\uFF1A");
+        const name = read("\u59D3\u540D\uFF1A");
+        const englishName = read("\u8B77\u7167\u82F1\u6587\u59D3\u540D\uFF1A");
+        const parts = englishName.split(/[\s,-]+/u).filter(Boolean);
+        const initials =
+          parts.length > 1
+            ? `${parts[0]?.[0] ?? ""}${parts[1]?.[0] ?? ""}`.toUpperCase()
+            : name.charAt(0);
+        const expected = topUrl.searchParams.get("hint");
+        if (name === "" || account === "" || (expected !== null && account !== expected)) {
+          return undefined;
+        }
+        return { name, account, initials };
+      } catch {
+        return undefined;
+      }
+    })();
+    profileRequests.set(targetDocument, request);
+    return await request;
+  }
+
   function mountSidebarVariantSwitch(
     targetDocument: Document,
     state: CcxpLiteSidebarState,
-    strings: Readonly<Record<string, string>>,
+    _strings: Readonly<Record<string, string>>,
     rerender: () => void,
     _footer?: HTMLElement,
   ) {
-    const isClassic = state.sidebarVariant === "classic";
-    const scopeDocument = resolveClassicOverlayScopeDocument(targetDocument, isClassic);
-    const topDocument = resolveTopLevelDocument();
-    const button = createSidebarVariantSwitch(scopeDocument, state, strings, rerender);
-    button.dataset.ccxpLiteSidebarLabSwitch = "true";
-    removeExistingSidebarVariantSwitches([targetDocument, scopeDocument, topDocument]);
-    Object.assign(button.style, { position: "relative", pointerEvents: "auto" });
-    if (isClassic && scopeDocument !== targetDocument) {
-      getClassicMainFrameOverlayMountNode(scopeDocument).append(button);
-      return;
-    }
-    getOverlayMountNode(targetDocument).append(button);
-  }
-
-  function resolveClassicOverlayScopeDocument(
-    targetDocument: Document,
-    isClassic: boolean,
-  ): Document {
-    if (!isClassic) {
-      return targetDocument;
-    }
-    try {
-      const scopeDocument = resolveTopLevelDocument();
-      if (!scopeDocument) {
-        return targetDocument;
-      }
-      ensureThemeDocument(scopeDocument, "nav");
-      return scopeDocument;
-    } catch {
-      return targetDocument;
-    }
-  }
-
-  function resolveTopLevelDocument(): Document | undefined {
-    try {
-      return window.top?.document ?? undefined;
-    } catch {
-      return undefined;
-    }
-  }
-
-  function getClassicMainFrameOverlayMountNode(targetDocument: Document): HTMLElement {
-    let anchor = targetDocument.querySelector<HTMLElement>(
-      "[data-ccxp-lite-main-frame-overlay-anchor='true']",
-    );
-    if (!anchor) {
-      anchor = createRenderer(targetDocument).element("div", {
-        data: { ccxpLiteMainFrameOverlayAnchor: "true" },
-      });
-      targetDocument.documentElement.append(anchor);
-    }
-    syncClassicMainFrameOverlayPosition(targetDocument, anchor);
-    return anchor;
-  }
-
-  function syncClassicMainFrameOverlayPosition(targetDocument: Document, anchor: HTMLElement) {
-    const mainFrame = targetDocument.querySelector<HTMLElement>("frame[name='main']");
-    const view = targetDocument.defaultView;
-    if (!mainFrame || !view) {
-      Object.assign(anchor.style, {
-        position: "fixed",
-        insetInlineEnd: "var(--ccxp-lite-spacing-lg)",
-        insetBlockEnd: "var(--ccxp-lite-spacing-lg)",
-      });
-      return;
-    }
-    const rect = mainFrame.getBoundingClientRect();
-    const inlineOffset = Math.max(0, view.innerWidth - rect.right);
-    const blockOffset = Math.max(0, view.innerHeight - rect.bottom);
-    Object.assign(anchor.style, {
-      position: "fixed",
-      insetInlineEnd: `calc(var(--ccxp-lite-spacing-lg) + ${inlineOffset}px)`,
-      insetBlockEnd: `calc(var(--ccxp-lite-spacing-lg) + ${blockOffset}px)`,
-      zIndex: "2147483646",
-      display: "flex",
-      alignItems: "flex-end",
-      justifyContent: "flex-end",
-      pointerEvents: "none",
+    profileCleanups.get(targetDocument)?.();
+    targetDocument.querySelector(".ccxp-lite-sidebar-profile")?.remove();
+    const topDocument = targetDocument.defaultView?.top?.document;
+    removeExistingSidebarVariantSwitches([targetDocument, topDocument]);
+    const dom = createRenderer(targetDocument);
+    const english = app.shared?.resolveLocaleFromDocument(targetDocument) === "en";
+    const name = dom.element("strong", {
+      text: english ? "University account" : "\u6821\u52D9\u7CFB\u7D71\u5E33\u865F",
     });
+    const avatar = dom.element("span", {
+      className: "ccxp-lite-profile-avatar",
+      text: "?",
+      attributes: { "aria-hidden": "true" },
+    });
+    const settings = dom.element(
+      "button",
+      {
+        className: "ccxp-lite-profile-trigger",
+        attributes: {
+          type: "button",
+          "aria-label": english ? "Settings" : "\u8A2D\u5B9A",
+          "aria-expanded": "false",
+          "aria-controls": "ccxp-lite-profile-popover",
+        },
+      },
+      [avatar, name],
+    );
+    const popup = dom.element("div", {
+      className: "ccxp-lite-profile-popover",
+      attributes: { id: "ccxp-lite-profile-popover", hidden: "" },
+    });
+    const mode = targetDocument.createElement("select");
+    mode.id = "ccxp-lite-profile-mode";
+    for (const [value, label] of [
+      ["classic", english ? "Sidebar" : "\u5074\u908A\u6B04\u6A21\u5F0F"],
+      ["layered", english ? "Full-screen menu" : "\u5168\u87A2\u5E55\u9078\u55AE"],
+    ]) {
+      const option = targetDocument.createElement("option");
+      option.value = value;
+      option.textContent = label;
+      mode.append(option);
+    }
+    mode.value = state.sidebarVariant;
+    mode.addEventListener("change", () => {
+      const nextState = state;
+      nextState.sidebarVariant = setPersistedSidebarVariant(
+        mode.value === "layered" ? "layered" : "classic",
+      );
+      syncTopLevelFramesetLayout(state.sidebarVariant);
+      nextState.activeLeaf = undefined;
+      nextState.currentCategoryId = "";
+      persistSidebarScroll(targetDocument, "root");
+      rerender();
+      targetDocument.querySelector<HTMLButtonElement>(".ccxp-lite-profile-trigger")?.focus();
+    });
+    popup.append(
+      dom.element(
+        "label",
+        {
+          className: "ccxp-lite-profile-mode",
+          text: english ? "Menu mode" : "\u9078\u55AE\u6A21\u5F0F",
+          attributes: { for: mode.id },
+        },
+        [mode],
+      ),
+    );
+    const shell = targetDocument.querySelector<HTMLElement>(".ccxp-lite-sidebar-shell");
+    const logoutUrl = shell?.dataset.ccxpLiteLogoutUrl;
+    if (logoutUrl !== undefined && logoutUrl !== "") {
+      popup.append(
+        dom.element(
+          "a",
+          {
+            className: "ccxp-lite-profile-logout",
+            attributes: { href: logoutUrl, target: "_top" },
+          },
+          [
+            app.uiIcons?.createCategoryIcon(targetDocument, "log-out"),
+            dom.element("span", { text: english ? "Log out" : "\u767B\u51FA" }),
+          ],
+        ),
+      );
+    }
+    const card = dom.element(
+      "section",
+      {
+        className: "ccxp-lite-sidebar-profile",
+        attributes: { "aria-label": english ? "Profile" : "\u500B\u4EBA\u8CC7\u6599" },
+      },
+      [settings, popup],
+    );
+    const controller = app.uiController?.createController(targetDocument);
+    const setOpen = (open: boolean) => {
+      popup.hidden = !open;
+      settings.setAttribute("aria-expanded", String(open));
+    };
+    controller?.listen(settings, "click", () => {
+      setOpen(popup.hidden);
+    });
+    controller?.listen(card, "keydown", (event) => {
+      if ((event as KeyboardEvent).key === "Escape") {
+        setOpen(false);
+        settings.focus();
+      }
+    });
+    controller?.listen(targetDocument, "click", (event) => {
+      if (!card.contains(event.target as Node | null)) {
+        setOpen(false);
+      }
+    });
+    controller?.listen(targetDocument, "focusin", (event) => {
+      if (!card.contains(event.target as Node | null)) {
+        setOpen(false);
+      }
+    });
+    const mainFrame = topDocument?.querySelector<HTMLIFrameElement>('frame[name="main"]');
+    let contentController:
+      | ReturnType<NonNullable<typeof app.uiController>["createController"]>
+      | undefined;
+    const bindContentDismissal = () => {
+      contentController?.destroy();
+      contentController = undefined;
+      try {
+        const contentDocument = mainFrame?.contentDocument;
+        if (contentDocument && contentDocument !== targetDocument) {
+          contentController = app.uiController?.createController(contentDocument);
+          contentController?.listen(
+            contentDocument,
+            "pointerdown",
+            () => {
+              setOpen(false);
+            },
+            true,
+          );
+          contentController?.listen(
+            contentDocument,
+            "focusin",
+            () => {
+              setOpen(false);
+            },
+            true,
+          );
+        }
+      } catch {
+        // The content frame may navigate to another origin.
+      }
+    };
+    if (mainFrame) {
+      controller?.listen(mainFrame, "load", () => {
+        setOpen(false);
+        bindContentDismissal();
+      });
+      bindContentDismissal();
+    }
+    const cleanup = () => {
+      controller?.destroy();
+      contentController?.destroy();
+    };
+    profileCleanups.set(targetDocument, cleanup);
+    app.shared?.addCleanupTask(cleanup);
+    const mount =
+      state.sidebarVariant === "layered"
+        ? shell?.querySelector(".ccxp-lite-sidebar-header")
+        : shell;
+    mount?.append(card);
+    loadProfile(targetDocument)
+      .then((profile) => {
+        if (!profile || !card.isConnected) {
+          return;
+        }
+        name.textContent = profile.name;
+        avatar.textContent = profile.initials;
+      })
+      .catch(() => undefined);
   }
 
   function removeExistingSidebarVariantSwitches(documents: ReadonlyArray<Document | undefined>) {
@@ -166,24 +297,6 @@
         delete node.dataset.ccxpLiteFloatingAnchorHost;
       }
     }
-  }
-
-  function getOverlayMountNode(targetDocument: Document): HTMLElement {
-    const anchorHost =
-      targetDocument.querySelector<HTMLElement>(
-        ".ccxp-lite-sidebar-content .ccxp-lite-dashboard-shell",
-      ) ??
-      targetDocument.querySelector<HTMLElement>(".ccxp-lite-sidebar-content .ccxp-lite-pane") ??
-      targetDocument.body;
-    anchorHost.dataset.ccxpLiteFloatingAnchorHost = "true";
-    let anchor = anchorHost.querySelector<HTMLElement>("[data-ccxp-lite-floating-anchor='true']");
-    if (!anchor) {
-      anchor = createRenderer(targetDocument).element("div", {
-        data: { ccxpLiteFloatingAnchor: "true" },
-      });
-      anchorHost.append(anchor);
-    }
-    return anchor;
   }
 
   namespace.sidebarOverlays = {

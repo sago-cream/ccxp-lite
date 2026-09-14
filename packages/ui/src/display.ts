@@ -95,3 +95,9 @@ export function createSidebarSearch(
     }),
   ]);
 }
+
+export function createPageHeader(targetDocument: Document): HTMLElement {
+  const header = targetDocument.createElement("header");
+  header.className = "ccxp-lite-page-header";
+  return header;
+}

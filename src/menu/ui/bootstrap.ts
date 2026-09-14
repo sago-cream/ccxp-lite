@@ -135,6 +135,10 @@
         ],
       );
 
+      const logout = navDocument.querySelector<HTMLAnchorElement>('a[href*="logout.php"]');
+      if (logout) {
+        shell.dataset.ccxpLiteLogoutUrl = logout.href;
+      }
       cleanLegacyAttributes(shell);
       hostBody.replaceChildren(shell);
 
@@ -147,6 +151,15 @@
         const uiState = getSidebarUiState(hostDocument);
         uiState.currentCategoryId = "";
         uiState.activeLeaf = undefined;
+        const mainFrame =
+          hostDocument.defaultView?.top?.document.querySelector<HTMLIFrameElement>(
+            'frame[name="main"]',
+          );
+        if (mainFrame) {
+          const home = new URL("xp03_m.htm", navDocument.location.href);
+          home.search = navDocument.location.search;
+          mainFrame.src = home.href;
+        }
         rerenderBinding.render?.();
       });
 

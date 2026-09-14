@@ -591,6 +591,8 @@ declare global {
   }
 
   interface CcxpLiteSidebarRuntime {
+    getRecentFunctionIds: () => readonly string[];
+    subscribeRecentFunctions: (listener: () => void) => () => void;
     INITIAL_MAIN_URL_STORAGE_KEY: string;
     shouldOpenLeafInDestination: (
       linkItem: CcxpLiteSidebarLinkItem,

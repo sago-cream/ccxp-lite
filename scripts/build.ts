@@ -315,6 +315,10 @@ try {
       path.join(directory, "shared/design-tokens.js"),
     );
     copyFileSync(
+      path.join(projectRoot, "packages/ui/styles/page-header.css"),
+      path.join(uiDirectory, "page-header.css"),
+    );
+    copyFileSync(
       path.join(projectRoot, "packages/ui/styles/popover.css"),
       path.join(uiDirectory, "popover.css"),
     );

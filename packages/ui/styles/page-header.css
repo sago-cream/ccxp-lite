@@ -1,0 +1,64 @@
+.ccxp-lite-page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--ccxp-lite-spacing-lg);
+  padding: var(--ccxp-lite-spacing-md, 16px) var(--ccxp-lite-spacing-lg, 24px);
+  margin-bottom: var(--ccxp-lite-spacing-lg);
+  border-bottom: 1px solid var(--ccxp-lite-border);
+}
+
+.ccxp-lite-page-header > h1 {
+  flex: 1 1 360px;
+  margin: 0 auto 0 0;
+  text-align: left;
+  text-wrap: balance;
+}
+
+.ccxp-lite-page-header > h1,
+.ccxp-lite-page-header > h1 span {
+  font: var(--ccxp-lite-type-page-title) !important;
+  color: var(--ccxp-lite-text) !important;
+  font-family: var(--ccxp-lite-font-brand) !important;
+  font-size: var(--ccxp-lite-font-size-sidebar-brand, 20px) !important;
+  letter-spacing: 0.01em;
+}
+
+.ccxp-lite-page-header .ccxp-lite-account-guide-info {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.ccxp-lite-page-header .ccxp-lite-account-guide-info > button {
+  width: auto;
+  height: 40px;
+  gap: var(--ccxp-lite-spacing-inline-sm, 6px);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  line-height: 1.4;
+}
+
+.ccxp-lite-page-header .ccxp-lite-account-guide-info > .ccxp-lite-account-guide-info-popup {
+  top: 100%;
+  left: auto;
+  right: 0;
+  width: min(440px, calc(100vw - 64px));
+  max-height: 60vh;
+  overflow-y: auto;
+  box-sizing: border-box;
+  text-align: left;
+  white-space: normal;
+  line-height: 1.6;
+  z-index: 10;
+  --ccxp-lite-popup-translate-x: 0;
+  --ccxp-lite-popup-translate-y: var(--ccxp-lite-spacing-2xs);
+}
+
+.ccxp-lite-page-header .ccxp-lite-account-guide-info > .ccxp-lite-account-guide-info-popup::before {
+  content: none;
+}

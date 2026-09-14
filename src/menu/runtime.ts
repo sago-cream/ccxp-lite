@@ -185,7 +185,48 @@
     }
   }
 
+  const RECENT_FUNCTIONS_KEY = "ccxp-lite-recent-functions";
+  const recentListeners = new Set<() => void>();
+  let recentIds: readonly string[] = [];
+  function getRecentFunctionIds(): readonly string[] {
+    try {
+      const parsed: unknown = JSON.parse(
+        getScopedSessionStorage()?.getItem(RECENT_FUNCTIONS_KEY) ?? "[]",
+      );
+      if (isArray(parsed) && parsed.every((id): id is string => typeof id === "string")) {
+        recentIds = [...new Set(parsed)].slice(0, 8);
+      }
+    } catch {
+      // Keep the in-memory history if session storage is unavailable.
+    }
+    return recentIds;
+  }
+
+  function subscribeRecentFunctions(listener: () => void) {
+    recentListeners.add(listener);
+    return () => {
+      recentListeners.delete(listener);
+    };
+  }
+
+  function recordRecentFunction(link: CcxpLiteSidebarLinkItem) {
+    const id = namespace.sidebarFavorites?.createLinkId(link);
+    if (id === undefined) {
+      return;
+    }
+    recentIds = [id, ...getRecentFunctionIds().filter((previous) => previous !== id)].slice(0, 8);
+    try {
+      getScopedSessionStorage()?.setItem(RECENT_FUNCTIONS_KEY, JSON.stringify(recentIds));
+    } catch {
+      // Navigation still works without storage.
+    }
+    for (const listener of recentListeners) {
+      listener();
+    }
+  }
+
   function openLeafInNewTab(activeLeaf: CcxpLiteSidebarLinkItem, navDocument: Document) {
+    recordRecentFunction(activeLeaf);
     const resolvedUrl = resolveLeafUrl(activeLeaf, navDocument);
     window.open(resolvedUrl, "_blank", "noopener");
   }
@@ -222,6 +263,7 @@
     navDocument: Document,
     destinationFrame?: HTMLIFrameElement,
   ) {
+    recordRecentFunction(linkItem);
     if (linkItem.clickLinkArgs) {
       const helperFrame = navDocument.querySelector<HTMLIFrameElement>("iframe[name='frame_7472']");
       const helperUrl = new URL("JH/JH01.php", navDocument.location.href);
@@ -291,6 +333,8 @@
     return url.searchParams.get("ACIXSTORE") ?? "";
   }
   namespace.sidebarRuntime = {
+    getRecentFunctionIds,
+    subscribeRecentFunctions,
     INITIAL_MAIN_URL_STORAGE_KEY,
     shouldOpenLeafInDestination,
     openLeafDestination,

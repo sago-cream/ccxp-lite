@@ -670,7 +670,10 @@
     }
     let nav = document.querySelector<HTMLElement>("#ccxp-lite-work-log-nav");
     if (!nav) {
-      nav = document.createElement("nav");
+      nav =
+        globalThis.CCXP_LITE?.uiDisplay?.createPageHeader(document) ??
+        document.createElement("header");
+      nav.classList.add("ccxp-lite-page-header");
       nav.id = "ccxp-lite-work-log-nav";
       const label = document.createElement("label");
       label.className = "ccxp-lite-work-log-language";
