@@ -3,7 +3,7 @@ import path from "node:path";
 
 const projectRoot = process.cwd();
 const captureDir = path.join(projectRoot, "assets", "showcase", "readme");
-const demoDir = path.join(projectRoot, "demo");
+const readmeAssetsDir = path.join(projectRoot, "docs", "assets");
 
 const targets = [
   { mode: "sidebar", stage: "login", file: "login-ccxplite.png" },
@@ -17,7 +17,7 @@ function resolveSourcePath(target: CaptureTarget) {
 }
 
 function resolveDestinationPath(target: CaptureTarget) {
-  return path.join(demoDir, target.file);
+  return path.join(readmeAssetsDir, target.file);
 }
 
 const missingSources = targets.filter((target) => !existsSync(resolveSourcePath(target)));
@@ -38,7 +38,7 @@ for (const target of targets) {
 }
 
 const summary = [
-  "Updated README demo assets from capture outputs:",
+  "Updated README assets from capture outputs:",
   ...targets.map(
     (target) =>
       `- ${path.relative(projectRoot, resolveSourcePath(target))} -> ${path.relative(projectRoot, resolveDestinationPath(target))}`,

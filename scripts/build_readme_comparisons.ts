@@ -7,13 +7,13 @@ import { PNG } from "pngjs";
 const { values } = parseArgs({
   args: process.argv.slice(2),
   options: {
-    "first-original": { type: "string", default: "demo/login-original.png" },
-    "first-updated": { type: "string", default: "demo/login-ccxplite.png" },
+    "first-original": { type: "string", default: "docs/assets/login-original.png" },
+    "first-updated": { type: "string", default: "docs/assets/login-ccxplite.png" },
     "first-caption": { type: "string", default: "Login" },
-    "second-original": { type: "string", default: "demo/homepage-original.png" },
-    "second-updated": { type: "string", default: "demo/homepage-ccxplite.png" },
+    "second-original": { type: "string", default: "docs/assets/homepage-original.png" },
+    "second-updated": { type: "string", default: "docs/assets/homepage-ccxplite.png" },
     "second-caption": { type: "string", default: "Homepage" },
-    output: { type: "string", default: "demo/showcase.svg" },
+    output: { type: "string", default: "docs/assets/showcase.svg" },
     help: { type: "boolean", short: "h" },
   },
 });
@@ -23,13 +23,13 @@ if (values.help === true) {
 
 bun run build:readme-comparisons [options]
 
-  --first-original PATH   First page before (default: demo/login-original.png)
-  --first-updated PATH    First page after (default: demo/login-ccxplite.png)
+  --first-original PATH   First page before (default: docs/assets/login-original.png)
+  --first-updated PATH    First page after (default: docs/assets/login-ccxplite.png)
   --first-caption TEXT    First page label (default: Login)
-  --second-original PATH  Second page before (default: demo/homepage-original.png)
-  --second-updated PATH   Second page after (default: demo/homepage-ccxplite.png)
+  --second-original PATH  Second page before (default: docs/assets/homepage-original.png)
+  --second-updated PATH   Second page after (default: docs/assets/homepage-ccxplite.png)
   --second-caption TEXT   Second page label (default: Homepage)
-  --output PATH           Output SVG (default: demo/showcase.svg)
+  --output PATH           Output SVG (default: docs/assets/showcase.svg)
 
 Paths are relative to the current directory. Captions gain (original) and
 (w/ ccxpLite) suffixes. No browser or live capture is needed.`);

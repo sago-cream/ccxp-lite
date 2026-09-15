@@ -12,7 +12,7 @@ export default [
       "storybook-static/**",
       "fixtures/ccxp-snapshot/**",
       "node_modules/**",
-      "release-it*.config.cjs",
+      "config/release/*.cjs",
     ],
   },
 

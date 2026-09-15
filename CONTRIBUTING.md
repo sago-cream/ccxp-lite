@@ -34,7 +34,7 @@ Rebuild after changing TypeScript. Test the affected CCXP pages with your own ac
 ## README animation
 
 Run `bun run build:readme-comparisons` to regenerate the animated demo from the four
-committed PNGs in `demo/`. Use `bun run build:readme-comparisons --help` for custom
+committed PNGs in `docs/assets/`. Use `bun run build:readme-comparisons --help` for custom
 image paths and captions. `bun run update:readme-assets` refreshes the two ccxpLite
 images from capture outputs and rebuilds the SVG.
 

@@ -1,6 +1,6 @@
 <h1 align="center">ccxpLite</h1>
 
-![Original CCXP to ccxpLite: login and homepage](demo/showcase.svg)
+![Original CCXP to ccxpLite: login and homepage](docs/assets/showcase.svg)
 
 A lightweight browser extension that improves the usability and navigation experience of the NTHU Academic Information System ([CCXP](https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/)).
 
