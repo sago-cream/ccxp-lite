@@ -30,12 +30,10 @@ A lightweight browser extension that improves the usability and navigation exper
 
 The extension bundles decaptcha models from [ccxpDecaptcha](https://github.com/sago-cream/ccxp-decaptcha) and runs inference locally in the content script.
 
-## Contributing
+## Design system
 
-The local design system includes [guidelines](docs/design/guidelines.md),
-[composition recipes](docs/design/recipes.md), and private token/component workspaces.
-After `bun install`, run `bun run storybook` to browse the catalog at `http://localhost:6006`.
-Run `bun run storybook:build` for the static site in `storybook-static/`, then
-`bun run test:design` to check it in Chromium.
+Browse the [Storybook component catalog](https://ccxplite.hsichen.dev/storybook/).
+
+## Contributing
 
 Contributions are welcome. Please read the [contribution guide](CONTRIBUTING.md) before opening a pull request. Report security and privacy issues according to our [security policy](.github/SECURITY.md).

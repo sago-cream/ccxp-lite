@@ -16,3 +16,4 @@ __pycache__/
 /assets/
 .capture-profile/
 .browser-parity/
+.vercel/

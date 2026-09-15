@@ -1,0 +1,11 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "installCommand": "bun install --frozen-lockfile",
+  "buildCommand": "bun run storybook:build && mkdir -p .build/site/storybook && cp -R storybook-static/. .build/site/storybook/",
+  "outputDirectory": ".build/site",
+  "redirects": [
+    { "source": "/", "destination": "/storybook/", "permanent": false },
+    { "source": "/storybook", "destination": "/storybook/", "permanent": true }
+  ]
+}
