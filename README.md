@@ -1,30 +1,24 @@
-# ccxpLite
+<h1 align="center">ccxpLite</h1>
 
-<img src="demo/sidebar/login.png" alt="ccxpLite demo image" >
-A lightweight browser extension that improves the usability and navigation experience of the NTHU Academic Information System (CCXP).
+![Original CCXP to ccxpLite: login and homepage](demo/comparison/showcase.svg)
+
+A lightweight browser extension that improves the usability and navigation experience of the NTHU Academic Information System ([CCXP](https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/)).
 
 ## Features
 
-- Redesigned login page for improved usability and better announcement readability
-- Automatic CAPTCHA solving for both CCXP login and OAuth verification (used in [eLearn](https://elearn.nthu.edu.tw/) and [eeclass](https://eeclass.nthu.edu.tw/)) with 99.95% and 98.79% accuracy respectively
-- Faster access to frequently used functions with support for pinned functions and folders
-- Two navigation layouts available: redesigned sidebar or full-screen menu
-- Single-day or multi-day work-hour registration with date ranges and weekday selection
-- Reduced visual clutter through saturation and texture suppression
+- Design overhaul for core pages
+- Let you pin frequenly used functions for quick access
+- Login decaptcha with 99.95%+ accuracy (also work for CCXP OAuth, used in [eLearn](https://elearn.nthu.edu.tw/) and [eeclass](https://eeclass.nthu.edu.tw/))
+- Automatic multi-day work-hour registration
 
 ## Installation
 
 - [Google Web Store](https://chromewebstore.google.com/detail/glcnfmnbmknbphfgjgbokbbchahmiakk?utm_source=item-share-cb)
 - [Firebox Add-ons](https://addons.mozilla.org/zh-TW/firefox/addon/ccxplite/)
 
-## Demo
+## Design system
 
-| Screen            | Original                                                                                                   | Sidebar Mode                                                                                                  | Menu Mode                                                                                               |
-| ----------------- | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| Login             | <img src="demo/original/login.png" alt="Original login screen" height="200">                               | <img src="demo/sidebar/login.png" alt="Sidebar mode login screen" height="200">                               | <img src="demo/menu/login.png" alt="Menu mode login screen" height="200">                               |
-| Main              | <img src="demo/original/main.png" alt="Original main screen" height="200">                                 | <img src="demo/sidebar/main.png" alt="Sidebar mode main screen" height="200">                                 | <img src="demo/menu/main.png" alt="Menu mode main screen" height="200">                                 |
-| Category Expanded | <img src="demo/original/main-expanded.png" alt="Original expanded main screen" height="200">               | <img src="demo/sidebar/main-expanded.png" alt="Sidebar mode expanded main screen" height="200">               | <img src="demo/menu/main-expanded.png" alt="Menu mode expanded main screen" height="200">               |
-| Funtion Selected  | <img src="demo/original/select-courses-selected.png" alt="Original 網路選課 selected screen" height="200"> | <img src="demo/sidebar/select-courses-selected.png" alt="Sidebar mode 網路選課 selected screen" height="200"> | <img src="demo/menu/select-courses-selected.png" alt="Menu mode 網路選課 selected screen" height="200"> |
+Browse the [Storybook component catalog](https://ccxplite.hsichen.dev/storybook/).
 
 ## Decaptcha
 

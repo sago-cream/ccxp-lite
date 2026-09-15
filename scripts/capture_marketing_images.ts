@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, rmSync } from "node:fs";
+import { existsSync, mkdirSync } from "node:fs";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { createInterface } from "node:readline/promises";
@@ -7,7 +7,7 @@ import type { BrowserContext, Page } from "playwright";
 import { chromium } from "playwright";
 
 const projectRoot = process.cwd();
-const extensionDir = path.join(projectRoot, "dist", "unpacked");
+const extensionDir = path.join(projectRoot, "dist", "crx", "unpacked");
 const outputReadmeDir = path.join(projectRoot, "assets", "showcase", "readme");
 const outputStoreDir = path.join(projectRoot, "assets", "showcase", "store");
 const captureProfileDir = path.join(projectRoot, ".capture-profile", "marketing");
@@ -96,8 +96,6 @@ function assertPrerequisites() {
 }
 
 function ensureOutputDirectories() {
-  rmSync(outputReadmeDir, { recursive: true, force: true });
-  rmSync(outputStoreDir, { recursive: true, force: true });
   mkdirSync(outputReadmeDir, { recursive: true });
   mkdirSync(outputStoreDir, { recursive: true });
 }
@@ -126,9 +124,12 @@ async function promptForCaptureTarget(
 }
 
 async function main() {
+  const targets = process.argv.includes("--sidebar-home")
+    ? captureTargets.filter((target) => target.mode === "sidebar" && target.stage === "main")
+    : captureTargets;
   assertPrerequisites();
   ensureOutputDirectories();
-  runOrThrow("bun", ["run", "build"], "extension build");
+  runOrThrow("bun", ["run", "build:crx"], "extension build");
   const readline = createInterface({ input, output });
   mkdirSync(captureProfileDir, { recursive: true });
   const context = await chromium.launchPersistentContext(captureProfileDir, {
@@ -158,7 +159,7 @@ async function main() {
 
     // Captures stay sequential so each prompt matches the current manual browser state.
     /* eslint-disable no-await-in-loop */
-    for (const target of captureTargets) {
+    for (const target of targets) {
       const page = resolveCapturePage(context, initialPage);
       await promptForCaptureTarget(page, readline, target);
       await page.bringToFront();
@@ -182,7 +183,7 @@ async function main() {
   }
 
   output.write(
-    `\nGenerated ${captureTargets.length * 2} images.\nREADME-ready: ${outputReadmeDir}\nStore-ready: ${outputStoreDir}\n`,
+    `\nGenerated ${targets.length * 2} images.\nREADME-ready: ${outputReadmeDir}\nStore-ready: ${outputStoreDir}\n`,
   );
 }
 

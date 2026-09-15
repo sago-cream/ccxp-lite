@@ -31,6 +31,12 @@ Build and load the extension locally before submitting changes to browser behavi
 
 Rebuild after changing TypeScript. Test the affected CCXP pages with your own account, and remove personal information from screenshots.
 
+## README animation
+
+Run `bun run build:readme-comparisons` to regenerate the animated demo from the four
+committed PNGs. See [README demo generation](docs/readme-demo.md) for custom images
+and captions.
+
 ## Pull Requests
 
 - Create your branch from the latest `main`.
