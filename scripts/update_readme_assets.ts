@@ -6,14 +6,8 @@ const captureDir = path.join(projectRoot, "assets", "showcase", "readme");
 const demoDir = path.join(projectRoot, "demo");
 
 const targets = [
-  { mode: "menu", stage: "login" },
-  { mode: "menu", stage: "main" },
-  { mode: "menu", stage: "main-expanded" },
-  { mode: "menu", stage: "select-courses-selected" },
-  { mode: "sidebar", stage: "login" },
-  { mode: "sidebar", stage: "main" },
-  { mode: "sidebar", stage: "main-expanded" },
-  { mode: "sidebar", stage: "select-courses-selected" },
+  { mode: "sidebar", stage: "login", file: "login-ccxplite.png" },
+  { mode: "sidebar", stage: "main", file: "homepage-ccxplite.png" },
 ] as const;
 
 type CaptureTarget = (typeof targets)[number];
@@ -23,7 +17,7 @@ function resolveSourcePath(target: CaptureTarget) {
 }
 
 function resolveDestinationPath(target: CaptureTarget) {
-  return path.join(demoDir, target.mode, `${target.stage}.png`);
+  return path.join(demoDir, target.file);
 }
 
 const missingSources = targets.filter((target) => !existsSync(resolveSourcePath(target)));
