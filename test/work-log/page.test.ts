@@ -50,10 +50,9 @@ test("task refresh supports host toSubmit returning undefined", () => {
   const doc = window.document as unknown as Document;
   const form = requireElement(doc.querySelector<HTMLFormElement>("form"));
   const scope = window as unknown as { toSubmit: CcxpLiteWrappedSubmit };
-  scope.toSubmit = (_target) => 
+  scope.toSubmit = (_target) =>
     // Legacy host scripts often execute form.submit() without an explicit return statement.
-     undefined
-  ;
+    undefined;
   loadModules(window, ["src/work-log/page.ts"]);
   scope.toSubmit(form, "getLabInsList");
   const frame = requireElement(doc.querySelector<HTMLIFrameElement>("iframe"));

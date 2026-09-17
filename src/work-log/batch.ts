@@ -173,11 +173,22 @@
         return;
       }
       const values = input.value.split("-");
-      year.value = values[0];
-      month.value = values[1];
-      (form.ownerDocument.defaultView as HostWindow | null)?.setDay?.(form.id, prefix, "onblur");
-      day.value = values[2];
+      const previousYear = year.value;
+      const previousMonth = month.value;
+      const [nextYear, nextMonth, nextDay] = values;
+      const monthChanged = previousYear !== nextYear || previousMonth !== nextMonth;
+      year.value = nextYear;
+      month.value = nextMonth;
+      const host = form.ownerDocument.defaultView as HostWindow | null;
+      host?.setDay?.(form.id, prefix, "onblur");
+      day.value = nextDay;
+      year.dispatchEvent(new Event("change", { bubbles: true }));
+      month.dispatchEvent(new Event("change", { bubbles: true }));
       day.dispatchEvent(new Event("change", { bubbles: true }));
+      day.dispatchEvent(new Event("blur", { bubbles: true }));
+      if (prefix === "I_TASK_DT_" && monthChanged && !running) {
+        host?.toSubmit?.(form, "getLabInsList");
+      }
     });
     year.before(input);
     return input;
