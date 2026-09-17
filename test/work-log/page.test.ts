@@ -37,6 +37,33 @@ test("task refresh posts the loading action and preserves the live form while re
   response.window.close();
 });
 
+test("task refresh supports host toSubmit returning undefined", () => {
+  const url = "https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/PE/1/14D/PE14D1.php";
+  const { window } = createTestWindow(
+    '<form id="insForm"><input name="I_TASK_DT_Day" value="10"><input name="I_SRV_ID" value="EM05"><table><tr id="trLabSerial"><td>Old task</td></tr></table></form>',
+    url,
+  );
+  const response = createTestWindow(
+    '<form id="insForm"><input name="I_TASK_DT_Day" value="10"><table><tr id="trLabSerial"><td>Refreshed task</td></tr></table></form>',
+    url,
+  );
+  const doc = window.document as unknown as Document;
+  const form = requireElement(doc.querySelector<HTMLFormElement>("form"));
+  const scope = window as unknown as { toSubmit: CcxpLiteWrappedSubmit };
+  scope.toSubmit = (_target) => 
+    // Legacy host scripts often execute form.submit() without an explicit return statement.
+     undefined
+  ;
+  loadModules(window, ["src/work-log/page.ts"]);
+  scope.toSubmit(form, "getLabInsList");
+  const frame = requireElement(doc.querySelector<HTMLIFrameElement>("iframe"));
+  Object.defineProperty(frame, "contentDocument", { value: response.window.document });
+  frame.dispatchEvent(new TestEvent("load"));
+  expect(doc.querySelector("#trLabSerial")?.textContent).toBe("Refreshed task");
+  window.close();
+  response.window.close();
+});
+
 test("allows another attempt after host validation rejects a submission", () => {
   const { window } = createTestWindow(
     '<form id="insForm" accept-charset="big5"></form>',

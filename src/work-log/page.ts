@@ -147,8 +147,8 @@
     }
     try {
       const submitted = originalToSubmit.call(globalScope, form, actionName, actionValue);
-      // Legacy validation is synchronous and returns true only after form.submit().
-      if (submitted !== true) {
+      // Legacy validation is synchronous and returns true or undefined only after form.submit().
+      if (submitted === false) {
         cleanupPendingSubmission();
         clearStoredSnapshot();
       }
