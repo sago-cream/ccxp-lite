@@ -140,11 +140,12 @@
     const action = globalScope.document.createElement("input");
     action.type = "hidden";
     action.name = "S_SUBMIT";
-    action.value = "\u8B80\u53D6\u300C\u52A9\u7406\u767B\u9304\u7CFB\u7D71\u300D(Loading Data)";
-    if (actionName === "getLabInsList") {
-      // Native form.submit() excludes the button whose value the host uses as its action.
-      form.append(action);
-    }
+    action.value =
+      actionName === "ins"
+        ? "\u65B0\u589E(Add)"
+        : "\u8B80\u53D6\u300C\u52A9\u7406\u767B\u9304\u7CFB\u7D71\u300D(Loading Data)";
+    // Native form.submit() excludes submit buttons. Supply the canonical server action explicitly.
+    form.append(action);
     try {
       const submitted = originalToSubmit.call(globalScope, form, actionName, actionValue);
       // Legacy validation is synchronous and returns true or undefined only after form.submit().
