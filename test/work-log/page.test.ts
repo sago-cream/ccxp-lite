@@ -63,6 +63,33 @@ test("task refresh supports host toSubmit returning undefined", () => {
   response.window.close();
 });
 
+test("insert posts canonical action and updates document body on response", () => {
+  const url = "https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/PE/1/14D/PE14D1.php";
+  const { window } = createTestWindow(
+    '<form id="insForm" method="post" accept-charset="big5"><input name="I_TASK_DT_Year" value="2026"><input name="I_TASK_DT_Month" value="10"><input name="I_TASK_DT_Day" value="15"><input name="I_SRV_ID" value="EU0A"><input type="submit" name="S_SUBMIT" value="\u65B0\u589E(Add)"></form>',
+    url,
+  );
+  const response = createTestWindow('<div id="updated-content">Success</div>', url);
+  const doc = window.document as unknown as Document;
+  const form = requireElement(doc.querySelector<HTMLFormElement>("form"));
+  const nativeSubmit = vi.fn();
+  const scope = window as unknown as { toSubmit: CcxpLiteWrappedSubmit };
+  scope.toSubmit = (target) => {
+    nativeSubmit(new window.FormData(target).getAll("S_SUBMIT"));
+    return undefined;
+  };
+  loadModules(window, ["src/work-log/page.ts"]);
+  scope.toSubmit(form, "ins");
+  expect(form.getAttribute("target")).toBe("ccxp-lite-pe14d-transport");
+  expect(nativeSubmit).toHaveBeenCalledWith(["\u65B0\u589E(Add)"]);
+  const frame = requireElement(doc.querySelector<HTMLIFrameElement>("iframe"));
+  Object.defineProperty(frame, "contentDocument", { value: response.window.document });
+  frame.dispatchEvent(new TestEvent("load"));
+  expect(doc.querySelector("#updated-content")?.textContent).toBe("Success");
+  window.close();
+  response.window.close();
+});
+
 test("allows another attempt after host validation rejects a submission", () => {
   const { window } = createTestWindow(
     '<form id="insForm" accept-charset="big5"></form>',
