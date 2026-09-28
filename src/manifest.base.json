@@ -80,6 +80,7 @@
         "menu/ui/views.js",
         "menu/ui/controller.js",
         "menu/ui/bootstrap.js",
+        "shared/decaptcha.js",
         "login/auth/decaptcha.model.js",
         "login/auth/decaptcha.js",
         "inquire/decaptcha.model.js",
@@ -121,6 +122,7 @@
       "js": [
         "shared/dom.js",
         "shared/analytics.js",
+        "shared/decaptcha.js",
         "oauth/decaptcha.model.js",
         "oauth/decaptcha.js",
         "login/locale.js",

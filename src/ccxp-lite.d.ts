@@ -48,6 +48,25 @@ declare global {
     predictDigits: (imageSource: unknown) => Promise<string> | string;
   }
 
+  interface CcxpLiteDecaptchaShared {
+    createTensor: (
+      shape: readonly number[],
+      data: Float32Array | ArrayLike<number>,
+    ) => CcxpLitePreparedTensor;
+    tensorGet: (tensor: CcxpLitePreparedTensor, indices: readonly number[]) => number;
+    decodeImageElement: (image: HTMLImageElement) => {
+      width: number;
+      height: number;
+      data: Uint8ClampedArray;
+    };
+    conv2d: (
+      inputTensor: CcxpLitePreparedTensor,
+      weight: CcxpLitePreparedTensor,
+      bias?: CcxpLitePreparedTensor,
+      options?: { stride?: number; padding?: number; groups?: number },
+    ) => CcxpLitePreparedTensor;
+  }
+
   interface CcxpLiteClickLinkArgs {
     name: string;
     url: string;
@@ -658,6 +677,7 @@ declare global {
     menuRuntime?: Record<string, unknown>;
     menuState?: Record<string, unknown>;
     menuUi?: Record<string, unknown>;
+    decaptchaShared?: CcxpLiteDecaptchaShared;
     decaptcha?: CcxpLiteCaptchaPredictor;
     decaptchaModel?: CcxpLiteDecaptchaModel;
     inquireDecaptcha?: CcxpLiteCaptchaPredictor;

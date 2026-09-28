@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-restricted-imports */
 import { describe, expect, test } from "vitest";
+import * as decaptchaSharedModule from "../../src/shared/decaptcha.js";
 
 import * as oauthDecaptchaModelModule from "../../src/oauth/decaptcha.model.js";
 import * as oauthDecaptchaModule from "../../src/oauth/decaptcha.js";
@@ -57,6 +58,7 @@ describe("oauth decaptcha model bootstrap", () => {
 
 describe("oauth decaptcha runtime bootstrap", () => {
   test("registers the oauth decaptcha API on the shared namespace", () => {
+    expect(Object.keys(decaptchaSharedModule)).toEqual([]);
     expect(Object.keys(oauthDecaptchaModule)).toEqual([]);
     expect(oauthDecaptcha).toBeDefined();
     expect(typeof oauthDecaptcha.predictDigits).toBe("function");
