@@ -71,7 +71,7 @@
         return true;
       }
       const state = getOrCreateCaptchaState(targetDocument, targetDocument);
-      if (!state || state.kind !== expectedKind) {
+      if (state?.kind !== expectedKind) {
         return false;
       }
       enableCaptchaAutofill(targetDocument, targetDocument, state);
@@ -454,11 +454,35 @@
     }
   }
 
+  class CaptchaSourceError extends Error {
+    override name = "CaptchaSourceError";
+  }
+
+  function validateCaptchaDownloadUrl(targetDocument: Document, captchaSrc: string) {
+    let url: URL;
+    try {
+      url = new URL(captchaSrc, targetDocument.location.href);
+    } catch {
+      throw new CaptchaSourceError("captcha-source-invalid");
+    }
+    if (
+      url.protocol !== "https:" ||
+      !["https://ccxp.nthu.edu.tw", "https://www.ccxp.nthu.edu.tw"].includes(url.origin) ||
+      url.origin !== targetDocument.location.origin ||
+      url.pathname !== "/ccxp/INQUIRE/auth_img.php" ||
+      url.username !== "" ||
+      url.password !== ""
+    ) {
+      throw new CaptchaSourceError("captcha-source-not-allowed");
+    }
+    return url;
+  }
+
   async function downloadCaptchaImageBytes(targetDocument: Document, captchaSrc: string) {
-    const captchaUrl = new URL(captchaSrc, targetDocument.location.href);
+    const captchaUrl = validateCaptchaDownloadUrl(targetDocument, captchaSrc);
     return await fetchWithTimeout(
       captchaUrl.toString(),
-      { credentials: "include" },
+      { credentials: "include", redirect: "error" },
       CAPTCHA_AUTOFILL_TIMEOUT_MS,
     ).then(async (response) => {
       if (!response.ok) {
@@ -527,6 +551,9 @@
     try {
       return await downloadCaptchaImageBytes(targetDocument, captchaSrc);
     } catch (error: unknown) {
+      if (error instanceof CaptchaSourceError) {
+        throw error;
+      }
       try {
         return await waitForCaptchaImageLoad(state.image);
       } catch {

@@ -179,3 +179,82 @@ describe("login captcha", () => {
     expect(window.fetch).toHaveBeenCalledTimes(1);
   });
 });
+
+function networkCaptcha(source: string, origin = "https://www.ccxp.nthu.edu.tw") {
+  const { window } = createTestWindow(createLoginHtml(), `${origin}/ccxp/INQUIRE/index.php`);
+  const document = window.document as Document;
+  const image = requireElement(document.querySelector<HTMLImageElement>("img"), "captcha image");
+  image.src = source;
+  Object.defineProperties(image, {
+    complete: { configurable: true, get: () => false },
+    naturalWidth: { configurable: true, get: () => 0 },
+    naturalHeight: { configurable: true, get: () => 0 },
+  });
+  const predictDigits = vi.fn().mockResolvedValue("432109");
+  const bytes = new ArrayBuffer(8);
+  const fetch = vi.fn(
+    async () =>
+      await Promise.resolve({ ok: true, arrayBuffer: async () => await Promise.resolve(bytes) }),
+  );
+  window.CCXP_LITE.decaptcha = { predictDigits };
+  window.fetch = fetch as unknown as typeof window.fetch;
+  loadModules(window, loginCaptchaModulePaths);
+  const input = requireElement(
+    document.querySelector<HTMLInputElement>("[name='passwd2']"),
+    "captcha input",
+  );
+  const loginCaptcha = requireValue(window.CCXP_LITE.loginCaptcha, "loginCaptcha");
+  loginCaptcha.enableCaptchaAutofill(document, document);
+  return { window, input, fetch, predictDigits, bytes };
+}
+
+test.each([
+  "https://attacker.example/auth_img.php",
+  "//attacker.example/ccxp/INQUIRE/auth_img.php",
+  "https://www.ccxp.nthu.edu.tw.attacker.example/ccxp/INQUIRE/auth_img.php",
+  "https://user:secret@www.ccxp.nthu.edu.tw/ccxp/INQUIRE/auth_img.php",
+  "https://www.ccxp.nthu.edu.tw:8443/ccxp/INQUIRE/auth_img.php",
+  "http://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/auth_img.php",
+  "https://ccxp.nthu.edu.tw/ccxp/INQUIRE/auth_img.php",
+  "https://[invalid/auth_img.php",
+  "data:image/png,auth_img.php",
+  "/ccxp/INQUIRE/account.php",
+  "/ccxp/INQUIRE/%61uth_img.php",
+  "/ccxp/INQUIRE/auth_img.php/../account.php",
+  "/ccxp/INQUIRE/%2e%2e/account.php",
+])("rejects captcha fetch destination %s and releases manual entry", async (source) => {
+  const { window, input, fetch, predictDigits } = networkCaptcha(source);
+  await flushPromises();
+  await flushPromises();
+  expect(fetch).not.toHaveBeenCalled();
+  expect(predictDigits).not.toHaveBeenCalled();
+  expect(input.hasAttribute("aria-busy")).toBe(false);
+  expect(input.value).toBe("");
+  input.value = "123456";
+  expect(input.value).toBe("123456");
+  await window.happyDOM.close();
+});
+
+test.each([
+  ["https://www.ccxp.nthu.edu.tw", "auth_img.php?pwdstr=abc&v=1"],
+  ["https://ccxp.nthu.edu.tw", "auth_img.php?pwdstr=abc&v=1"],
+  [
+    "https://www.ccxp.nthu.edu.tw",
+    "https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/auth_img.php?pwdstr=abc",
+  ],
+  ["https://ccxp.nthu.edu.tw", "https://ccxp.nthu.edu.tw/ccxp/INQUIRE/auth_img.php?pwdstr=abc"],
+  ["https://www.ccxp.nthu.edu.tw", "//www.ccxp.nthu.edu.tw/ccxp/INQUIRE/auth_img.php?pwdstr=abc"],
+  ["https://www.ccxp.nthu.edu.tw", "nested/../auth_img.php?pwdstr=abc"],
+])("downloads the canonical captcha URL on %s from %s", async (origin, source) => {
+  const { window, input, fetch, predictDigits, bytes } = networkCaptcha(source, origin);
+  await flushPromises();
+  await flushPromises();
+  expect(fetch).toHaveBeenCalledExactlyOnceWith(
+    new URL(source, `${origin}/ccxp/INQUIRE/index.php`).toString(),
+    expect.objectContaining({ credentials: "include", redirect: "error" }),
+  );
+  expect(predictDigits).toHaveBeenCalledExactlyOnceWith(bytes);
+  expect(input.value).toBe("432109");
+  expect(input.getAttribute("aria-busy")).toBe("false");
+  await window.happyDOM.close();
+});
