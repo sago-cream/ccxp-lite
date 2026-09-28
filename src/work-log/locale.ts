@@ -582,11 +582,7 @@
     }
     const header = table.rows.item(0);
     // Leave unfamiliar legacy table variants intact.
-    if (
-      !header ||
-      header.cells.length !== 15 ||
-      !header.textContent.includes("\u5DE5\u4F5C\u65E5\u671F")
-    ) {
+    if (header?.cells.length !== 15 || !header.textContent.includes("\u5DE5\u4F5C\u65E5\u671F")) {
       return;
     }
     if (
@@ -879,7 +875,7 @@
     actions.append(primary);
     const table = cell.closest("table");
     const row = cell.closest("tr");
-    if (table && row && row.cells.length === 1 && primary.form?.contains(table) === true) {
+    if (table && row?.cells.length === 1 && primary.form?.contains(table) === true) {
       table.after(actions);
       // Preserve any remaining host controls while removing the decorative action row.
       for (const control of row.querySelectorAll("input, select, textarea, button")) {
