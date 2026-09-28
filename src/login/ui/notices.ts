@@ -31,6 +31,42 @@
     }
     table.classList.add("ccxp-lite-announcement-table");
     const rows = [...table.rows];
+    removeAnnouncementSpacers(rows);
+    const headerCell = rows
+      .flatMap((row) => [...row.cells])
+      .find((cell) => cell.classList.contains("board_item"));
+    const titleText = (headerCell ? headerCell.textContent : "").replaceAll(/\s+/g, " ").trim();
+    const headerRow = rows.find((row) => {
+      const cells = [...row.cells];
+      return cells.filter((cell) => cell.classList.contains("board_subject")).length >= 2;
+    });
+    if (headerRow) {
+      removeNode(headerRow);
+    }
+    const entries = [...collectAnnouncementEntries(rows, strings)];
+    if (entries.length === 0) {
+      const announcementTable = table;
+      announcementTable.hidden = true;
+      announcementTable.dataset.ccxpLiteAnnouncementPrepared = "true";
+      return undefined;
+    }
+    const primaryActionAnchor = extractPrimaryAnnouncementAction(entries[0]?.topicContent);
+    if (primaryActionAnchor) {
+      entries.shift();
+    }
+    if (entries.length === 0) {
+      const announcementTable = table;
+      announcementTable.hidden = true;
+      announcementTable.dataset.ccxpLiteAnnouncementPrepared = "true";
+      return primaryActionAnchor;
+    }
+    renderAnnouncementTable(table, titleText, entries, strings);
+    const announcementTable = table;
+    announcementTable.dataset.ccxpLiteAnnouncementPrepared = "true";
+    return primaryActionAnchor;
+  }
+
+  function removeAnnouncementSpacers(rows: readonly HTMLTableRowElement[]) {
     for (const row of rows) {
       const cells = [...row.cells];
       if (cells.length === 0) {
@@ -59,17 +95,12 @@
         removeNode(row);
       }
     }
-    const headerCell = rows
-      .flatMap((row) => [...row.cells])
-      .find((cell) => cell.classList.contains("board_item"));
-    const titleText = (headerCell ? headerCell.textContent : "").replaceAll(/\s+/g, " ").trim();
-    const headerRow = rows.find((row) => {
-      const cells = [...row.cells];
-      return cells.filter((cell) => cell.classList.contains("board_subject")).length >= 2;
-    });
-    if (headerRow) {
-      removeNode(headerRow);
-    }
+  }
+
+  function collectAnnouncementEntries(
+    rows: readonly HTMLTableRowElement[],
+    strings: Readonly<Record<string, string>>,
+  ): readonly CcxpLiteAnnouncementEntry[] {
     const entries: CcxpLiteAnnouncementEntry[] = [];
     for (const row of rows) {
       const cells = [...row.cells];
@@ -94,26 +125,7 @@
         hasTokenizedHeader: tokenizeAnnouncementHeader(topicContent, rawDate),
       });
     }
-    if (entries.length === 0) {
-      const announcementTable = table;
-      announcementTable.hidden = true;
-      announcementTable.dataset.ccxpLiteAnnouncementPrepared = "true";
-      return undefined;
-    }
-    const primaryActionAnchor = extractPrimaryAnnouncementAction(entries[0]?.topicContent);
-    if (primaryActionAnchor) {
-      entries.shift();
-    }
-    if (entries.length === 0) {
-      const announcementTable = table;
-      announcementTable.hidden = true;
-      announcementTable.dataset.ccxpLiteAnnouncementPrepared = "true";
-      return primaryActionAnchor;
-    }
-    renderAnnouncementTable(table, titleText, entries, strings);
-    const announcementTable = table;
-    announcementTable.dataset.ccxpLiteAnnouncementPrepared = "true";
-    return primaryActionAnchor;
+    return entries;
   }
 
   function extractPrimaryAnnouncementAction(topicContent: HTMLElement | undefined) {
@@ -170,8 +182,8 @@
 
   function tokenizeAnnouncementHeader(topicContent: HTMLElement, date: string): boolean {
     const topicText = topicContent.textContent;
-    const leadingTitleMatch = topicText.match(
-      /^\s*\u3010([^\u3011]+)\u3011(?=\s|$|[.\uFF0E:\uFF1A])/u,
+    const leadingTitleMatch = /^\s*\u3010([^\u3011]+)\u3011(?=\s|$|[.\uFF0E:\uFF1A])/u.exec(
+      topicText,
     );
     if (!leadingTitleMatch) {
       return false;
@@ -184,28 +196,9 @@
     let textNode = walker.nextNode();
     while (textNode) {
       const text = textNode.textContent ?? "";
-      const match = text.match(/^(\s*)\u3010([^\u3011]+)\u3011([\s.\uFF0E:\uFF1A]*)/u);
+      const match = /^(\s*)\u3010([^\u3011]+)\u3011([\s.\uFF0E:\uFF1A]*)/u.exec(text);
       if (match) {
-        const topicDocument = topicContent.ownerDocument;
-        const header = topicDocument.createElement("span");
-        header.className = "ccxp-lite-announcement-topic-header";
-        header.textContent = `${date} ${label}`;
-        textNode.textContent = `${match[1]}${text.slice(match[0].length)}`;
-        const insertionTarget = findAnnouncementHeaderInsertionTarget(topicContent, textNode);
-        if (insertionTarget) {
-          const insertionAnchor = insertionTarget as ChildNode & {
-            before: (...nodes: readonly Node[]) => void;
-          };
-          insertionAnchor.before(header);
-          if (textNode.textContent.trim() !== "") {
-            insertionAnchor.before(topicDocument.createTextNode(" "));
-          }
-        } else {
-          topicContent.prepend(header);
-          if (textNode.textContent.trim() !== "") {
-            topicContent.insertBefore(topicDocument.createTextNode(" "), header.nextSibling);
-          }
-        }
+        insertAnnouncementHeader(topicContent, textNode, match, date, label);
         return true;
       }
       if (text.trim() !== "") {
@@ -214,6 +207,36 @@
       textNode = walker.nextNode();
     }
     return false;
+  }
+
+  function insertAnnouncementHeader(
+    topicContent: HTMLElement,
+    sourceNode: Node,
+    match: RegExpExecArray,
+    date: string,
+    label: string,
+  ) {
+    const textNode = sourceNode;
+    const topicDocument = topicContent.ownerDocument;
+    const header = topicDocument.createElement("span");
+    header.className = "ccxp-lite-announcement-topic-header";
+    header.textContent = `${date} ${label}`;
+    textNode.textContent = `${match[1]}${(textNode.textContent ?? "").slice(match[0].length)}`;
+    const insertionTarget = findAnnouncementHeaderInsertionTarget(topicContent, textNode);
+    if (insertionTarget) {
+      const insertionAnchor = insertionTarget as ChildNode & {
+        before: (...nodes: readonly Node[]) => void;
+      };
+      insertionAnchor.before(header);
+      if (textNode.textContent.trim() !== "") {
+        insertionAnchor.before(topicDocument.createTextNode(" "));
+      }
+    } else {
+      topicContent.prepend(header);
+      if (textNode.textContent.trim() !== "") {
+        topicContent.insertBefore(topicDocument.createTextNode(" "), header.nextSibling);
+      }
+    }
   }
 
   function findAnnouncementHeaderInsertionTarget(

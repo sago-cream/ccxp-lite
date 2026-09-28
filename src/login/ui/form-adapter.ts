@@ -276,17 +276,13 @@
   function findLegacyInlineLabelNode(fieldNode: Node, boundaryNode: Node) {
     let currentNode = fieldNode.previousSibling;
     while (currentNode && currentNode !== boundaryNode) {
-      if (currentNode.nodeType === Node.TEXT_NODE && getNodeText(currentNode) === "") {
+      if (isInlineLabelDecoration(currentNode)) {
         currentNode = currentNode.previousSibling;
         continue;
       }
       if (currentNode.nodeType === Node.ELEMENT_NODE) {
         const element = currentNode as Element;
         const tagName = element.tagName.toLowerCase();
-        if (tagName === "br" || ["a", "button", "img", "svg"].includes(tagName)) {
-          currentNode = currentNode.previousSibling;
-          continue;
-        }
         if (tagName === "label" && element.classList.contains("ccxp-lite-login-field-label")) {
           return undefined;
         }
@@ -294,6 +290,16 @@
       return getNodeText(currentNode) === "" ? undefined : currentNode;
     }
     return undefined;
+  }
+
+  function isInlineLabelDecoration(node: Node) {
+    if (node.nodeType === Node.TEXT_NODE) {
+      return getNodeText(node) === "";
+    }
+    return (
+      node.nodeType === Node.ELEMENT_NODE &&
+      ["a", "br", "button", "img", "svg"].includes((node as Element).tagName.toLowerCase())
+    );
   }
 
   function getPreferredLabelText(labelCell: Node | undefined, fieldCell: Node, fieldNode: Element) {
@@ -341,7 +347,8 @@
     const normalizedName = (fieldNode.getAttribute("name") ?? "field")
       .trim()
       .replaceAll(/[^\w-]+/g, "-")
-      .replaceAll(/^-+|-+$/g, "");
+      .replace(/^-+/, "")
+      .replace(/(?<!-)-+$/, "");
     const baseName = normalizedName === "" ? "field" : normalizedName;
     const pairSuffix = pairIndex > 0 ? `-${pairIndex + 1}` : "";
     const inputField = fieldNode;

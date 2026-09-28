@@ -16,102 +16,115 @@
       ...rootNode.querySelectorAll<HTMLInputElement>("form input[type='image']"),
     ];
     for (const inputNode of imageSubmitInputs) {
-      if (inputNode.dataset.ccxpLiteImageButtonReplaced === "true") {
-        continue;
-      }
-      if (shouldKeepLegacyLoginImageSubmit(inputNode)) {
-        continue;
-      }
-      if (isVerificationAudioControl(inputNode)) {
-        const audioButton = createAudioIconButtonFromImageInput(targetDocument, inputNode);
-        inputNode.replaceWith(audioButton);
-        audioButton.dataset.ccxpLiteImageButtonReplaced = "true";
-        continue;
-      }
-      if (isAdjacentLoginClearControl(inputNode)) {
-        removeNode(inputNode);
-        continue;
-      }
-      const label = resolveLegacyImageButtonLabel(inputNode);
-      if (label === "") {
-        continue;
-      }
-      if (isClearActionLabel(label)) {
-        removeNode(inputNode);
-        continue;
-      }
-      const button = createButton(targetDocument, {
-        type: "submit",
-        className: "button ccxp-lite-image-action-button",
-      });
-      button.textContent = label;
-      if (inputNode.id !== "") {
-        button.id = inputNode.id;
-      }
-      if (inputNode.name !== "") {
-        button.name = inputNode.name;
-      }
-      if (inputNode.title !== "") {
-        button.title = inputNode.title;
-      }
-      if (inputNode.className !== "") {
-        button.className = `${button.className} ${inputNode.className}`.trim();
-      }
-      if (inputNode.disabled) {
-        button.disabled = true;
-      }
-      for (const attributeName of [
-        "onclick",
-        "formaction",
-        "formmethod",
-        "formenctype",
-        "formtarget",
-        "tabindex",
-      ]) {
-        const value = inputNode.getAttribute(attributeName);
-        if (value !== null && value !== "") {
-          button.setAttribute(attributeName, value);
-        }
-      }
-      if (inputNode.hasAttribute("formnovalidate")) {
-        button.setAttribute("formnovalidate", "");
-      }
-      inputNode.replaceWith(button);
-      button.dataset.ccxpLiteImageButtonReplaced = "true";
+      replaceImageSubmitInput(targetDocument, inputNode);
     }
     const imageAnchors = [...rootNode.querySelectorAll<HTMLImageElement>("form a > img[alt]")];
     for (const imageNode of imageAnchors) {
-      const anchor = imageNode.closest("a");
-      if (!anchor || anchor.dataset.ccxpLiteImageButtonReplaced === "true") {
-        continue;
-      }
-      if (isVerificationAudioControl(imageNode)) {
-        anchor.classList.add("ccxp-lite-audio-icon-link");
-        const imageLabel = resolveLegacyImageButtonLabel(imageNode);
-        anchor.setAttribute(
-          "aria-label",
-          imageLabel === "" ? getLandingStrings(targetDocument).playVerificationAudio : imageLabel,
-        );
-        anchor.replaceChildren(createAudioIcon(targetDocument));
-        anchor.dataset.ccxpLiteImageButtonReplaced = "true";
-        continue;
-      }
-      if (isAdjacentLoginClearControl(imageNode)) {
-        removeNode(anchor);
-        continue;
-      }
-      const label = resolveLegacyImageButtonLabel(imageNode);
-      if (label === "") {
-        continue;
-      }
-      if (isClearActionLabel(label)) {
-        removeNode(anchor);
-        continue;
-      }
-      anchor.classList.add("ccxp-lite-image-link-button");
-      anchor.replaceChildren(targetDocument.createTextNode(label));
-      anchor.dataset.ccxpLiteImageButtonReplaced = "true";
+      replaceImageAnchor(targetDocument, imageNode);
     }
+  }
+
+  function replaceImageSubmitInput(targetDocument: Document, inputNode: HTMLInputElement) {
+    if (inputNode.dataset.ccxpLiteImageButtonReplaced === "true") {
+      return;
+    }
+    if (shouldKeepLegacyLoginImageSubmit(inputNode)) {
+      return;
+    }
+    if (isVerificationAudioControl(inputNode)) {
+      const audioButton = createAudioIconButtonFromImageInput(targetDocument, inputNode);
+      inputNode.replaceWith(audioButton);
+      audioButton.dataset.ccxpLiteImageButtonReplaced = "true";
+      return;
+    }
+    if (isAdjacentLoginClearControl(inputNode)) {
+      removeNode(inputNode);
+      return;
+    }
+    const label = resolveLegacyImageButtonLabel(inputNode);
+    if (label === "") {
+      return;
+    }
+    if (isClearActionLabel(label)) {
+      removeNode(inputNode);
+      return;
+    }
+    const button = createButton(targetDocument, {
+      type: "submit",
+      className: "button ccxp-lite-image-action-button",
+    });
+    button.textContent = label;
+    copyImageSubmitAttributes(inputNode, button);
+    inputNode.replaceWith(button);
+    button.dataset.ccxpLiteImageButtonReplaced = "true";
+  }
+
+  function copyImageSubmitAttributes(inputNode: HTMLInputElement, targetButton: HTMLButtonElement) {
+    const button = targetButton;
+    if (inputNode.id !== "") {
+      button.id = inputNode.id;
+    }
+    if (inputNode.name !== "") {
+      button.name = inputNode.name;
+    }
+    if (inputNode.title !== "") {
+      button.title = inputNode.title;
+    }
+    if (inputNode.className !== "") {
+      button.className = `${button.className} ${inputNode.className}`.trim();
+    }
+    if (inputNode.disabled) {
+      button.disabled = true;
+    }
+    for (const attributeName of [
+      "onclick",
+      "formaction",
+      "formmethod",
+      "formenctype",
+      "formtarget",
+      "tabindex",
+    ]) {
+      const value = inputNode.getAttribute(attributeName);
+      if (value !== null && value !== "") {
+        button.setAttribute(attributeName, value);
+      }
+    }
+    if (inputNode.hasAttribute("formnovalidate")) {
+      button.setAttribute("formnovalidate", "");
+    }
+  }
+
+  function replaceImageAnchor(targetDocument: Document, imageNode: HTMLImageElement) {
+    const anchor = imageNode.closest("a");
+    if (!anchor || anchor.dataset.ccxpLiteImageButtonReplaced === "true") {
+      return;
+    }
+    if (isVerificationAudioControl(imageNode)) {
+      anchor.classList.add("ccxp-lite-audio-icon-link");
+      const imageLabel = resolveLegacyImageButtonLabel(imageNode);
+      anchor.setAttribute(
+        "aria-label",
+        imageLabel === "" ? getLandingStrings(targetDocument).playVerificationAudio : imageLabel,
+      );
+      anchor.replaceChildren(createAudioIcon(targetDocument));
+      anchor.dataset.ccxpLiteImageButtonReplaced = "true";
+      return;
+    }
+    if (isAdjacentLoginClearControl(imageNode)) {
+      removeNode(anchor);
+      return;
+    }
+    const label = resolveLegacyImageButtonLabel(imageNode);
+    if (label === "") {
+      return;
+    }
+    if (isClearActionLabel(label)) {
+      removeNode(anchor);
+      return;
+    }
+    anchor.classList.add("ccxp-lite-image-link-button");
+    anchor.replaceChildren(targetDocument.createTextNode(label));
+    anchor.dataset.ccxpLiteImageButtonReplaced = "true";
   }
 
   function wrapPrimaryLoginButtons(targetDocument: Document, rootNode: ParentNode) {
@@ -160,35 +173,7 @@
       ...formNode.querySelectorAll<HTMLInputElement>("input[type='submit']"),
     ];
     for (const inputNode of nativeSubmitInputs) {
-      if (inputNode.dataset.ccxpLiteSubmitRebuilt === "true") {
-        continue;
-      }
-      const label = inputNode.value.replaceAll(/\s+/g, " ").trim();
-      if (label === "") {
-        continue;
-      }
-      const button = createButton(targetDocument, {
-        type: "submit",
-        className: "ccxp-lite-image-action-button",
-      });
-      button.textContent = label;
-      button.value = label;
-      button.setAttribute("value", label);
-      for (const attribute of inputNode.attributes) {
-        const attributeName = attribute.name.toLowerCase();
-        if (attributeName === "type" || attributeName === "class") {
-          continue;
-        }
-        button.setAttribute(attribute.name, attribute.value);
-      }
-      if (inputNode.className !== "") {
-        button.className = `${button.className} ${inputNode.className}`.trim();
-      }
-      if (inputNode.disabled) {
-        button.disabled = true;
-      }
-      inputNode.replaceWith(button);
-      button.dataset.ccxpLiteSubmitRebuilt = "true";
+      replaceNativeSubmitInput(targetDocument, inputNode);
     }
     const nativeSubmitButtons = [
       ...formNode.querySelectorAll<HTMLButtonElement>("button[type='submit'], button:not([type])"),
@@ -202,6 +187,38 @@
       }
       buttonNode.classList.add("ccxp-lite-image-action-button");
     }
+  }
+
+  function replaceNativeSubmitInput(targetDocument: Document, inputNode: HTMLInputElement) {
+    if (inputNode.dataset.ccxpLiteSubmitRebuilt === "true") {
+      return;
+    }
+    const label = inputNode.value.replaceAll(/\s+/g, " ").trim();
+    if (label === "") {
+      return;
+    }
+    const button = createButton(targetDocument, {
+      type: "submit",
+      className: "ccxp-lite-image-action-button",
+    });
+    button.textContent = label;
+    button.value = label;
+    button.setAttribute("value", label);
+    for (const attribute of inputNode.attributes) {
+      const attributeName = attribute.name.toLowerCase();
+      if (attributeName === "type" || attributeName === "class") {
+        continue;
+      }
+      button.setAttribute(attribute.name, attribute.value);
+    }
+    if (inputNode.className !== "") {
+      button.className = `${button.className} ${inputNode.className}`.trim();
+    }
+    if (inputNode.disabled) {
+      button.disabled = true;
+    }
+    inputNode.replaceWith(button);
+    button.dataset.ccxpLiteSubmitRebuilt = "true";
   }
 
   function isPrimaryLoginActionLabel(rawLabel: string | undefined) {
@@ -278,7 +295,7 @@
       return false;
     }
     const row = node.closest("tr");
-    if (row && row.querySelector("input[name='passwd2']")) {
+    if (row?.querySelector("input[name='passwd2']")) {
       return true;
     }
     const hintText = [
@@ -348,7 +365,7 @@
 
   function isLoginLikeControl(node: Element) {
     const hints = extractControlHints(node);
-    return /(\u767B\u5165|login|sign\s*-?\s*in|submit)/i.test(hints);
+    return /(\u767B\u5165|login|sign\s*(?:-\s*)?in|submit)/i.test(hints);
   }
 
   function isClearLikeControl(node: Element) {
@@ -371,9 +388,9 @@
       node.getAttribute("src"),
       node.getAttribute("onclick"),
       node.textContent,
-      anchor && anchor.getAttribute("href"),
-      anchor && anchor.getAttribute("onclick"),
-      anchor && anchor.textContent,
+      anchor?.getAttribute("href"),
+      anchor?.getAttribute("onclick"),
+      anchor?.textContent,
     ]
       .map((value) => value ?? "")
       .join(" ")

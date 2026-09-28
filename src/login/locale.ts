@@ -31,8 +31,13 @@
     if (htmlLang.startsWith("zh")) {
       return "zh";
     }
+    const explicitLocale = resolveQueryLocale(targetDocument) ?? resolveLinkLocale(languageLinks);
+    return explicitLocale ?? resolveTextLocale(loginSourceCell, loginForm);
+  }
+
+  function resolveQueryLocale(targetDocument: Document): CcxpLiteLocale | undefined {
     const search = targetDocument.location.search.toLowerCase();
-    const langMatch = search.match(/[&?]lang=([^&]+)/);
+    const langMatch = /[&?]lang=([^&]+)/.exec(search);
     if (langMatch) {
       const langValue = decodeURIComponent(langMatch[1]);
       if (langValue.includes("en")) {
@@ -42,6 +47,10 @@
         return "zh";
       }
     }
+    return undefined;
+  }
+
+  function resolveLinkLocale(languageLinks: ParentNode | undefined): CcxpLiteLocale | undefined {
     if (languageLinks) {
       const currentLangNode = languageLinks.querySelector(
         ".active, .current, .selected, [aria-current='page'], strong, b",
@@ -56,6 +65,13 @@
         }
       }
     }
+    return undefined;
+  }
+
+  function resolveTextLocale(
+    loginSourceCell: ParentNode | undefined,
+    loginForm: HTMLFormElement | undefined,
+  ): CcxpLiteLocale {
     const formInputTextSample = loginForm
       ? [...loginForm.querySelectorAll("input, select, textarea, button")]
           .map((node) =>
@@ -70,8 +86,8 @@
           .join(" ")
       : "";
     const loginTextSample = [
-      loginForm && loginForm.textContent,
-      loginSourceCell && loginSourceCell.textContent,
+      loginForm?.textContent,
+      loginSourceCell?.textContent,
       formInputTextSample,
     ]
       .filter(Boolean)
@@ -101,7 +117,7 @@
     if (enHits > zhHits) {
       return "en";
     }
-    const sampleText = ((loginSourceCell && loginSourceCell.textContent) ?? "").trim();
+    const sampleText = (loginSourceCell?.textContent ?? "").trim();
     return /[\u3400-\u9FFF]/.test(sampleText) ? "zh" : "en";
   }
 

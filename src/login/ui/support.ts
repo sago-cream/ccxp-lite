@@ -66,15 +66,15 @@
       const headingCell = rows
         .flatMap((row) => [...row.cells])
         .find((cell) => cell.classList.contains("board_item"));
-      const headingText = normalizeAnnouncementHeading(headingCell && headingCell.textContent);
+      const headingText = normalizeAnnouncementHeading(headingCell?.textContent);
       if (!hasAnnouncementHeading(headingText)) {
         return false;
       }
-      const boardHeaderRow = rows.find((row) => {
+      const hasBoardHeaderRow = rows.some((row) => {
         const cells = [...row.cells];
         return cells.filter((cell) => cell.classList.contains("board_subject")).length >= 2;
       });
-      if (!boardHeaderRow) {
+      if (!hasBoardHeaderRow) {
         return false;
       }
       const dateRows = rows.filter((row) => {
@@ -246,7 +246,7 @@
   }
 
   function isLikelySpacerRow(row: Element | undefined) {
-    if (!row || row.tagName !== "TR") {
+    if (row?.tagName !== "TR") {
       return false;
     }
     const cells = [...row.children].filter(

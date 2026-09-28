@@ -1,6 +1,6 @@
 (function registerLoginLinks(globalScope: typeof globalThis) {
   const namespace = globalScope.CCXP_LITE;
-  if (!namespace || !namespace.shared || !namespace.uiIcons) {
+  if (!namespace?.shared || !namespace.uiIcons) {
     return;
   }
   const { getLocalizedStrings } = namespace.shared;
@@ -156,7 +156,7 @@
           .filter((anchor) => anchor.textContent.trim() !== "")
       : [];
     const serviceAnchorSource =
-      serviceLinkNode && serviceLinkNode.matches("a[href]")
+      serviceLinkNode?.matches("a[href]") === true
         ? (serviceLinkNode as HTMLAnchorElement)
         : serviceLinkNode?.querySelector<HTMLAnchorElement>("a[href]");
     if (

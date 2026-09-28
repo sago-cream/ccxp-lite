@@ -54,8 +54,6 @@
     const {
       loginForm,
       loginSourceCell,
-      tabNavigation,
-      tabContents,
       languageLinks,
       announcementTable,
       utilityLinks,
@@ -165,25 +163,8 @@
       }
     }
 
-    if (utilityLinks) {
-      collapseLegacyUtilityRow(utilityLinks);
-      removeNode(utilityLinks);
-    }
-
+    cleanLegacySupport(identifiedSurface);
     topSection.append(headerSection);
-
-    if (serviceLink) {
-      collapseLegacyServiceRow(serviceLink);
-    }
-    if (cannotLoginLink) {
-      collapseLegacyCannotLoginLink(cannotLoginLink);
-    }
-
-    if (tabNavigation && tabContents.length > 0) {
-      for (const tabContent of tabContents) {
-        collapseLegacyThreeColumnRows(tabContent);
-      }
-    }
 
     if (announcementTable && !announcementTable.hidden) {
       bodySection.append(loginSection);
@@ -213,6 +194,28 @@
       loginValidationState,
       captchaAutofillState,
     };
+  }
+
+  function cleanLegacySupport(identifiedSurface: CcxpLiteLoginIdentifyResult) {
+    const { utilityLinks, serviceLink, cannotLoginLink, tabNavigation, tabContents } =
+      identifiedSurface;
+    if (utilityLinks) {
+      collapseLegacyUtilityRow(utilityLinks);
+      removeNode(utilityLinks);
+    }
+
+    if (serviceLink) {
+      collapseLegacyServiceRow(serviceLink);
+    }
+    if (cannotLoginLink) {
+      collapseLegacyCannotLoginLink(cannotLoginLink);
+    }
+
+    if (tabNavigation && tabContents.length > 0) {
+      for (const tabContent of tabContents) {
+        collapseLegacyThreeColumnRows(tabContent);
+      }
+    }
   }
 
   namespace.loginRewrite = {

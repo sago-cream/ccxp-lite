@@ -12,7 +12,7 @@
   function captureValidationState(targetDocument: Document): CcxpLiteLoginValidationState {
     const fnstrField = targetDocument.querySelector<HTMLInputElement>("input[name='fnstr']");
     const rawFnstr = fnstrField ? fnstrField.value : "";
-    const match = rawFnstr.match(/^(\d{8})-(\d+)$/);
+    const match = /^(\d{8})-(\d+)$/.exec(rawFnstr);
 
     if (!match) {
       return { startedAt: Date.now() };
@@ -230,7 +230,7 @@
       const parsed = new URL(rawSrc, targetDocument.location.href);
       return parsed.searchParams.get("pwdstr") ?? "";
     } catch {
-      const match = rawSrc.match(/[&?]pwdstr=([^&]+)/i);
+      const match = /[&?]pwdstr=([^&]+)/i.exec(rawSrc);
       return match ? decodeURIComponent(match[1]) : "";
     }
   }

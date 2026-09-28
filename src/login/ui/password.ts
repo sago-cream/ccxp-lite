@@ -56,7 +56,7 @@
     }
   }
 
-  function removeRedundantPasswordLabelEyeIcon(passwordField: HTMLInputElement) {
+  function removeInlinePasswordToggles(passwordField: HTMLInputElement) {
     const inlineScope = passwordField.closest("form") ?? passwordField.parentElement;
     if (inlineScope) {
       const legacyInlineToggles = [
@@ -76,6 +76,10 @@
         }
       }
     }
+  }
+
+  function removeRedundantPasswordLabelEyeIcon(passwordField: HTMLInputElement) {
+    removeInlinePasswordToggles(passwordField);
     const row = passwordField.closest("tr");
     if (!row || row.dataset.ccxpLitePasswordLabelCleaned === "true") {
       return;
