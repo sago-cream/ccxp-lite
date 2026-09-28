@@ -70,7 +70,7 @@ def load_checkpoint(checkpoint_path):
             if not isinstance(pid, tuple) or pid[0] != "storage":
                 raise ValueError(f"Unexpected persistent id: {pid}")
 
-            _, storage_type, key, location, size = pid
+            _, storage_type, key, _, size = pid
             size = int(size)
             cache_key = str(key)
             if cache_key in storage_cache:

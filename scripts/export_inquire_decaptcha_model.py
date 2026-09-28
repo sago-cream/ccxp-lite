@@ -16,7 +16,7 @@ def build_inquire_payload(checkpoint, digits: int, crop_right: int):
         if key.endswith("num_batches_tracked"):
             continue
         if key.startswith("heads."):
-            prefix, index_str, suffix = key.split(".", maxsplit=2)
+            _, index_str, _ = key.split(".", maxsplit=2)
             if int(index_str) >= digits:
                 continue
         tensors[key] = {

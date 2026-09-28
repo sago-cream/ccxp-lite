@@ -48,10 +48,8 @@ export async function routeWorkLogFixture(route: Route): Promise<boolean> {
     ];
     const escape = (text: string) =>
       text.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
-    html = html.replace(
-      "<!-- fixture-record -->",
-      `<tr>${cells.map((cell) => `<td>${escape(cell)}</td>`).join("")}</tr>`,
-    );
+    const recordCells = cells.map((cell) => `<td>${escape(cell)}</td>`).join("");
+    html = html.replace("<!-- fixture-record -->", `<tr>${recordCells}</tr>`);
     html = html.replace("</body>", "<script>alert('Add successfully!');</script></body>");
   }
   await route.fulfill({ contentType: "text/html; charset=utf-8", body: html });

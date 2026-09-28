@@ -32,10 +32,11 @@ function fixture(fields = new URLSearchParams(), success = false) {
       )
       .join("")}</select>`;
   const date = `115${fields.get("I_TASK_DT_Month") ?? "09"}${fields.get("I_TASK_DT_Day") ?? "10"}`;
-  const time = (prefix: string) =>
-    `${fields.get(`I_TASK_${prefix}_TM_Hour`) ?? "08"}:${
-      fields.get(`I_TASK_${prefix}_TM_Minute`) ?? "00"
-    }`;
+  const time = (prefix: string) => {
+    const hour = fields.get(`I_TASK_${prefix}_TM_Hour`) ?? "08";
+    const minute = fields.get(`I_TASK_${prefix}_TM_Minute`) ?? "00";
+    return `${hour}:${minute}`;
+  };
   const cells = [
     "123",
     date,
@@ -53,6 +54,8 @@ function fixture(fields = new URLSearchParams(), success = false) {
     "",
     "",
   ];
+  const recordCells = cells.map((cell) => `<td>${cell}</td>`).join("");
+  const recordRow = success ? `<tr>${recordCells}</tr>` : "";
   return `<!doctype html><html><head><meta charset="big5"></head><body>
 <form id="insForm" name="insForm" method="post" accept-charset="big5" action="PE14D1.php">
 <input name="ACIXSTORE" value="test-session" type="hidden">
@@ -79,7 +82,7 @@ ${select("Q_TASK_Z_DT_Year", ["2026", "2027"], "2026")}
 ${select("Q_TASK_Z_DT_Month", numbers(12, 1), "09")}
 ${select("Q_TASK_Z_DT_Day", numbers(31, 1), "30")}
 </td></tr></tbody></table></form></div>
-<form id="listForm"><table>${success ? `<tr>${cells.map((cell) => `<td>${cell}</td>`).join("")}</tr>` : ""}</table></form>
+<form id="listForm"><table>${recordRow}</table></form>
 <script>
 window.toSubmit = function(form, action) {
   if (action === 'getLabInsList') form.S_SUBMIT.value = 'Loading Data';

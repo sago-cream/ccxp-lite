@@ -25,7 +25,7 @@ const defaultExtensionDir = path.join(projectRoot, "dist", "crx", "unpacked");
 const defaultOutputDir = path.join(projectRoot, ".browser-parity");
 const viewport = { width: 1280, height: 960 };
 const ccxpOrigin = "https://www.ccxp.nthu.edu.tw";
-const maximumPixelDifferenceRatio = 0.000_06;
+const maximumPixelDifferenceRatio = 6e-5;
 
 type Probe = Readonly<{
   name: string;
@@ -161,6 +161,22 @@ function prepareOutputDirectory(outputDir: string) {
   mkdirSync(outputDir, { recursive: true });
 }
 
+function fixtureHtmlForRequest(fixtureName: string, requestUrl: URL) {
+  let html = readFixture(fixtureName);
+  if (fixtureName === "frameset.html") {
+    if (requestUrl.searchParams.has("work-log")) {
+      html = html.replace("xp03_m.htm", "PE/1/14D/PE14D1.php");
+    } else {
+      const requested = requestUrl.searchParams.get("page");
+      const destination = [...fixtureByPath].find(([, file]) => file === `${requested}.html`);
+      if (destination) {
+        html = html.replace("xp03_m.htm", destination[0]);
+      }
+    }
+  }
+  return html;
+}
+
 async function routeFixtures(context: BrowserContext): Promise<ReadonlySet<string>> {
   const missingAssets = new Set<string>();
   await context.route("**/*", async (route) => {
@@ -184,18 +200,7 @@ async function routeFixtures(context: BrowserContext): Promise<ReadonlySet<strin
     }
     const fixtureName = fixtureByPath.get(requestUrl.pathname);
     if (requestUrl.origin === ccxpOrigin && fixtureName !== undefined) {
-      let html = readFixture(fixtureName);
-      if (fixtureName === "frameset.html") {
-        if (requestUrl.searchParams.has("work-log")) {
-          html = html.replace("xp03_m.htm", "PE/1/14D/PE14D1.php");
-        } else {
-          const requested = requestUrl.searchParams.get("page");
-          const destination = [...fixtureByPath].find(([, file]) => file === `${requested}.html`);
-          if (destination) {
-            html = html.replace("xp03_m.htm", destination[0]);
-          }
-        }
-      }
+      const html = fixtureHtmlForRequest(fixtureName, requestUrl);
       await route.fulfill({ status: 200, contentType: "text/html; charset=utf-8", body: html });
       return;
     }
@@ -335,84 +340,158 @@ async function captureRevision(
     });
     const page = context.pages()[0] ?? (await context.newPage());
 
-    if (!workLogOnly) {
-      process.stdout.write(`[${label}] login\n`);
-      await page.goto(`${ccxpOrigin}/ccxp/INQUIRE/`, { waitUntil: "domcontentloaded" });
-      await page.locator("body[data-ccxp-lite-landing-applied='true']").waitFor();
-      const password = page.locator("input[name='passwd']");
-      await password.fill("parity-only");
-      await page.locator(".ccxp-lite-password-toggle").click();
-      if ((await password.getAttribute("type")) !== "text") {
-        throw new Error("Password visibility control did not preserve interaction behavior");
+    async function captureWorkLogPages() {
+      process.stdout.write(`[${label}] work-log (standalone and main frame)\n`);
+      await page.goto(`${ccxpOrigin}${workLogPath}`, { waitUntil: "domcontentloaded" });
+      styles["work-log-standalone-ready"] = await assertWorkLogReady(page);
+      const standaloneWorkLog = path.join(revisionOutputDir, "work-log-standalone.png");
+      await capturePage(page, standaloneWorkLog);
+      screenshots["work-log-standalone"] = standaloneWorkLog;
+      if (recordVideo) {
+        markRecordingStep("Open Search hours");
+        await page.waitForTimeout(2000);
       }
-      const loginScreenshot = path.join(revisionOutputDir, "login.png");
-      await capturePage(page, loginScreenshot);
-      screenshots.login = loginScreenshot;
-      styles.login = await collectStyles(page, loginProbes);
-
-      /* eslint-disable no-await-in-loop -- Captures navigate the same page sequentially. */
-      for (const [name, route, ready] of [
-        [
-          "staff-registration",
-          "/ccxp/INQUIRE/PE/3/3000/PE30001.php",
-          "html[data-ccxp-registration-ready='true']",
-        ],
-        ["staff-history", "/ccxp/INQUIRE/PE/3/3000/PE30003.php", "html.ccxp-staff-shell"],
-      ]) {
-        process.stdout.write(`[${label}] ${name}\n`);
-        await page.goto(`${ccxpOrigin}${route}`, { waitUntil: "domcontentloaded" });
-        await page.locator(ready).waitFor({ state: "attached" });
-        await page.locator("body.ccxp-lite-main-skin").waitFor();
-        await page.locator(".k-grid").first().waitFor();
-        const file = path.join(revisionOutputDir, `${name}.png`);
-        await capturePage(page, file);
-        screenshots[name] = file;
-        styles[name] = await collectStyles(page, [
-          { name: "grid", selector: ".k-grid", properties: visualProperties },
-        ]);
-        if (name === "staff-registration") {
-          await page.getByRole("switch", { name: "English", exact: true }).check();
-          await page.getByRole("button", { name: "Registration reminders", exact: true }).click();
-          await page.locator("#ccxp-registration-reminders").waitFor();
-          const reminders = path.join(revisionOutputDir, "staff-registration-reminders.png");
-          await capturePage(page, reminders);
-          screenshots["staff-registration-reminders"] = reminders;
-          await page
-            .getByRole("button", { name: "Registration reminders", exact: true })
-            .press("Escape");
-          await page.getByRole("switch", { name: "English", exact: true }).uncheck();
-          await page.locator(".k-grid").first().scrollIntoViewIfNeeded();
-          const records = path.join(revisionOutputDir, "staff-registration-records.png");
-          await capturePage(page, records);
-          screenshots["staff-registration-records"] = records;
-        }
-      }
-
-      for (const name of ["course-hub", "curriculum", "keyword"]) {
-        process.stdout.write(`[${label}] ${name} in main frame\n`);
-        await page.goto(`${ccxpOrigin}/ccxp/INQUIRE/select_entry.php?page=${name}`, {
-          waitUntil: "load",
-        });
-        const scope = page.frameLocator('frame[name="main"]');
-        await scope.locator("body.ccxp-lite-main-skin").waitFor();
-        await page.waitForFunction(
-          () => document.querySelector("frameset[cols]")?.getAttribute("cols") === "324,*",
+      await page.locator('#ccxp-lite-work-log-sections input[value="search"]').check();
+      await page.waitForTimeout(500);
+      const searchFormBottom = await page
+        .locator("#queForm")
+        .evaluate((form) => Math.ceil(form.getBoundingClientRect().bottom));
+      if (expectSearchResultsChange) {
+        assert.equal(
+          await page.locator("#listForm").isVisible(),
+          label === "base",
+          "Initial empty results should only be visible in the base extension",
         );
-        const file = path.join(revisionOutputDir, `${name}.png`);
-        await capturePage(page, file);
-        screenshots[name] = file;
       }
-      /* eslint-enable no-await-in-loop */
-      process.stdout.write(`[${label}] standalone\n`);
-      await page.goto(`${ccxpOrigin}/ccxp/INQUIRE/JH/B/B.2/B.2.3/JHB23001.php`, {
-        waitUntil: "domcontentloaded",
-      });
+      markRecordingStep("Before searching");
+      const initialSearch = path.join(revisionOutputDir, "work-log-search-initial.png");
+      await capturePage(page, initialSearch);
+      screenshots["work-log-search-initial"] = initialSearch;
+      if (recordVideo) {
+        await page.waitForTimeout(4500);
+        await page.locator('#queForm input[type="submit"]').hover();
+        markRecordingStep("Click Search");
+        await page.waitForTimeout(1500);
+      }
+      await page.locator('#queForm input[type="submit"]').click();
+      await page.locator('html[data-ccxp-lite-work-log-section="search"] #listForm').waitFor();
       await page.locator("body.ccxp-lite-main-skin").waitFor();
-      const standaloneScreenshot = path.join(revisionOutputDir, "standalone.png");
-      await capturePage(page, standaloneScreenshot);
-      screenshots.standalone = standaloneScreenshot;
-      styles.standalone = await collectStyles(page, standaloneProbes);
+      await page.waitForTimeout(500);
+      if (expectSearchResultsChange && label === "head") {
+        const heading = page.locator("#listForm h2");
+        assert.equal(await heading.textContent(), "\u641C\u5C0B\u7D50\u679C");
+        assert.equal(await page.locator("#listForm .H12").isVisible(), false);
+        const typography = await heading.evaluate((element) => {
+          const section = document.querySelector("#queForm th");
+          if (!section) {
+            throw new Error("Missing section label");
+          }
+          const actual = getComputedStyle(element);
+          const expected = getComputedStyle(section);
+          return (
+            actual.fontSize === expected.fontSize &&
+            actual.fontWeight === expected.fontWeight &&
+            actual.color === expected.color
+          );
+        });
+        assert.equal(typography, true, "Results heading must match section-label typography");
+      }
+      markRecordingStep("Search completed - no matching records");
+      const emptySearch = path.join(revisionOutputDir, "work-log-search-empty.png");
+      await capturePage(page, emptySearch);
+      screenshots["work-log-search-empty"] = emptySearch;
+      // Moving the table beneath a shorter heading changes raster rounding at its edges. Compare
+      // its actual content and computed layout instead of its absolute pixel position.
+      styles["work-log-search-table"] = {
+        layout: await collectStyles(page, [
+          { name: "table", selector: "#listForm table", properties: visualProperties },
+          { name: "header", selector: "#listForm th", properties: visualProperties },
+          { name: "cell", selector: "#listForm td", properties: visualProperties },
+        ]),
+        content: await page.locator("#listForm table").textContent(),
+      };
+      if (recordVideo) {
+        await page.waitForTimeout(5000);
+        await page.locator('#ccxp-lite-work-log-nav [role="switch"]').hover();
+        markRecordingStep("Switch to English");
+        await page.waitForTimeout(1500);
+      }
+      await page.locator('#ccxp-lite-work-log-nav [role="switch"]').click();
+      if (expectSearchResultsChange && label === "head") {
+        assert.equal(await page.locator("#listForm h2").textContent(), "Search results");
+        assert.equal(await page.locator("#listForm").isVisible(), true);
+      }
+      markRecordingStep("English results heading");
+      const englishSearch = path.join(revisionOutputDir, "work-log-search-english.png");
+      await capturePage(page, englishSearch);
+      screenshots["work-log-search-english"] = englishSearch;
+      if (recordVideo) {
+        await page.waitForTimeout(5000);
+      }
+      markRecordingStep("Search demonstration ends");
+      await page.locator('#ccxp-lite-work-log-nav [role="switch"]').click();
+      await page.locator('#ccxp-lite-work-log-sections input[value="add"]').check();
+      const departmentInput = page.locator('[name="KI_SRV_ID"]');
+      await departmentInput.fill("");
+      await departmentInput.focus();
+      const departmentScreenshot = path.join(revisionOutputDir, "work-log-department-results.png");
+      await capturePage(page, departmentScreenshot);
+      screenshots["work-log-department-results"] = departmentScreenshot;
+      await departmentInput.fill("EU0A");
+      const filteredScreenshot = path.join(revisionOutputDir, "work-log-department-filtered.png");
+      await capturePage(page, filteredScreenshot);
+      screenshots["work-log-department-filtered"] = filteredScreenshot;
+      await page.goto(`${ccxpOrigin}/ccxp/INQUIRE/select_entry.php?work-log`, {
+        waitUntil: "commit",
+      });
+      await page.waitForFunction((pathname) => {
+        const frame = document.querySelector('frame[name="main"]');
+        const doc = frame
+          ? (Reflect.get(frame, "contentDocument") as Document | undefined)
+          : undefined;
+        return doc?.location.pathname === pathname;
+      }, workLogPath);
+      const mainFrame = page.frames().find((frame) => frame.url().includes(workLogPath));
+      if (!mainFrame) {
+        throw new Error("Missing work-log main frame");
+      }
+      styles["work-log-framed-ready"] = await assertWorkLogReady(mainFrame);
+      await page.waitForFunction(
+        () => document.querySelector("frameset[cols]")?.getAttribute("cols") === "324,*",
+      );
+      await mainFrame.getByRole("button", { name: "\u591A\u65E5", exact: true }).click();
+      await mainFrame
+        .locator("#ccxp-lite-batch")
+        .getByLabel("\u7D50\u675F\u65E5\u671F", { exact: true })
+        .fill("2026-09-11");
+      const multiScreenshot = path.join(revisionOutputDir, "work-log-multiday.png");
+      await capturePage(page, multiScreenshot);
+      screenshots["work-log-multiday"] = multiScreenshot;
+      styles["work-log-multiday"] = await collectStyles(mainFrame, [
+        { name: "header", selector: "#ccxp-lite-work-log-nav", properties: visualProperties },
+        { name: "note", selector: '[name="I_TASK_NOTE"]', properties: visualProperties },
+        {
+          name: "submit",
+          selector: "#insTask .ccxp-lite-action-control-primary",
+          properties: visualProperties,
+        },
+      ]);
+      await mainFrame.locator('#insForm [name="S_SUBMIT"]').click();
+      await mainFrame.waitForFunction(
+        () =>
+          document.querySelector('[role="dialog"]') !== null ||
+          document.querySelector('[role="status"]')?.textContent.includes("\u6210\u529F 2 \u7B46"),
+      );
+      const submitScreenshot = path.join(revisionOutputDir, "work-log-submit.png");
+      await capturePage(page, submitScreenshot);
+      screenshots["work-log-submit"] = submitScreenshot;
+      if (recordVideo) {
+        await page.waitForTimeout(1000);
+      }
+      return searchFormBottom;
+    }
 
+    async function captureSidebarPages() {
       process.stdout.write(`[${label}] sidebar classic\n`);
       await page.goto(
         `${ccxpOrigin}/ccxp/INQUIRE/select_entry.php?ACIXSTORE=fixture&hint=123456789`,
@@ -499,153 +578,92 @@ async function captureRevision(
       screenshots["embedded-destination"] = destinationScreenshot;
       styles["embedded-destination"] = await collectStyles(navFrame, destinationProbes);
     }
-    process.stdout.write(`[${label}] work-log (standalone and main frame)\n`);
-    await page.goto(`${ccxpOrigin}${workLogPath}`, { waitUntil: "domcontentloaded" });
-    styles["work-log-standalone-ready"] = await assertWorkLogReady(page);
-    const standaloneWorkLog = path.join(revisionOutputDir, "work-log-standalone.png");
-    await capturePage(page, standaloneWorkLog);
-    screenshots["work-log-standalone"] = standaloneWorkLog;
-    if (recordVideo) {
-      markRecordingStep("Open Search hours");
-      await page.waitForTimeout(2000);
-    }
-    await page.locator('#ccxp-lite-work-log-sections input[value="search"]').check();
-    await page.waitForTimeout(500);
-    const searchFormBottom = await page
-      .locator("#queForm")
-      .evaluate((form) => Math.ceil(form.getBoundingClientRect().bottom));
-    if (expectSearchResultsChange) {
-      assert.equal(
-        await page.locator("#listForm").isVisible(),
-        label === "base",
-        "Initial empty results should only be visible in the base extension",
-      );
-    }
-    markRecordingStep("Before searching");
-    const initialSearch = path.join(revisionOutputDir, "work-log-search-initial.png");
-    await capturePage(page, initialSearch);
-    screenshots["work-log-search-initial"] = initialSearch;
-    if (recordVideo) {
-      await page.waitForTimeout(4500);
-      await page.locator('#queForm input[type="submit"]').hover();
-      markRecordingStep("Click Search");
-      await page.waitForTimeout(1500);
-    }
-    await page.locator('#queForm input[type="submit"]').click();
-    await page.locator('html[data-ccxp-lite-work-log-section="search"] #listForm').waitFor();
-    await page.locator("body.ccxp-lite-main-skin").waitFor();
-    await page.waitForTimeout(500);
-    if (expectSearchResultsChange && label === "head") {
-      const heading = page.locator("#listForm h2");
-      assert.equal(await heading.textContent(), "\u641C\u5C0B\u7D50\u679C");
-      assert.equal(await page.locator("#listForm .H12").isVisible(), false);
-      const typography = await heading.evaluate((element) => {
-        const section = document.querySelector("#queForm th");
-        if (!section) {
-          throw new Error("Missing section label");
+
+    async function captureGeneralPages() {
+      process.stdout.write(`[${label}] login\n`);
+      await page.goto(`${ccxpOrigin}/ccxp/INQUIRE/`, { waitUntil: "domcontentloaded" });
+      await page.locator("body[data-ccxp-lite-landing-applied='true']").waitFor();
+      const password = page.locator("input[name='passwd']");
+      await password.fill("parity-only");
+      await page.locator(".ccxp-lite-password-toggle").click();
+      if ((await password.getAttribute("type")) !== "text") {
+        throw new Error("Password visibility control did not preserve interaction behavior");
+      }
+      const loginScreenshot = path.join(revisionOutputDir, "login.png");
+      await capturePage(page, loginScreenshot);
+      screenshots.login = loginScreenshot;
+      styles.login = await collectStyles(page, loginProbes);
+
+      /* eslint-disable no-await-in-loop -- Captures navigate the same page sequentially. */
+      for (const [name, route, ready] of [
+        [
+          "staff-registration",
+          "/ccxp/INQUIRE/PE/3/3000/PE30001.php",
+          "html[data-ccxp-registration-ready='true']",
+        ],
+        ["staff-history", "/ccxp/INQUIRE/PE/3/3000/PE30003.php", "html.ccxp-staff-shell"],
+      ]) {
+        process.stdout.write(`[${label}] ${name}\n`);
+        await page.goto(`${ccxpOrigin}${route}`, { waitUntil: "domcontentloaded" });
+        await page.locator(ready).waitFor({ state: "attached" });
+        await page.locator("body.ccxp-lite-main-skin").waitFor();
+        await page.locator(".k-grid").first().waitFor();
+        const file = path.join(revisionOutputDir, `${name}.png`);
+        await capturePage(page, file);
+        screenshots[name] = file;
+        styles[name] = await collectStyles(page, [
+          { name: "grid", selector: ".k-grid", properties: visualProperties },
+        ]);
+        if (name === "staff-registration") {
+          await page.getByRole("switch", { name: "English", exact: true }).check();
+          await page.getByRole("button", { name: "Registration reminders", exact: true }).click();
+          await page.locator("#ccxp-registration-reminders").waitFor();
+          const reminders = path.join(revisionOutputDir, "staff-registration-reminders.png");
+          await capturePage(page, reminders);
+          screenshots["staff-registration-reminders"] = reminders;
+          await page
+            .getByRole("button", { name: "Registration reminders", exact: true })
+            .press("Escape");
+          await page.getByRole("switch", { name: "English", exact: true }).uncheck();
+          await page.locator(".k-grid").first().scrollIntoViewIfNeeded();
+          const records = path.join(revisionOutputDir, "staff-registration-records.png");
+          await capturePage(page, records);
+          screenshots["staff-registration-records"] = records;
         }
-        const actual = getComputedStyle(element);
-        const expected = getComputedStyle(section);
-        return (
-          actual.fontSize === expected.fontSize &&
-          actual.fontWeight === expected.fontWeight &&
-          actual.color === expected.color
+      }
+
+      for (const name of ["course-hub", "curriculum", "keyword"]) {
+        process.stdout.write(`[${label}] ${name} in main frame\n`);
+        await page.goto(`${ccxpOrigin}/ccxp/INQUIRE/select_entry.php?page=${name}`, {
+          waitUntil: "load",
+        });
+        const scope = page.frameLocator('frame[name="main"]');
+        await scope.locator("body.ccxp-lite-main-skin").waitFor();
+        await page.waitForFunction(
+          () => document.querySelector("frameset[cols]")?.getAttribute("cols") === "324,*",
         );
+        const file = path.join(revisionOutputDir, `${name}.png`);
+        await capturePage(page, file);
+        screenshots[name] = file;
+      }
+      /* eslint-enable no-await-in-loop */
+      process.stdout.write(`[${label}] standalone\n`);
+      await page.goto(`${ccxpOrigin}/ccxp/INQUIRE/JH/B/B.2/B.2.3/JHB23001.php`, {
+        waitUntil: "domcontentloaded",
       });
-      assert.equal(typography, true, "Results heading must match section-label typography");
+      await page.locator("body.ccxp-lite-main-skin").waitFor();
+      const standaloneScreenshot = path.join(revisionOutputDir, "standalone.png");
+      await capturePage(page, standaloneScreenshot);
+      screenshots.standalone = standaloneScreenshot;
+      styles.standalone = await collectStyles(page, standaloneProbes);
+
+      await captureSidebarPages();
     }
-    markRecordingStep("Search completed - no matching records");
-    const emptySearch = path.join(revisionOutputDir, "work-log-search-empty.png");
-    await capturePage(page, emptySearch);
-    screenshots["work-log-search-empty"] = emptySearch;
-    // Moving the table beneath a shorter heading changes raster rounding at its edges. Compare its
-    // actual content and computed layout instead of its absolute pixel position.
-    styles["work-log-search-table"] = {
-      layout: await collectStyles(page, [
-        { name: "table", selector: "#listForm table", properties: visualProperties },
-        { name: "header", selector: "#listForm th", properties: visualProperties },
-        { name: "cell", selector: "#listForm td", properties: visualProperties },
-      ]),
-      content: await page.locator("#listForm table").textContent(),
-    };
-    if (recordVideo) {
-      await page.waitForTimeout(5000);
-      await page.locator('#ccxp-lite-work-log-nav [role="switch"]').hover();
-      markRecordingStep("Switch to English");
-      await page.waitForTimeout(1500);
+
+    if (!workLogOnly) {
+      await captureGeneralPages();
     }
-    await page.locator('#ccxp-lite-work-log-nav [role="switch"]').click();
-    if (expectSearchResultsChange && label === "head") {
-      assert.equal(await page.locator("#listForm h2").textContent(), "Search results");
-      assert.equal(await page.locator("#listForm").isVisible(), true);
-    }
-    markRecordingStep("English results heading");
-    const englishSearch = path.join(revisionOutputDir, "work-log-search-english.png");
-    await capturePage(page, englishSearch);
-    screenshots["work-log-search-english"] = englishSearch;
-    if (recordVideo) {
-      await page.waitForTimeout(5000);
-    }
-    markRecordingStep("Search demonstration ends");
-    await page.locator('#ccxp-lite-work-log-nav [role="switch"]').click();
-    await page.locator('#ccxp-lite-work-log-sections input[value="add"]').check();
-    const departmentInput = page.locator('[name="KI_SRV_ID"]');
-    await departmentInput.fill("");
-    await departmentInput.focus();
-    const departmentScreenshot = path.join(revisionOutputDir, "work-log-department-results.png");
-    await capturePage(page, departmentScreenshot);
-    screenshots["work-log-department-results"] = departmentScreenshot;
-    await departmentInput.fill("EU0A");
-    const filteredScreenshot = path.join(revisionOutputDir, "work-log-department-filtered.png");
-    await capturePage(page, filteredScreenshot);
-    screenshots["work-log-department-filtered"] = filteredScreenshot;
-    await page.goto(`${ccxpOrigin}/ccxp/INQUIRE/select_entry.php?work-log`, {
-      waitUntil: "commit",
-    });
-    await page.waitForFunction((pathname) => {
-      const frame = document.querySelector('frame[name="main"]');
-      const doc = frame
-        ? (Reflect.get(frame, "contentDocument") as Document | undefined)
-        : undefined;
-      return doc?.location.pathname === pathname;
-    }, workLogPath);
-    const mainFrame = page.frames().find((frame) => frame.url().includes(workLogPath));
-    if (!mainFrame) {
-      throw new Error("Missing work-log main frame");
-    }
-    styles["work-log-framed-ready"] = await assertWorkLogReady(mainFrame);
-    await page.waitForFunction(
-      () => document.querySelector("frameset[cols]")?.getAttribute("cols") === "324,*",
-    );
-    await mainFrame.getByRole("button", { name: "\u591A\u65E5", exact: true }).click();
-    await mainFrame
-      .locator("#ccxp-lite-batch")
-      .getByLabel("\u7D50\u675F\u65E5\u671F", { exact: true })
-      .fill("2026-09-11");
-    const multiScreenshot = path.join(revisionOutputDir, "work-log-multiday.png");
-    await capturePage(page, multiScreenshot);
-    screenshots["work-log-multiday"] = multiScreenshot;
-    styles["work-log-multiday"] = await collectStyles(mainFrame, [
-      { name: "header", selector: "#ccxp-lite-work-log-nav", properties: visualProperties },
-      { name: "note", selector: '[name="I_TASK_NOTE"]', properties: visualProperties },
-      {
-        name: "submit",
-        selector: "#insTask .ccxp-lite-action-control-primary",
-        properties: visualProperties,
-      },
-    ]);
-    await mainFrame.locator('#insForm [name="S_SUBMIT"]').click();
-    await mainFrame.waitForFunction(
-      () =>
-        document.querySelector('[role="dialog"]') !== null ||
-        document.querySelector('[role="status"]')?.textContent.includes("\u6210\u529F 2 \u7B46"),
-    );
-    const submitScreenshot = path.join(revisionOutputDir, "work-log-submit.png");
-    await capturePage(page, submitScreenshot);
-    screenshots["work-log-submit"] = submitScreenshot;
-    if (recordVideo) {
-      await page.waitForTimeout(1000);
-    }
+    const searchFormBottom = await captureWorkLogPages();
     if (!workLogOnly) {
       await page.goto(
         `${ccxpOrigin}/ccxp/INQUIRE/select_entry.php?ACIXSTORE=fixture&hint=123456789`,
@@ -877,9 +895,8 @@ async function main() {
       process.stdout.write(`Visual differences acknowledged:\n${failures.join("\n")}\n`);
       return;
     }
-    throw new Error(
-      `Browser parity failed:\n${failures.map((failure) => `- ${failure}`).join("\n")}`,
-    );
+    const failureDetails = failures.map((failure) => `- ${failure}`).join("\n");
+    throw new Error(`Browser parity failed:\n${failureDetails}`);
   }
   process.stdout.write("Browser parity passed for screenshots and computed styles.\n");
 }
