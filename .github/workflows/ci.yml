@@ -27,7 +27,7 @@ jobs:
         run: bun run check
 
       - name: Install browser test runtime
-        run: bun node_modules/playwright/cli.js install --with-deps chromium
+        run: ./node_modules/.bin/playwright install --with-deps chromium
 
       - name: Test native work-log submissions
         run: bun run test:browser
@@ -70,7 +70,7 @@ jobs:
 
       - name: Install Chromium
         working-directory: head
-        run: bun node_modules/playwright/cli.js install --with-deps chromium
+        run: ./node_modules/.bin/playwright install --with-deps chromium
 
       - name: Build packaged extensions
         run: |
