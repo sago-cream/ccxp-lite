@@ -164,30 +164,33 @@
       };
     }
 
+    function decodeImageElement(image: HTMLImageElement) {
+      const width = image.naturalWidth > 0 ? image.naturalWidth : image.width;
+      const height = image.naturalHeight > 0 ? image.naturalHeight : image.height;
+      const canvas =
+        typeof OffscreenCanvas === "undefined"
+          ? runtimeScope.document.createElement("canvas")
+          : new OffscreenCanvas(width, height);
+      canvas.width = width;
+      canvas.height = height;
+      const context = canvas.getContext("2d", { willReadFrequently: true }) as
+        | OffscreenCanvasRenderingContext2D
+        | CanvasRenderingContext2D
+        | null;
+      if (!context) {
+        throw new Error("Failed to create 2d canvas context.");
+      }
+      context.drawImage(image, 0, 0);
+      return {
+        width,
+        height,
+        data: context.getImageData(0, 0, width, height).data,
+      };
+    }
+
     async function decodeImageData(imageBytes: unknown) {
       if (isCaptchaImageElement(imageBytes)) {
-        const image = imageBytes;
-        const width = image.naturalWidth > 0 ? image.naturalWidth : image.width;
-        const height = image.naturalHeight > 0 ? image.naturalHeight : image.height;
-        const canvas =
-          typeof OffscreenCanvas === "undefined"
-            ? runtimeScope.document.createElement("canvas")
-            : new OffscreenCanvas(width, height);
-        canvas.width = width;
-        canvas.height = height;
-        const context = canvas.getContext("2d", { willReadFrequently: true }) as
-          | OffscreenCanvasRenderingContext2D
-          | CanvasRenderingContext2D
-          | null;
-        if (!context) {
-          throw new Error("Failed to create 2d canvas context.");
-        }
-        context.drawImage(image, 0, 0);
-        return {
-          width,
-          height,
-          data: context.getImageData(0, 0, width, height).data,
-        };
+        return decodeImageElement(imageBytes);
       }
 
       const bytes = toUint8Array(imageBytes);
@@ -283,34 +286,43 @@
       const outWidth = Math.floor((inWidth + 2 * padding - kernelWidth) / stride) + 1;
       const out = new Float32Array(outChannels * outHeight * outWidth);
       const outChannelsPerGroup = outChannels / groups;
+      function convolvePixel(
+        outChannel: number,
+        inputChannelOffset: number,
+        inY0: number,
+        inX0: number,
+      ) {
+        let acc = bias ? bias.data[outChannel] : 0;
+        const firstY = Math.max(0, -inY0);
+        const lastY = Math.min(kernelHeight, inHeight - inY0);
+        const firstX = Math.max(0, -inX0);
+        const lastX = Math.min(kernelWidth, inWidth - inX0);
+        for (let channelIndex = 0; channelIndex < channelsPerGroup; channelIndex++) {
+          const inputChannel = inputChannelOffset + channelIndex;
+          for (let kernelY = firstY; kernelY < lastY; kernelY++) {
+            const inY = inY0 + kernelY;
+            for (let kernelX = firstX; kernelX < lastX; kernelX++) {
+              const inX = inX0 + kernelX;
+              acc +=
+                tensorGet(inputTensor, [inputChannel, inY, inX]) *
+                tensorGet(weight, [outChannel, channelIndex, kernelY, kernelX]);
+            }
+          }
+        }
+        return acc;
+      }
       let outIndex = 0;
       for (let outChannel = 0; outChannel < outChannels; outChannel++) {
         const groupIndex = Math.floor(outChannel / outChannelsPerGroup);
         const inputChannelOffset = groupIndex * channelsPerGroup;
         for (let outY = 0; outY < outHeight; outY++) {
           for (let outX = 0; outX < outWidth; outX++) {
-            let acc = bias ? bias.data[outChannel] : 0;
-            const inY0 = outY * stride - padding;
-            const inX0 = outX * stride - padding;
-            for (let channelIndex = 0; channelIndex < channelsPerGroup; channelIndex++) {
-              const inputChannel = inputChannelOffset + channelIndex;
-              for (let kernelY = 0; kernelY < kernelHeight; kernelY++) {
-                const inY = inY0 + kernelY;
-                if (inY < 0 || inY >= inHeight) {
-                  continue;
-                }
-                for (let kernelX = 0; kernelX < kernelWidth; kernelX++) {
-                  const inX = inX0 + kernelX;
-                  if (inX < 0 || inX >= inWidth) {
-                    continue;
-                  }
-                  acc +=
-                    tensorGet(inputTensor, [inputChannel, inY, inX]) *
-                    tensorGet(weight, [outChannel, channelIndex, kernelY, kernelX]);
-                }
-              }
-            }
-            out[outIndex] = acc;
+            out[outIndex] = convolvePixel(
+              outChannel,
+              inputChannelOffset,
+              outY * stride - padding,
+              outX * stride - padding,
+            );
             outIndex++;
           }
         }

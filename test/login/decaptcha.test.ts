@@ -3,6 +3,8 @@ import { describe, expect, test } from "vitest";
 
 import * as decaptchaModelModule from "../../src/login/auth/decaptcha.model.js";
 import * as decaptchaModule from "../../src/login/auth/decaptcha.js";
+import * as inquireDecaptchaModule from "../../src/inquire/decaptcha.js";
+import * as oauthDecaptchaModule from "../../src/oauth/decaptcha.js";
 
 globalThis.CCXP_LITE ??= {} as CcxpLiteNamespace;
 const namespace = globalThis.CCXP_LITE;
@@ -22,6 +24,8 @@ interface DecaptchaTest {
       b: CcxpLitePreparedTensor | undefined,
       o?: {
         groups?: number;
+        stride?: number;
+        padding?: number;
       },
     ) => CcxpLitePreparedTensor;
     batchnorm2d: (
@@ -54,6 +58,8 @@ describe("decaptcha model bootstrap", () => {
 describe("decaptcha runtime bootstrap", () => {
   test("registers the decaptcha API on the shared namespace", () => {
     expect(Object.keys(decaptchaModule)).toEqual([]);
+    expect(Object.keys(inquireDecaptchaModule)).toEqual([]);
+    expect(Object.keys(oauthDecaptchaModule)).toEqual([]);
     expect(decaptcha).toBeDefined();
     expect(typeof decaptcha.predictDigits).toBe("function");
   });
@@ -162,3 +168,23 @@ describe("decaptcha model parity", () => {
     expect(answer).toBe("077774");
   });
 });
+
+test.each([
+  ["legacy", namespace.decaptcha],
+  ["inquire", namespace.inquireDecaptcha],
+  ["oauth", namespace.oauthDecaptcha],
+] as const)(
+  "%s convolution preserves bias, stride and padded boundary cells",
+  (_kind, predictor) => {
+    const operations = (predictor as unknown as DecaptchaTest).__test;
+    const input = decaptcha.__test.createTensor(
+      [2, 2, 3],
+      [1, 2, 3, 4, 5, 6, 10, 20, 30, 40, 50, 60],
+    );
+    const weight = decaptcha.__test.createTensor([2, 1, 2, 2], [1, 2, 3, 4, 1, 2, 3, 4]);
+    const bias = decaptcha.__test.createTensor([2], [7, -2]);
+    const output = operations.conv2d(input, weight, bias, { groups: 2, stride: 2, padding: 1 });
+    expect(output.shape).toEqual([2, 2, 2]);
+    expect([...output.data]).toEqual([11, 25, 15, 24, 38, 178, 78, 168]);
+  },
+);
