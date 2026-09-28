@@ -245,6 +245,8 @@ test.each([
   ["https://ccxp.nthu.edu.tw", "https://ccxp.nthu.edu.tw/ccxp/INQUIRE/auth_img.php?pwdstr=abc"],
   ["https://www.ccxp.nthu.edu.tw", "//www.ccxp.nthu.edu.tw/ccxp/INQUIRE/auth_img.php?pwdstr=abc"],
   ["https://www.ccxp.nthu.edu.tw", "nested/../auth_img.php?pwdstr=abc"],
+  ["https://www.ccxp.nthu.edu.tw", "auth_img.php?pwdstr=%2F%2Fevil.example&v=a%26b#fragment"],
+  ["https://www.ccxp.nthu.edu.tw", "auth_img.php"],
 ])("downloads the canonical captcha URL on %s from %s", async (origin, source) => {
   const { window, input, fetch, predictDigits, bytes } = networkCaptcha(source, origin);
   await flushPromises();

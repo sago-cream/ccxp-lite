@@ -480,8 +480,12 @@
 
   async function downloadCaptchaImageBytes(targetDocument: Document, captchaSrc: string) {
     const captchaUrl = validateCaptchaDownloadUrl(targetDocument, captchaSrc);
+    const endpoint =
+      captchaUrl.origin === "https://ccxp.nthu.edu.tw"
+        ? "https://ccxp.nthu.edu.tw/ccxp/INQUIRE/auth_img.php"
+        : "https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/auth_img.php";
     return await fetchWithTimeout(
-      captchaUrl.toString(),
+      `${endpoint}${captchaUrl.search}${captchaUrl.hash}`,
       { credentials: "include", redirect: "error" },
       CAPTCHA_AUTOFILL_TIMEOUT_MS,
     ).then(async (response) => {
