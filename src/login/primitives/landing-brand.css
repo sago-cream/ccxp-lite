@@ -44,7 +44,7 @@
 .ccxp-lite-landing-brand-title {
   color: var(--ccxp-lite-type-display-color);
   font-family: var(--ccxp-lite-font-brand);
-  font-size: var(--ccxp-lite-font-size-sidebar-brand);
+  font-size: var(--ccxp-lite-font-size-sidebar-brand) !important;
   font-weight: var(--ccxp-lite-font-weight-regular);
   line-height: 1;
   letter-spacing: 0.01em;
@@ -131,7 +131,7 @@
 .ccxp-lite-landing-brand .ccxp-lite-sidebar-brand-title span {
   font: var(--ccxp-lite-font-weight-regular) var(--ccxp-lite-font-size-sidebar-brand) / 1
     var(--ccxp-lite-font-brand) !important;
-  letter-spacing: 0.01em !important;
+  letter-spacing: 0.01em;
 }
 
 .ccxp-lite-landing-brand .ccxp-lite-sidebar-brand-title {
@@ -150,7 +150,7 @@
 .ccxp-lite-landing-brand-partner-label {
   font: var(--ccxp-lite-font-weight-regular) var(--ccxp-lite-font-size-sidebar-brand) / 1
     var(--ccxp-lite-font-brand) !important;
-  letter-spacing: 0.01em !important;
+  letter-spacing: 0.01em;
 }
 
 .ccxp-lite-landing-brand,
@@ -160,12 +160,8 @@
 .ccxp-lite-landing-brand span {
   font: var(--ccxp-lite-font-weight-regular) var(--ccxp-lite-font-size-sidebar-brand) / 1
     var(--ccxp-lite-font-brand) !important;
-  letter-spacing: 0.01em !important;
+  letter-spacing: 0.01em;
   font-synthesis: none;
-}
-
-.ccxp-lite-landing-brand-title {
-  font-size: var(--ccxp-lite-font-size-sidebar-brand) !important;
 }
 
 .ccxp-lite-landing-header .ccxp-lite-landing-brand,
@@ -182,6 +178,6 @@
 .ccxp-lite-landing-header .ccxp-lite-landing-brand .ccxp-lite-landing-brand-partner-label {
   font: var(--ccxp-lite-font-weight-regular) var(--ccxp-lite-font-size-sidebar-brand) / 1
     var(--ccxp-lite-font-brand) !important;
-  letter-spacing: 0.01em !important;
+  letter-spacing: 0.01em;
   font-synthesis: none;
 }

@@ -234,8 +234,8 @@ test("groups populated records and preserves controls in expandable details", as
   loadModules(window, ["src/work-log/locale.ts"]);
   doc.dispatchEvent(new TestEvent("DOMContentLoaded"));
   const table = requireValue(doc.querySelector("table") ?? undefined);
-  expect(table.rows[0].cells.length).toBe(5);
-  expect(table.rows[1].cells.length).toBe(5);
+  expect(table.rows[0].cells).toHaveLength(5);
+  expect(table.rows[1].cells).toHaveLength(5);
   expect(table.rows[1].cells[1].textContent).toContain("09:00 - 12:00");
   expect(table.rows[1].cells[2].textContent).toContain("Sample work");
   const detail = requireValue(
@@ -277,7 +277,7 @@ test("supports results-only pages with merged total cells", async () => {
   loadModules(window, ["src/work-log/locale.ts"]);
   doc.dispatchEvent(new TestEvent("DOMContentLoaded"));
   const table = requireValue(doc.querySelector("table") ?? undefined);
-  expect(table.rows[0].cells.length).toBe(5);
+  expect(table.rows[0].cells).toHaveLength(5);
   expect(table.rows[1].cells[0].colSpan).toBe(5);
   expect(doc.querySelector(".ccxp-lite-record-totals")?.textContent).toContain("6");
   expect(doc.querySelector(".ccxp-lite-record-totals")?.textContent).toContain("0");
@@ -452,5 +452,39 @@ test("hides unsearched empty results and replaces the dated host caption", async
   expect(doc.querySelector<HTMLElement>("#listForm")?.hidden).toBe(true);
   expect(doc.querySelector<HTMLElement>("p.H12")?.hidden).toBe(true);
   expect(doc.querySelector("#listForm h2")?.textContent).toBe("\u641C\u5C0B\u7D50\u679C");
+  await window.happyDOM.close();
+});
+
+test("preserves bilingual labels with missing translations and nested separators", async () => {
+  const cases = [
+    ["EJ03 - \u4E2D\u6587 / Department", "EJ03 - \u4E2D\u6587", "EJ03 - Department"],
+    ["EJ03 - \u4E2D\u6587 / ", "EJ03 - \u4E2D\u6587", "EJ03 - English name unavailable"],
+    ["ABC - / English", "ABC -", "ABC -English"],
+    ["\u4E2D / EN / Other", "\u4E2D", "EN / Other"],
+    ["\u4E2D / EN\u4E2D / Last", "\u4E2D / EN\u4E2D", "Last"],
+    ["\u4E2D (EN (EN2))", "\u4E2D", "EN (EN2)"],
+    ["\uFF0D\u8ACB\u9078\u64C7(Please select)\uFF0D", "\uFF0D\u8ACB\u9078\u64C7", "Please select"],
+    ["\u4E2D / EN\nOther", "\u4E2D / EN\nOther", "\u4E2D / EN\nOther"],
+  ];
+  const { window } = createTestWindow('<div id="divTitle">Title</div><select></select>');
+  const doc = window.document as unknown as Document;
+  const select = requireValue(doc.querySelector("select") ?? undefined);
+  for (const [index, [original]] of cases.entries()) {
+    const option = doc.createElement("option");
+    option.value = String(index);
+    option.textContent = original;
+    select.append(option);
+  }
+  select.value = "3";
+  loadModules(window, ["src/work-log/locale.ts"]);
+  doc.dispatchEvent(new TestEvent("DOMContentLoaded"));
+  const readLabels = () => [...select.options].map((option) => option.textContent);
+  expect(readLabels()).toEqual(cases.map(([, zh]) => zh));
+  const toggle = requireValue(doc.querySelector<HTMLInputElement>('[role="switch"]') ?? undefined);
+  toggle.click();
+  expect(readLabels()).toEqual(cases.map((labels) => labels[2]));
+  expect(select.value).toBe("3");
+  toggle.click();
+  expect(readLabels()).toEqual(cases.map(([, zh]) => zh));
   await window.happyDOM.close();
 });

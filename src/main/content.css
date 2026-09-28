@@ -352,9 +352,6 @@ html[data-ccxp-lite-scope="main"]
 body.ccxp-lite-main-skin:has(.ccxp-home-header) {
   padding: 0;
 }
-.ccxp-home-content {
-  padding-inline: var(--ccxp-lite-spacing-lg);
-}
 .ccxp-home-info ul {
   margin: 0;
   padding: 0 0 0 20px;
@@ -364,9 +361,6 @@ body.ccxp-lite-main-skin:has(.ccxp-home-header) {
 }
 .ccxp-home-info li + li {
   margin-top: var(--ccxp-lite-spacing-inset-sm);
-}
-.ccxp-home-content {
-  padding-top: var(--ccxp-lite-spacing-md);
 }
 .ccxp-home-content p {
   font: var(--ccxp-lite-type-body-muted);

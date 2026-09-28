@@ -250,38 +250,44 @@
     "Work-study Student payment system in Secretary office",
   ]);
   const translations: Array<{ node: Text; labels: readonly [string, string] }> = [];
-  const walker = document.createTreeWalker(form, NodeFilter.SHOW_TEXT);
-  let current = walker.nextNode();
-  while (current) {
-    const node = current as Text;
-    if (
-      !node.parentElement?.closest(
-        "script, style, select, textarea, .k-grid, .k-animation-container",
-      )
-    ) {
-      const text = node.textContent.trim().replaceAll(/\s+/g, " ");
-      const labels = phrases.get(text);
-      if (labels) {
-        translations.push({ node, labels });
-      } else if (duplicateEnglish.has(text)) {
-        node.textContent = "";
+  collectTranslations(form);
+  function collectTranslations(targetForm: HTMLFormElement) {
+    const walker = document.createTreeWalker(targetForm, NodeFilter.SHOW_TEXT);
+    let current = walker.nextNode();
+    while (current) {
+      const node = current as Text;
+      if (
+        !node.parentElement?.closest(
+          "script, style, select, textarea, .k-grid, .k-animation-container",
+        )
+      ) {
+        const text = node.textContent.trim().replaceAll(/\s+/g, " ");
+        const labels = phrases.get(text);
+        if (labels) {
+          translations.push({ node, labels });
+        } else if (duplicateEnglish.has(text)) {
+          node.textContent = "";
+        }
       }
+      current = walker.nextNode();
     }
-    current = walker.nextNode();
   }
   // Mark only empty layout spacer columns. Host conditional controls keep their visibility.
-  for (const row of form.querySelectorAll<HTMLElement>(":scope > .row")) {
-    row.classList.add("ccxp-registration-row");
-    for (const column of row.querySelectorAll<HTMLElement>(":scope > .col")) {
-      if (
-        column.textContent.trim() === "" &&
-        !column.querySelector("input, select, textarea, button, a, [id]")
-      ) {
-        column.classList.add("ccxp-registration-spacer");
-      } else {
-        column.classList.add("ccxp-registration-field");
-        if (column.classList.contains("s8") || column.classList.contains("s12")) {
-          column.classList.add("ccxp-registration-wide");
+  markLayoutColumns(form);
+  function markLayoutColumns(targetForm: HTMLFormElement) {
+    for (const row of targetForm.querySelectorAll<HTMLElement>(":scope > .row")) {
+      row.classList.add("ccxp-registration-row");
+      for (const column of row.querySelectorAll<HTMLElement>(":scope > .col")) {
+        if (
+          column.textContent.trim() === "" &&
+          !column.querySelector("input, select, textarea, button, a, [id]")
+        ) {
+          column.classList.add("ccxp-registration-spacer");
+        } else {
+          column.classList.add("ccxp-registration-field");
+          if (column.classList.contains("s8") || column.classList.contains("s12")) {
+            column.classList.add("ccxp-registration-wide");
+          }
         }
       }
     }
@@ -291,29 +297,45 @@
     tagline.setAttribute("role", "heading");
     tagline.setAttribute("aria-level", "2");
   }
-  const choices = form.querySelector("#I_SYS_2")?.closest<HTMLElement>(".row");
-  if (choices) {
-    choices.classList.add("ccxp-registration-choices");
-    const hint = choices.querySelector<HTMLAnchorElement>('a[href="#!"]');
-    if (hint) {
-      const help = document.createElement("div");
-      help.className = "ccxp-registration-choice-help";
-      help.append(hint);
-      choices.before(help);
-    }
-    for (const spacer of choices.querySelectorAll<HTMLElement>(".col > div")) {
-      if (spacer.textContent.trim() === "" && spacer.children.length === 0) {
-        spacer.classList.add("ccxp-registration-spacer");
+  preparePaymentChoices(form);
+  function preparePaymentChoices(targetForm: HTMLFormElement) {
+    const choices = targetForm.querySelector("#I_SYS_2")?.closest<HTMLElement>(".row");
+    if (choices) {
+      choices.classList.add("ccxp-registration-choices");
+      const hint = choices.querySelector<HTMLAnchorElement>('a[href="#!"]');
+      if (hint) {
+        const help = document.createElement("div");
+        help.className = "ccxp-registration-choice-help";
+        help.append(hint);
+        choices.before(help);
+      }
+      for (const spacer of choices.querySelectorAll<HTMLElement>(".col > div")) {
+        if (spacer.textContent.trim() === "" && spacer.children.length === 0) {
+          spacer.classList.add("ccxp-registration-spacer");
+        }
       }
     }
   }
   // Give generated Kendo inputs the same accessible name as their original selects.
-  for (const id of ["PJ_LEADER", "I_SRV"]) {
-    const label = form.querySelector<HTMLLabelElement>(`label[for="${id}"]`);
-    const input = form.querySelector<HTMLInputElement>(`input[name="${id}_input"]`);
-    if (label && input) {
-      label.id ||= `ccxp-registration-label-${id}`;
-      input.setAttribute("aria-labelledby", label.id);
+  labelGeneratedInputs(form);
+  function labelGeneratedInputs(targetForm: HTMLFormElement) {
+    for (const id of ["PJ_LEADER", "I_SRV"]) {
+      const label = targetForm.querySelector<HTMLLabelElement>(`label[for="${id}"]`);
+      const input = targetForm.querySelector<HTMLInputElement>(`input[name="${id}_input"]`);
+      if (label && input) {
+        label.id ||= `ccxp-registration-label-${id}`;
+        input.setAttribute("aria-labelledby", label.id);
+      }
+    }
+  }
+
+  function renderNavigationCaptions() {
+    for (const [index, caption] of captions.entries()) {
+      if (index < navLabels.length) {
+        const label = navLabels[index][english ? 1 : 0];
+        caption.textContent = label;
+        links[index].setAttribute("aria-label", label);
+      }
     }
   }
   const render = () => {
@@ -328,7 +350,7 @@
     if (detail && detailPlaceholder !== null && detailPlaceholder !== undefined) {
       detail.placeholder = english
         ? detailPlaceholder
-        : detailPlaceholder.replace(/\s*\(limit 100 words\)/i, "");
+        : detailPlaceholder.replace(/(?<!\s)\s*\(limit 100 words\)/i, "");
     }
     infoCaption.textContent = english ? "Reminders" : "\u63D0\u9192";
     infoButton.setAttribute(
@@ -338,13 +360,7 @@
     for (const { node, labels } of translations) {
       node.textContent = labels[english ? 1 : 0];
     }
-    for (const [index, caption] of captions.entries()) {
-      if (index < navLabels.length) {
-        const label = navLabels[index][english ? 1 : 0];
-        caption.textContent = label;
-        links[index].setAttribute("aria-label", label);
-      }
-    }
+    renderNavigationCaptions();
     document.documentElement.dataset.ccxpRegistrationLanguage = english ? "en" : "zh";
   };
   language.addEventListener("change", () => {

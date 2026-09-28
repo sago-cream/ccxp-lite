@@ -121,9 +121,18 @@
     actionName: string,
     actionValue?: string,
   ): unknown {
-    if (pendingSubmission) {
-      return false;
+    if (!pendingSubmission) {
+      startTransportSubmission(originalToSubmit, form, actionName, actionValue);
     }
+    return false;
+  }
+
+  function startTransportSubmission(
+    originalToSubmit: CcxpLiteWrappedSubmit,
+    form: HTMLFormElement,
+    actionName: string,
+    actionValue?: string,
+  ) {
     const transportFrame = ensureTransportFrame();
     const snapshot = captureSnapshot(form, actionName);
     pendingSubmission = {
@@ -174,7 +183,6 @@
         undefined,
       );
     }
-    return false;
   }
 
   function ensureTransportFrame() {
