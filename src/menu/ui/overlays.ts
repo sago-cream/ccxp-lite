@@ -60,7 +60,7 @@
         const preview = new TextDecoder().decode(bytes);
         const charset =
           response.headers.get("content-type")?.match(/charset\s*=\s*["']?([\w-]+)/iu)?.[1] ??
-          preview.match(/<meta[^>]+charset\s*=\s*["']?([\w-]+)/iu)?.[1] ??
+          /<meta[^>]+charset\s*=\s*["']?([\w-]+)/iu.exec(preview)?.[1] ??
           "utf8";
         const page = new DOMParser().parseFromString(
           new TextDecoder(charset).decode(bytes),

@@ -205,7 +205,7 @@
           ) => void;
         }
       ).get([LEGACY_FAVORITES_STORAGE_KEY], (result: Readonly<Record<string, unknown>>) => {
-        if (runtime && runtime.lastError) {
+        if (runtime?.lastError) {
           resolve(new Set<string>());
           return;
         }
@@ -676,7 +676,7 @@
       return true;
     }
     const parsedFavoriteId = parseVersionedFavoriteId(favoriteId);
-    if (!parsedFavoriteId || parsedFavoriteId.version !== "v4") {
+    if (parsedFavoriteId?.version !== "v4") {
       return false;
     }
     if (
@@ -837,11 +837,12 @@
       const normalizedPath = url.pathname.replaceAll(/\/+/g, "/");
       const normalizedQuery = url.searchParams.toString();
       const normalizedHash = url.hash;
-      return `${normalizedPath}${normalizedQuery === "" ? "" : `?${normalizedQuery}`}${normalizedHash}`;
+      const querySuffix = normalizedQuery === "" ? "" : `?${normalizedQuery}`;
+      return `${normalizedPath}${querySuffix}${normalizedHash}`;
     } catch {
       return value
         .replaceAll(/([&?])(acixstore|sid|session|phpsessid|token|_|t)=[^#&]*/gi, "$1")
-        .replace(/[&?]+$/, "")
+        .replace(/(?<![&?])[&?]+$/, "")
         .replaceAll(/[&?]{2,}/g, "&")
         .replace("?&", "?");
     }

@@ -49,7 +49,7 @@
       loginLib.preloadCaptcha(document);
       simplifyLoginPage(document, {
         retry,
-        onReady: markLoginReady,
+        onReady: markStandaloneReady,
       });
       return;
     }
@@ -61,7 +61,7 @@
           return;
         }
         simplifyMainDocument(document);
-        markStandaloneMainReady();
+        markStandaloneReady();
         return;
       }
       if (!sidebar) {
@@ -131,7 +131,7 @@
     if (!loadingState || loadingState.released) {
       return;
     }
-    const navDocument = navFrame && navFrame.contentDocument;
+    const navDocument = navFrame?.contentDocument;
     const navBody = navDocument?.querySelector("body");
     if (navBody?.dataset.ccxpLiteSidebarApplied === "true") {
       loadingState.navReady = true;
@@ -147,16 +147,7 @@
     tryReleaseLoadingSprite();
   }
 
-  function markLoginReady() {
-    if (!loadingState || loadingState.released) {
-      return;
-    }
-    loadingState.navReady = true;
-    loadingState.mainReady = true;
-    tryReleaseLoadingSprite();
-  }
-
-  function markStandaloneMainReady() {
+  function markStandaloneReady() {
     if (!loadingState || loadingState.released) {
       return;
     }
@@ -284,7 +275,7 @@
   }
 
   function simplifyMainFrame(mainFrame: HTMLIFrameElement | undefined) {
-    const mainDocument = mainFrame && mainFrame.contentDocument;
+    const mainDocument = mainFrame?.contentDocument;
     if (!mainDocument) {
       return;
     }

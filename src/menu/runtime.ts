@@ -270,7 +270,7 @@
       helperUrl.searchParams.set("ACIXSTORE", readAcixstore(navDocument.location.href));
       helperUrl.searchParams.set("name", linkItem.clickLinkArgs.name);
       helperUrl.searchParams.set("url", linkItem.clickLinkArgs.url);
-      if (helperFrame && helperFrame.contentWindow) {
+      if (helperFrame?.contentWindow) {
         const helperWindow = helperFrame.contentWindow;
         helperWindow.location.replace(helperUrl.toString());
       } else if (helperFrame) {

@@ -58,11 +58,7 @@ export function LocalizedDocsContainer(props: PropsWithChildren<DocsContainerPro
 
 export function LocalizedMarkdown({ zh, en }: { zh: string; en: string }) {
   const locale = useContext(LocaleContext);
-  return createElement(
-    Markdown,
-    { children: locale === "en" ? en : zh },
-    locale === "en" ? en : zh,
-  );
+  return createElement(Markdown, undefined, locale === "en" ? en : zh);
 }
 
 export function LocalizedDocsPage() {
@@ -78,7 +74,7 @@ export function LocalizedDocsPage() {
     const english = parameters.docs?.description?.[kind];
     const chinese = parameters.i18n?.description?.[kind];
     const text = locale === "en" ? english : (chinese ?? english);
-    return text === undefined ? undefined : createElement(Markdown, { children: text }, text);
+    return text === undefined ? undefined : createElement(Markdown, undefined, text);
   };
   const title = first.title.split("/").at(-1) ?? first.title;
   return createElement(

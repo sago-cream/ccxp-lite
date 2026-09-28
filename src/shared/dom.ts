@@ -13,7 +13,7 @@
   }
 
   function removeNode(node: ChildNode | undefined) {
-    if (node && node.parentNode) {
+    if (node?.parentNode) {
       node.remove();
     }
   }
@@ -123,12 +123,11 @@
   }
 
   function invalidateContext() {
-    if (namespace.isOrphan === true) {
-      return false;
+    if (namespace.isOrphan !== true) {
+      namespace.isOrphan = true;
+      triggerCleanup();
+      scheduleOrphanReload();
     }
-    namespace.isOrphan = true;
-    triggerCleanup();
-    scheduleOrphanReload();
     return false;
   }
 

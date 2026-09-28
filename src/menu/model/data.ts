@@ -201,34 +201,15 @@
           }
           const candidateLinkKeys = linkKeySets[candidateIndex];
           const candidateLinkLabels = linkLabelSets[candidateIndex];
-          const candidateInsideBlockByKey = isLinkKeySubset(candidateLinkKeys, blockLinkKeys);
-          const candidateInsideBlockByLabel = isLinkKeySubset(candidateLinkLabels, blockLinkLabels);
-          const blockInsideCandidateByKey = isLinkKeySubset(blockLinkKeys, candidateLinkKeys);
-          const blockInsideCandidateByLabel = isLinkKeySubset(blockLinkLabels, candidateLinkLabels);
-          const isExactDuplicateSet =
-            candidate.links.length === block.links.length &&
-            ((candidateLinkKeys.size === blockLinkKeys.size && candidateInsideBlockByKey) ||
-              (candidateLinkLabels.size === blockLinkLabels.size && candidateInsideBlockByLabel));
           if (
-            (candidateLinkKeys.size === 0 && candidateLinkLabels.size === 0) ||
-            (!candidateInsideBlockByKey &&
-              !candidateInsideBlockByLabel &&
-              !blockInsideCandidateByKey &&
-              !blockInsideCandidateByLabel) ||
-            (candidate.links.length > block.links.length &&
-              !isExactDuplicateSet &&
-              !blockInsideCandidateByKey &&
-              !blockInsideCandidateByLabel) ||
-            (candidate.links.length > block.links.length &&
-              !isExactDuplicateSet &&
-              !hasNestedOverlapWithinBlock(
-                block,
-                candidate,
-                candidateLinkKeys,
-                candidateLinkLabels,
-              )) ||
-            (candidate.links.length === block.links.length &&
-              getBlockSpecificityScore(candidate) <= getBlockSpecificityScore(block))
+            !shouldPruneOverlap(
+              block,
+              candidate,
+              blockLinkKeys,
+              blockLinkLabels,
+              candidateLinkKeys,
+              candidateLinkLabels,
+            )
           ) {
             continue;
           }
@@ -252,6 +233,40 @@
       })
       .filter((block) => block.links.length > 0);
     return dedupeBlockItems(prunedBlocks);
+  }
+
+  function shouldPruneOverlap(
+    block: CcxpLiteSidebarBlock,
+    candidate: CcxpLiteSidebarBlock,
+    blockLinkKeys: ReadonlySet<string>,
+    blockLinkLabels: ReadonlySet<string>,
+    candidateLinkKeys: ReadonlySet<string>,
+    candidateLinkLabels: ReadonlySet<string>,
+  ) {
+    const candidateInsideBlockByKey = isLinkKeySubset(candidateLinkKeys, blockLinkKeys);
+    const candidateInsideBlockByLabel = isLinkKeySubset(candidateLinkLabels, blockLinkLabels);
+    const blockInsideCandidateByKey = isLinkKeySubset(blockLinkKeys, candidateLinkKeys);
+    const blockInsideCandidateByLabel = isLinkKeySubset(blockLinkLabels, candidateLinkLabels);
+    const isExactDuplicateSet =
+      candidate.links.length === block.links.length &&
+      ((candidateLinkKeys.size === blockLinkKeys.size && candidateInsideBlockByKey) ||
+        (candidateLinkLabels.size === blockLinkLabels.size && candidateInsideBlockByLabel));
+    return !(
+      (candidateLinkKeys.size === 0 && candidateLinkLabels.size === 0) ||
+      (!candidateInsideBlockByKey &&
+        !candidateInsideBlockByLabel &&
+        !blockInsideCandidateByKey &&
+        !blockInsideCandidateByLabel) ||
+      (candidate.links.length > block.links.length &&
+        !isExactDuplicateSet &&
+        !blockInsideCandidateByKey &&
+        !blockInsideCandidateByLabel) ||
+      (candidate.links.length > block.links.length &&
+        !isExactDuplicateSet &&
+        !hasNestedOverlapWithinBlock(block, candidate, candidateLinkKeys, candidateLinkLabels)) ||
+      (candidate.links.length === block.links.length &&
+        getBlockSpecificityScore(candidate) <= getBlockSpecificityScore(block))
+    );
   }
 
   function isLinkKeySubset(
@@ -384,47 +399,23 @@
       .replaceAll(/([\dA-Za-z])([\u4E00-\u9FFF])/g, "$1 $2")
       .replaceAll(/[()\uFF08\uFF09]/g, " ")
       .replaceAll(/[&,]/g, " ")
-      .replaceAll(/\s*\/\s*/g, " ")
+      .replaceAll("/", " ")
       .replaceAll(/\s+/g, " ")
       .trim();
   }
 
   function collectSidebarLabels(item: CcxpLiteSidebarTreeNode): readonly string[] {
-    const labels: string[] = [];
     if (item.kind === "link") {
-      const itemLabel = normalizeSidebarLabel(item.label);
-      if (itemLabel !== "") {
-        labels.push(itemLabel);
-      }
-      for (const pathSegment of item.linkItem.pathSegments ?? []) {
-        const normalizedPathSegment = normalizeSidebarLabel(pathSegment);
-        if (normalizedPathSegment !== "") {
-          labels.push(normalizedPathSegment);
-        }
-      }
-      return labels;
-    }
-    const itemLabel = normalizeSidebarLabel(item.label);
-    if (itemLabel !== "") {
-      labels.push(itemLabel);
+      return [item.label, ...(item.linkItem.pathSegments ?? [])]
+        .map(normalizeSidebarLabel)
+        .filter((label) => label !== "");
     }
     const links =
       item.kind === "block"
         ? item.links
         : [...(item.links ?? []), ...item.blocks.flatMap((block) => block.links)];
-    for (const linkItem of links) {
-      const linkLabel = normalizeSidebarLabel(linkItem.label);
-      if (linkLabel !== "") {
-        labels.push(linkLabel);
-      }
-      for (const pathSegment of linkItem.pathSegments ?? []) {
-        const normalizedPathSegment = normalizeSidebarLabel(pathSegment);
-        if (normalizedPathSegment !== "") {
-          labels.push(normalizedPathSegment);
-        }
-      }
-    }
-    return labels;
+    const nestedLabels = links.flatMap((link) => [link.label, ...(link.pathSegments ?? [])]);
+    return [item.label, ...nestedLabels].map(normalizeSidebarLabel).filter((label) => label !== "");
   }
 
   function isSidebarLabelMatch(candidateLabel: string, normalizedCategoryLabel: string) {
@@ -910,8 +901,8 @@
     href: string;
     target: string;
   } {
-    const hrefMatch = rawLink.match(/^'([^']+)'/);
-    const targetMatch = rawLink.match(/target="?([^\s"]+)"?/i);
+    const hrefMatch = /^'([^']+)'/.exec(rawLink);
+    const targetMatch = /target="?([^\s"]+)"?/i.exec(rawLink);
     return {
       href: hrefMatch ? hrefMatch[1] : "",
       target: targetMatch ? targetMatch[1] : "main",
@@ -924,7 +915,7 @@
         url: string;
       }
     | undefined {
-    const match = rawHtml.match(/ClickLink\("([^"]+)","([^"]+)"\)/);
+    const match = /ClickLink\("([^"]+)","([^"]+)"\)/.exec(rawHtml);
     if (!match) {
       return undefined;
     }
@@ -1099,12 +1090,12 @@
       String.raw`^insDoc\s*\(\s*(\w+)\s*,\s*gLnk\s*\(\s*([^,]+?)\s*,\s*(${stringPattern})\s*,\s*(${stringPattern})\s*\)\s*\)$`,
     );
     for (const statement of statements) {
-      const rootMatch = statement.match(rootRegex);
+      const rootMatch = rootRegex.exec(statement);
       if (rootMatch) {
         root.desc = parseJsStringLiteral(rootMatch[1]);
         continue;
       }
-      const folderMatch = statement.match(folderRegex);
+      const folderMatch = folderRegex.exec(statement);
       if (folderMatch) {
         const [, variableName, parentName, descLiteral] = folderMatch;
         const folderNode = { desc: parseJsStringLiteral(descLiteral), children: [] };
@@ -1115,7 +1106,7 @@
         }
         continue;
       }
-      const docMatch = statement.match(docRegex);
+      const docMatch = docRegex.exec(statement);
       if (docMatch) {
         const [, parentName, targetToken, descLiteral, hrefLiteral] = docMatch;
         const parentNode = nodes.get(parentName);

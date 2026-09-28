@@ -20,7 +20,7 @@ export function mountInfoPopoverContent(
 ): CcxpLiteMounted<HTMLSpanElement> {
   const dom = createRenderer(targetDocument);
   const controller = createController(targetDocument);
-  const popupId = `ccxp-lite-info-popup-${Math.random().toString(36).slice(2, 10)}`;
+  const popupId = `ccxp-lite-info-popup-${globalThis.crypto.randomUUID()}`;
   const button = dom.element(
     "button",
     {

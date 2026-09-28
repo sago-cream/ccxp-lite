@@ -97,7 +97,7 @@ export function mountSearchSelect(
       syncInput();
       return;
     }
-    const selected = options.find(({ option }) => option.value === select.value);
+    const selected = options.some(({ option }) => option.value === select.value);
     const query = selected && input.value === displayedValue ? "" : normalize(input.value);
     matches = options.filter(({ option, text }) =>
       normalize(`${option.value} ${text}`).includes(query),

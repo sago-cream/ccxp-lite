@@ -12,7 +12,7 @@ import {
 
 function stableMarkup(node: Element): string {
   return node.outerHTML
-    .replaceAll(/ccxp-lite-info-popup-[\da-z]+/g, "ccxp-lite-info-popup-ID")
+    .replaceAll(/ccxp-lite-info-popup-[\da-z-]+/g, "ccxp-lite-info-popup-ID")
     .replaceAll(/[\t ]+\n/g, "\n");
 }
 

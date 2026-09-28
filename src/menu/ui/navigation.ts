@@ -27,6 +27,15 @@
   const { createFavoriteToggle, createBlockFavoriteToggle } = namespace.sidebarFavoriteControls;
   const { createClassicViewModel } = namespace.sidebarNavigationAdapter;
 
+  interface ClassicSidebarContext {
+    targetDocument: Document;
+    navDocument: Document;
+    expandedItemIds: ReadonlySet<string>;
+    strings: Readonly<Record<string, string>>;
+    state: CcxpLiteSidebarState;
+    rerender: () => void;
+  }
+
   const categoryIcons = new WeakMap<Document, Map<string, string>>();
 
   function createClassicSidebarView(
@@ -66,19 +75,9 @@
       );
       return sidebarList;
     }
+    const context = { targetDocument, navDocument, expandedItemIds, strings, state, rerender };
     for (const item of items) {
-      sidebarList.append(
-        createClassicSidebarNode(
-          targetDocument,
-          navDocument,
-          item,
-          expandedItemIds,
-          0,
-          strings,
-          state,
-          rerender,
-        ),
-      );
+      sidebarList.append(createClassicSidebarNode(context, item, 0));
     }
     const nextState = state;
     nextState.classicExpandedItemIds = [...expandedItemIds];
@@ -86,39 +85,15 @@
   }
 
   function createClassicSidebarNode(
-    targetDocument: Document,
-    navDocument: Document,
+    context: ClassicSidebarContext,
     group: CcxpLiteSidebarCategoryNode | CcxpLiteSidebarBlock,
-    expandedItemIds: ReadonlySet<string>,
     depth: number,
-    strings: Readonly<Record<string, string>>,
-    state: CcxpLiteSidebarState,
-    rerender: () => void,
   ) {
+    const { targetDocument, expandedItemIds } = context;
     const isExpanded = expandedItemIds.has(group.id);
     const dom = createRenderer(targetDocument);
-    const button = createClassicGroupButton(
-      targetDocument,
-      group,
-      expandedItemIds,
-      depth,
-      isExpanded,
-      strings,
-      state,
-      rerender,
-    );
-    const children = isExpanded
-      ? createClassicGroupChildren(
-          targetDocument,
-          navDocument,
-          group,
-          expandedItemIds,
-          depth,
-          strings,
-          state,
-          rerender,
-        )
-      : undefined;
+    const button = createClassicGroupButton(context, group, depth, isExpanded);
+    const children = isExpanded ? createClassicGroupChildren(context, group, depth) : undefined;
     return dom.element(
       "div",
       {
@@ -129,15 +104,12 @@
   }
 
   function createClassicGroupButton(
-    targetDocument: Document,
+    context: ClassicSidebarContext,
     group: CcxpLiteSidebarCategoryNode | CcxpLiteSidebarBlock,
-    expandedItemIds: ReadonlySet<string>,
     depth: number,
     isExpanded: boolean,
-    strings: Readonly<Record<string, string>>,
-    state: CcxpLiteSidebarState,
-    rerender: () => void,
   ) {
+    const { targetDocument, expandedItemIds, strings, state, rerender } = context;
     const dom = createRenderer(targetDocument);
     const button = createButton(targetDocument, {
       className: "ccxp-lite-row-button ccxp-lite-expandable",
@@ -177,15 +149,11 @@
   }
 
   function createClassicGroupChildren(
-    targetDocument: Document,
-    navDocument: Document,
+    context: ClassicSidebarContext,
     group: CcxpLiteSidebarCategoryNode | CcxpLiteSidebarBlock,
-    expandedItemIds: ReadonlySet<string>,
     depth: number,
-    strings: Readonly<Record<string, string>>,
-    state: CcxpLiteSidebarState,
-    rerender: () => void,
   ) {
+    const { targetDocument, navDocument, strings, rerender } = context;
     const children = createRenderer(targetDocument).element("div", {
       className: "ccxp-lite-link-list ccxp-lite-link-list-layer",
       attributes: { "data-guide-anchor": "icon" },
@@ -215,18 +183,7 @@
         );
       }
       for (const block of group.blocks) {
-        children.append(
-          createClassicSidebarNode(
-            targetDocument,
-            navDocument,
-            block,
-            expandedItemIds,
-            depth + 1,
-            strings,
-            state,
-            rerender,
-          ),
-        );
+        children.append(createClassicSidebarNode(context, block, depth + 1));
       }
     } else {
       for (const linkItem of group.links) {
