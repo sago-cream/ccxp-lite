@@ -166,6 +166,10 @@
         [mode],
       ),
     );
+    for (const link of app.shared?.createSupportLinks(targetDocument) ?? []) {
+      link.className = "ccxp-lite-profile-link";
+      popup.append(link);
+    }
     const shell = targetDocument.querySelector<HTMLElement>(".ccxp-lite-sidebar-shell");
     const logoutUrl = shell?.dataset.ccxpLiteLogoutUrl;
     if (logoutUrl !== undefined && logoutUrl !== "") {
@@ -173,7 +177,7 @@
         dom.element(
           "a",
           {
-            className: "ccxp-lite-profile-logout",
+            className: "ccxp-lite-profile-link ccxp-lite-profile-logout",
             attributes: { href: logoutUrl, target: "_top" },
           },
           [

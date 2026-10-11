@@ -392,7 +392,7 @@
 }
 .ccxp-lite-profile-popover > .ccxp-lite-profile-logout,
 .ccxp-lite-profile-popover
-  > .ccxp-lite-profile-logout:is(:link, :visited, :hover, :active, :focus-visible) {
+  > .ccxp-lite-profile-link:is(:link, :visited, :hover, :active, :focus-visible) {
   position: static;
   inset: auto;
   transform: none;
@@ -416,7 +416,7 @@
   height: 16px;
   flex-shrink: 0;
 }
-.ccxp-lite-profile-logout:hover {
+.ccxp-lite-profile-link:hover {
   background: var(--ccxp-lite-surface-muted);
 }
 @media (max-width: 760px) {
@@ -468,4 +468,9 @@
 
 [data-ccxp-lite-order-drop="after"] {
   box-shadow: inset 0 -2px var(--ccxp-lite-primary-focus-border);
+}
+
+.ccxp-lite-profile-link:focus-visible {
+  outline: 2px solid var(--ccxp-lite-primary-focus-border);
+  outline-offset: -2px;
 }
