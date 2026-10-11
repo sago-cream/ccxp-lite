@@ -32,6 +32,11 @@
       sidebarAddFavorite: "Add to favorites",
       sidebarRemoveFavorite: "Remove from favorites",
       sidebarReorderHint: "Drag to reorder; Alt+Shift+arrow keys to move",
+      sidebarRestoreOrder: "Restore original order",
+      sidebarRestoreOrderDialogTitle: "Restore original menu order?",
+      sidebarRestoreOrderDialogDescription:
+        "All categories, groups, links, and pinned items will return to their original order. Your pinned items will be kept.",
+      sidebarRestoreOrderDialogCancel: "Cancel",
       announcementDate: "Date",
       announcementTopic: "Topic",
       playVerificationAudio: "Play verification audio",
@@ -119,6 +124,12 @@
       sidebarRemoveFavorite: "\u79FB\u9664\u5E38\u7528\u529F\u80FD",
       sidebarReorderHint:
         "\u62D6\u66F3\u4EE5\u8ABF\u6574\u9806\u5E8F\uFF1BAlt+Shift+\u65B9\u5411\u9375\u79FB\u52D5",
+      sidebarRestoreOrder: "\u9084\u539F\u539F\u59CB\u9806\u5E8F",
+      sidebarRestoreOrderDialogTitle:
+        "\u9084\u539F\u9078\u55AE\u7684\u539F\u59CB\u9806\u5E8F\uFF1F",
+      sidebarRestoreOrderDialogDescription:
+        "\u6240\u6709\u5206\u985E\u3001\u7FA4\u7D44\u3001\u9023\u7D50\u53CA\u5E38\u7528\u529F\u80FD\u5C07\u9084\u539F\u70BA\u539F\u59CB\u9806\u5E8F\u3002\u5DF2\u52A0\u5165\u7684\u5E38\u7528\u529F\u80FD\u6703\u4FDD\u7559\u3002",
+      sidebarRestoreOrderDialogCancel: "\u53D6\u6D88",
       announcementDate: "\u65E5\u671F",
       announcementTopic: "\u65B0\u805E\u4E3B\u984C",
       playVerificationAudio: "\u64AD\u653E\u9A57\u8B49\u78BC\u8A9E\u97F3",

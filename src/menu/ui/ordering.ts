@@ -47,6 +47,15 @@
     return [...saved, ...ids.filter((id) => !savedIds.has(id))];
   }
 
+  function restoreOriginalOrder() {
+    savedOrders = new Map();
+    try {
+      globalScope.localStorage.removeItem(STORAGE_KEY);
+    } catch {
+      // Restore the default order for this session when storage is unavailable.
+    }
+  }
+
   function getSiblingIds(
     model: CcxpLiteSidebarModel,
     layered: boolean,
@@ -267,5 +276,5 @@
     }
   }
 
-  namespace.sidebarOrdering = { mountSidebarOrdering };
+  namespace.sidebarOrdering = { mountSidebarOrdering, restoreOriginalOrder };
 })(globalThis);

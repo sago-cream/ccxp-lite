@@ -89,7 +89,12 @@ test("packaged headers omit ccxpLite and profile menus expose support links", as
       }
       const preferences = popup.getByRole("region", { name: "\u504F\u597D\u8A2D\u5B9A" });
       const support = popup.getByRole("region", { name: "\u652F\u63F4\u8207\u9023\u7D50" });
-      expect(await preferences.getByRole("button").count()).toBe(2);
+      expect(await preferences.getByRole("button").count()).toBe(3);
+      expect(
+        await preferences
+          .getByRole("button", { name: "\u9084\u539F\u539F\u59CB\u9806\u5E8F", exact: true })
+          .count(),
+      ).toBe(1);
       expect(await preferences.getByRole("link").count()).toBe(0);
       expect(await support.getByRole("link").count()).toBe(2);
       const mode = preferences.locator("#ccxp-lite-profile-mode");
@@ -109,6 +114,12 @@ test("packaged headers omit ccxpLite and profile menus expose support links", as
           : "\u986F\u793A\u767B\u51FA\u5012\u6578",
       );
       await timerToggle.press("Tab");
+      const restoreOrder = preferences.getByRole("button", {
+        name: "\u9084\u539F\u539F\u59CB\u9806\u5E8F",
+        exact: true,
+      });
+      expect(await restoreOrder.evaluate((button) => button === document.activeElement)).toBe(true);
+      await restoreOrder.press("Tab");
       const repo = popup.getByRole("link", { name: "ccxpLite", exact: true });
       const report = popup.getByRole("link", { name: "\u554F\u984C\u56DE\u5831", exact: true });
       expect(await repo.getAttribute("href")).toBe("https://github.com/sago-cream/ccxp-lite");
@@ -134,7 +145,7 @@ test("packaged headers omit ccxpLite and profile menus expose support links", as
             };
           }),
         );
-      expect(rows).toHaveLength(5);
+      expect(rows).toHaveLength(6);
       for (const row of rows) {
         expect(row.iconTag).toBe("svg");
         expect(row.iconHidden).toBe("true");
