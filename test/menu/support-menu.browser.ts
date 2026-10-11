@@ -92,7 +92,7 @@ test("packaged headers omit ccxpLite and profile menus expose support links", as
       expect(await preferences.getByRole("button").count()).toBe(3);
       expect(
         await preferences
-          .getByRole("button", { name: "\u9084\u539F\u539F\u59CB\u9806\u5E8F", exact: true })
+          .getByRole("button", { name: "\u9084\u539F\u9762\u677F\u6392\u5E8F", exact: true })
           .count(),
       ).toBe(1);
       expect(await preferences.getByRole("link").count()).toBe(0);
@@ -115,7 +115,7 @@ test("packaged headers omit ccxpLite and profile menus expose support links", as
       );
       await timerToggle.press("Tab");
       const restoreOrder = preferences.getByRole("button", {
-        name: "\u9084\u539F\u539F\u59CB\u9806\u5E8F",
+        name: "\u9084\u539F\u9762\u677F\u6392\u5E8F",
         exact: true,
       });
       expect(await restoreOrder.evaluate((button) => button === document.activeElement)).toBe(true);

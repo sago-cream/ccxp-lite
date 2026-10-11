@@ -124,7 +124,7 @@
       sidebarRemoveFavorite: "\u79FB\u9664\u5E38\u7528\u529F\u80FD",
       sidebarReorderHint:
         "\u62D6\u66F3\u4EE5\u8ABF\u6574\u9806\u5E8F\uFF1BAlt+Shift+\u65B9\u5411\u9375\u79FB\u52D5",
-      sidebarRestoreOrder: "\u9084\u539F\u539F\u59CB\u9806\u5E8F",
+      sidebarRestoreOrder: "\u9084\u539F\u9762\u677F\u6392\u5E8F",
       sidebarRestoreOrderDialogTitle:
         "\u9084\u539F\u9078\u55AE\u7684\u539F\u59CB\u9806\u5E8F\uFF1F",
       sidebarRestoreOrderDialogDescription:
