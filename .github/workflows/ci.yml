@@ -98,6 +98,10 @@ jobs:
              grep -q 'createSupportLinks' src/menu/ui/overlays.ts; then
             expected_changes+=(--expect-support-links-change)
           fi
+          if ! grep -q 'bindCollapse' ../base/src/menu/ui/controller.ts &&
+             grep -q 'bindCollapse' src/menu/ui/controller.ts; then
+            expected_changes+=(--expect-sidebar-collapse-change)
+          fi
           bun run test:browser-parity -- \
             --base-extension ../base/dist/crx/unpacked \
             --head-extension dist/crx/unpacked \

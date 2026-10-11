@@ -101,7 +101,12 @@
         className: `ccxp-lite-sidebar-group${group.kind === "category" ? " ccxp-lite-category" : ""}`,
         attributes: { "data-ccxp-lite-order-item": `${group.kind}:${group.id}` },
       },
-      [button, children],
+      [
+        button,
+        children
+          ? dom.element("div", { className: "ccxp-lite-sidebar-children" }, [children])
+          : undefined,
+      ],
     );
   }
 

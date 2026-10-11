@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/html-vite";
 import {
   createBreadcrumbHeading,
+  createButton,
+  createCategoryIcon,
   createEmptyState,
   createLabIcon,
   createRenderer,
@@ -70,4 +72,16 @@ export const LayoutSwitch: Story = {
       ),
     );
   },
+};
+
+export const SidebarCollapseIcon: Story = {
+  render: (_args, context) =>
+    surface(
+      createButton(document, {
+        className: "ccxp-lite-sidebar-collapse-preview",
+        ariaLabel: localized(context.globals.locale, "收合側邊欄", "Collapse sidebar"),
+        title: localized(context.globals.locale, "收合側邊欄", "Collapse sidebar"),
+        icon: createCategoryIcon(document, "panel-left-close"),
+      }),
+    ),
 };

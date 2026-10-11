@@ -25,7 +25,7 @@
       "file": "navigation.html",
       "path": "/ccxp/INQUIRE/IN_INQ_STU.php",
       "owners": ["src/menu/"],
-      "state": "Complete student navigation DOM and tree declarations"
+      "state": "Complete student navigation DOM and tree declarations. Packaged extension checks cover saved compact icon rail, hover/focus preview, pin expanded, reload, rapid reversal, reduced motion, and profile access at 1280/600/375px using this same legacy host DOM; no live role/session values are added."
     },
     {
       "file": "top.html",

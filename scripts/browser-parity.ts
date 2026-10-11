@@ -15,6 +15,7 @@ import { tmpdir } from "node:os";
 import { assertWorkLogReady, routeWorkLogFixture, workLogPath } from "./work-log-fixtures.js";
 import pixelmatch from "pixelmatch";
 import { assertHome, assertHomeFavorites, assertMenuProfile } from "./home-fixtures.js";
+import { assertSidebarCollapse } from "./sidebar-collapse-fixtures.js";
 import { assertSessionTimer } from "./session-timer-fixtures.js";
 import type { BrowserContext, Frame, Page } from "playwright";
 import { chromium } from "playwright";
@@ -324,6 +325,7 @@ async function captureRevision(
   recordVideo: boolean,
   expectSearchResultsChange: boolean,
   expectSupportLinksChange: boolean,
+  expectSidebarCollapseChange: boolean,
 ): Promise<CaptureResult> {
   const profileDir = path.join(tmpdir(), `ccxp-lite-parity-${label}-${process.pid}-${Date.now()}`);
   const revisionOutputDir = path.join(outputDir, label);
@@ -533,7 +535,7 @@ async function captureRevision(
           navDocument?.querySelector<HTMLElement>("body")?.dataset.ccxpLiteSidebarApplied === "true"
         );
       });
-      const navFrame = page.frames().find((frame) => frame.url().includes("IN_INQ_STU.php"));
+      let navFrame = page.frames().find((frame) => frame.url().includes("IN_INQ_STU.php"));
       if (!navFrame) {
         throw new Error("Missing sanitized navigation frame");
       }
@@ -569,6 +571,17 @@ async function captureRevision(
         }
         await capturePage(page, path.join(revisionOutputDir, "profile-classic.png"));
         await navFrame.locator(".ccxp-lite-profile-trigger").click();
+      }
+      if (expectSidebarCollapseChange && label === "head") {
+        markRecordingStep("sidebar-collapse-start");
+        navFrame = await assertSidebarCollapse(
+          page,
+          navFrame,
+          revisionOutputDir,
+          capturePage,
+          recordVideo,
+        );
+        markRecordingStep("sidebar-collapse-end");
       }
       if ((await navFrame.locator(".ccxp-lite-session-timer-toggle").count()) > 0) {
         await assertSessionTimer(page, navFrame, revisionOutputDir, capturePage);
@@ -816,6 +829,7 @@ function compareCaptures(
   expectSearchResultsChange: boolean,
   expectHomeChange: boolean,
   expectSupportLinksChange: boolean,
+  expectSidebarCollapseChange: boolean,
 ): readonly string[] {
   const failures: string[] = [];
   if (base.searchFormBottom !== head.searchFormBottom) {
@@ -850,8 +864,10 @@ function compareCaptures(
     }
     const headPath = head.screenshots[name];
     const headerChanges =
-      expectSupportLinksChange &&
-      (name === "login" || redesignedViews.has(name) || framedViews.has(name));
+      (expectSupportLinksChange &&
+        (name === "login" || redesignedViews.has(name) || framedViews.has(name))) ||
+      (expectSidebarCollapseChange &&
+        (name === "sidebar-classic" || name === "embedded-destination" || framedViews.has(name)));
     const headerWidth = headerChanges ? 324 : 0;
     const difference = compareScreenshot(
       basePath,
@@ -909,6 +925,7 @@ async function main() {
       "expect-search-results-change": { type: "boolean", default: false },
       "expect-home-change": { type: "boolean", default: false },
       "expect-support-links-change": { type: "boolean", default: false },
+      "expect-sidebar-collapse-change": { type: "boolean", default: false },
     },
     strict: true,
   });
@@ -927,6 +944,7 @@ async function main() {
     values["record-video"],
     values["expect-search-results-change"],
     values["expect-support-links-change"],
+    values["expect-sidebar-collapse-change"],
   );
   const head = await captureRevision(
     "head",
@@ -936,6 +954,7 @@ async function main() {
     values["record-video"],
     values["expect-search-results-change"],
     values["expect-support-links-change"],
+    values["expect-sidebar-collapse-change"],
   );
   if (values["expect-support-links-change"]) {
     // Captures above validate the profile links; the browser test covers keyboard/dismissal.
@@ -948,6 +967,7 @@ async function main() {
     values["expect-search-results-change"],
     values["expect-home-change"],
     values["expect-support-links-change"],
+    values["expect-sidebar-collapse-change"],
   );
   writeFileSync(
     path.join(outputDir, "report.json"),

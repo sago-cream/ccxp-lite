@@ -128,6 +128,9 @@
   --ccxp-lite-size-password-toggle-offset: 44px;
   --ccxp-lite-size-icon-button-sm: 24px;
   --ccxp-lite-size-icon-button-md: 36px;
+  --ccxp-lite-size-sidebar-expanded: 324px;
+  --ccxp-lite-size-sidebar-collapsed: 64px;
+  --ccxp-lite-size-sidebar-collapse-control: 40px;
   --ccxp-lite-size-sidebar-section-icon: 42px;
   --ccxp-lite-size-sidebar-category-card-icon: 48px;
   --ccxp-lite-size-control-min-width: 112px;
