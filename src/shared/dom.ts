@@ -242,7 +242,7 @@
   const { getLocalizedStrings, normalizeLocale, rememberLocale, resolveLocaleFromDocument } =
     sharedLocale;
   const {
-    createSupportMenu,
+    createSupportLinks,
     createBrandImage,
     createBrandCopy,
     createBrandPartnerIcon,
@@ -259,7 +259,7 @@
     normalizeLocale,
     rememberLocale,
     resolveLocaleFromDocument,
-    createSupportMenu,
+    createSupportLinks,
     createBrandImage,
     createBrandCopy,
     createBrandPartnerIcon,

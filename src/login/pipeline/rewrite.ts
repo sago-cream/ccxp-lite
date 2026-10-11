@@ -12,12 +12,11 @@
   }
 
   const {
-    createSupportMenu,
+    createSupportLinks,
     TOKENS,
     ASSETS,
     createBrandImage,
     createBrandCopy,
-    createBrandPartnerLink,
     moveChildNodes,
     removeNode,
   } = shared;
@@ -93,18 +92,7 @@
     );
     brandSection.append(brandLockup);
 
-    const { link: repoLink } = createBrandPartnerLink(targetDocument, {
-      linkClassName: "ccxp-lite-landing-brand-partner-link",
-      iconWrapClassName: "ccxp-lite-landing-brand-partner-mark",
-      copyClassName: "ccxp-lite-landing-brand-partner-copy",
-      labelClassName: "ccxp-lite-landing-brand-partner-label",
-      label: strings.sidebarGitHubLink,
-    });
-    brandSection.append(repoLink);
-
     const langSection = createLanguageSelector(targetDocument, languageLinks);
-
-    const supportMenu = createSupportMenu(targetDocument, repoLink);
 
     const loginHeaderLabel = targetDocument.createElement("h1");
     loginHeaderLabel.className = "ccxp-lite-landing-login-label";
@@ -176,17 +164,13 @@
     }
     const footer = targetDocument.createElement("footer");
     footer.className = "ccxp-lite-landing-footer";
-    const menuLinks = [...supportMenu.querySelectorAll("a")];
-    for (const sourceLink of menuLinks.toReversed()) {
-      const link = targetDocument.createElement("a");
-      link.href = sourceLink.href;
-      link.target = "_blank";
-      link.rel = "noopener noreferrer";
-      link.textContent =
-        sourceLink.textContent === "GitHub" ? "ccxpLite" : `ccxpLite ${sourceLink.textContent}`;
+    for (const link of createSupportLinks(targetDocument)) {
+      if (link.textContent !== "ccxpLite") {
+        link.textContent = `ccxpLite ${link.textContent}`;
+      }
       footer.append(link);
     }
-    shell.append(topSection, footer, supportMenu);
+    shell.append(topSection, footer);
 
     return {
       shell,

@@ -28,8 +28,6 @@
     resolveLocaleFromDocument,
     createBrandImage,
     createBrandCopy,
-    createBrandPartnerLink,
-    createSupportMenu,
     isDocumentComplete,
     cleanLegacyAttributes,
   } = shared;
@@ -113,25 +111,15 @@
         ),
       );
 
-      const { link: repoLink } = createBrandPartnerLink(hostDocument, {
-        linkClassName: "ccxp-lite-sidebar-brand-partner-link",
-        iconWrapClassName: "ccxp-lite-sidebar-brand-partner-mark",
-        copyClassName: "ccxp-lite-sidebar-brand-partner-copy",
-        labelClassName: "ccxp-lite-sidebar-brand-partner-label",
-        label: strings.sidebarGitHubLink,
-      });
-
       const search = createSidebarSearch(hostDocument, strings);
 
-      const supportMenu = createSupportMenu(hostDocument, repoLink);
-      dom.append(brandGroup, brand, repoLink);
+      dom.append(brandGroup, brand);
       const shell = dom.element(
         "div",
         { className: `${TOKENS.sidebarClass} ccxp-lite-app-shell` },
         [
           dom.element("div", { className: "ccxp-lite-sidebar-header" }, [brandGroup, search]),
           dom.element("main", { className: "ccxp-lite-sidebar-content" }),
-          supportMenu,
         ],
       );
 

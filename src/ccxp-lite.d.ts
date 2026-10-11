@@ -207,7 +207,7 @@ declare global {
   }
 
   interface CcxpLiteSharedBrand {
-    createSupportMenu: (targetDocument: Document, repoLink: HTMLButtonElement) => HTMLElement;
+    createSupportLinks: (targetDocument: Document) => readonly HTMLAnchorElement[];
     createBrandImage: (
       targetDocument: Document,
       className: string,
@@ -310,7 +310,7 @@ declare global {
     rememberLocale: (locale: string | undefined, targetDocument: Document | undefined) => string;
     normalizeLocale: (locale: string) => string;
     resolveLocaleFromDocument: (targetDocument: Document) => string;
-    createSupportMenu: (targetDocument: Document, repoLink: HTMLButtonElement) => HTMLElement;
+    createSupportLinks: (targetDocument: Document) => readonly HTMLAnchorElement[];
     createBrandImage: (
       targetDocument: Document,
       className: string,

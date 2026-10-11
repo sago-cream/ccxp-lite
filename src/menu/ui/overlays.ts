@@ -14,6 +14,7 @@
   const app = namespace;
   const { setPersistedSidebarVariant, persistSidebarScroll } = namespace.sidebarState;
   const { createRenderer } = namespace.uiRenderer;
+  const { createCategoryIcon, createExternalLinkIcon } = namespace.uiIcons;
   const { showRemovePinnedDialog } = namespace.sidebarDialogController;
 
   function syncTopLevelFramesetLayout(variant: "classic" | "layered") {
@@ -131,22 +132,27 @@
       className: "ccxp-lite-profile-popover",
       attributes: { id: "ccxp-lite-profile-popover", hidden: "" },
     });
-    const mode = targetDocument.createElement("select");
-    mode.id = "ccxp-lite-profile-mode";
-    for (const [value, label] of [
-      ["classic", english ? "Sidebar" : "\u5074\u908A\u6B04\u6A21\u5F0F"],
-      ["layered", english ? "Full-screen menu" : "\u5168\u87A2\u5E55\u9078\u55AE"],
-    ]) {
-      const option = targetDocument.createElement("option");
-      option.value = value;
-      option.textContent = label;
-      mode.append(option);
-    }
-    mode.value = state.sidebarVariant;
-    mode.addEventListener("change", () => {
+    const modeLabels = english
+      ? { classic: "Use menu mode", layered: "Use sidebar mode" }
+      : {
+          classic: "\u4F7F\u7528\u9078\u55AE\u6A21\u5F0F",
+          layered: "\u4F7F\u7528\u5074\u6B04\u6A21\u5F0F",
+        };
+    const mode = dom.element(
+      "button",
+      {
+        className: "ccxp-lite-profile-row ccxp-lite-profile-control ccxp-lite-profile-mode",
+        attributes: { id: "ccxp-lite-profile-mode", type: "button" },
+      },
+      [
+        createCategoryIcon(targetDocument, "panels-top-left"),
+        dom.element("span", { text: modeLabels[state.sidebarVariant] }),
+      ],
+    );
+    mode.addEventListener("click", () => {
       const nextState = state;
       nextState.sidebarVariant = setPersistedSidebarVariant(
-        mode.value === "layered" ? "layered" : "classic",
+        state.sidebarVariant === "classic" ? "layered" : "classic",
       );
       syncTopLevelFramesetLayout(state.sidebarVariant);
       nextState.activeLeaf = undefined;
@@ -155,32 +161,65 @@
       rerender();
       targetDocument.querySelector<HTMLButtonElement>(".ccxp-lite-profile-trigger")?.focus();
     });
-    popup.append(
-      dom.element(
-        "label",
-        {
-          className: "ccxp-lite-profile-mode",
-          text: english ? "Menu mode" : "\u9078\u55AE\u6A21\u5F0F",
-          attributes: { for: mode.id },
-        },
-        [mode],
-      ),
+    const preferences = dom.element(
+      "section",
+      {
+        className: "ccxp-lite-profile-section",
+        attributes: { "aria-labelledby": "ccxp-lite-profile-preferences-title" },
+      },
+      [
+        dom.element("h3", {
+          className: "ccxp-lite-profile-section-title",
+          text: english ? "Preferences" : "\u504F\u597D\u8A2D\u5B9A",
+          attributes: { id: "ccxp-lite-profile-preferences-title" },
+        }),
+      ],
     );
+    const controls = dom.element("div", { className: "ccxp-lite-profile-settings" }, [mode]);
+    preferences.append(controls);
+    const resources = dom.element(
+      "section",
+      {
+        className: "ccxp-lite-profile-section ccxp-lite-profile-resources",
+        attributes: { "aria-labelledby": "ccxp-lite-profile-support-title" },
+      },
+      [
+        dom.element("h3", {
+          className: "ccxp-lite-profile-section-title",
+          text: english ? "Support & links" : "\u652F\u63F4\u8207\u9023\u7D50",
+          attributes: { id: "ccxp-lite-profile-support-title" },
+        }),
+      ],
+    );
+    for (const link of app.shared?.createSupportLinks(targetDocument) ?? []) {
+      link.className = "ccxp-lite-profile-row ccxp-lite-profile-link";
+      const label = dom.element("span", { text: link.textContent });
+      const iconName = link.hostname === "github.com" ? "code-xml" : "message-square-more";
+      link.replaceChildren(
+        createCategoryIcon(targetDocument, iconName),
+        label,
+        createExternalLinkIcon(targetDocument),
+      );
+      resources.append(link);
+    }
+    popup.append(preferences, resources);
     const shell = targetDocument.querySelector<HTMLElement>(".ccxp-lite-sidebar-shell");
     const logoutUrl = shell?.dataset.ccxpLiteLogoutUrl;
     if (logoutUrl !== undefined && logoutUrl !== "") {
       popup.append(
-        dom.element(
-          "a",
-          {
-            className: "ccxp-lite-profile-logout",
-            attributes: { href: logoutUrl, target: "_top" },
-          },
-          [
-            app.uiIcons?.createCategoryIcon(targetDocument, "log-out"),
-            dom.element("span", { text: english ? "Log out" : "\u767B\u51FA" }),
-          ],
-        ),
+        dom.element("div", { className: "ccxp-lite-profile-actions" }, [
+          dom.element(
+            "a",
+            {
+              className: "ccxp-lite-profile-row ccxp-lite-profile-link ccxp-lite-profile-logout",
+              attributes: { href: logoutUrl, target: "_top" },
+            },
+            [
+              createCategoryIcon(targetDocument, "log-out"),
+              dom.element("span", { text: english ? "Log out" : "\u767B\u51FA" }),
+            ],
+          ),
+        ]),
       );
     }
     const card = dom.element(
