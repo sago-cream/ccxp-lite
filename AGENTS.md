@@ -2,6 +2,10 @@
 
 - After runtime changes, run `bun run build:crx` and sync `dist/crx/unpacked` to the
   directory shown under Chrome extension Details → Loaded from.
+- When developing in a Git worktree, Chrome may load the unpacked extension from
+  a different checkout. Use `git worktree list --porcelain` to locate available
+  checkouts, then confirm the sync destination against Chrome's Loaded from value.
+  Do not assume the active worktree or primary checkout is the loaded copy.
 
 ## PR visual evidence
 
