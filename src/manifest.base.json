@@ -80,6 +80,7 @@
         "menu/ui/navigation.js",
         "menu/ui/destination.js",
         "menu/ui/views.js",
+        "menu/ui/ordering.js",
         "menu/ui/controller.js",
         "menu/ui/bootstrap.js",
         "shared/decaptcha.js",

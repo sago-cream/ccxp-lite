@@ -33,12 +33,13 @@
     }
     repoLink.setAttribute("aria-expanded", "false");
     repoLink.setAttribute("aria-controls", supportMenu.id);
+    repoLink.setAttribute("popovertarget", supportMenu.id);
+    repoLink.setAttribute("popovertargetaction", "toggle");
 
     repoLink.addEventListener("click", () => {
       const bounds = repoLink.getBoundingClientRect();
       supportMenu.style.left = `${Math.max(8, Math.min(bounds.left, targetDocument.documentElement.clientWidth - 168))}px`;
       supportMenu.style.top = `${bounds.bottom + 8}px`;
-      supportMenu.togglePopover();
     });
 
     const dismissSupportMenu = () => {

@@ -449,3 +449,23 @@
     grid-template-columns: var(--ccxp-lite-size-sidebar-brand-logo);
   }
 }
+
+.ccxp-lite-order-handle {
+  cursor: grab;
+}
+
+.ccxp-lite-order-handle:active {
+  cursor: grabbing;
+}
+
+.ccxp-lite-order-dragging {
+  opacity: 0.5;
+}
+
+[data-ccxp-lite-order-drop="before"] {
+  box-shadow: inset 0 2px var(--ccxp-lite-primary-focus-border);
+}
+
+[data-ccxp-lite-order-drop="after"] {
+  box-shadow: inset 0 -2px var(--ccxp-lite-primary-focus-border);
+}

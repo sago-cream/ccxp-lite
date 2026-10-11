@@ -10,6 +10,7 @@
     !namespace.sidebarNavigation ||
     !namespace.sidebarDestination ||
     !namespace.sidebarViews ||
+    !namespace.sidebarOrdering ||
     !namespace.shared
   ) {
     return;
@@ -25,6 +26,7 @@
   const { createClassicSidebarView } = namespace.sidebarNavigation;
   const { createDestinationView } = namespace.sidebarDestination;
   const { createDashboardView, createCategoryDetailView } = namespace.sidebarViews;
+  const { mountSidebarOrdering } = namespace.sidebarOrdering;
   const controllers = new WeakMap<Document, SidebarController>();
 
   class SidebarController {
@@ -110,6 +112,7 @@
             rerender,
           ),
         );
+        mountSidebarOrdering(content, model, this.strings, rerender, this.renderController);
         restoreSidebarScroll(content, state.scrollTopByView.root);
         return;
       }
@@ -139,6 +142,7 @@
             this.renderController,
           ),
         );
+        mountSidebarOrdering(content, model, this.strings, rerender, this.renderController);
         restoreSidebarScroll(content, state.scrollTopByView.category);
         return;
       }
@@ -153,6 +157,7 @@
           rerender,
         ),
       );
+      mountSidebarOrdering(content, model, this.strings, rerender, this.renderController);
       restoreSidebarScroll(content, state.scrollTopByView.root);
     }
 
