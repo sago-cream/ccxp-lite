@@ -137,6 +137,12 @@ export async function assertSessionTimer(
     await englishProfile.getByRole("button", { name: "Dismiss reminder" }).click();
     assert.equal(await englishProfile.locator(".ccxp-lite-session-warning").isVisible(), false);
     await englishProfile.getByRole("button", { name: "Settings", exact: true }).click();
+    const englishPopupBounds = await englishProfile
+      .locator(".ccxp-lite-profile-popover")
+      .boundingBox();
+    assert.ok(englishPopupBounds);
+    assert.ok(englishPopupBounds.x >= 0 && englishPopupBounds.x + englishPopupBounds.width <= 375);
+    await capture(englishPage, path.join(outputDir, "profile-english-layered-375.png"));
     await englishProfile.getByLabel("Show session timer").uncheck();
     await englishProfile.locator("#ccxp-lite-profile-mode").selectOption("classic");
   } finally {

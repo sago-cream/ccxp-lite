@@ -80,14 +80,13 @@
       attributes: { type: "checkbox" },
     });
     toggle.checked = getVisible();
-    popup.insertBefore(
+    (popup.querySelector(".ccxp-lite-profile-settings") ?? popup).append(
       dom.element("label", { className: "ccxp-lite-session-timer-toggle" }, [
         dom.element("span", {
           text: english ? "Show session timer" : "\u986F\u793A\u767B\u51FA\u5012\u6578",
         }),
         toggle,
       ]),
-      popup.querySelector(".ccxp-lite-profile-logout"),
     );
     const icon = targetDocument.createElementNS("http://www.w3.org/2000/svg", "svg");
     for (const [key, value] of Object.entries({
