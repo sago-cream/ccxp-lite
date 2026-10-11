@@ -63,6 +63,7 @@
     categoryIcons.set(targetDocument, icons);
     const sidebarList = createRenderer(targetDocument).element("aside", {
       className: "ccxp-lite-sidebar-list",
+      attributes: { "data-ccxp-lite-order-group": "root" },
     });
     const { items, expandedItemIds } = createClassicViewModel(model, state, areFavoritesLoaded());
     if (items.length === 0) {
@@ -98,6 +99,7 @@
       "div",
       {
         className: `ccxp-lite-sidebar-group${group.kind === "category" ? " ccxp-lite-category" : ""}`,
+        attributes: { "data-ccxp-lite-order-item": `${group.kind}:${group.id}` },
       },
       [button, children],
     );
@@ -156,7 +158,10 @@
     const { targetDocument, navDocument, strings, rerender } = context;
     const children = createRenderer(targetDocument).element("div", {
       className: "ccxp-lite-link-list ccxp-lite-link-list-layer",
-      attributes: { "data-guide-anchor": "icon" },
+      attributes: {
+        "data-guide-anchor": "icon",
+        "data-ccxp-lite-order-group": `${group.kind}:${group.id}`,
+      },
       styleProperties: { "--ccxp-lite-tree-depth": String(depth + 1) },
     });
     if (!areFavoritesLoaded() && group.kind === "category" && group.id === "category-favorites") {
@@ -230,6 +235,7 @@
       className: "ccxp-lite-row-button ccxp-lite-item",
     });
     button.setAttribute("title", linkItem.label);
+    button.dataset.ccxpLiteOrderItem = `link:${linkItem.id}`;
     button.style.setProperty(
       "--ccxp-lite-row-depth",
       String(getClassicSidebarIndentLevel("link", depth)),
@@ -361,17 +367,27 @@
     rerender: () => void,
   ): HTMLElement {
     const dom = createRenderer(targetDocument);
-    return dom.element("div", { className: "ccxp-lite-category-block" }, [
-      blockItem.label === ""
-        ? undefined
-        : dom.element("h3", {
-            className: "ccxp-lite-category-block-title",
-            text: blockItem.label,
-          }),
-      ...blockItem.links.map((linkItem) =>
-        createDetailLinkCard(targetDocument, navDocument, linkItem, strings, rerender),
-      ),
-    ]);
+    return dom.element(
+      "div",
+      {
+        className: "ccxp-lite-category-block",
+        attributes: {
+          "data-ccxp-lite-order-item": `block:${blockItem.id}`,
+          "data-ccxp-lite-order-group": `block:${blockItem.id}`,
+        },
+      },
+      [
+        blockItem.label === ""
+          ? undefined
+          : dom.element("h3", {
+              className: "ccxp-lite-category-block-title",
+              text: blockItem.label,
+            }),
+        ...blockItem.links.map((linkItem) =>
+          createDetailLinkCard(targetDocument, navDocument, linkItem, strings, rerender),
+        ),
+      ],
+    );
   }
 
   function createCategoryCard(
@@ -383,6 +399,7 @@
     const dom = createRenderer(targetDocument);
     const button = createButton(targetDocument, { className: "ccxp-lite-category-card" });
     button.setAttribute("title", category.label);
+    button.dataset.ccxpLiteOrderItem = `category:${category.id}`;
     button.addEventListener("click", onOpen);
     dom.append(
       button,
@@ -421,6 +438,7 @@
   ) {
     const button = createButton(targetDocument, { className });
     button.setAttribute("title", linkItem.label);
+    button.dataset.ccxpLiteOrderItem = `link:${linkItem.id}`;
     button.append(
       createRowLabel(targetDocument, linkItem.label, isExternalLinkTarget(linkItem, navDocument)),
     );
@@ -463,6 +481,7 @@
       className: "ccxp-lite-link-card ccxp-lite-pinned-card",
     });
     button.setAttribute("title", blockItem.label);
+    button.dataset.ccxpLiteOrderItem = `block:${blockItem.id}`;
     button.append(createRowLabel(targetDocument, blockItem.label, false));
     button.append(createBlockFavoriteToggle(targetDocument, blockItem, strings, rerender));
     button.addEventListener("click", () => {

@@ -131,6 +131,7 @@ export const menuModulePaths = [
   "src/menu/ui/navigation.ts",
   "src/menu/ui/destination.ts",
   "src/menu/ui/views.ts",
+  "src/menu/ui/ordering.ts",
   "src/menu/ui/controller.ts",
 ];
 
