@@ -237,7 +237,15 @@
       topFrameset.setAttribute("rows", FRAMESET_ROWS);
     }
     if (innerFrameset) {
-      innerFrameset.setAttribute("cols", getFramesetColumnsForVariant(readSidebarVariant()));
+      const state = namespace.sidebarState?.getSidebarUiState(document);
+      if (state && namespace.sidebarUi) {
+        namespace.sidebarUi.syncTopLevelFramesetLayout(
+          state.sidebarVariant,
+          state.sidebarCollapsed && !state.sidebarPreview,
+        );
+      } else {
+        innerFrameset.setAttribute("cols", getFramesetColumnsForVariant(readSidebarVariant()));
+      }
     }
   }
 

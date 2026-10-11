@@ -529,6 +529,7 @@ declare global {
 
   interface CcxpLiteSidebarStateModule {
     getSidebarUiState: (navDocument: Document) => CcxpLiteSidebarState;
+    setPersistedSidebarCollapsed: (collapsed: boolean) => void;
     persistSidebarScroll: (targetDocument: Document, viewKey: string) => void;
     restoreSidebarScroll: (contentNode: Element, scrollTop: number) => void;
     getPersistedSidebarVariant: () => "classic" | "layered";
@@ -541,6 +542,8 @@ declare global {
     searchQuery: string;
     activeLeaf: CcxpLiteSidebarLinkItem | undefined;
     sidebarVariant: "classic" | "layered";
+    sidebarCollapsed: boolean;
+    sidebarPreview: boolean;
     classicExpandedItemIds: string[];
     scrollTopByView: Record<string, number>;
   }
@@ -599,7 +602,11 @@ declare global {
       hostDocument: Document,
       strings: Readonly<Record<string, string>>,
     ) => HTMLElement;
-    syncTopLevelFramesetLayout: (variant: "classic" | "layered") => void;
+    syncTopLevelFramesetLayout: (
+      variant: "classic" | "layered",
+      collapsed?: boolean,
+      animate?: boolean,
+    ) => void;
     mountSidebarVariantSwitch: (
       targetDocument: Document,
       state: CcxpLiteSidebarState,

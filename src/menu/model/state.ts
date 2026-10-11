@@ -2,6 +2,7 @@
   const runtimeScope = globalScope;
   const namespace = runtimeScope.CCXP_LITE ?? {};
   const SIDEBAR_VARIANT_STORAGE_KEY = "ccxp-lite-sidebar-variant";
+  const SIDEBAR_COLLAPSED_STORAGE_KEY = "ccxp-lite-sidebar-collapsed";
   const sidebarUiStateByDocument = new WeakMap<Document, CcxpLiteSidebarState>();
   let persistedSidebarVariant: "classic" | "layered" | undefined;
 
@@ -32,6 +33,8 @@
       searchQuery: "",
       activeLeaf: undefined,
       sidebarVariant: getPersistedSidebarVariant(),
+      sidebarCollapsed: getPersistedSidebarCollapsed(),
+      sidebarPreview: false,
       classicExpandedItemIds: ["category-favorites"],
       scrollTopByView: {
         root: 0,
@@ -83,8 +86,26 @@
     }
     return persistedSidebarVariant;
   }
+
+  function getPersistedSidebarCollapsed(): boolean {
+    try {
+      return globalThis.localStorage.getItem(SIDEBAR_COLLAPSED_STORAGE_KEY) === "true";
+    } catch {
+      return false;
+    }
+  }
+
+  function setPersistedSidebarCollapsed(collapsed: boolean) {
+    try {
+      globalThis.localStorage.setItem(SIDEBAR_COLLAPSED_STORAGE_KEY, String(collapsed));
+    } catch {
+      // The current page keeps the preference when storage is unavailable.
+    }
+  }
+
   namespace.sidebarState = {
     getSidebarUiState,
+    setPersistedSidebarCollapsed,
     persistSidebarScroll,
     restoreSidebarScroll,
     getPersistedSidebarVariant,

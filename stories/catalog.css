@@ -80,3 +80,15 @@ body {
   height: 420px;
   overflow: auto;
 }
+
+.ccxp-lite-sidebar-collapse-preview {
+  display: grid;
+  place-items: center;
+  width: var(--ccxp-lite-size-sidebar-collapse-control);
+  height: var(--ccxp-lite-size-sidebar-collapse-control);
+  border: 0;
+  border-radius: var(--ccxp-lite-radius-sm);
+  background: var(--ccxp-lite-sidebar-surface);
+  color: var(--ccxp-lite-text-muted);
+  cursor: pointer;
+}

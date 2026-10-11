@@ -51,6 +51,34 @@ describe("sidebar state", () => {
       ),
     ).toBe("classic");
   });
+  test("restores collapsed preference without persisting hover preview", () => {
+    const { window } = createTestWindow();
+    window.localStorage.setItem("ccxp-lite-sidebar-collapsed", "true");
+    loadModules(window, menuModulePaths);
+    const api = requireValue(window.CCXP_LITE.sidebarState);
+    const state = api.getSidebarUiState(window.document);
+    expect(state.sidebarCollapsed).toBe(true);
+    expect(state.sidebarPreview).toBe(false);
+    api.setPersistedSidebarCollapsed(false);
+    expect(window.localStorage.getItem("ccxp-lite-sidebar-collapsed")).toBe("false");
+  });
+
+  test("keeps collapse controls usable when preference storage is blocked", () => {
+    const { window } = createTestWindow();
+    Object.defineProperty(window, "localStorage", {
+      configurable: true,
+      get() {
+        throw new Error("storage blocked");
+      },
+    });
+    loadModules(window, menuModulePaths);
+    const api = requireValue(window.CCXP_LITE.sidebarState);
+    expect(api.getSidebarUiState(window.document).sidebarCollapsed).toBe(false);
+    expect(() => {
+      api.setPersistedSidebarCollapsed(true);
+    }).not.toThrow();
+  });
+
   test("persists and restores scroll positions by view", () => {
     const { window } = createTestWindow(
       "<!doctype html><html><body><div class='ccxp-lite-sidebar-content'></div></body></html>",

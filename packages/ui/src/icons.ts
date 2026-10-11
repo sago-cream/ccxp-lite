@@ -206,6 +206,11 @@ function getCategoryIconShapes(iconName: string): ReadonlyArray<
     clock: [{ tag: "circle", attributes: { cx: "12", cy: "12", r: "10" } }, "M12 6v6l4 2"],
     "code-xml": ["m8 8-4 4 4 4", "m16 8 4 4-4 4", "m14 4-4 16"],
     x: ["M18 6 6 18", "m6 6 12 12"],
+    "panel-left-close": [
+      "M9 3v18",
+      "m16 9-3 3 3 3",
+      "M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z",
+    ],
     "log-out": ["m16 17 5-5-5-5", "M21 12H9", "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"],
     "circle-user-round": [
       "M17.925 20.056a6 6 0 0 0-11.851.001",

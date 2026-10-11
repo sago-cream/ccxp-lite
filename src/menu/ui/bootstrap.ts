@@ -81,7 +81,10 @@
     const state = getSidebarUiState(hostDocument);
     const rerenderBinding = getOrCreateRerenderBinding(hostDocument);
     captureInitialMainFrameUrl();
-    syncTopLevelFramesetLayout(state.sidebarVariant);
+    syncTopLevelFramesetLayout(
+      state.sidebarVariant,
+      state.sidebarCollapsed && !state.sidebarPreview,
+    );
     const hostBody = ensureDocumentBody(hostDocument);
 
     if (!hostBody) {

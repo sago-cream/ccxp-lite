@@ -104,6 +104,10 @@ export async function assertSessionTimer(
       .find((frame) => new URL(frame.url()).pathname.endsWith("/top.php"));
     assert.ok(englishNav && englishHeader);
     await englishNav.locator("body[data-ccxp-lite-sidebar-applied='true']").waitFor();
+    const collapse = englishNav.locator(".ccxp-lite-sidebar-collapse");
+    if ((await collapse.count()) > 0) {
+      assert.equal(await collapse.getAttribute("aria-label"), "Collapse sidebar");
+    }
     await englishNav.getByText("\u6E2C\u8A66\u540C\u5B78", { exact: true }).waitFor();
     await englishPage.frameLocator('frame[name="main"]').locator(".ccxp-home-wordmark").waitFor();
     await englishNav.waitForFunction(() =>

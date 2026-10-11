@@ -34,6 +34,10 @@
     private shellController: CcxpLiteUiController;
     private renderController: CcxpLiteUiController;
     private searchInput: HTMLInputElement | undefined;
+    private collapseButton: HTMLButtonElement | undefined;
+    private hovered = false;
+    private focused = false;
+    private collapsing = false;
     private navDocument: Document;
     private modelInput: CcxpLiteSidebarModel | (() => CcxpLiteSidebarModel);
     private strings: Readonly<Record<string, string>>;
@@ -96,6 +100,7 @@
       content.textContent = "";
       this.hostDocument.body.dataset.ccxpLiteSidebarVariant = state.sidebarVariant;
       shell.dataset.ccxpLiteSidebarVariant = state.sidebarVariant;
+      this.syncCollapse(shell);
       const rerender = () => {
         this.render();
       };
@@ -113,6 +118,7 @@
           ),
         );
         mountSidebarOrdering(content, model, this.strings, rerender, this.renderController);
+        this.syncCollapse(shell);
         restoreSidebarScroll(content, state.scrollTopByView.root);
         return;
       }
@@ -175,11 +181,123 @@
         return;
       }
       this.searchInput.dataset.ccxpLiteSearchBound = "true";
+      this.bindCollapse(shell);
       this.shellController.listen(this.searchInput, "input", () => {
         const state = getSidebarUiState(this.hostDocument);
         state.searchQuery = this.searchInput?.value ?? "";
         this.render();
       });
+    }
+
+    private bindCollapse(shell: HTMLElement) {
+      const header = shell.querySelector(".ccxp-lite-sidebar-brand-group");
+      const icon = app.uiIcons?.createCategoryIcon(this.hostDocument, "panel-left-close");
+      const button = app.uiButtons?.createButton(this.hostDocument, {
+        className: "ccxp-lite-sidebar-collapse",
+        icon,
+      });
+      if (!header || !button) {
+        return;
+      }
+      this.collapseButton = button;
+      header.append(button);
+      this.shellController.addCleanup(() => {
+        button.remove();
+      });
+      const view = this.hostDocument.defaultView;
+      if (view) {
+        const observer = new view.MutationObserver(() => {
+          this.previewCollapse(shell);
+        });
+        observer.observe(shell, { subtree: true, attributes: true, attributeFilter: ["hidden"] });
+        this.shellController.addCleanup(() => {
+          observer.disconnect();
+        });
+      }
+      this.shellController.listen(button, "click", () => {
+        const state = getSidebarUiState(this.hostDocument);
+        state.sidebarCollapsed = !state.sidebarCollapsed;
+        state.sidebarPreview = false;
+        this.hovered = false;
+        this.focused = false;
+        app.sidebarState?.setPersistedSidebarCollapsed(state.sidebarCollapsed);
+        if (state.sidebarCollapsed) {
+          this.collapsing = true;
+          shell.querySelector<HTMLButtonElement>(".ccxp-lite-sidebar-brand-button")?.focus();
+          this.collapsing = false;
+        }
+        this.syncCollapse(shell, true);
+      });
+      this.shellController.listen(shell, "pointerenter", (event) => {
+        if ((event as PointerEvent).pointerType === "touch") {
+          return;
+        }
+        this.hovered = true;
+        this.previewCollapse(shell);
+      });
+      this.shellController.listen(shell, "pointerleave", () => {
+        this.hovered = false;
+        this.previewCollapse(shell);
+      });
+      this.shellController.listen(shell, "focusin", () => {
+        if (this.collapsing) {
+          return;
+        }
+        this.focused = true;
+        this.previewCollapse(shell);
+      });
+      this.shellController.listen(shell, "focusout", (event) => {
+        if (shell.contains((event as FocusEvent).relatedTarget as Node | null)) {
+          return;
+        }
+        this.focused = false;
+        this.previewCollapse(shell);
+      });
+    }
+
+    private previewCollapse(shell: HTMLElement) {
+      const state = getSidebarUiState(this.hostDocument);
+      const preview =
+        state.sidebarCollapsed &&
+        (this.hovered ||
+          this.focused ||
+          shell.querySelector(
+            ".ccxp-lite-session-warning:not([hidden]), .ccxp-lite-profile-popover:not([hidden])",
+          ) !== null);
+      if (state.sidebarPreview === preview) {
+        return;
+      }
+      state.sidebarPreview = preview;
+      this.syncCollapse(shell, true);
+    }
+
+    private syncCollapse(shell: HTMLElement, animate = false) {
+      const state = getSidebarUiState(this.hostDocument);
+      const classic = state.sidebarVariant === "classic";
+      if (
+        classic &&
+        state.sidebarCollapsed &&
+        shell.querySelector(".ccxp-lite-session-warning:not([hidden])")
+      ) {
+        state.sidebarPreview = true;
+      }
+      const compact = classic && state.sidebarCollapsed && !state.sidebarPreview;
+      const shellNode = shell;
+      shellNode.dataset.ccxpLiteSidebarCompact = String(compact);
+      shellNode.dataset.ccxpLiteSidebarCollapsed = String(classic && state.sidebarCollapsed);
+      if (this.collapseButton) {
+        const label = state.sidebarCollapsed
+          ? this.strings.sidebarKeepExpanded
+          : this.strings.sidebarCollapse;
+        this.collapseButton.hidden = !classic;
+        this.collapseButton.setAttribute("aria-label", label);
+        this.collapseButton.title = label;
+        this.collapseButton.setAttribute("aria-expanded", String(!compact));
+      }
+      for (const list of shell.querySelectorAll<HTMLElement>(".ccxp-lite-sidebar-children")) {
+        list.inert = compact;
+      }
+      syncTopLevelFramesetLayout(state.sidebarVariant, compact, animate);
     }
   }
 

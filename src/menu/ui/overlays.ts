@@ -17,12 +17,59 @@
   const { createCategoryIcon, createExternalLinkIcon } = namespace.uiIcons;
   const { showRemovePinnedDialog } = namespace.sidebarDialogController;
 
-  function syncTopLevelFramesetLayout(variant: "classic" | "layered") {
+  let layoutFrame = 0;
+  app.shared?.addCleanupTask(() => {
+    globalThis.cancelAnimationFrame(layoutFrame);
+  });
+
+  function syncTopLevelFramesetLayout(
+    variant: "classic" | "layered",
+    collapsed = false,
+    animate = false,
+  ) {
     try {
       const scopeDocument = window.top ? window.top.document : document;
-      scopeDocument
-        .querySelector("frameset[cols]")
-        ?.setAttribute("cols", variant === "classic" ? "324,*" : "*,0");
+      const frameset = scopeDocument.querySelector("frameset[cols]");
+      if (!frameset) {
+        return;
+      }
+      globalThis.cancelAnimationFrame(layoutFrame);
+      if (variant === "layered") {
+        frameset.setAttribute("cols", "*,0");
+        return;
+      }
+      const width = Number.parseFloat(
+        collapsed
+          ? (app.shared?.TOKENS.sizeSidebarCollapsed ?? "64")
+          : (app.shared?.TOKENS.sizeSidebarExpanded ?? "324"),
+      );
+      const navFrame = scopeDocument.querySelector("frame[src*='IN_INQ']");
+      const startWidth = navFrame?.getBoundingClientRect().width ?? width;
+      if (
+        !animate ||
+        globalThis.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+        startWidth === width
+      ) {
+        frameset.setAttribute("cols", `${width},*`);
+        return;
+      }
+      const start = globalThis.performance.now();
+      const configuredDuration = Number.parseFloat(
+        globalThis
+          .getComputedStyle(document.documentElement)
+          .getPropertyValue("--ccxp-lite-motion-fast"),
+      );
+      const duration =
+        Number.isFinite(configuredDuration) && configuredDuration > 0 ? configuredDuration : 120;
+      const step = (now: number) => {
+        const progress = Math.min(1, (now - start) / duration);
+        const eased = 1 - (1 - progress) ** 3;
+        frameset.setAttribute("cols", `${Math.round(startWidth + (width - startWidth) * eased)},*`);
+        if (progress < 1) {
+          layoutFrame = globalThis.requestAnimationFrame(step);
+        }
+      };
+      layoutFrame = globalThis.requestAnimationFrame(step);
     } catch {
       // Ignore cross-frame layout sync failures.
     }
@@ -154,7 +201,8 @@
       nextState.sidebarVariant = setPersistedSidebarVariant(
         state.sidebarVariant === "classic" ? "layered" : "classic",
       );
-      syncTopLevelFramesetLayout(state.sidebarVariant);
+      syncTopLevelFramesetLayout(state.sidebarVariant, state.sidebarCollapsed);
+      nextState.sidebarPreview = false;
       nextState.activeLeaf = undefined;
       nextState.currentCategoryId = "";
       persistSidebarScroll(targetDocument, "root");

@@ -264,7 +264,11 @@ declare global {
         itemName: string,
         strings: Readonly<Record<string, string>>,
       ) => Promise<boolean>;
-      syncTopLevelFramesetLayout: (variant: "classic" | "layered") => void;
+      syncTopLevelFramesetLayout: (
+        variant: "classic" | "layered",
+        collapsed?: boolean,
+        animate?: boolean,
+      ) => void;
       mountSidebarVariantSwitch: (
         targetDocument: Document,
         state: CcxpLiteSidebarState,
