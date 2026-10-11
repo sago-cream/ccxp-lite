@@ -198,6 +198,13 @@ function getCategoryIconShapes(iconName: string): ReadonlyArray<
         }
     >
   > = {
+    "panels-top-left": [
+      { tag: "rect", attributes: { x: "3", y: "3", width: "18", height: "18", rx: "2" } },
+      "M3 9h18",
+      "M9 9v12",
+    ],
+    clock: [{ tag: "circle", attributes: { cx: "12", cy: "12", r: "10" } }, "M12 6v6l4 2"],
+    "code-xml": ["m8 8-4 4 4 4", "m16 8 4 4-4 4", "m14 4-4 16"],
     x: ["M18 6 6 18", "m6 6 12 12"],
     "panel-left-close": [
       "M9 3v18",

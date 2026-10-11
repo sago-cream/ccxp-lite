@@ -117,7 +117,30 @@ test("packaged headers omit ccxpLite and profile menus expose support links", as
       for (const link of [repo, report]) {
         expect(await link.getAttribute("target")).toBe("_blank");
         expect(await link.getAttribute("rel")).toBe("noopener noreferrer");
-        expect(await link.locator("svg[aria-hidden='true']").count()).toBe(1);
+        expect(await link.locator("svg[aria-hidden='true']").count()).toBe(2);
+      }
+      const rows = await popup
+        .locator(".ccxp-lite-profile-row")
+        .evaluateAll((elements: readonly Element[]) =>
+          elements.map((row) => {
+            const icon = row.firstElementChild;
+            const label = icon?.nextElementSibling;
+            return {
+              iconTag: icon?.tagName.toLowerCase(),
+              iconHidden: icon?.getAttribute("aria-hidden"),
+              iconX: icon?.getBoundingClientRect().x,
+              labelX: label?.getBoundingClientRect().x,
+              height: row.getBoundingClientRect().height,
+            };
+          }),
+        );
+      expect(rows).toHaveLength(5);
+      for (const row of rows) {
+        expect(row.iconTag).toBe("svg");
+        expect(row.iconHidden).toBe("true");
+        expect(row.iconX).toBe(rows[0].iconX);
+        expect(row.labelX).toBe(rows[0].labelX);
+        expect(row.height).toBe(40);
       }
       await report.press("Escape");
       await popup.waitFor({ state: "hidden" });

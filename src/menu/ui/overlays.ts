@@ -14,7 +14,7 @@
   const app = namespace;
   const { setPersistedSidebarVariant, persistSidebarScroll } = namespace.sidebarState;
   const { createRenderer } = namespace.uiRenderer;
-  const { createExternalLinkIcon } = namespace.uiIcons;
+  const { createCategoryIcon, createExternalLinkIcon } = namespace.uiIcons;
   const { showRemovePinnedDialog } = namespace.sidebarDialogController;
 
   let layoutFrame = 0;
@@ -185,11 +185,17 @@
           classic: "\u4F7F\u7528\u9078\u55AE\u6A21\u5F0F",
           layered: "\u4F7F\u7528\u5074\u6B04\u6A21\u5F0F",
         };
-    const mode = dom.element("button", {
-      className: "ccxp-lite-profile-control ccxp-lite-profile-mode",
-      text: modeLabels[state.sidebarVariant],
-      attributes: { id: "ccxp-lite-profile-mode", type: "button" },
-    });
+    const mode = dom.element(
+      "button",
+      {
+        className: "ccxp-lite-profile-row ccxp-lite-profile-control ccxp-lite-profile-mode",
+        attributes: { id: "ccxp-lite-profile-mode", type: "button" },
+      },
+      [
+        createCategoryIcon(targetDocument, "panels-top-left"),
+        dom.element("span", { text: modeLabels[state.sidebarVariant] }),
+      ],
+    );
     mode.addEventListener("click", () => {
       const nextState = state;
       nextState.sidebarVariant = setPersistedSidebarVariant(
@@ -234,9 +240,14 @@
       ],
     );
     for (const link of app.shared?.createSupportLinks(targetDocument) ?? []) {
-      link.className = "ccxp-lite-profile-link";
+      link.className = "ccxp-lite-profile-row ccxp-lite-profile-link";
       const label = dom.element("span", { text: link.textContent });
-      link.replaceChildren(label, createExternalLinkIcon(targetDocument));
+      const iconName = link.hostname === "github.com" ? "code-xml" : "message-square-more";
+      link.replaceChildren(
+        createCategoryIcon(targetDocument, iconName),
+        label,
+        createExternalLinkIcon(targetDocument),
+      );
       resources.append(link);
     }
     popup.append(preferences, resources);
@@ -248,11 +259,11 @@
           dom.element(
             "a",
             {
-              className: "ccxp-lite-profile-link ccxp-lite-profile-logout",
+              className: "ccxp-lite-profile-row ccxp-lite-profile-link ccxp-lite-profile-logout",
               attributes: { href: logoutUrl, target: "_top" },
             },
             [
-              app.uiIcons?.createCategoryIcon(targetDocument, "log-out"),
+              createCategoryIcon(targetDocument, "log-out"),
               dom.element("span", { text: english ? "Log out" : "\u767B\u51FA" }),
             ],
           ),

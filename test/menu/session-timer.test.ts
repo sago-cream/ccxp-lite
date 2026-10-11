@@ -74,7 +74,10 @@ describe("legacy session countdown", () => {
     expect(ui.timer().textContent).toBe("15:01");
     expect(ui.warning().hidden).toBe(true);
     expect(ui.toggle().textContent).toBe("\u986F\u793A\u767B\u51FA\u5012\u6578");
+    const icon = ui.toggle().querySelector("svg");
+    expect(icon).not.toBeNull();
     ui.toggle().click();
+    expect(ui.toggle().querySelector("svg")).toBe(icon);
     expect(ui.timer().hidden).toBe(false);
     expect(ui.window.localStorage.getItem("ccxp-lite-show-session-timer")).toBe("true");
     ui.clock(900);
