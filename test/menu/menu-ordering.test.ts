@@ -107,6 +107,31 @@ describe("sidebar ordering", () => {
     expect(ui.window.localStorage.getItem(storageKey)).toBeNull();
   });
 
+  test("drags layered groups through their nested list containers", async () => {
+    const model = createSidebarModel();
+    const category = requireValue(model.categories[0]);
+    category.blocks = [
+      ...category.blocks,
+      { id: "second", label: "Second group", links: [], kind: "block" },
+    ];
+    const ui = await setup(undefined, model);
+    ui.state.sidebarVariant = "layered";
+    ui.state.currentCategoryId = category.id;
+    ui.render();
+    const source = requireElement(
+      ui.document.querySelector<HTMLElement>('[data-ccxp-lite-order-item="block:second"] > h3'),
+    );
+    const target = requireElement(
+      ui.document.querySelector<HTMLElement>(
+        '[data-ccxp-lite-order-item="block:section-academic"] > h3',
+      ),
+    );
+    dragEvent(source, "dragstart");
+    expect(dragEvent(target, "dragover").defaultPrevented).toBe(true);
+    dragEvent(target, "drop");
+    expect(ui.ids("category:category-courses")).toEqual(["block:second", "block:section-academic"]);
+  });
+
   test("keeps hidden siblings when reordering filtered results and appends newly available items", async () => {
     const model = createSidebarModel();
     const block = requireValue(model.categories[0]?.blocks[0]);

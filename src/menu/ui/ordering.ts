@@ -256,11 +256,12 @@
       });
       controller.listen(list, "drop", (event) => {
         const drop = resolveDrop(event as DragEvent);
-        if (drop && dragState.dragged) {
-          event.preventDefault();
-          event.stopPropagation();
-          move(list, dragState.dragged.item, drop.target, drop.after);
+        if (!drop || !dragState.dragged) {
+          return;
         }
+        event.preventDefault();
+        event.stopPropagation();
+        move(list, dragState.dragged.item, drop.target, drop.after);
         clearDrag();
       });
     }
