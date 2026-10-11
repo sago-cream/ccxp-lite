@@ -2,6 +2,15 @@
 
 - After runtime changes, run `bun run build:crx` and sync `dist/crx/unpacked` to the
   directory shown under Chrome extension Details → Loaded from.
+- In this local setup, Chrome loads the original checkout's unpacked build at
+  `/Users/hsi/Projects/Extensions/ccxpLite/dist/crx/unpacked`. Build in the active
+  worktree, then sync to that directory; the worktree's own `dist` is not the
+  loaded copy. For example:
+  `rsync -a dist/crx/unpacked/ /Users/hsi/Projects/Extensions/ccxpLite/dist/crx/unpacked/`.
+- Locate the original checkout with `git worktree list --porcelain` (the first
+  `worktree` entry), or the parent of the common Git directory reported by
+  `git rev-parse --path-format=absolute --git-common-dir`. If Chrome's Loaded from
+  value changes, use that value as the sync destination.
 
 ## PR visual evidence
 
