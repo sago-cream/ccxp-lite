@@ -94,6 +94,10 @@ jobs:
              grep -q 'function mountHomeSearch' src/main/bootstrap.ts; then
             expected_changes+=(--expect-home-change)
           fi
+          if grep -q 'createSupportMenu' ../base/src/menu/ui/bootstrap.ts &&
+             grep -q 'createSupportLinks' src/menu/ui/overlays.ts; then
+            expected_changes+=(--expect-support-links-change)
+          fi
           bun run test:browser-parity -- \
             --base-extension ../base/dist/crx/unpacked \
             --head-extension dist/crx/unpacked \

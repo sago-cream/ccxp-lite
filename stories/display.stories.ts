@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/html-vite";
 import {
   createBreadcrumbHeading,
+  createCategoryIcon,
   createEmptyState,
   createLabIcon,
   createRenderer,
@@ -67,6 +68,26 @@ export const LayoutSwitch: Story = {
             icon: createLabIcon(document),
           }),
         ),
+      ),
+    );
+  },
+};
+
+export const ProfileIcons: Story = {
+  render: (_args, context) => {
+    const dom = createRenderer(document);
+    return surface(
+      ...[
+        ["panels-top-left", "切換導覽模式", "Switch navigation layout"],
+        ["clock", "登出倒數", "Session timer"],
+        ["code-xml", "ccxpLite", "ccxpLite"],
+        ["message-square-more", "問題回報", "Report an issue"],
+        ["log-out", "登出", "Log out"],
+      ].map(([icon, zh, en]) =>
+        dom.element("div", { className: "ds-row" }, [
+          createCategoryIcon(document, icon),
+          dom.element("span", { text: localized(context.globals.locale, zh, en) }),
+        ]),
       ),
     );
   },

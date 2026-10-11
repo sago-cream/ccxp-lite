@@ -198,6 +198,13 @@ function getCategoryIconShapes(iconName: string): ReadonlyArray<
         }
     >
   > = {
+    "panels-top-left": [
+      { tag: "rect", attributes: { x: "3", y: "3", width: "18", height: "18", rx: "2" } },
+      "M3 9h18",
+      "M9 9v12",
+    ],
+    clock: [{ tag: "circle", attributes: { cx: "12", cy: "12", r: "10" } }, "M12 6v6l4 2"],
+    "code-xml": ["m8 8-4 4 4 4", "m16 8 4 4-4 4", "m14 4-4 16"],
     x: ["M18 6 6 18", "m6 6 12 12"],
     "log-out": ["m16 17 5-5-5-5", "M21 12H9", "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"],
     "circle-user-round": [

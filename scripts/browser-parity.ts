@@ -16,6 +16,7 @@ import { assertWorkLogReady, routeWorkLogFixture, workLogPath } from "./work-log
 import pixelmatch from "pixelmatch";
 import { assertHome, assertHomeFavorites, assertMenuProfile } from "./home-fixtures.js";
 import { assertSessionTimer } from "./session-timer-fixtures.js";
+import { recordProfileActions, setProfileMenuMode } from "./profile-fixtures.js";
 import type { BrowserContext, Frame, Page } from "playwright";
 import { chromium } from "playwright";
 import { PNG } from "pngjs";
@@ -323,6 +324,7 @@ async function captureRevision(
   workLogOnly: boolean,
   recordVideo: boolean,
   expectSearchResultsChange: boolean,
+  expectSupportLinksChange: boolean,
 ): Promise<CaptureResult> {
   const profileDir = path.join(tmpdir(), `ccxp-lite-parity-${label}-${process.pid}-${Date.now()}`);
   const revisionOutputDir = path.join(outputDir, label);
@@ -555,6 +557,25 @@ async function captureRevision(
       await capturePage(page, classicScreenshot);
       screenshots["sidebar-classic"] = classicScreenshot;
       styles["sidebar-classic"] = await collectStyles(navFrame, sidebarProbes);
+      if (expectSupportLinksChange) {
+        if (label === "head") {
+          assert.equal(await navFrame.locator(".ccxp-lite-sidebar-brand-partner-link").count(), 0);
+        }
+        await navFrame.locator(".ccxp-lite-profile-trigger").click();
+        await navFrame.locator("#ccxp-lite-profile-popover").waitFor({ state: "visible" });
+        if (label === "head") {
+          const links = navFrame.locator("#ccxp-lite-profile-popover .ccxp-lite-profile-link");
+          assert.equal(await links.count(), 3);
+          assert.equal(await links.first().textContent(), "ccxpLite");
+        }
+        await capturePage(page, path.join(revisionOutputDir, "profile-classic.png"));
+        if (recordVideo) {
+          markRecordingStep("profile-actions-start");
+          await recordProfileActions(page, navFrame);
+          markRecordingStep("profile-actions-end");
+        }
+        await navFrame.locator(".ccxp-lite-profile-trigger").click();
+      }
       if ((await navFrame.locator(".ccxp-lite-session-timer-toggle").count()) > 0) {
         await assertSessionTimer(page, navFrame, revisionOutputDir, capturePage);
       }
@@ -565,7 +586,7 @@ async function captureRevision(
         if (recordVideo) {
           await page.waitForTimeout(1500);
         }
-        await navFrame.locator("#ccxp-lite-profile-mode").selectOption("layered");
+        await setProfileMenuMode(navFrame.locator("#ccxp-lite-profile-mode"), "layered");
       } else {
         await page.locator(".ccxp-lite-sidebar-experiment-switch").click();
       }
@@ -587,6 +608,12 @@ async function captureRevision(
       markRecordingStep("homepage-end");
       if (hasHome) {
         await assertMenuProfile(page, navFrame);
+      }
+      if (expectSupportLinksChange) {
+        await navFrame.locator(".ccxp-lite-profile-trigger").click();
+        await navFrame.locator("#ccxp-lite-profile-popover").waitFor({ state: "visible" });
+        await capturePage(page, path.join(revisionOutputDir, "profile-layered.png"));
+        await navFrame.locator(".ccxp-lite-profile-trigger").click();
       }
       process.stdout.write(`[${label}] embedded destination\n`);
       await navFrame.locator("button[title^='\u6559\u5B78\u610F\u898B']").click();
@@ -751,6 +778,7 @@ function compareScreenshot(
   diffPath: string,
   preserveAbove?: number,
   maskSidebar = false,
+  headerWidth = 0,
 ) {
   const base = PNG.sync.read(readFileSync(basePath));
   const head = PNG.sync.read(readFileSync(headPath));
@@ -774,6 +802,12 @@ function compareScreenshot(
       }
     }
   }
+  // Support links move out of the header; the surrounding page remains strict.
+  for (const png of [base, head]) {
+    for (let y = 0; y < (headerWidth > 0 ? 68 : 0); y++) {
+      png.data.fill(0, y * png.width * 4, (y * png.width + headerWidth) * 4);
+    }
+  }
   const diff = new PNG({ width: base.width, height: base.height });
   const differentPixels = pixelmatch(base.data, head.data, diff.data, base.width, base.height, {
     includeAA: false,
@@ -793,6 +827,7 @@ function compareCaptures(
   outputDir: string,
   expectSearchResultsChange: boolean,
   expectHomeChange: boolean,
+  expectSupportLinksChange: boolean,
 ): readonly string[] {
   const failures: string[] = [];
   if (base.searchFormBottom !== head.searchFormBottom) {
@@ -826,6 +861,10 @@ function compareCaptures(
       continue;
     }
     const headPath = head.screenshots[name];
+    const headerChanges =
+      expectSupportLinksChange &&
+      (name === "login" || redesignedViews.has(name) || framedViews.has(name));
+    const headerWidth = headerChanges ? 324 : 0;
     const difference = compareScreenshot(
       basePath,
       headPath,
@@ -834,6 +873,7 @@ function compareCaptures(
         ? base.searchFormBottom
         : undefined,
       expectHomeChange && framedViews.has(name),
+      name === "sidebar-layered-search" && headerChanges ? 520 : headerWidth,
     );
     if (difference.ratio > maximumPixelDifferenceRatio) {
       failures.push(
@@ -880,6 +920,7 @@ async function main() {
       "record-video": { type: "boolean", default: false },
       "expect-search-results-change": { type: "boolean", default: false },
       "expect-home-change": { type: "boolean", default: false },
+      "expect-support-links-change": { type: "boolean", default: false },
     },
     strict: true,
   });
@@ -897,6 +938,7 @@ async function main() {
     values["work-log-only"],
     values["record-video"],
     values["expect-search-results-change"],
+    values["expect-support-links-change"],
   );
   const head = await captureRevision(
     "head",
@@ -905,17 +947,23 @@ async function main() {
     values["work-log-only"],
     values["record-video"],
     values["expect-search-results-change"],
+    values["expect-support-links-change"],
   );
+  if (values["expect-support-links-change"]) {
+    // Captures above validate the profile links; the browser test covers keyboard/dismissal.
+    assert.ok(existsSync(path.join(outputDir, "head", "profile-classic.png")));
+  }
   const failures = compareCaptures(
     base,
     head,
     outputDir,
     values["expect-search-results-change"],
     values["expect-home-change"],
+    values["expect-support-links-change"],
   );
   writeFileSync(
     path.join(outputDir, "report.json"),
-    `${JSON.stringify({ baseExtensionDir, headExtensionDir, expectHomeChange: values["expect-home-change"], expectSearchResultsChange: values["expect-search-results-change"], searchFormBottom: base.searchFormBottom, failures }, undefined, 2)}\n`,
+    `${JSON.stringify({ baseExtensionDir, headExtensionDir, expectHomeChange: values["expect-home-change"], expectSupportLinksChange: values["expect-support-links-change"], expectSearchResultsChange: values["expect-search-results-change"], searchFormBottom: base.searchFormBottom, failures }, undefined, 2)}\n`,
   );
   if (failures.length > 0) {
     if (process.env.ALLOW_VISUAL_CHANGE === "true") {
