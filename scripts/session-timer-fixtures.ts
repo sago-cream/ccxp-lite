@@ -112,12 +112,23 @@ export async function assertSessionTimer(
     );
     await englishHeader.goto(idleUrl(1501));
     const englishProfile = englishNav.locator(".ccxp-lite-sidebar-profile");
-    await englishProfile.getByRole("status").getByText("Logout in 5 min").waitFor();
+    await englishProfile
+      .getByRole("status")
+      .getByText("Logout in 5 min due to inactivity")
+      .waitFor();
     await englishProfile.getByRole("button", { name: "Settings", exact: true }).click();
     await englishProfile.getByLabel("Show session timer").check();
     await capture(englishPage, path.join(outputDir, "session-timer-english.png"));
     await englishProfile.locator("#ccxp-lite-profile-mode").selectOption("layered");
     await englishPage.setViewportSize({ width: 375, height: originalViewport.height });
+    const englishDismissBounds = await englishProfile
+      .getByRole("button", { name: "Dismiss reminder" })
+      .boundingBox();
+    assert.ok(englishDismissBounds);
+    assert.ok(
+      englishDismissBounds.x + englishDismissBounds.width <= 375,
+      "English reminder keeps its dismiss button in the viewport",
+    );
     await capture(englishPage, path.join(outputDir, "session-timer-english-layered-375.png"));
     await englishProfile.getByRole("button", { name: "Dismiss reminder" }).click();
     assert.equal(await englishProfile.locator(".ccxp-lite-session-warning").isVisible(), false);

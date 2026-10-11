@@ -367,6 +367,10 @@
   color: var(--ccxp-lite-text-muted);
   cursor: pointer;
 }
+.ccxp-lite-session-warning > [role="status"] {
+  min-width: 0;
+  white-space: normal;
+}
 .ccxp-lite-session-warning-dismiss svg {
   width: var(--ccxp-lite-size-sidebar-search-icon);
   height: var(--ccxp-lite-size-sidebar-search-icon);

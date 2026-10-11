@@ -98,7 +98,9 @@ describe("legacy session countdown", () => {
     ui.tick();
     expect(ui.timer().hidden).toBe(true);
     expect(ui.warning().hidden).toBe(false);
-    expect(ui.warning().textContent).toContain("5 \u5206\u9418\u5F8C\u767B\u51FA");
+    expect(ui.warning().textContent).toContain(
+      "5\u5206\u9418\u5F8C\u5C07\u56E0\u9592\u7F6E\u767B\u51FA",
+    );
     requireElement(
       ui.document.querySelector<HTMLButtonElement>(".ccxp-lite-session-warning-dismiss"),
     ).click();
@@ -123,7 +125,7 @@ describe("legacy session countdown", () => {
     expect(ui.warning().hidden).toBe(true);
     ui.clock(240);
     ui.tick();
-    expect(ui.warning().textContent).toContain("Logout in 5 min");
+    expect(ui.warning().textContent).toContain("Logout in 5 min due to inactivity");
     ui.clock(240, Date.now() - 16_000);
     ui.tick();
     expect(ui.warning().hidden).toBe(true);

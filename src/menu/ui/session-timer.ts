@@ -113,7 +113,9 @@
       { className: "ccxp-lite-session-warning", attributes: { hidden: "" } },
       [
         dom.element("span", {
-          text: english ? "Logout in 5 min" : "5 \u5206\u9418\u5F8C\u767B\u51FA",
+          text: english
+            ? "Logout in 5 min due to inactivity"
+            : "5\u5206\u9418\u5F8C\u5C07\u56E0\u9592\u7F6E\u767B\u51FA",
           attributes: { role: "status" },
         }),
         dismiss,
