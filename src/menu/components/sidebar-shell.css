@@ -237,21 +237,26 @@
 .ccxp-lite-profile-trigger:focus-visible {
   outline: 2px solid var(--ccxp-lite-primary-focus-border);
 }
-.ccxp-lite-profile-mode {
-  display: grid;
-  gap: 8px;
-  margin-top: 0;
-  font: var(--ccxp-lite-type-caption);
-  color: var(--ccxp-lite-text);
-}
-.ccxp-lite-profile-mode select {
+.ccxp-lite-profile-popover .ccxp-lite-profile-control {
+  display: flex;
+  align-items: center;
   width: 100%;
-  padding: 8px;
-  border: 1px solid var(--ccxp-lite-border);
+  min-height: var(--ccxp-lite-size-dialog-action-height);
+  padding: var(--ccxp-lite-spacing-inline-sm);
+  border: 0;
   border-radius: var(--ccxp-lite-radius-input);
-  background: var(--ccxp-lite-surface);
+  background: transparent;
   color: var(--ccxp-lite-text);
   font: var(--ccxp-lite-type-caption);
+  text-align: left;
+  cursor: pointer;
+}
+.ccxp-lite-profile-popover .ccxp-lite-profile-control:hover {
+  background: var(--ccxp-lite-primary-hover-surface);
+}
+.ccxp-lite-profile-popover .ccxp-lite-profile-control:focus-visible {
+  outline: 2px solid var(--ccxp-lite-primary-focus-border);
+  outline-offset: -2px;
 }
 .ccxp-lite-profile-overlays {
   position: absolute;
@@ -281,7 +286,7 @@
   font-weight: 600;
 }
 .ccxp-lite-profile-settings {
-  padding: var(--ccxp-lite-spacing-inset-sm);
+  padding: var(--ccxp-lite-spacing-2xs);
   border: 1px solid var(--ccxp-lite-border);
   border-radius: var(--ccxp-lite-radius-input);
   background: var(--ccxp-lite-surface-muted);
@@ -350,26 +355,6 @@
   color: var(--ccxp-lite-text-muted);
   font: var(--ccxp-lite-type-caption);
   font-variant-numeric: var(--ccxp-lite-font-variant-numeric-tabular);
-}
-.ccxp-lite-session-timer-toggle {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--ccxp-lite-spacing-inline-sm);
-  min-height: var(--ccxp-lite-size-dialog-action-height);
-  margin-top: var(--ccxp-lite-spacing-inset-sm);
-  padding-top: var(--ccxp-lite-spacing-inline-sm);
-  border-top: 1px solid var(--ccxp-lite-border);
-  color: var(--ccxp-lite-text);
-  font: var(--ccxp-lite-type-caption);
-  cursor: pointer;
-}
-.ccxp-lite-session-timer-toggle input {
-  flex-shrink: 0;
-  width: 16px;
-  height: 16px;
-  margin: 0;
-  accent-color: var(--ccxp-lite-primary);
 }
 .ccxp-lite-session-warning {
   display: flex;

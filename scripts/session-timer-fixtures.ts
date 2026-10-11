@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import path from "node:path";
 import type { Frame, Page } from "playwright";
+import { setProfileMenuMode, toggleProfileTimer } from "./profile-fixtures.js";
 
 // Synthetic idle responses are served at the live legacy timer's original endpoint.
 export async function assertSessionTimer(
@@ -17,7 +18,7 @@ export async function assertSessionTimer(
   const profile = nav.locator(".ccxp-lite-sidebar-profile");
   const timer = profile.locator(".ccxp-lite-session-timer");
   const warning = profile.locator(".ccxp-lite-session-warning");
-  const toggle = profile.locator(".ccxp-lite-session-timer-toggle input");
+  const toggle = profile.locator(".ccxp-lite-session-timer-toggle");
   const trigger = profile.locator(".ccxp-lite-profile-trigger");
   const mode = profile.locator("#ccxp-lite-profile-mode");
   const idleUrl = (idle: number) => {
@@ -30,7 +31,7 @@ export async function assertSessionTimer(
   await warning.waitFor({ state: "visible" });
   assert.equal(await timer.isVisible(), false, "Hidden timer must still warn at five minutes");
   await trigger.click();
-  await toggle.check();
+  await toggleProfileTimer(toggle);
   await trigger.press("Escape");
   await timer.waitFor({ state: "visible" });
   assert.match((await timer.textContent()) ?? "", /^0[45]:\d{2}$/u);
@@ -61,7 +62,7 @@ export async function assertSessionTimer(
   await header.goto(idleUrl(1501));
   await warning.waitFor({ state: "visible" });
   await trigger.click();
-  await mode.selectOption("layered");
+  await setProfileMenuMode(mode, "layered");
   assert.equal(await warning.isVisible(), true);
   assert.equal(await timer.isVisible(), true);
   for (const width of [1280, 600, 375]) {
@@ -84,9 +85,9 @@ export async function assertSessionTimer(
   }
   await page.setViewportSize(originalViewport);
   await trigger.click();
-  await mode.selectOption("classic");
+  await setProfileMenuMode(mode, "classic");
   await trigger.click();
-  await toggle.uncheck();
+  await toggleProfileTimer(toggle);
   await trigger.press("Escape");
   await header.goto(originalHeaderUrl);
   await warning.waitFor({ state: "hidden" });
@@ -117,9 +118,9 @@ export async function assertSessionTimer(
       .getByText("Logout in 5 min due to inactivity")
       .waitFor();
     await englishProfile.getByRole("button", { name: "Settings", exact: true }).click();
-    await englishProfile.getByLabel("Show session timer").check();
+    await toggleProfileTimer(englishProfile.locator(".ccxp-lite-session-timer-toggle"));
     await capture(englishPage, path.join(outputDir, "session-timer-english.png"));
-    await englishProfile.locator("#ccxp-lite-profile-mode").selectOption("layered");
+    await setProfileMenuMode(englishProfile.locator("#ccxp-lite-profile-mode"), "layered");
     await englishPage.setViewportSize({ width: 375, height: originalViewport.height });
     const englishDismissBounds = await englishProfile
       .getByRole("button", { name: "Dismiss reminder" })
@@ -139,8 +140,8 @@ export async function assertSessionTimer(
     assert.ok(englishPopupBounds);
     assert.ok(englishPopupBounds.x >= 0 && englishPopupBounds.x + englishPopupBounds.width <= 375);
     await capture(englishPage, path.join(outputDir, "profile-english-layered-375.png"));
-    await englishProfile.getByLabel("Show session timer").uncheck();
-    await englishProfile.locator("#ccxp-lite-profile-mode").selectOption("classic");
+    await toggleProfileTimer(englishProfile.locator(".ccxp-lite-session-timer-toggle"));
+    await setProfileMenuMode(englishProfile.locator("#ccxp-lite-profile-mode"), "classic");
   } finally {
     await englishPage.close();
   }

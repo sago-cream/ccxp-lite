@@ -132,22 +132,21 @@
       className: "ccxp-lite-profile-popover",
       attributes: { id: "ccxp-lite-profile-popover", hidden: "" },
     });
-    const mode = targetDocument.createElement("select");
-    mode.id = "ccxp-lite-profile-mode";
-    for (const [value, label] of [
-      ["classic", english ? "Sidebar" : "\u5074\u908A\u6B04\u6A21\u5F0F"],
-      ["layered", english ? "Full-screen menu" : "\u5168\u87A2\u5E55\u9078\u55AE"],
-    ]) {
-      const option = targetDocument.createElement("option");
-      option.value = value;
-      option.textContent = label;
-      mode.append(option);
-    }
-    mode.value = state.sidebarVariant;
-    mode.addEventListener("change", () => {
+    const modeLabels = english
+      ? { classic: "Use menu mode", layered: "Use sidebar mode" }
+      : {
+          classic: "\u4F7F\u7528\u9078\u55AE\u6A21\u5F0F",
+          layered: "\u4F7F\u7528\u5074\u6B04\u6A21\u5F0F",
+        };
+    const mode = dom.element("button", {
+      className: "ccxp-lite-profile-control ccxp-lite-profile-mode",
+      text: modeLabels[state.sidebarVariant],
+      attributes: { id: "ccxp-lite-profile-mode", type: "button" },
+    });
+    mode.addEventListener("click", () => {
       const nextState = state;
       nextState.sidebarVariant = setPersistedSidebarVariant(
-        mode.value === "layered" ? "layered" : "classic",
+        state.sidebarVariant === "classic" ? "layered" : "classic",
       );
       syncTopLevelFramesetLayout(state.sidebarVariant);
       nextState.activeLeaf = undefined;
@@ -170,17 +169,7 @@
         }),
       ],
     );
-    const controls = dom.element("div", { className: "ccxp-lite-profile-settings" }, [
-      dom.element(
-        "label",
-        {
-          className: "ccxp-lite-profile-mode",
-          text: english ? "Menu mode" : "\u9078\u55AE\u6A21\u5F0F",
-          attributes: { for: mode.id },
-        },
-        [mode],
-      ),
-    ]);
+    const controls = dom.element("div", { className: "ccxp-lite-profile-settings" }, [mode]);
     preferences.append(controls);
     const resources = dom.element(
       "section",

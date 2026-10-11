@@ -89,16 +89,25 @@ test("packaged headers omit ccxpLite and profile menus expose support links", as
       }
       const preferences = popup.getByRole("region", { name: "\u504F\u597D\u8A2D\u5B9A" });
       const support = popup.getByRole("region", { name: "\u652F\u63F4\u8207\u9023\u7D50" });
-      expect(await preferences.getByRole("combobox").count()).toBe(1);
-      expect(await preferences.getByRole("checkbox").count()).toBe(1);
+      expect(await preferences.getByRole("button").count()).toBe(2);
       expect(await preferences.getByRole("link").count()).toBe(0);
       expect(await support.getByRole("link").count()).toBe(2);
-      await preferences.getByRole("combobox").focus();
-      await preferences.getByRole("combobox").press("Tab");
-      const timerToggle = preferences.getByRole("checkbox");
+      const mode = preferences.locator("#ccxp-lite-profile-mode");
+      expect(await mode.textContent()).toBe(
+        variant === "classic"
+          ? "\u4F7F\u7528\u9078\u55AE\u6A21\u5F0F"
+          : "\u4F7F\u7528\u5074\u6B04\u6A21\u5F0F",
+      );
+      await mode.focus();
+      await mode.press("Tab");
+      const timerToggle = preferences.locator(".ccxp-lite-session-timer-toggle");
       expect(await timerToggle.evaluate((input) => input === document.activeElement)).toBe(true);
       await timerToggle.press("Space");
-      expect(await timerToggle.isChecked()).toBe(variant === "classic");
+      expect(await timerToggle.textContent()).toBe(
+        variant === "classic"
+          ? "\u96B1\u85CF\u767B\u51FA\u5012\u6578"
+          : "\u986F\u793A\u767B\u51FA\u5012\u6578",
+      );
       await timerToggle.press("Tab");
       const repo = popup.getByRole("link", { name: "ccxpLite", exact: true });
       const report = popup.getByRole("link", { name: "\u554F\u984C\u56DE\u5831", exact: true });
@@ -114,9 +123,7 @@ test("packaged headers omit ccxpLite and profile menus expose support links", as
       await popup.waitFor({ state: "hidden" });
       expect(await trigger.getAttribute("aria-expanded")).toBe("false");
       await trigger.click();
-      await nav
-        .locator("#ccxp-lite-profile-mode")
-        .selectOption(variant === "classic" ? "layered" : "classic");
+      await nav.locator("#ccxp-lite-profile-mode").click();
     }
     await page.setViewportSize({ width: 1280, height: 960 });
     await nav.locator(".ccxp-lite-profile-trigger").click();

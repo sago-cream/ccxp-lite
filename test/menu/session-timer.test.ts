@@ -1,5 +1,4 @@
 import { afterEach, describe, expect, test, vi } from "vitest";
-import { TestEvent } from "../helpers/dom-event.js";
 import { createSidebarShellHtml } from "../helpers/menu-fixtures.js";
 import {
   createTestWindow,
@@ -49,9 +48,7 @@ function setup(english = false) {
   const warning = () =>
     requireElement(document.querySelector<HTMLElement>(".ccxp-lite-session-warning"));
   const toggle = () =>
-    requireElement(
-      document.querySelector<HTMLInputElement>(".ccxp-lite-session-timer-toggle input"),
-    );
+    requireElement(document.querySelector<HTMLButtonElement>(".ccxp-lite-session-timer-toggle"));
   return {
     window,
     document,
@@ -76,8 +73,8 @@ describe("legacy session countdown", () => {
     expect(ui.timer().hidden).toBe(true);
     expect(ui.timer().textContent).toBe("15:01");
     expect(ui.warning().hidden).toBe(true);
-    ui.toggle().checked = true;
-    ui.toggle().dispatchEvent(new TestEvent("change"));
+    expect(ui.toggle().textContent).toBe("\u986F\u793A\u767B\u51FA\u5012\u6578");
+    ui.toggle().click();
     expect(ui.timer().hidden).toBe(false);
     expect(ui.window.localStorage.getItem("ccxp-lite-show-session-timer")).toBe("true");
     ui.clock(900);
@@ -85,8 +82,11 @@ describe("legacy session countdown", () => {
     expect(ui.timer().textContent).toBe("15:00");
     ui.mount();
     expect(ui.clear).toHaveBeenCalledWith(42);
-    expect(ui.toggle().checked).toBe(true);
+    expect(ui.toggle().textContent).toBe("\u96B1\u85CF\u767B\u51FA\u5012\u6578");
     expect(ui.timer().hidden).toBe(false);
+    ui.toggle().click();
+    expect(ui.timer().hidden).toBe(true);
+    expect(ui.toggle().textContent).toBe("\u986F\u793A\u767B\u51FA\u5012\u6578");
   });
 
   test("warns at five minutes while hidden, dismisses once per idle period, and rearms on activity", () => {
@@ -121,6 +121,9 @@ describe("legacy session countdown", () => {
   test("hides unknown or stale clocks and supports English", () => {
     const ui = setup(true);
     ui.mount();
+    expect(ui.toggle().textContent).toBe("Show session timer");
+    ui.toggle().click();
+    expect(ui.toggle().textContent).toBe("Hide session timer");
     expect(ui.timer().hidden).toBe(true);
     expect(ui.warning().hidden).toBe(true);
     ui.clock(240);

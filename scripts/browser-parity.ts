@@ -16,6 +16,7 @@ import { assertWorkLogReady, routeWorkLogFixture, workLogPath } from "./work-log
 import pixelmatch from "pixelmatch";
 import { assertHome, assertHomeFavorites, assertMenuProfile } from "./home-fixtures.js";
 import { assertSessionTimer } from "./session-timer-fixtures.js";
+import { setProfileMenuMode } from "./profile-fixtures.js";
 import type { BrowserContext, Frame, Page } from "playwright";
 import { chromium } from "playwright";
 import { PNG } from "pngjs";
@@ -580,7 +581,7 @@ async function captureRevision(
         if (recordVideo) {
           await page.waitForTimeout(1500);
         }
-        await navFrame.locator("#ccxp-lite-profile-mode").selectOption("layered");
+        await setProfileMenuMode(navFrame.locator("#ccxp-lite-profile-mode"), "layered");
       } else {
         await page.locator(".ccxp-lite-sidebar-experiment-switch").click();
       }
