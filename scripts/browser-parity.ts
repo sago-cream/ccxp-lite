@@ -17,6 +17,7 @@ import pixelmatch from "pixelmatch";
 import { assertHome, assertHomeFavorites, assertMenuProfile } from "./home-fixtures.js";
 import { assertSidebarCollapse } from "./sidebar-collapse-fixtures.js";
 import { assertSessionTimer } from "./session-timer-fixtures.js";
+import { recordProfileActions, setProfileMenuMode } from "./profile-fixtures.js";
 import type { BrowserContext, Frame, Page } from "playwright";
 import { chromium } from "playwright";
 import { PNG } from "pngjs";
@@ -570,6 +571,11 @@ async function captureRevision(
           assert.equal(await links.first().textContent(), "ccxpLite");
         }
         await capturePage(page, path.join(revisionOutputDir, "profile-classic.png"));
+        if (recordVideo) {
+          markRecordingStep("profile-actions-start");
+          await recordProfileActions(page, navFrame);
+          markRecordingStep("profile-actions-end");
+        }
         await navFrame.locator(".ccxp-lite-profile-trigger").click();
       }
       if (expectSidebarCollapseChange && label === "head") {
@@ -593,7 +599,7 @@ async function captureRevision(
         if (recordVideo) {
           await page.waitForTimeout(1500);
         }
-        await navFrame.locator("#ccxp-lite-profile-mode").selectOption("layered");
+        await setProfileMenuMode(navFrame.locator("#ccxp-lite-profile-mode"), "layered");
       } else {
         await page.locator(".ccxp-lite-sidebar-experiment-switch").click();
       }
