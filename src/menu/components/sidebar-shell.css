@@ -288,10 +288,6 @@
   font: var(--ccxp-lite-type-caption);
   font-weight: 600;
 }
-.ccxp-lite-profile-settings {
-  border-radius: var(--ccxp-lite-radius-input);
-  background: var(--ccxp-lite-surface-muted);
-}
 .ccxp-lite-profile-actions {
   margin-top: var(--ccxp-lite-spacing-inline-sm);
   padding-top: var(--ccxp-lite-spacing-inline-sm);
