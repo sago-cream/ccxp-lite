@@ -58,6 +58,94 @@ function moveKey(element: HTMLElement, key: string) {
 }
 
 describe("sidebar ordering", () => {
+  test("confirmation restores every saved group, keeps pinned items, and persists after reload", async () => {
+    const model = createSidebarModel();
+    model.favorites.blocks = [requireValue(model.categories[0]?.blocks[0])];
+    const ui = await setup(undefined, model);
+    const originalRoot = ui.ids("root");
+    const originalLinks = ui.ids("block:section-academic");
+    const originalPinned = ui.ids("category:category-favorites");
+    moveKey(ui.row("Campus Systems"), "ArrowUp");
+    moveKey(ui.row("Course Schedule"), "ArrowUp");
+    const pinnedBlock = requireElement(
+      ui.list("category:category-favorites").querySelector<HTMLElement>(":scope > div > button"),
+    );
+    moveKey(pinnedBlock, "ArrowUp");
+    const stored = ui.window.localStorage.getItem(storageKey);
+    expect(stored).not.toBeNull();
+    const openDialog = () => {
+      requireElement(
+        ui.document.querySelector<HTMLButtonElement>(".ccxp-lite-profile-trigger"),
+      ).click();
+      requireElement(
+        ui.document.querySelector<HTMLButtonElement>(".ccxp-lite-profile-restore-order"),
+      ).click();
+      return requireElement(ui.document.querySelector<HTMLElement>('[role="dialog"]'));
+    };
+    const canceled = openDialog();
+    requireElement(canceled.querySelector<HTMLButtonElement>("button")).click();
+    await Promise.resolve();
+    expect(ui.window.localStorage.getItem(storageKey)).toBe(stored);
+    const dialog = openDialog();
+    const buttons = dialog.querySelectorAll<HTMLButtonElement>("button");
+    expect(ui.document.activeElement).toBe(buttons[0]);
+    const tab = new TestEvent("keydown", { bubbles: true, cancelable: true });
+    Object.assign(tab, { key: "Tab", shiftKey: true });
+    requireElement(buttons[0]).dispatchEvent(tab);
+    expect(ui.document.activeElement).toBe(buttons[1]);
+    requireElement(buttons[1]).click();
+    await new Promise<void>((resolve) => {
+      setTimeout(resolve, 0);
+    });
+    expect(ui.ids("root")).toEqual(originalRoot);
+    expect(ui.ids("block:section-academic")).toEqual(originalLinks);
+    expect(ui.ids("category:category-favorites")).toEqual(originalPinned);
+    expect(ui.window.localStorage.getItem(storageKey)).toBeNull();
+    expect(ui.document.activeElement).toBe(ui.document.querySelector(".ccxp-lite-profile-trigger"));
+    const reload = await setup(ui.window.localStorage.getItem(storageKey) ?? undefined, model);
+    expect(reload.ids("root")).toEqual(originalRoot);
+    ui.state.sidebarVariant = "layered";
+    ui.render();
+    expect(ui.ids("category:category-favorites")).toEqual([
+      "block:section-academic",
+      "link:grades",
+    ]);
+  });
+
+  test("Escape and backdrop cancel restoration, and blocked storage still restores this session", async () => {
+    const ui = await setup();
+    const original = ui.ids("root");
+    moveKey(ui.row("Campus Systems"), "ArrowUp");
+    const stored = ui.window.localStorage.getItem(storageKey);
+    const show = async () =>
+      await requireValue(ui.window.CCXP_LITE.sidebarDialogController).showRestoreOrderDialog(
+        ui.document,
+        requireValue(ui.window.CCXP_LITE.shared).STRINGS,
+      );
+    const escapeResult = show();
+    const event = new TestEvent("keydown", { bubbles: true, cancelable: true });
+    Object.assign(event, { key: "Escape" });
+    requireElement(ui.document.querySelector<HTMLElement>('[role="dialog"] button')).dispatchEvent(
+      event,
+    );
+    expect(await escapeResult).toBe(false);
+    const backdropResult = show();
+    requireElement(
+      ui.document.querySelector<HTMLDivElement>("[data-ccxp-lite-remove-pinned-dialog]"),
+    ).click();
+    expect(await backdropResult).toBe(false);
+    expect(ui.window.localStorage.getItem(storageKey)).toBe(stored);
+    Object.defineProperty(ui.window, "localStorage", {
+      configurable: true,
+      get() {
+        throw new Error("blocked");
+      },
+    });
+    requireValue(ui.window.CCXP_LITE.sidebarOrdering).restoreOriginalOrder();
+    ui.render();
+    expect(ui.ids("root")).toEqual(original);
+  });
+
   test("drags categories, restores them on reload, and shares ordering with the layered layout", async () => {
     const ui = await setup();
     dragEvent(ui.row("Campus Systems"), "dragstart");

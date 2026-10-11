@@ -6,6 +6,7 @@
     !namespace.uiSwitch ||
     !namespace.uiIcons ||
     !namespace.uiRenderer ||
+    !namespace.uiButtons ||
     !namespace.sidebarDialogController
   ) {
     return;
@@ -15,7 +16,7 @@
   const { setPersistedSidebarVariant, persistSidebarScroll } = namespace.sidebarState;
   const { createRenderer } = namespace.uiRenderer;
   const { createCategoryIcon, createExternalLinkIcon } = namespace.uiIcons;
-  const { showRemovePinnedDialog } = namespace.sidebarDialogController;
+  const { showRemovePinnedDialog, showRestoreOrderDialog } = namespace.sidebarDialogController;
 
   let layoutFrame = 0;
   app.shared?.addCleanupTask(() => {
@@ -144,7 +145,7 @@
   function mountSidebarVariantSwitch(
     targetDocument: Document,
     state: CcxpLiteSidebarState,
-    _strings: Readonly<Record<string, string>>,
+    strings: Readonly<Record<string, string>>,
     rerender: () => void,
     _footer?: HTMLElement,
   ) {
@@ -290,6 +291,38 @@
       popup.hidden = !open;
       settings.setAttribute("aria-expanded", String(open));
     };
+    const restoreOrder = dom.element(
+      "button",
+      {
+        className:
+          "ccxp-lite-profile-row ccxp-lite-profile-control ccxp-lite-profile-restore-order",
+        attributes: { type: "button" },
+      },
+      [
+        createCategoryIcon(targetDocument, "refresh-cw"),
+        dom.element("span", { text: strings.sidebarRestoreOrder }),
+      ],
+    );
+    controls.append(restoreOrder);
+    controller?.listen(restoreOrder, "click", () => {
+      setOpen(false);
+      settings.focus();
+      showRestoreOrderDialog(targetDocument, strings, controller.signal).then(
+        (confirmed) => {
+          if (!confirmed || !card.isConnected) {
+            return;
+          }
+          app.sidebarOrdering?.restoreOriginalOrder();
+          persistSidebarScroll(
+            targetDocument,
+            state.currentCategoryId === "" ? "root" : "category",
+          );
+          rerender();
+          targetDocument.querySelector<HTMLButtonElement>(".ccxp-lite-profile-trigger")?.focus();
+        },
+        () => undefined,
+      );
+    });
     controller?.listen(settings, "click", () => {
       setOpen(popup.hidden);
     });

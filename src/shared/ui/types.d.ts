@@ -128,6 +128,11 @@ declare global {
       ) => CcxpLiteRemovePinnedDialogView;
     };
     sidebarDialogController?: {
+      showRestoreOrderDialog: (
+        targetDocument: Document,
+        strings: Readonly<Record<string, string>>,
+        signal?: AbortSignal,
+      ) => Promise<boolean>;
       showRemovePinnedDialog: (
         targetDocument: Document,
         itemName: string,

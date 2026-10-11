@@ -676,6 +676,7 @@ declare global {
     sidebar?: CcxpLiteSidebar;
     sidebarState?: CcxpLiteSidebarStateModule;
     sidebarOrdering?: {
+      restoreOriginalOrder: () => void;
       mountSidebarOrdering: (
         content: HTMLElement,
         model: CcxpLiteSidebarModel,
