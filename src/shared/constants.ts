@@ -31,6 +31,7 @@
       sidebarFavoritesEmpty: "Press star at any function to save it here",
       sidebarAddFavorite: "Add to favorites",
       sidebarRemoveFavorite: "Remove from favorites",
+      sidebarReorderHint: "Drag to reorder; Alt+Shift+arrow keys to move",
       announcementDate: "Date",
       announcementTopic: "Topic",
       playVerificationAudio: "Play verification audio",
@@ -114,6 +115,8 @@
         "\u6309\u4E0B\u4EFB\u610F\u529F\u80FD\u65C1\u7684\u661F\u865F\u4EE5\u5132\u5B58",
       sidebarAddFavorite: "\u52A0\u5165\u5E38\u7528\u529F\u80FD",
       sidebarRemoveFavorite: "\u79FB\u9664\u5E38\u7528\u529F\u80FD",
+      sidebarReorderHint:
+        "\u62D6\u66F3\u4EE5\u8ABF\u6574\u9806\u5E8F\uFF1BAlt+Shift+\u65B9\u5411\u9375\u79FB\u52D5",
       announcementDate: "\u65E5\u671F",
       announcementTopic: "\u65B0\u805E\u4E3B\u984C",
       playVerificationAudio: "\u64AD\u653E\u9A57\u8B49\u78BC\u8A9E\u97F3",

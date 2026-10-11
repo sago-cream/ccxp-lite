@@ -668,6 +668,15 @@ declare global {
     loginStyle?: CcxpLiteLoginStyle;
     sidebar?: CcxpLiteSidebar;
     sidebarState?: CcxpLiteSidebarStateModule;
+    sidebarOrdering?: {
+      mountSidebarOrdering: (
+        content: HTMLElement,
+        model: CcxpLiteSidebarModel,
+        strings: Readonly<Record<string, string>>,
+        rerender: () => void,
+        controller: CcxpLiteUiController,
+      ) => void;
+    };
     sidebarFavorites?: CcxpLiteSidebarFavorites;
     sidebarData?: CcxpLiteSidebarData;
     sidebarUi?: CcxpLiteSidebarUi;

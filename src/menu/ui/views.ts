@@ -57,6 +57,7 @@
     const dom = createRenderer(targetDocument);
     const body = dom.element("div", {
       className: "ccxp-lite-pane-body ccxp-lite-pinned-list",
+      attributes: { "data-ccxp-lite-order-group": "category:category-favorites" },
     });
     const pinnedBlocks = favorites?.blocks ?? [];
     const pinnedLinks = favorites?.links ?? [];
@@ -94,6 +95,7 @@
     const dom = createRenderer(targetDocument);
     const body = dom.element("div", {
       className: "ccxp-lite-pane-body ccxp-lite-category-browser",
+      attributes: { "data-ccxp-lite-order-group": "root" },
     });
     if (categories.length === 0) {
       body.append(
@@ -184,7 +186,12 @@
     rerender: () => void,
   ) {
     const dom = createRenderer(targetDocument);
-    const body = dom.element("div", { className: "ccxp-lite-category-detail" });
+    const body = dom.element("div", {
+      className: "ccxp-lite-category-detail",
+      attributes: category
+        ? { "data-ccxp-lite-order-group": `category:${category.id}` }
+        : undefined,
+    });
     if (!category) {
       body.append(
         createEmptyState(
@@ -239,7 +246,13 @@
       }
       frameId = view.requestAnimationFrame(() => {
         frameId = 0;
-        layoutCategoryDetailWaterfall(view, body, detailItems);
+        layoutCategoryDetailWaterfall(
+          view,
+          body,
+          [...body.children].filter(
+            (child): child is HTMLElement => !child.classList.contains("ccxp-lite-empty"),
+          ),
+        );
       });
     };
     controller.addCleanup(() => {
