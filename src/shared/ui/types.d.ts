@@ -50,6 +50,15 @@ declare global {
   }
 
   interface CcxpLiteNamespace {
+    sidebarSessionTimer?: {
+      mount: (
+        targetDocument: Document,
+        card: HTMLElement,
+        settings: HTMLButtonElement,
+        popup: HTMLElement,
+        english: boolean,
+      ) => () => void;
+    };
     uiSearchSelect?: {
       mountSearchSelect: (
         input: HTMLInputElement,

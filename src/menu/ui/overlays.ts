@@ -191,6 +191,13 @@
       },
       [settings, popup],
     );
+    const cleanupTimer = app.sidebarSessionTimer?.mount(
+      targetDocument,
+      card,
+      settings,
+      popup,
+      english,
+    );
     const controller = app.uiController?.createController(targetDocument);
     const setOpen = (open: boolean) => {
       popup.hidden = !open;
@@ -255,6 +262,7 @@
       bindContentDismissal();
     }
     const cleanup = () => {
+      cleanupTimer?.();
       controller?.destroy();
       contentController?.destroy();
     };

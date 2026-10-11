@@ -125,6 +125,7 @@ export const menuModulePaths = [
   "src/menu/model/data.ts",
   "src/menu/runtime.ts",
   "src/menu/ui/dialog-controller.ts",
+  "src/menu/ui/session-timer.ts",
   "src/menu/ui/overlays.ts",
   "src/menu/ui/favorites.ts",
   "src/menu/ui/navigation-adapter.ts",

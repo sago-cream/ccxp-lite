@@ -10,6 +10,9 @@ history were recaptured on 2026-09-12 with their complete DOM. Registration reta
 Kendo controls and the grid; history retains expanded effective items and its initialized grids.
 Staff identities, dropdown options, and every grid data cell are replaced by synthetic values.
 Host scripts and polling are removed; widget snapshots do not simulate live Kendo behavior.
+The header timer is an exception: `top-timer.js` preserves the script inspected in the live
+`top.php` on 2026-10-11, alongside its jQuery 1.12.4 asset. Its identity/session URLs are
+sanitized, and the harness serves synthetic idle responses without contacting CCXP.
 
 The student navigation retains the full tree declarations and rendered DOM rather than a selected
 category subset. Session parameters are removed/replaced. The frame shell retains the original
@@ -29,6 +32,10 @@ the broad styles on native tables, links, and controls outside the dedicated ext
 The harness waits for the shared main skin as well as page-specific readiness and loaded stylesheets.
 It fails on missing visual assets, missing readiness markers, and failed interactions before
 comparing screenshots and styles.
+Supplementary session-timer captures exercise the five-minute reminder, visibility preference,
+dismissal across rerenders, and activity reset. They use the same packaged extension and legacy
+frameset, with layered layouts checked at 1280, 600, and 375px. These new behavior states are
+captured for head only; the default hidden state remains part of strict base/head parity.
 Tests also reject truncated captures and check synthetic staff grid rows and CSS asset references.
 
 This is representative coverage, not every possible CCXP route or state. OAuth authorization,
