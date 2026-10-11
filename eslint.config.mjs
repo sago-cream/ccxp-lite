@@ -13,6 +13,9 @@ export default [
       "fixtures/ccxp-snapshot/**",
       "node_modules/**",
       "config/release/*.cjs",
+      // Captured and vendored legacy scripts are host fixture data.
+      "test/browser-fixtures/host-assets/*.js",
+      "test/browser-fixtures/top-timer.js",
     ],
   },
 

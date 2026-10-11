@@ -12,7 +12,10 @@ export async function assertProfile(page: Page, nav: Frame, recordVideo = false)
   if (recordVideo) {
     await page.waitForTimeout(1200);
   }
-  await profile.locator("label").click({ position: { x: 3, y: 3 } });
+  await profile
+    .locator("label")
+    .first()
+    .click({ position: { x: 3, y: 3 } });
   assert.equal(await popup.isVisible(), true, "Label clicks must not dismiss the popup");
   const logout = profile.locator(".ccxp-lite-profile-logout");
   assert.equal(await logout.getAttribute("target"), "_top");

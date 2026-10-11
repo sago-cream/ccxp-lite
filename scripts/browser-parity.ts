@@ -15,6 +15,7 @@ import { tmpdir } from "node:os";
 import { assertWorkLogReady, routeWorkLogFixture, workLogPath } from "./work-log-fixtures.js";
 import pixelmatch from "pixelmatch";
 import { assertHome, assertHomeFavorites, assertMenuProfile } from "./home-fixtures.js";
+import { assertSessionTimer } from "./session-timer-fixtures.js";
 import type { BrowserContext, Frame, Page } from "playwright";
 import { chromium } from "playwright";
 import { PNG } from "pngjs";
@@ -179,10 +180,28 @@ function fixtureHtmlForRequest(fixtureName: string, requestUrl: URL) {
 
 async function routeFixtures(context: BrowserContext): Promise<ReadonlySet<string>> {
   const missingAssets = new Set<string>();
+  const idleClocks = new WeakMap<Frame, { url: string; idle: number; startedAt: number }>();
   await context.route("**/*", async (route) => {
     const requestUrl = new URL(route.request().url());
     if (requestUrl.protocol === "chrome-extension:") {
       await route.continue();
+      return;
+    }
+    if (requestUrl.origin === ccxpOrigin && requestUrl.pathname === "/ccxp/INQUIRE/time.php") {
+      const headerUrl = new URL(route.request().frame().url());
+      const frame = route.request().frame();
+      let clock = idleClocks.get(frame);
+      if (!clock || clock.url !== headerUrl.href) {
+        clock = {
+          url: headerUrl.href,
+          idle: Number(headerUrl.searchParams.get("fixture-idle") ?? "18"),
+          startedAt: Date.now(),
+        };
+        idleClocks.set(frame, clock);
+      }
+      await route.fulfill({
+        json: { idle: clock.idle + Math.floor((Date.now() - clock.startedAt) / 1000) },
+      });
       return;
     }
     if (
@@ -317,7 +336,12 @@ async function captureRevision(
     colorScheme: "light",
     reducedMotion: "reduce",
     ...(recordVideo ? { recordVideo: { dir: revisionOutputDir, size: viewport } } : {}),
-    args: [`--disable-extensions-except=${extensionDir}`, `--load-extension=${extensionDir}`],
+    args: [
+      // Use consistent text edges across compositor layers in both packaged captures.
+      "--disable-lcd-text",
+      `--disable-extensions-except=${extensionDir}`,
+      `--load-extension=${extensionDir}`,
+    ],
   });
   const screenshots: Record<string, string> = {};
   const styles: Record<string, unknown> = {};
@@ -531,6 +555,9 @@ async function captureRevision(
       await capturePage(page, classicScreenshot);
       screenshots["sidebar-classic"] = classicScreenshot;
       styles["sidebar-classic"] = await collectStyles(navFrame, sidebarProbes);
+      if ((await navFrame.locator(".ccxp-lite-session-timer-toggle").count()) > 0) {
+        await assertSessionTimer(page, navFrame, revisionOutputDir, capturePage);
+      }
 
       process.stdout.write(`[${label}] sidebar layered search\n`);
       if ((await navFrame.locator("#ccxp-lite-profile-mode").count()) > 0) {

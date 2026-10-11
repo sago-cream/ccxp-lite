@@ -1,12 +1,12 @@
 {
   "inspectedAt": "2026-09-12",
-  "captureMode": "Original DOM with ccxpLite disabled; initialized host widgets frozen; scripts removed except inert navigation declarations and explicit offline work-log shim",
+  "captureMode": "Original DOM with ccxpLite disabled; initialized host widgets frozen; scripts removed except inert navigation declarations, explicit offline work-log shim, and live-inspected legacy header timer with offline idle responses",
   "sanitization": [
     "Credentials, account and identity values cleared",
     "Session URL parameters replaced or removed",
     "All staff grid data cells replaced with synthetic records",
     "Staff dropdown options replaced with synthetic options",
-    "No live form submissions or host polling"
+    "No live form submissions or host polling; legacy header polling is routed to synthetic offline idle responses"
   ],
   "pages": [
     {
@@ -31,7 +31,7 @@
       "file": "top.html",
       "path": "/ccxp/INQUIRE/top.php",
       "owners": ["src/menu/"],
-      "state": "Original header, polling removed"
+      "state": "Original header DOM captured 2026-09-12; timer source inspected live 2026-10-11 and retained in top-timer.js with original jQuery 1.12.4 host asset. Account/session replaced with 123456789/fixture. time.php returns synthetic idle values offline; fixture-idle query stages the 5-minute boundary and activity reset. Packaged extension checks cover hidden/visible countdown, reminder, dismissal across rerender, settings, and layered menu at 1280/600/375px. Timer screenshots are supplementary head behavior evidence, not base/head pixel comparisons."
     },
     {
       "file": "main.html",

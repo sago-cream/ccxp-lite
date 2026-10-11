@@ -1,4 +1,12 @@
 {
+  "/ccxp/INQUIRE/js/jquery-1.12.4.min.js": {
+    "file": "host-assets/jquery-1.12.4.min.js",
+    "contentType": "text/javascript"
+  },
+  "/ccxp/INQUIRE/top-timer.js": {
+    "file": "top-timer.js",
+    "contentType": "text/javascript"
+  },
   "/style/PE2.css": {
     "file": "host-assets/PE2.css",
     "contentType": "text/css"

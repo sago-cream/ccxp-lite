@@ -29,6 +29,11 @@ Source: https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/PE/common/jquery-ui/css/theme/
 License: MIT (https://jquery.org/license)
 Copyright: 2014 jQuery Foundation and other contributors
 
+The header timer fixture includes jQuery 1.12.4 with its upstream license header:
+Source: https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/js/jquery-1.12.4.min.js
+License: MIT (https://jquery.org/license)
+Copyright: jQuery Foundation
+
 Additional legacy fixture assets are mapped to their original CCXP URL paths in
 host-assets.json: login/tree images, Materialize, Kendo UI theme styles and fonts,
 Font Awesome, Animate.css, W3.CSS, and notification styles. Existing vendor license
