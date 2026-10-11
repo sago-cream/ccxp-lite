@@ -336,7 +336,12 @@ async function captureRevision(
     colorScheme: "light",
     reducedMotion: "reduce",
     ...(recordVideo ? { recordVideo: { dir: revisionOutputDir, size: viewport } } : {}),
-    args: [`--disable-extensions-except=${extensionDir}`, `--load-extension=${extensionDir}`],
+    args: [
+      // Use consistent text edges across compositor layers in both packaged captures.
+      "--disable-lcd-text",
+      `--disable-extensions-except=${extensionDir}`,
+      `--load-extension=${extensionDir}`,
+    ],
   });
   const screenshots: Record<string, string> = {};
   const styles: Record<string, unknown> = {};
