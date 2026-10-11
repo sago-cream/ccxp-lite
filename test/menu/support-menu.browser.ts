@@ -74,17 +74,41 @@ test("packaged headers omit ccxpLite and profile menus expose support links", as
       await nav.locator(".ccxp-lite-sidebar-header").getByText("ccxpLite", { exact: true }).count(),
     ).toBe(0);
     for (const variant of ["classic", "layered"]) {
+      await page.setViewportSize({ width: 375, height: 480 });
       const trigger = nav.locator(".ccxp-lite-profile-trigger");
       await trigger.press("Enter");
       const popup = nav.locator("#ccxp-lite-profile-popover");
       await popup.waitFor({ state: "visible" });
+      const popupBounds = await popup.boundingBox();
+      expect(popupBounds).not.toBeNull();
+      if (popupBounds) {
+        expect(popupBounds.x).toBeGreaterThanOrEqual(0);
+        expect(popupBounds.y).toBeGreaterThanOrEqual(0);
+        expect(popupBounds.x + popupBounds.width).toBeLessThanOrEqual(375);
+        expect(popupBounds.y + popupBounds.height).toBeLessThanOrEqual(480);
+      }
+      const preferences = popup.getByRole("region", { name: "\u504F\u597D\u8A2D\u5B9A" });
+      const support = popup.getByRole("region", { name: "\u652F\u63F4\u8207\u9023\u7D50" });
+      expect(await preferences.getByRole("combobox").count()).toBe(1);
+      expect(await preferences.getByRole("checkbox").count()).toBe(1);
+      expect(await preferences.getByRole("link").count()).toBe(0);
+      expect(await support.getByRole("link").count()).toBe(2);
+      await preferences.getByRole("combobox").focus();
+      await preferences.getByRole("combobox").press("Tab");
+      const timerToggle = preferences.getByRole("checkbox");
+      expect(await timerToggle.evaluate((input) => input === document.activeElement)).toBe(true);
+      await timerToggle.press("Space");
+      expect(await timerToggle.isChecked()).toBe(variant === "classic");
+      await timerToggle.press("Tab");
       const repo = popup.getByRole("link", { name: "ccxpLite", exact: true });
       const report = popup.getByRole("link", { name: "\u554F\u984C\u56DE\u5831", exact: true });
       expect(await repo.getAttribute("href")).toBe("https://github.com/sago-cream/ccxp-lite");
       expect(await report.getAttribute("href")).toContain("https://docs.google.com/forms/");
+      expect(await repo.evaluate((link) => link === document.activeElement)).toBe(true);
       for (const link of [repo, report]) {
         expect(await link.getAttribute("target")).toBe("_blank");
         expect(await link.getAttribute("rel")).toBe("noopener noreferrer");
+        expect(await link.locator("svg[aria-hidden='true']").count()).toBe(1);
       }
       await report.press("Escape");
       await popup.waitFor({ state: "hidden" });
@@ -94,6 +118,7 @@ test("packaged headers omit ccxpLite and profile menus expose support links", as
         .locator("#ccxp-lite-profile-mode")
         .selectOption(variant === "classic" ? "layered" : "classic");
     }
+    await page.setViewportSize({ width: 1280, height: 960 });
     await nav.locator(".ccxp-lite-profile-trigger").click();
     await page.frameLocator('frame[name="main"]').locator(".ccxp-home-wordmark").click();
     await nav.locator("#ccxp-lite-profile-popover").waitFor({ state: "hidden" });

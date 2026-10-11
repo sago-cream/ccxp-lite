@@ -563,7 +563,7 @@ async function captureRevision(
         await navFrame.locator(".ccxp-lite-profile-trigger").click();
         await navFrame.locator("#ccxp-lite-profile-popover").waitFor({ state: "visible" });
         if (label === "head") {
-          const links = navFrame.locator("#ccxp-lite-profile-popover > .ccxp-lite-profile-link");
+          const links = navFrame.locator("#ccxp-lite-profile-popover .ccxp-lite-profile-link");
           assert.equal(await links.count(), 3);
           assert.equal(await links.first().textContent(), "ccxpLite");
         }
@@ -602,6 +602,12 @@ async function captureRevision(
       markRecordingStep("homepage-end");
       if (hasHome) {
         await assertMenuProfile(page, navFrame);
+      }
+      if (expectSupportLinksChange) {
+        await navFrame.locator(".ccxp-lite-profile-trigger").click();
+        await navFrame.locator("#ccxp-lite-profile-popover").waitFor({ state: "visible" });
+        await capturePage(page, path.join(revisionOutputDir, "profile-layered.png"));
+        await navFrame.locator(".ccxp-lite-profile-trigger").click();
       }
       process.stdout.write(`[${label}] embedded destination\n`);
       await navFrame.locator("button[title^='\u6559\u5B78\u610F\u898B']").click();
