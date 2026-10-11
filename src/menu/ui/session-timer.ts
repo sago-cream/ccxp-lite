@@ -1,11 +1,12 @@
 (function registerSidebarSessionTimer(globalScope: typeof globalThis) {
   const app = globalScope.CCXP_LITE;
-  if (!app?.uiRenderer || !app.uiButtons || !app.uiController) {
+  if (!app?.uiRenderer || !app.uiButtons || !app.uiController || !app.uiIcons) {
     return;
   }
   const { createRenderer } = app.uiRenderer;
   const { createButton } = app.uiButtons;
   const { createController } = app.uiController;
+  const { createCategoryIcon } = app.uiIcons;
   const visibilityKey = "ccxp-lite-show-session-timer";
   const warningStates = new WeakMap<Document, { dismissed: boolean }>();
   let visible: boolean | undefined;
@@ -77,8 +78,11 @@
     });
     settings.append(timer);
     const toggle = createButton(targetDocument, {
-      className: "ccxp-lite-profile-control ccxp-lite-session-timer-toggle",
+      className: "ccxp-lite-profile-row ccxp-lite-profile-control ccxp-lite-session-timer-toggle",
+      icon: createCategoryIcon(targetDocument, "clock"),
     });
+    const toggleLabel = dom.element("span");
+    toggle.append(toggleLabel);
     (popup.querySelector(".ccxp-lite-profile-settings") ?? popup).append(toggle);
     const icon = targetDocument.createElementNS("http://www.w3.org/2000/svg", "svg");
     for (const [key, value] of Object.entries({
@@ -120,7 +124,7 @@
     const showLabel = english ? "Show session timer" : "\u986F\u793A\u767B\u51FA\u5012\u6578";
     const hideLabel = english ? "Hide session timer" : "\u96B1\u85CF\u767B\u51FA\u5012\u6578";
     const update = () => {
-      toggle.textContent = getVisible() ? hideLabel : showLabel;
+      toggleLabel.textContent = getVisible() ? hideLabel : showLabel;
       const remaining = readClock(topDocument);
       timer.hidden = !getVisible() || remaining === undefined;
       if (remaining === undefined) {
