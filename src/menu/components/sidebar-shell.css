@@ -361,7 +361,7 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--ccxp-lite-spacing-2xs);
-  padding: var(--ccxp-lite-spacing-2xs) var(--ccxp-lite-spacing-inline-sm);
+  padding: var(--ccxp-lite-spacing-2xs) var(--ccxp-lite-spacing-md);
   border: 1px solid var(--ccxp-lite-border);
   border-radius: var(--ccxp-lite-radius-input);
   background: var(--ccxp-lite-surface);
