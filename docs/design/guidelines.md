@@ -15,7 +15,7 @@
 
 Body text and control labels use 14px regular. Action buttons and standalone text links use 14px semibold (600). Inline links inherit the surrounding text size and use semibold weight. Preserve existing heading and branding typography.
 
-The home search input, results, and function-card labels use 16px regular for emphasis. Sidebar navigation and profile-menu rows share a 40px height.
+The home search input, results, and function-card labels use 16px regular for emphasis. Sidebar navigation and profile-menu rows share a 36px height.
 
 ## Reuse
 

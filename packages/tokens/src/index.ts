@@ -77,7 +77,7 @@ export const tokens = {
   sizeSidebarBrandLogo: "30px",
   sizeSidebarCategoryLeading: "1.5em",
   sizeSidebarControl: "24px",
-  sizeSidebarRowHeight: "40px",
+  sizeSidebarRowHeight: "36px",
   sizeSidebarGuideLine: "2px",
   sizeSidebarSearchSpacer: "14px",
   sizeSidebarSearchWidth: "268px",

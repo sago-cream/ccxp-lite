@@ -214,9 +214,9 @@
   align-items: center;
   gap: 8px;
   width: 100%;
-  height: 40px;
+  height: var(--ccxp-lite-size-sidebar-row-height);
   min-width: 0;
-  padding: 6px 8px;
+  padding: var(--ccxp-lite-spacing-2xs) var(--ccxp-lite-spacing-inline-sm);
   border: 0;
   background: transparent;
   border-radius: inherit;
