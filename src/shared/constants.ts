@@ -76,6 +76,7 @@
       sidebarOpenCategory: "Open category",
       sidebarResetHome: "Go to home",
       sidebarCollapse: "Collapse sidebar",
+      sidebarResize: "Resize sidebar (arrow keys to resize, Home to collapse)",
       sidebarKeepExpanded: "Keep sidebar expanded",
       sidebarGitHubLink: "ccxpLite",
       sidebarBrandPartner: "ccxp",
@@ -172,6 +173,8 @@
       sidebarOpenCategory: "\u67E5\u770B\u5206\u985E",
       sidebarResetHome: "\u56DE\u5230\u9996\u9801",
       sidebarCollapse: "\u6536\u5408\u5074\u908A\u6B04",
+      sidebarResize:
+        "\u8ABF\u6574\u5074\u908A\u6B04\u5BEC\u5EA6\uFF08\u65B9\u5411\u9375\u8ABF\u6574\uFF0CHome \u6536\u5408\uFF09",
       sidebarKeepExpanded: "\u4FDD\u6301\u5074\u908A\u6B04\u5C55\u958B",
       sidebarGitHubLink: "ccxpLite",
       sidebarBrandPartner: "ccxp",

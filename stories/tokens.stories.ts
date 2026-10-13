@@ -59,6 +59,7 @@ type Story = StoryObj<Args>;
 export const AllTokens: Story = {};
 export const Spacing: Story = { args: { filter: "spacing" } };
 export const Surfaces: Story = { args: { filter: "surface" } };
+export const SidebarSizing: Story = { args: { filter: "size-sidebar" } };
 export const Dialog: Story = { args: { filter: "dialog" } };
 export const Typography: Story = {
   render: () => {

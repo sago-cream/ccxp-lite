@@ -136,6 +136,35 @@ export async function assertSidebarCollapse(
   await page.reload({ waitUntil: "commit" });
   nav = await readyNav(page);
   await waitWidth(324);
+  if ((await nav.locator(".ccxp-lite-sidebar-resize").count()) > 0) {
+    const handle = nav.getByRole("separator");
+    const bounds = await handle.boundingBox();
+    assert.ok(bounds);
+    await page.mouse.move(bounds.x + bounds.width / 2, 400);
+    await page.mouse.down();
+    await page.mouse.move(246, 400);
+    await waitWidth(280);
+    assert.equal(
+      await nav.locator(".ccxp-lite-sidebar-shell").getAttribute("data-ccxp-lite-sidebar-compact"),
+      "false",
+    );
+    await capture(page, path.join(outputDir, "sidebar-resize-minimum.png"));
+    await pause();
+    await page.mouse.move(190, 400);
+    await waitWidth(64);
+    await capture(page, path.join(outputDir, "sidebar-resize-snap.png"));
+    await pause();
+    await page.mouse.move(240, 400);
+    await waitWidth(64);
+    await page.mouse.move(416, 400);
+    await waitWidth(420);
+    await capture(page, path.join(outputDir, "sidebar-resize-expanded.png"));
+    await pause();
+    await page.mouse.move(320, 400);
+    await waitWidth(324);
+    await page.mouse.up();
+    await page.mouse.move(700, 800);
+  }
   return nav;
 }
 

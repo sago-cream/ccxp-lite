@@ -34,6 +34,12 @@
       if (!frameset) {
         return;
       }
+      // eslint-disable-next-line @typescript-eslint/no-deprecated -- Lock the legacy frameset divider; the sidebar owns resizing.
+      for (const frame of frameset.querySelectorAll("frame")) {
+        if (!frame.hasAttribute("noresize")) {
+          frame.setAttribute("noresize", "");
+        }
+      }
       globalThis.cancelAnimationFrame(layoutFrame);
       if (variant === "layered") {
         frameset.setAttribute("cols", "*,0");
@@ -42,7 +48,7 @@
       const width = Number.parseFloat(
         collapsed
           ? (app.shared?.TOKENS.sizeSidebarCollapsed ?? "64")
-          : (app.shared?.TOKENS.sizeSidebarExpanded ?? "324"),
+          : String(app.sidebarState?.getSidebarUiState(scopeDocument).sidebarWidth ?? 324),
       );
       const navFrame = scopeDocument.querySelector("frame[src*='IN_INQ']");
       const startWidth = navFrame?.getBoundingClientRect().width ?? width;

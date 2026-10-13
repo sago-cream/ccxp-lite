@@ -130,6 +130,10 @@
   --ccxp-lite-size-icon-button-md: 36px;
   --ccxp-lite-size-sidebar-expanded: 324px;
   --ccxp-lite-size-sidebar-collapsed: 64px;
+  --ccxp-lite-size-sidebar-min: 280px;
+  --ccxp-lite-size-sidebar-max: 480px;
+  --ccxp-lite-size-sidebar-collapse-threshold: 200px;
+  --ccxp-lite-size-sidebar-resize-handle: 8px;
   --ccxp-lite-size-sidebar-collapse-control: 40px;
   --ccxp-lite-size-sidebar-section-icon: 42px;
   --ccxp-lite-size-sidebar-category-card-icon: 48px;

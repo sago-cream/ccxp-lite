@@ -102,6 +102,10 @@ jobs:
              grep -q 'bindCollapse' src/menu/ui/controller.ts; then
             expected_changes+=(--expect-sidebar-collapse-change)
           fi
+          if ! grep -q 'bindResize' ../base/src/menu/ui/controller.ts &&
+             grep -q 'bindResize' src/menu/ui/controller.ts; then
+            expected_changes+=(--expect-sidebar-resize-change)
+          fi
           bun run test:browser-parity -- \
             --base-extension ../base/dist/crx/unpacked \
             --head-extension dist/crx/unpacked \

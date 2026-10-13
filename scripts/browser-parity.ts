@@ -327,6 +327,7 @@ async function captureRevision(
   expectSearchResultsChange: boolean,
   expectSupportLinksChange: boolean,
   expectSidebarCollapseChange: boolean,
+  expectSidebarResizeChange: boolean,
 ): Promise<CaptureResult> {
   const profileDir = path.join(tmpdir(), `ccxp-lite-parity-${label}-${process.pid}-${Date.now()}`);
   const revisionOutputDir = path.join(outputDir, label);
@@ -578,7 +579,10 @@ async function captureRevision(
         }
         await navFrame.locator(".ccxp-lite-profile-trigger").click();
       }
-      if (expectSidebarCollapseChange && label === "head") {
+      if (expectSidebarResizeChange && label === "head") {
+        assert.equal(await navFrame.locator(".ccxp-lite-sidebar-resize").count(), 1);
+      }
+      if ((expectSidebarCollapseChange || expectSidebarResizeChange) && label === "head") {
         markRecordingStep("sidebar-collapse-start");
         navFrame = await assertSidebarCollapse(
           page,
@@ -792,6 +796,7 @@ function compareScreenshot(
   preserveAbove?: number,
   maskSidebar = false,
   headerWidth = 0,
+  maskResizeHandle = false,
 ) {
   const base = PNG.sync.read(readFileSync(basePath));
   const head = PNG.sync.read(readFileSync(headPath));
@@ -821,6 +826,14 @@ function compareScreenshot(
       png.data.fill(0, y * png.width * 4, (y * png.width + headerWidth) * 4);
     }
   }
+  // Only the new eight-pixel resize handle may differ when it is introduced.
+  if (maskResizeHandle) {
+    for (const png of [base, head]) {
+      for (let y = 0; y < png.height; y++) {
+        png.data.fill(0, (y * png.width + 316) * 4, (y * png.width + 324) * 4);
+      }
+    }
+  }
   const diff = new PNG({ width: base.width, height: base.height });
   const differentPixels = pixelmatch(base.data, head.data, diff.data, base.width, base.height, {
     includeAA: false,
@@ -842,6 +855,7 @@ function compareCaptures(
   expectHomeChange: boolean,
   expectSupportLinksChange: boolean,
   expectSidebarCollapseChange: boolean,
+  expectSidebarResizeChange: boolean,
 ): readonly string[] {
   const failures: string[] = [];
   if (base.searchFormBottom !== head.searchFormBottom) {
@@ -890,6 +904,7 @@ function compareCaptures(
         : undefined,
       expectHomeChange && framedViews.has(name),
       name === "sidebar-layered-search" && headerChanges ? 520 : headerWidth,
+      expectSidebarResizeChange && (name === "sidebar-classic" || framedViews.has(name)),
     );
     if (difference.ratio > maximumPixelDifferenceRatio) {
       failures.push(
@@ -938,6 +953,7 @@ async function main() {
       "expect-home-change": { type: "boolean", default: false },
       "expect-support-links-change": { type: "boolean", default: false },
       "expect-sidebar-collapse-change": { type: "boolean", default: false },
+      "expect-sidebar-resize-change": { type: "boolean", default: false },
     },
     strict: true,
   });
@@ -957,6 +973,7 @@ async function main() {
     values["expect-search-results-change"],
     values["expect-support-links-change"],
     values["expect-sidebar-collapse-change"],
+    values["expect-sidebar-resize-change"],
   );
   const head = await captureRevision(
     "head",
@@ -967,6 +984,7 @@ async function main() {
     values["expect-search-results-change"],
     values["expect-support-links-change"],
     values["expect-sidebar-collapse-change"],
+    values["expect-sidebar-resize-change"],
   );
   if (values["expect-support-links-change"]) {
     // Captures above validate the profile links; the browser test covers keyboard/dismissal.
@@ -980,10 +998,11 @@ async function main() {
     values["expect-home-change"],
     values["expect-support-links-change"],
     values["expect-sidebar-collapse-change"],
+    values["expect-sidebar-resize-change"],
   );
   writeFileSync(
     path.join(outputDir, "report.json"),
-    `${JSON.stringify({ baseExtensionDir, headExtensionDir, expectHomeChange: values["expect-home-change"], expectSupportLinksChange: values["expect-support-links-change"], expectSearchResultsChange: values["expect-search-results-change"], searchFormBottom: base.searchFormBottom, failures }, undefined, 2)}\n`,
+    `${JSON.stringify({ baseExtensionDir, headExtensionDir, expectSidebarResizeChange: values["expect-sidebar-resize-change"], expectHomeChange: values["expect-home-change"], expectSupportLinksChange: values["expect-support-links-change"], expectSearchResultsChange: values["expect-search-results-change"], searchFormBottom: base.searchFormBottom, failures }, undefined, 2)}\n`,
   );
   if (failures.length > 0) {
     if (process.env.ALLOW_VISUAL_CHANGE === "true") {
