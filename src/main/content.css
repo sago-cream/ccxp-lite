@@ -128,7 +128,8 @@ html[data-ccxp-lite-scope="main"] body {
 html[data-ccxp-lite-scope="main"]
   a:not(.button):not([class*="button" i]):where(:not(.k-icon, .k-calendar *)) {
   color: var(--ccxp-lite-type-primary-link-color);
-  font: var(--ccxp-lite-type-primary-link);
+  font: inherit;
+  font-weight: var(--ccxp-lite-font-weight-semibold);
   text-decoration: none;
 }
 

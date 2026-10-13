@@ -371,5 +371,6 @@ html.ccxp-registration .ccxp-registration-reminder + .ccxp-registration-reminder
 }
 html.ccxp-registration #ccxp-registration-reminders a {
   color: var(--ccxp-lite-type-primary-link-color) !important;
-  font: var(--ccxp-lite-type-primary-link);
+  font: inherit;
+  font-weight: var(--ccxp-lite-font-weight-semibold);
 }

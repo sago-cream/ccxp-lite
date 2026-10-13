@@ -144,7 +144,7 @@ html[data-ccxp-lite-work-log-language] :is(#insTask, #queTask, #listForm) hr {
 
 /* A compact type scale over the legacy markup; form values and handlers stay intact. */
 html[data-ccxp-lite-work-log-language] {
-  --ccxp-lite-work-log-body: 400 16px/1.55 var(--ccxp-lite-font-sans);
+  --ccxp-lite-work-log-body: var(--ccxp-lite-type-body);
   --ccxp-lite-work-log-label: 700 14px/1.4 var(--ccxp-lite-font-sans);
   --ccxp-lite-work-log-utility: 400 14px/1.4 var(--ccxp-lite-font-sans);
 }
@@ -221,7 +221,7 @@ html[data-ccxp-lite-work-log-language] #divContact + br + br {
 }
 
 html[data-ccxp-lite-work-log-language] #divContact {
-  margin-bottom: calc(var(--ccxp-lite-font-size-body, 16px) * 1.55);
+  margin-bottom: calc(var(--ccxp-lite-font-size-body, 14px) * 1.55);
 }
 
 html[data-ccxp-lite-work-log-language] #listForm {

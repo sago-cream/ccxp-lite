@@ -71,7 +71,7 @@ export const tokens = {
   fontSizeCaption: "14px",
   fontSizeNav: "14px",
   fontSizeUtility: "14px",
-  fontSizeBody: "16px",
+  fontSizeBody: "14px",
   fontSizeSidebarBrand: "20px",
   sizeSidebarBrandLogo: "30px",
   sizeSidebarCategoryLeading: "1.5em",

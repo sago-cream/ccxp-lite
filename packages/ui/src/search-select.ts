@@ -122,7 +122,7 @@ export function mountSearchSelect(
           boxSizing: "border-box",
           borderRadius: "4px",
           cursor: "pointer",
-          font: "var(--ccxp-lite-type-body, 16px Arial)",
+          font: "var(--ccxp-lite-type-body, 14px Arial)",
           overflowWrap: "anywhere",
         });
         return row;
