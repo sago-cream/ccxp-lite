@@ -74,9 +74,27 @@ describe("sidebar state", () => {
     loadModules(window, menuModulePaths);
     const api = requireValue(window.CCXP_LITE.sidebarState);
     expect(api.getSidebarUiState(window.document).sidebarCollapsed).toBe(false);
+    expect(api.getSidebarUiState(window.document).sidebarWidth).toBe(324);
     expect(() => {
+      api.setPersistedSidebarWidth(400);
       api.setPersistedSidebarCollapsed(true);
     }).not.toThrow();
+  });
+
+  test.each([
+    ["420", 420],
+    ["100", 280],
+    ["900", 480],
+    ["NaN", 324],
+    ["", 324],
+  ])("restores a bounded sidebar width from %s", (stored, expected) => {
+    const { window } = createTestWindow();
+    window.localStorage.setItem("ccxp-lite-sidebar-width", stored);
+    loadModules(window, menuModulePaths);
+    const api = requireValue(window.CCXP_LITE.sidebarState);
+    expect(api.getSidebarUiState(window.document).sidebarWidth).toBe(expected);
+    api.setPersistedSidebarWidth(400);
+    expect(window.localStorage.getItem("ccxp-lite-sidebar-width")).toBe("400");
   });
 
   test("persists and restores scroll positions by view", () => {

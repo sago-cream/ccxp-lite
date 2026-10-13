@@ -35,6 +35,7 @@
       sidebarVariant: getPersistedSidebarVariant(),
       sidebarCollapsed: getPersistedSidebarCollapsed(),
       sidebarPreview: false,
+      sidebarWidth: getPersistedSidebarWidth(),
       classicExpandedItemIds: ["category-favorites"],
       scrollTopByView: {
         root: 0,
@@ -103,9 +104,33 @@
     }
   }
 
+  function getPersistedSidebarWidth() {
+    const tokens = namespace.shared?.TOKENS;
+    const minimum = Number.parseFloat(tokens?.sizeSidebarMin ?? "280");
+    const maximum = Number.parseFloat(tokens?.sizeSidebarMax ?? "480");
+    const fallback = Number.parseFloat(tokens?.sizeSidebarExpanded ?? "324");
+    try {
+      const stored = Number(globalThis.localStorage.getItem("ccxp-lite-sidebar-width"));
+      return stored > 0 && Number.isFinite(stored)
+        ? Math.min(maximum, Math.max(minimum, stored))
+        : fallback;
+    } catch {
+      return fallback;
+    }
+  }
+
+  function setPersistedSidebarWidth(width: number) {
+    try {
+      globalThis.localStorage.setItem("ccxp-lite-sidebar-width", String(width));
+    } catch {
+      // Keep the current width in memory when storage is unavailable.
+    }
+  }
+
   namespace.sidebarState = {
     getSidebarUiState,
     setPersistedSidebarCollapsed,
+    setPersistedSidebarWidth,
     persistSidebarScroll,
     restoreSidebarScroll,
     getPersistedSidebarVariant,

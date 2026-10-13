@@ -35,6 +35,8 @@
     private renderController: CcxpLiteUiController;
     private searchInput: HTMLInputElement | undefined;
     private collapseButton: HTMLButtonElement | undefined;
+    private resizeHandle: HTMLElement | undefined;
+    private resizing = false;
     private hovered = false;
     private focused = false;
     private collapsing = false;
@@ -182,6 +184,7 @@
       }
       this.searchInput.dataset.ccxpLiteSearchBound = "true";
       this.bindCollapse(shell);
+      this.bindResize(shell);
       this.shellController.listen(this.searchInput, "input", () => {
         const state = getSidebarUiState(this.hostDocument);
         state.searchQuery = this.searchInput?.value ?? "";
@@ -232,6 +235,13 @@
         if ((event as PointerEvent).pointerType === "touch") {
           return;
         }
+        if (
+          this.resizing ||
+          (event as PointerEvent).clientX >=
+            shell.clientWidth - Number.parseFloat(TOKENS.sizeSidebarResizeHandle)
+        ) {
+          return;
+        }
         this.hovered = true;
         this.previewCollapse(shell);
       });
@@ -239,8 +249,8 @@
         this.hovered = false;
         this.previewCollapse(shell);
       });
-      this.shellController.listen(shell, "focusin", () => {
-        if (this.collapsing) {
+      this.shellController.listen(shell, "focusin", (event) => {
+        if (this.collapsing || this.resizing || event.target === this.resizeHandle) {
           return;
         }
         this.focused = true;
@@ -255,7 +265,148 @@
       });
     }
 
+    private bindResize(shell: HTMLElement) {
+      const shellNode = shell;
+      const minimum = Number.parseFloat(TOKENS.sizeSidebarMin);
+      const maximum = Number.parseFloat(TOKENS.sizeSidebarMax);
+      const threshold = Number.parseFloat(TOKENS.sizeSidebarCollapseThreshold);
+      const collapsedWidth = Number.parseFloat(TOKENS.sizeSidebarCollapsed);
+      const handle = this.hostDocument.createElement("div");
+      handle.className = "ccxp-lite-sidebar-resize";
+      handle.tabIndex = 0;
+      handle.setAttribute("role", "separator");
+      handle.setAttribute("aria-orientation", "vertical");
+      handle.setAttribute("aria-label", this.strings.sidebarResize);
+      handle.title = this.strings.sidebarResize;
+      handle.setAttribute("aria-valuemin", String(collapsedWidth));
+      handle.setAttribute("aria-valuemax", String(maximum));
+      shell.append(handle);
+      this.resizeHandle = handle;
+      let drag:
+        | {
+            pointerId: number;
+            startX: number;
+            startWidth: number;
+            width: number;
+            collapsed: boolean;
+          }
+        | undefined;
+      const persist = () => {
+        const state = getSidebarUiState(this.hostDocument);
+        app.sidebarState?.setPersistedSidebarCollapsed(state.sidebarCollapsed);
+        app.sidebarState?.setPersistedSidebarWidth(state.sidebarWidth);
+      };
+      const apply = (rawWidth: number) => {
+        const state = getSidebarUiState(this.hostDocument);
+        // Separate close and reopen thresholds keep a captured drag stable around the snap point.
+        if (state.sidebarCollapsed ? rawWidth >= minimum : rawWidth < threshold) {
+          state.sidebarCollapsed = !state.sidebarCollapsed;
+        }
+        if (!state.sidebarCollapsed) {
+          state.sidebarWidth = Math.round(Math.min(maximum, Math.max(minimum, rawWidth)));
+        }
+        state.sidebarPreview = false;
+        this.hovered = false;
+        this.focused = false;
+        this.syncCollapse(shell);
+      };
+      const finish = (cancel = false) => {
+        if (!drag) {
+          return;
+        }
+        const { pointerId } = drag;
+        if (cancel) {
+          const state = getSidebarUiState(this.hostDocument);
+          state.sidebarWidth = drag.width;
+          state.sidebarCollapsed = drag.collapsed;
+          state.sidebarPreview = false;
+          this.syncCollapse(shell);
+        } else {
+          persist();
+        }
+        drag = undefined;
+        this.resizing = false;
+        delete shellNode.dataset.ccxpLiteSidebarResizing;
+        if (handle.hasPointerCapture(pointerId)) {
+          handle.releasePointerCapture(pointerId);
+        }
+      };
+      this.shellController.listen(handle, "pointerdown", (event) => {
+        const pointer = event as PointerEvent;
+        if (pointer.button !== 0 || !pointer.isPrimary) {
+          return;
+        }
+        event.preventDefault();
+        const state = getSidebarUiState(this.hostDocument);
+        drag = {
+          pointerId: pointer.pointerId,
+          startX: pointer.clientX,
+          startWidth: shell.getBoundingClientRect().width,
+          width: state.sidebarWidth,
+          collapsed: state.sidebarCollapsed,
+        };
+        this.resizing = true;
+        shellNode.dataset.ccxpLiteSidebarResizing = "true";
+        handle.setPointerCapture(pointer.pointerId);
+        handle.focus({ preventScroll: true });
+        // Cancel any hover/collapse animation before the first movement.
+        this.syncCollapse(shell);
+      });
+      this.shellController.listen(handle, "pointermove", (event) => {
+        const pointer = event as PointerEvent;
+        if (drag?.pointerId === pointer.pointerId) {
+          apply(drag.startWidth + pointer.clientX - drag.startX);
+        }
+      });
+      this.shellController.listen(handle, "pointerup", (event) => {
+        if (drag?.pointerId === (event as PointerEvent).pointerId) {
+          finish();
+        }
+      });
+      this.shellController.listen(handle, "pointercancel", () => {
+        finish(true);
+      });
+      this.shellController.listen(handle, "lostpointercapture", () => {
+        finish(true);
+      });
+      this.shellController.listen(handle, "keydown", (event) => {
+        const keyboard = event as KeyboardEvent;
+        if (keyboard.key === "Escape" && drag) {
+          keyboard.preventDefault();
+          finish(true);
+          return;
+        }
+        const state = getSidebarUiState(this.hostDocument);
+        const width = state.sidebarCollapsed ? collapsedWidth : state.sidebarWidth;
+        let next: number | undefined;
+        if (keyboard.key === "ArrowLeft") {
+          next = width <= minimum ? threshold - 1 : width - 16;
+        }
+        if (keyboard.key === "ArrowRight") {
+          next = state.sidebarCollapsed ? minimum : width + 16;
+        }
+        if (keyboard.key === "Home") {
+          next = collapsedWidth;
+        }
+        if (keyboard.key === "End") {
+          next = maximum;
+        }
+        if (next !== undefined && !drag) {
+          keyboard.preventDefault();
+          apply(next);
+          persist();
+        }
+      });
+      this.shellController.addCleanup(() => {
+        finish(true);
+        handle.remove();
+      });
+    }
+
     private previewCollapse(shell: HTMLElement) {
+      if (this.resizing) {
+        return;
+      }
       const state = getSidebarUiState(this.hostDocument);
       const preview =
         state.sidebarCollapsed &&
@@ -296,6 +447,19 @@
       }
       for (const list of shell.querySelectorAll<HTMLElement>(".ccxp-lite-sidebar-children")) {
         list.inert = compact;
+      }
+      if (this.resizeHandle) {
+        this.resizeHandle.setAttribute("aria-label", this.strings.sidebarResize);
+        this.resizeHandle.title = this.strings.sidebarResize;
+        this.resizeHandle.hidden = !classic;
+        this.resizeHandle.setAttribute(
+          "aria-valuenow",
+          String(compact ? Number.parseFloat(TOKENS.sizeSidebarCollapsed) : state.sidebarWidth),
+        );
+        this.resizeHandle.setAttribute(
+          "aria-valuetext",
+          compact ? this.strings.sidebarCollapse : `${state.sidebarWidth}px`,
+        );
       }
       syncTopLevelFramesetLayout(state.sidebarVariant, compact, animate);
     }

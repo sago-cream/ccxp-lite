@@ -530,6 +530,7 @@ declare global {
   interface CcxpLiteSidebarStateModule {
     getSidebarUiState: (navDocument: Document) => CcxpLiteSidebarState;
     setPersistedSidebarCollapsed: (collapsed: boolean) => void;
+    setPersistedSidebarWidth: (width: number) => void;
     persistSidebarScroll: (targetDocument: Document, viewKey: string) => void;
     restoreSidebarScroll: (contentNode: Element, scrollTop: number) => void;
     getPersistedSidebarVariant: () => "classic" | "layered";
@@ -544,6 +545,7 @@ declare global {
     sidebarVariant: "classic" | "layered";
     sidebarCollapsed: boolean;
     sidebarPreview: boolean;
+    sidebarWidth: number;
     classicExpandedItemIds: string[];
     scrollTopByView: Record<string, number>;
   }
