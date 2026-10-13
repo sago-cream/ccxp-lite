@@ -184,7 +184,7 @@ html[data-ccxp-lite-work-log-language]
 }
 
 html[data-ccxp-lite-work-log-language] #ccxp-lite-work-log-help-content > a {
-  font: var(--ccxp-lite-type-control) !important;
+  font: var(--ccxp-lite-type-primary-link) !important;
   color: var(--ccxp-lite-primary) !important;
   background: transparent !important;
 }

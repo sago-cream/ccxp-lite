@@ -118,17 +118,17 @@ html[data-ccxp-lite-scope="landing"] .ccxp-lite-landing-utility-link {
   align-items: center;
   gap: var(--ccxp-lite-spacing-2xs);
   color: var(--ccxp-lite-type-primary-link-color);
-  font: var(--ccxp-lite-type-control) !important;
+  font: var(--ccxp-lite-type-primary-link) !important;
 }
 
 html[data-ccxp-lite-scope="landing"] .ccxp-lite-landing-utility-link:hover,
 html[data-ccxp-lite-scope="landing"] .ccxp-lite-landing-utility-link:focus-visible {
-  font: var(--ccxp-lite-type-control) !important;
+  font: var(--ccxp-lite-type-primary-link) !important;
 }
 
 html[data-ccxp-lite-scope="landing"] .ccxp-lite-landing-utility-separator {
   color: var(--ccxp-lite-type-body-muted-color);
-  font: var(--ccxp-lite-type-control) !important;
+  font: var(--ccxp-lite-type-body) !important;
 }
 
 .ccxp-lite-landing-link-icon {
@@ -159,7 +159,7 @@ html[data-ccxp-lite-scope="landing"] .ccxp-lite-landing-utility-separator {
 .ccxp-lite-landing-lang ul.links a:active {
   min-height: var(--ccxp-lite-size-control-height-sm) !important;
   color: var(--ccxp-lite-type-utility-color) !important;
-  font: var(--ccxp-lite-type-control) !important;
+  font: var(--ccxp-lite-type-primary-link) !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -187,7 +187,7 @@ html[data-ccxp-lite-scope="landing"] .ccxp-lite-landing-utility-separator {
 .ccxp-lite-landing-lang ul.links a:focus-visible {
   box-shadow: none !important;
   color: var(--ccxp-lite-type-utility-color) !important;
-  font: var(--ccxp-lite-type-control) !important;
+  font: var(--ccxp-lite-type-primary-link) !important;
   transform: none !important;
   text-decoration: underline !important;
   background: none !important;
@@ -196,7 +196,7 @@ html[data-ccxp-lite-scope="landing"] .ccxp-lite-landing-utility-separator {
 
 .ccxp-lite-landing-lang a {
   color: var(--ccxp-lite-type-utility-color) !important;
-  font: var(--ccxp-lite-type-control) !important;
+  font: var(--ccxp-lite-type-primary-link) !important;
 }
 
 .ccxp-lite-landing-links table {
@@ -308,7 +308,7 @@ html[data-ccxp-lite-scope="landing"] .ccxp-lite-landing-footer > a:focus-visible
   translate: none !important;
   transform: none !important;
   color: var(--ccxp-lite-type-primary-link-color);
-  font: var(--ccxp-lite-type-control) !important;
+  font: var(--ccxp-lite-type-primary-link) !important;
   text-decoration: none;
 }
 

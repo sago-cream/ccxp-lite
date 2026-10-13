@@ -126,7 +126,7 @@
   justify-content: center;
   gap: var(--ccxp-lite-spacing-2xs);
   color: var(--ccxp-lite-type-primary-link-color);
-  font: var(--ccxp-lite-type-control) !important;
+  font: var(--ccxp-lite-type-primary-link) !important;
   text-align: center;
   text-decoration: none;
 }

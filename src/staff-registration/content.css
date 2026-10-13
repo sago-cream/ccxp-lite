@@ -107,7 +107,7 @@ html.ccxp-registration #float_menu li > a {
   border-radius: 0;
   background: transparent !important;
   color: var(--ccxp-lite-type-primary-link-color) !important;
-  font: var(--ccxp-lite-type-control) !important;
+  font: var(--ccxp-lite-type-primary-link) !important;
   text-transform: none;
   box-shadow: none !important;
   opacity: 1 !important;

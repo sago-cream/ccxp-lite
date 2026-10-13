@@ -157,7 +157,7 @@
   --ccxp-lite-type-page-title: var(--ccxp-lite-font-weight-strong)
     var(--ccxp-lite-font-size-page-title)/1.2 var(--ccxp-lite-font-sans);
   --ccxp-lite-type-page-title-color: var(--ccxp-lite-text);
-  --ccxp-lite-type-primary-link: var(--ccxp-lite-type-control);
+  --ccxp-lite-type-primary-link: var(--ccxp-lite-type-button);
   --ccxp-lite-type-primary-link-color: var(--ccxp-lite-primary);
   --ccxp-lite-type-info: var(--ccxp-lite-type-body-strong);
   --ccxp-lite-type-info-color: var(--ccxp-lite-legacy-blue-text);

@@ -72,7 +72,7 @@ body[data-ccxp-lite-floating-anchor-host="true"] > [data-ccxp-lite-floating-anch
   translate: none !important;
   transform: none !important;
   color: var(--ccxp-lite-type-primary-link-color);
-  font: var(--ccxp-lite-type-control) !important;
+  font: var(--ccxp-lite-type-primary-link) !important;
   text-decoration: none;
 }
 

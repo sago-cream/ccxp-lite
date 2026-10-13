@@ -124,7 +124,7 @@ html.ccxp-staff-shell .ccxp-staff-navigation li > a {
   opacity: 1 !important;
   transform: none !important;
   text-transform: none;
-  font: var(--ccxp-lite-type-control, 16px/1.55 var(--ccxp-lite-font-sans)) !important;
+  font: var(--ccxp-lite-type-primary-link, 600 16px/1.55 var(--ccxp-lite-font-sans)) !important;
 }
 html.ccxp-staff-shell .ccxp-staff-navigation li i {
   color: inherit !important;

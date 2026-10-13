@@ -583,7 +583,7 @@ html[data-ccxp-lite-scope="main"] .ccxp-home-search > input {
   border-bottom-color: transparent;
 }
 html[data-ccxp-lite-scope="main"] .ccxp-home-header > .ccxp-home-contact {
-  font: var(--ccxp-lite-type-control) !important;
+  font: var(--ccxp-lite-type-primary-link) !important;
 }
 
 .ccxp-home-search > input::-webkit-search-cancel-button {
