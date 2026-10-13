@@ -432,6 +432,7 @@
 .ccxp-lite-profile-popover
   .ccxp-lite-profile-logout:is(:link, :visited, :hover, :active, :focus-visible) {
   color: var(--ccxp-lite-text);
+  font-weight: var(--ccxp-lite-font-weight-regular) !important;
 }
 .ccxp-lite-profile-popover .ccxp-lite-profile-link:hover {
   background: var(--ccxp-lite-primary-hover-surface);
