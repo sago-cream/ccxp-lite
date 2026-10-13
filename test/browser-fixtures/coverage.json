@@ -31,7 +31,7 @@
       "file": "top.html",
       "path": "/ccxp/INQUIRE/top.php",
       "owners": ["src/menu/"],
-      "state": "Original header DOM captured 2026-09-12; timer source inspected live 2026-10-11 and retained in top-timer.js with original jQuery 1.12.4 host asset. Account/session replaced with 123456789/fixture. time.php returns synthetic idle values offline; fixture-idle query stages the 5-minute boundary and activity reset. Packaged extension checks cover hidden/visible countdown, reminder, dismissal across rerender, settings, and layered menu at 1280/600/375px. Timer screenshots are supplementary head behavior evidence, not base/head pixel comparisons."
+      "state": "Original header DOM captured 2026-09-12; timer source inspected live 2026-10-11 and retained in top-timer.js with original jQuery 1.12.4 host asset. Account/session replaced with 123456789/fixture. time.php returns synthetic idle values offline; fixture-idle query stages the 5-minute boundary and activity reset. Packaged extension checks cover hidden/visible countdown on initial frameset load before header navigation, reminder, dismissal across rerender, settings, and layered menu at 1280/600/375px. Timer screenshots are supplementary head behavior evidence, not base/head pixel comparisons."
     },
     {
       "file": "main.html",

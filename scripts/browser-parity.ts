@@ -16,7 +16,7 @@ import { assertWorkLogReady, routeWorkLogFixture, workLogPath } from "./work-log
 import pixelmatch from "pixelmatch";
 import { assertHome, assertHomeFavorites, assertMenuProfile } from "./home-fixtures.js";
 import { assertSidebarCollapse } from "./sidebar-collapse-fixtures.js";
-import { assertSessionTimer } from "./session-timer-fixtures.js";
+import { assertInitialSessionTimer, assertSessionTimer } from "./session-timer-fixtures.js";
 import { recordProfileActions, setProfileMenuMode } from "./profile-fixtures.js";
 import type { BrowserContext, Frame, Page } from "playwright";
 import { chromium } from "playwright";
@@ -594,6 +594,9 @@ async function captureRevision(
         markRecordingStep("sidebar-collapse-end");
       }
       if ((await navFrame.locator(".ccxp-lite-session-timer-toggle").count()) > 0) {
+        if (label === "head") {
+          await assertInitialSessionTimer(navFrame);
+        }
         await assertSessionTimer(page, navFrame, revisionOutputDir, capturePage);
       }
 
