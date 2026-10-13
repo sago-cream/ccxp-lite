@@ -265,8 +265,6 @@ export const cssVariables = {
   "--ccxp-lite-type-body":
     "var(--ccxp-lite-font-weight-regular) var(--ccxp-lite-font-size-body)/1.55 var(--ccxp-lite-font-sans)",
   "--ccxp-lite-type-body-color": "var(--ccxp-lite-text)",
-  "--ccxp-lite-type-control": "var(--ccxp-lite-type-body)",
-  "--ccxp-lite-type-control-color": "var(--ccxp-lite-text)",
   "--ccxp-lite-type-button":
     "var(--ccxp-lite-font-weight-semibold) var(--ccxp-lite-font-size-body)/1.55 var(--ccxp-lite-font-sans)",
   "--ccxp-lite-type-button-color": "var(--ccxp-lite-text)",
@@ -276,7 +274,7 @@ export const cssVariables = {
   "--ccxp-lite-type-utility":
     "var(--ccxp-lite-font-weight-strong) var(--ccxp-lite-font-size-utility)/1.4 var(--ccxp-lite-font-sans)",
   "--ccxp-lite-type-utility-color": "var(--ccxp-lite-primary)",
-  "--ccxp-lite-type-nav": "var(--ccxp-lite-type-control)",
+  "--ccxp-lite-type-nav": "var(--ccxp-lite-type-utility)",
   "--ccxp-lite-type-nav-color": "var(--ccxp-lite-primary)",
   "--ccxp-lite-type-caption": "var(--ccxp-lite-type-utility)",
   "--ccxp-lite-type-caption-color": "var(--ccxp-lite-text-muted)",

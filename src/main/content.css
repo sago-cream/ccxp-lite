@@ -487,7 +487,7 @@ html[data-ccxp-lite-scope="main"] .ccxp-home-search > input {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font: var(--ccxp-lite-type-control);
+  font: var(--ccxp-lite-type-body);
 }
 @media (max-width: 520px) {
   .ccxp-home-cards {
@@ -505,7 +505,7 @@ html[data-ccxp-lite-scope="main"] .ccxp-home-search > input {
   background: transparent;
   box-shadow: none;
   color: var(--ccxp-lite-type-primary-link-color);
-  font: var(--ccxp-lite-type-control);
+  font: var(--ccxp-lite-type-body);
   cursor: pointer;
 }
 .ccxp-home-show-all[hidden] {
@@ -538,7 +538,7 @@ html[data-ccxp-lite-scope="main"] .ccxp-home-search > input {
   border-radius: 16px;
   background: transparent;
   color: var(--ccxp-lite-text);
-  font: var(--ccxp-lite-type-control);
+  font: var(--ccxp-lite-type-body);
   text-align: left;
   cursor: pointer;
 }

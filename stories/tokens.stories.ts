@@ -69,10 +69,8 @@ export const Typography: Story = {
       "page-title",
       "body-strong",
       "body",
-      "control",
       "button",
       "primary-link",
-      "nav",
       "utility",
       "caption",
     ];

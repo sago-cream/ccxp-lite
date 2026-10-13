@@ -317,6 +317,8 @@
   background: var(--ccxp-lite-surface) !important;
   color: var(--ccxp-lite-type-body-color) !important;
   font: var(--ccxp-lite-type-body) !important;
+  font-size: var(--ccxp-lite-font-size-utility) !important;
+  line-height: 1.2 !important;
 }
 
 .ccxp-lite-landing-login .inputtext:focus {

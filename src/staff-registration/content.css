@@ -342,7 +342,7 @@ html.ccxp-registration .ccxp-registration-info > button {
   border: 0;
   background: transparent;
   color: var(--ccxp-lite-type-primary-link-color);
-  font: var(--ccxp-lite-type-control);
+  font: var(--ccxp-lite-type-body);
   cursor: pointer;
 }
 html.ccxp-registration #ccxp-registration-reminders {

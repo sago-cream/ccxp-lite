@@ -229,7 +229,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font: var(--ccxp-lite-type-control);
+  font: var(--ccxp-lite-type-body);
 }
 .ccxp-lite-profile-trigger:hover {
   background: var(--ccxp-lite-primary-hover-surface);
@@ -250,7 +250,7 @@
   border-radius: var(--ccxp-lite-radius-input);
   background: transparent;
   color: var(--ccxp-lite-text);
-  font: var(--ccxp-lite-type-control);
+  font: var(--ccxp-lite-type-body);
   text-align: left;
   cursor: pointer;
 }
@@ -286,6 +286,7 @@
   margin: 0 0 var(--ccxp-lite-spacing-inline-sm);
   color: var(--ccxp-lite-text-muted);
   font: var(--ccxp-lite-type-caption);
+  font-weight: 600;
 }
 .ccxp-lite-profile-actions {
   margin-top: var(--ccxp-lite-spacing-inline-sm);
@@ -396,7 +397,9 @@
   display: none;
 }
 .ccxp-lite-profile-trigger .ccxp-lite-profile-avatar {
-  font: var(--ccxp-lite-type-caption);
+  font:
+    600 12px / 1 Arial,
+    sans-serif;
 }
 .ccxp-lite-profile-popover
   .ccxp-lite-profile-link:is(:link, :visited, :hover, :active, :focus-visible) {
