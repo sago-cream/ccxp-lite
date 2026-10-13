@@ -418,7 +418,7 @@
   border: 0 !important;
   border-radius: var(--ccxp-lite-radius-input);
   color: var(--ccxp-lite-primary);
-  font: var(--ccxp-lite-type-body) !important;
+  font: var(--ccxp-lite-type-primary-link) !important;
   text-decoration: none;
 }
 .ccxp-lite-profile-row svg {
@@ -431,7 +431,7 @@
 }
 .ccxp-lite-profile-popover
   .ccxp-lite-profile-logout:is(:link, :visited, :hover, :active, :focus-visible) {
-  color: var(--ccxp-lite-text-muted);
+  color: var(--ccxp-lite-text);
 }
 .ccxp-lite-profile-popover .ccxp-lite-profile-link:hover {
   background: var(--ccxp-lite-primary-hover-surface);
