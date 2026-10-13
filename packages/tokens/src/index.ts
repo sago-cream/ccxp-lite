@@ -64,6 +64,7 @@ export const tokens = {
   fontSans: '"Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif',
   fontBrand: '"Futura", "Futura PT", "Avenir Next", sans-serif',
   fontWeightRegular: "400",
+  fontWeightSemibold: "600",
   fontWeightStrong: "700",
   fontWeightHeavy: "800",
   fontVariantNumericTabular: "tabular-nums",
@@ -196,6 +197,7 @@ export const cssVariables = {
   "--ccxp-lite-font-sans": tokens.fontSans,
   "--ccxp-lite-font-brand": tokens.fontBrand,
   "--ccxp-lite-font-weight-regular": tokens.fontWeightRegular,
+  "--ccxp-lite-font-weight-semibold": tokens.fontWeightSemibold,
   "--ccxp-lite-font-weight-strong": tokens.fontWeightStrong,
   "--ccxp-lite-font-weight-heavy": tokens.fontWeightHeavy,
   "--ccxp-lite-font-variant-numeric-tabular": tokens.fontVariantNumericTabular,
@@ -263,7 +265,8 @@ export const cssVariables = {
   "--ccxp-lite-type-body":
     "var(--ccxp-lite-font-weight-regular) var(--ccxp-lite-font-size-body)/1.55 var(--ccxp-lite-font-sans)",
   "--ccxp-lite-type-body-color": "var(--ccxp-lite-text)",
-  "--ccxp-lite-type-control": "var(--ccxp-lite-type-body)",
+  "--ccxp-lite-type-control":
+    "var(--ccxp-lite-font-weight-semibold) var(--ccxp-lite-font-size-body)/1.55 var(--ccxp-lite-font-sans)",
   "--ccxp-lite-type-control-color": "var(--ccxp-lite-text)",
   "--ccxp-lite-type-body-muted":
     "var(--ccxp-lite-font-weight-regular) var(--ccxp-lite-font-size-body)/1.55 var(--ccxp-lite-font-sans)",

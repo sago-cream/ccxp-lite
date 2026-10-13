@@ -101,6 +101,7 @@
   --ccxp-lite-font-sans: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
   --ccxp-lite-font-brand: "Futura", "Futura PT", "Avenir Next", sans-serif;
   --ccxp-lite-font-weight-regular: 400;
+  --ccxp-lite-font-weight-semibold: 600;
   --ccxp-lite-font-weight-strong: 700;
   --ccxp-lite-font-weight-heavy: 800;
   --ccxp-lite-font-variant-numeric-tabular: tabular-nums;
@@ -168,7 +169,8 @@
   --ccxp-lite-type-body: var(--ccxp-lite-font-weight-regular) var(--ccxp-lite-font-size-body)/1.55
     var(--ccxp-lite-font-sans);
   --ccxp-lite-type-body-color: var(--ccxp-lite-text);
-  --ccxp-lite-type-control: var(--ccxp-lite-type-body);
+  --ccxp-lite-type-control: var(--ccxp-lite-font-weight-semibold)
+    var(--ccxp-lite-font-size-body)/1.55 var(--ccxp-lite-font-sans);
   --ccxp-lite-type-control-color: var(--ccxp-lite-text);
   --ccxp-lite-type-body-muted: var(--ccxp-lite-font-weight-regular)
     var(--ccxp-lite-font-size-body)/1.55 var(--ccxp-lite-font-sans);

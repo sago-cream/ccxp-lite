@@ -316,7 +316,7 @@
   outline: none !important;
   background: var(--ccxp-lite-surface) !important;
   color: var(--ccxp-lite-type-body-color) !important;
-  font: var(--ccxp-lite-type-control) !important;
+  font: var(--ccxp-lite-type-body) !important;
 }
 
 .ccxp-lite-landing-login .inputtext:focus {
