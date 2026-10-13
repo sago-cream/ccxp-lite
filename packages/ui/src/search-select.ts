@@ -122,7 +122,7 @@ export function mountSearchSelect(
           boxSizing: "border-box",
           borderRadius: "4px",
           cursor: "pointer",
-          font: "var(--ccxp-lite-type-body, 16px Arial)",
+          font: "var(--ccxp-lite-type-control, 16px/1.55 var(--ccxp-lite-font-sans))",
           overflowWrap: "anywhere",
         });
         return row;
@@ -135,7 +135,7 @@ export function mountSearchSelect(
       Object.assign(empty.style, {
         padding: "12px",
         color: "var(--ccxp-lite-text-muted, #6b7280)",
-        font: "var(--ccxp-lite-type-caption, 14px Arial)",
+        font: "var(--ccxp-lite-type-caption, 700 14px/1.4 var(--ccxp-lite-font-sans))",
       });
       list.append(empty);
     }

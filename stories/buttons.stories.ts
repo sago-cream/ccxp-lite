@@ -36,12 +36,14 @@ const meta = {
   parameters: {
     i18n: {
       description: {
-        component: "主要按鈕用於送出，次要按鈕用於取消，危險按鈕用於移除。",
+        component:
+          "主要按鈕用於送出，次要按鈕用於取消，危險按鈕用於移除。各種操作使用相同的 16px 一般字重控制項字體，以色彩區分用途。",
       },
     },
     docs: {
       description: {
-        component: "Use primary for submission, secondary for cancel, and danger for removal.",
+        component:
+          "Use primary for submission, secondary for cancel, and danger for removal. All actions share the 16px regular control type role; color distinguishes their purpose.",
       },
     },
   },

@@ -126,7 +126,7 @@
   justify-content: center;
   gap: var(--ccxp-lite-spacing-2xs);
   color: var(--ccxp-lite-type-primary-link-color);
-  font: var(--ccxp-lite-type-utility);
+  font: var(--ccxp-lite-type-control) !important;
   text-align: center;
   text-decoration: none;
 }
@@ -316,9 +316,7 @@
   outline: none !important;
   background: var(--ccxp-lite-surface) !important;
   color: var(--ccxp-lite-type-body-color) !important;
-  font: var(--ccxp-lite-type-body) !important;
-  font-size: var(--ccxp-lite-font-size-utility) !important;
-  line-height: 1.2 !important;
+  font: var(--ccxp-lite-type-control) !important;
 }
 
 .ccxp-lite-landing-login .inputtext:focus {
@@ -384,9 +382,7 @@ html[data-ccxp-lite-scope="landing"] .ccxp-lite-action-control {
   border: 1px solid var(--ccxp-lite-border);
   background: transparent;
   color: var(--ccxp-lite-type-utility-color);
-  font: var(--ccxp-lite-type-body);
-  font-size: var(--ccxp-lite-font-size-utility);
-  font-weight: var(--ccxp-lite-font-weight-strong);
+  font: var(--ccxp-lite-type-control) !important;
   white-space: normal;
   overflow-wrap: anywhere;
   text-align: center;
@@ -405,9 +401,7 @@ html[data-ccxp-lite-scope="landing"] .ccxp-lite-action-control-primary {
   border: 0;
   background: var(--ccxp-lite-primary);
   color: var(--ccxp-lite-bg);
-  font: var(--ccxp-lite-type-body);
-  font-size: var(--ccxp-lite-font-size-utility);
-  font-weight: var(--ccxp-lite-font-weight-strong);
+  font: var(--ccxp-lite-type-control) !important;
 }
 
 .ccxp-lite-landing-login .ccxp-lite-image-action-button:hover,

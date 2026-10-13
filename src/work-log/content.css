@@ -184,7 +184,7 @@ html[data-ccxp-lite-work-log-language]
 }
 
 html[data-ccxp-lite-work-log-language] #ccxp-lite-work-log-help-content > a {
-  font: var(--ccxp-lite-work-log-utility) !important;
+  font: var(--ccxp-lite-type-control) !important;
   color: var(--ccxp-lite-primary) !important;
   background: transparent !important;
 }
@@ -395,8 +395,7 @@ html[data-ccxp-lite-work-log-language] :is(#insTask, #queForm) .ccxp-lite-work-l
   border-radius: var(--ccxp-lite-radius-full, 999px) !important;
   border: 1px solid var(--ccxp-lite-border, #ddd) !important;
   background: transparent !important;
-  font-size: var(--ccxp-lite-font-size-utility, 14px) !important;
-  font-weight: var(--ccxp-lite-font-weight-strong, 700) !important;
+  font: var(--ccxp-lite-type-control) !important;
   cursor: pointer;
   transition:
     background-color 120ms ease,

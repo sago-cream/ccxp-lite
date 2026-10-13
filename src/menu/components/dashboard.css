@@ -263,19 +263,12 @@
 }
 
 .ccxp-lite-category-card-title {
-  font: var(--ccxp-lite-font-weight-strong) var(--ccxp-lite-font-size-body) / 1.3
-    var(--ccxp-lite-font-sans);
-  letter-spacing: 0.01em;
+  font: var(--ccxp-lite-type-control);
 }
 
 .ccxp-lite-row-label {
-  font: var(--ccxp-lite-type-body);
+  font: var(--ccxp-lite-type-control);
   white-space: nowrap;
-}
-
-.ccxp-lite-link-card .ccxp-lite-row-label {
-  font: var(--ccxp-lite-font-weight-strong) var(--ccxp-lite-font-size-nav) / 1.3
-    var(--ccxp-lite-font-sans);
 }
 
 .ccxp-lite-category-card-summary {

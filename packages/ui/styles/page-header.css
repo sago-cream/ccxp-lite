@@ -20,7 +20,7 @@
 .ccxp-lite-page-header > h1 span {
   font: var(--ccxp-lite-type-page-title) !important;
   color: var(--ccxp-lite-text) !important;
-  font-family: var(--ccxp-lite-font-brand) !important;
+  font-family: var(--ccxp-lite-font-sans) !important;
   font-size: var(--ccxp-lite-font-size-sidebar-brand, 20px) !important;
   letter-spacing: 0.01em;
 }
