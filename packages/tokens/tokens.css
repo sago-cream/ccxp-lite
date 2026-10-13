@@ -109,10 +109,12 @@
   --ccxp-lite-font-size-nav: 14px;
   --ccxp-lite-font-size-utility: 14px;
   --ccxp-lite-font-size-body: 14px;
+  --ccxp-lite-font-size-home-control: 16px;
   --ccxp-lite-font-size-sidebar-brand: 20px;
   --ccxp-lite-size-sidebar-brand-logo: 30px;
   --ccxp-lite-size-sidebar-category-leading: 1.5em;
   --ccxp-lite-size-sidebar-control: 24px;
+  --ccxp-lite-size-sidebar-row-height: 40px;
   --ccxp-lite-size-sidebar-guide-line: 2px;
   --ccxp-lite-size-sidebar-search-spacer: 14px;
   --ccxp-lite-size-sidebar-search-width: 268px;
@@ -169,6 +171,9 @@
   --ccxp-lite-type-body: var(--ccxp-lite-font-weight-regular) var(--ccxp-lite-font-size-body)/1.55
     var(--ccxp-lite-font-sans);
   --ccxp-lite-type-body-color: var(--ccxp-lite-text);
+  --ccxp-lite-type-home-control: var(--ccxp-lite-font-weight-regular)
+    var(--ccxp-lite-font-size-home-control)/1.55 var(--ccxp-lite-font-sans);
+  --ccxp-lite-type-home-control-color: var(--ccxp-lite-text);
   --ccxp-lite-type-button: var(--ccxp-lite-font-weight-semibold)
     var(--ccxp-lite-font-size-body)/1.55 var(--ccxp-lite-font-sans);
   --ccxp-lite-type-button-color: var(--ccxp-lite-text);

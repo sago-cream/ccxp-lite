@@ -243,8 +243,8 @@
   gap: var(--ccxp-lite-spacing-inline-sm);
   box-sizing: border-box;
   width: 100%;
-  height: var(--ccxp-lite-size-dialog-action-height);
-  min-height: var(--ccxp-lite-size-dialog-action-height);
+  height: var(--ccxp-lite-size-sidebar-row-height);
+  min-height: var(--ccxp-lite-size-sidebar-row-height);
   padding: 0 var(--ccxp-lite-spacing-inline-sm);
   border: 0;
   border-radius: var(--ccxp-lite-radius-input);
@@ -411,8 +411,8 @@
   align-items: center;
   gap: var(--ccxp-lite-spacing-inline-sm);
   box-sizing: border-box;
-  height: var(--ccxp-lite-size-dialog-action-height);
-  min-height: var(--ccxp-lite-size-dialog-action-height);
+  height: var(--ccxp-lite-size-sidebar-row-height);
+  min-height: var(--ccxp-lite-size-sidebar-row-height);
   margin: 0 !important;
   padding: 0 var(--ccxp-lite-spacing-inline-sm) !important;
   border: 0 !important;
