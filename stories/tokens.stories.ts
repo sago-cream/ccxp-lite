@@ -70,6 +70,7 @@ export const Typography: Story = {
       "body-strong",
       "body",
       "control",
+      "button",
       "nav",
       "utility",
       "caption",

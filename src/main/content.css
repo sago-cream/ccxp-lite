@@ -388,9 +388,9 @@ html[data-ccxp-lite-scope="main"] .ccxp-home-wordmark {
   gap: var(--ccxp-lite-spacing-md);
   margin-bottom: 32px;
   text-align: center;
-  font-family: var(--ccxp-lite-font-sans) !important;
+  font-family: Arial, sans-serif !important;
   font-size: clamp(48px, 7vw, 76px);
-  font-weight: var(--ccxp-lite-font-weight-strong);
+  font-weight: 600;
   line-height: 1.15;
   letter-spacing: -0.01em;
 }

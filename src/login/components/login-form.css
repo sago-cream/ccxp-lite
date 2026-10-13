@@ -382,7 +382,7 @@ html[data-ccxp-lite-scope="landing"] .ccxp-lite-action-control {
   border: 1px solid var(--ccxp-lite-border);
   background: transparent;
   color: var(--ccxp-lite-type-utility-color);
-  font: var(--ccxp-lite-type-control) !important;
+  font: var(--ccxp-lite-type-button) !important;
   white-space: normal;
   overflow-wrap: anywhere;
   text-align: center;
@@ -401,7 +401,7 @@ html[data-ccxp-lite-scope="landing"] .ccxp-lite-action-control-primary {
   border: 0;
   background: var(--ccxp-lite-primary);
   color: var(--ccxp-lite-bg);
-  font: var(--ccxp-lite-type-control) !important;
+  font: var(--ccxp-lite-type-button) !important;
 }
 
 .ccxp-lite-landing-login .ccxp-lite-image-action-button:hover,

@@ -395,7 +395,7 @@ html[data-ccxp-lite-work-log-language] :is(#insTask, #queForm) .ccxp-lite-work-l
   border-radius: var(--ccxp-lite-radius-full, 999px) !important;
   border: 1px solid var(--ccxp-lite-border, #ddd) !important;
   background: transparent !important;
-  font: var(--ccxp-lite-type-control) !important;
+  font: var(--ccxp-lite-type-button) !important;
   cursor: pointer;
   transition:
     background-color 120ms ease,

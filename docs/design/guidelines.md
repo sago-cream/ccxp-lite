@@ -2,16 +2,16 @@
 
 ## Foundations
 
-| Use        | Rule                                                                                                                                                         |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Color      | Purple for primary actions and navigation; danger for removal and errors.                                                                                    |
-| Surfaces   | White for content, neutral tints for navigation and secondary groups. Use borders to separate content.                                                       |
-| Typography | Use the shared sans stack and 16px semibold (600) actions and regular body/input text; keep utilities and captions at 14px. Futura is reserved for branding. |
-| Language   | Support Traditional Chinese and English. Check CJK wrapping and long English labels.                                                                         |
-| Numbers    | Align date and time columns. Use Arial with tabular numerals in work-log.                                                                                    |
-| Spacing    | Reuse spacing tokens. Use a 4px grid for new layouts; preserve existing optical adjustments.                                                                 |
-| Corners    | Match the input, control, surface, or pill role.                                                                                                             |
-| Motion     | Keep action feedback brief: 120ms. Respect reduced-motion preferences.                                                                                       |
+| Use        | Rule                                                                                                                                                                                |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Color      | Purple for primary actions and navigation; danger for removal and errors.                                                                                                           |
+| Surfaces   | White for content, neutral tints for navigation and secondary groups. Use borders to separate content.                                                                              |
+| Typography | Use the shared sans stack and 16px regular navigation/body/input text and 16px semibold (600) action buttons; keep utilities and captions at 14px. Futura is reserved for branding. |
+| Language   | Support Traditional Chinese and English. Check CJK wrapping and long English labels.                                                                                                |
+| Numbers    | Align date and time columns. Use Arial with tabular numerals in work-log.                                                                                                           |
+| Spacing    | Reuse spacing tokens. Use a 4px grid for new layouts; preserve existing optical adjustments.                                                                                        |
+| Corners    | Match the input, control, surface, or pill role.                                                                                                                                    |
+| Motion     | Keep action feedback brief: 120ms. Respect reduced-motion preferences.                                                                                                              |
 
 ## Reuse
 
