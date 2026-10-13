@@ -418,7 +418,7 @@
   border: 0 !important;
   border-radius: var(--ccxp-lite-radius-input);
   color: var(--ccxp-lite-primary);
-  font: var(--ccxp-lite-type-primary-link) !important;
+  font: var(--ccxp-lite-type-body) !important;
   text-decoration: none;
 }
 .ccxp-lite-profile-row svg {
