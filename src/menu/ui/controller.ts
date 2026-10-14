@@ -231,8 +231,8 @@
         }
         this.syncCollapse(shell, true);
       });
-      this.shellController.listen(shell, "pointerenter", (event) => {
-        if ((event as PointerEvent).pointerType === "touch") {
+      const previewOnPointer = (event: Event) => {
+        if (this.hovered || (event as PointerEvent).pointerType === "touch") {
           return;
         }
         if (
@@ -244,7 +244,9 @@
         }
         this.hovered = true;
         this.previewCollapse(shell);
-      });
+      };
+      this.shellController.listen(shell, "pointerenter", previewOnPointer);
+      this.shellController.listen(shell, "pointermove", previewOnPointer);
       this.shellController.listen(shell, "pointerleave", () => {
         this.hovered = false;
         this.previewCollapse(shell);
@@ -270,6 +272,7 @@
       const minimum = Number.parseFloat(TOKENS.sizeSidebarMin);
       const maximum = Number.parseFloat(TOKENS.sizeSidebarMax);
       const threshold = Number.parseFloat(TOKENS.sizeSidebarCollapseThreshold);
+      const reopening = Number.parseFloat(TOKENS.sizeSidebarReopenThreshold);
       const collapsedWidth = Number.parseFloat(TOKENS.sizeSidebarCollapsed);
       const handle = this.hostDocument.createElement("div");
       handle.className = "ccxp-lite-sidebar-resize";
@@ -299,7 +302,7 @@
       const apply = (rawWidth: number) => {
         const state = getSidebarUiState(this.hostDocument);
         // Separate close and reopen thresholds keep a captured drag stable around the snap point.
-        if (state.sidebarCollapsed ? rawWidth >= minimum : rawWidth < threshold) {
+        if (state.sidebarCollapsed ? rawWidth >= reopening : rawWidth < threshold) {
           state.sidebarCollapsed = !state.sidebarCollapsed;
         }
         if (!state.sidebarCollapsed) {

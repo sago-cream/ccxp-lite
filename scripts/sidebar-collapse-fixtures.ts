@@ -48,7 +48,9 @@ export async function assertSidebarCollapse(
   assert.equal(await nav.locator(".ccxp-lite-profile-trigger strong").isVisible(), false);
   await capture(page, path.join(outputDir, "sidebar-collapsed.png"));
   await pause();
-  await page.mouse.move(32, 220);
+  await page.mouse.move(63, 220);
+  await waitWidth(64);
+  await page.mouse.move(32, 220, { steps: 5 });
   await waitWidth(324);
   assert.equal(await shell.getAttribute("data-ccxp-lite-sidebar-collapsed"), "true");
   assert.equal(
@@ -142,19 +144,19 @@ export async function assertSidebarCollapse(
     assert.ok(bounds);
     await page.mouse.move(bounds.x + bounds.width / 2, 400);
     await page.mouse.down();
-    await page.mouse.move(246, 400);
-    await waitWidth(280);
+    await page.mouse.move(236, 400);
+    await waitWidth(240);
     assert.equal(
       await nav.locator(".ccxp-lite-sidebar-shell").getAttribute("data-ccxp-lite-sidebar-compact"),
       "false",
     );
     await capture(page, path.join(outputDir, "sidebar-resize-minimum.png"));
     await pause();
-    await page.mouse.move(190, 400);
+    await page.mouse.move(123, 400);
     await waitWidth(64);
     await capture(page, path.join(outputDir, "sidebar-resize-snap.png"));
     await pause();
-    await page.mouse.move(240, 400);
+    await page.mouse.move(155, 400);
     await waitWidth(64);
     await page.mouse.move(416, 400);
     await waitWidth(420);
