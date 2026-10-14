@@ -1,0 +1,21 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+import { LocalizedMarkdown } from "./docs.js";
+import * as Classes from "./native-page-classes.stories";
+import reference from "../docs/design/native-page-classes.md?raw";
+import referenceZh from "../docs/design/native-page-classes.zh-TW.md?raw";
+
+<Meta of={Classes} />
+
+<LocalizedMarkdown zh={referenceZh} en={reference} />
+
+<LocalizedMarkdown zh="## 響應式表單" en="## Responsive form" />
+
+<Canvas of={Classes.ResponsiveForm} className="ds-docs-canvas" />
+
+<LocalizedMarkdown zh="## 字體排版" en="## Typography" />
+
+<Canvas of={Classes.Typography} className="ds-docs-canvas" />
+
+<LocalizedMarkdown zh="## 控制項與狀態" en="## Controls and status" />
+
+<Canvas of={Classes.ControlStates} className="ds-docs-canvas" />
