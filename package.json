@@ -17,6 +17,7 @@
     "update:readme-assets": "bun run scripts/update_readme_assets.ts && bun run build:readme-comparisons",
     "build:readme-comparisons": "bun run scripts/build_readme_comparisons.ts",
     "release": "release-it --config config/release/release-it.config.cjs",
+    "release:setup": "bun run scripts/setup_release_credentials.mts",
     "release:crx": "release-it --config config/release/release-it.crx.config.cjs",
     "release:firefox": "release-it --config config/release/release-it.firefox.config.cjs",
     "test": "bun run design:build && bunx vitest run",

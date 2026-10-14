@@ -7,11 +7,12 @@ Use environment variables as the interface. Prefer injecting them from an existi
 From the repository root:
 
 ```sh
-cp .env.release.example .env.release.local
-chmod 600 .env.release.local
+bun run release:setup
 ```
 
-Fill values in a local editor. Load the file explicitly for Bun processes:
+Paste each value at its prompt; input stays hidden. Enter keeps an existing value or skips an empty field. Each answer is saved immediately in the ignored `.env.release.local` with owner-only permissions. Ctrl+C stops while preserving saved answers. GitHub continues to use `gh` authentication; the setup command only writes local credentials and does not contact or submit to stores.
+
+You can also fill the file in a local editor. Load it explicitly for Bun processes:
 
 ```sh
 bun --env-file=.env.release.local run release <version> --ci --no-github.draft
