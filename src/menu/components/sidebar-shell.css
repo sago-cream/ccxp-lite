@@ -348,9 +348,12 @@
 }
 .ccxp-lite-session-timer {
   margin-left: auto;
+  margin-right: var(--ccxp-lite-spacing-2xs);
   flex-shrink: 0;
   color: var(--ccxp-lite-text-muted);
   font: var(--ccxp-lite-type-caption);
+  font-family: Arial, sans-serif;
+  font-kerning: none;
   font-variant-numeric: var(--ccxp-lite-font-variant-numeric-tabular);
 }
 .ccxp-lite-session-warning {

@@ -19,6 +19,24 @@ export async function assertInitialSessionTimer(
   if (verifyVisible) {
     await timer.waitFor({ state: "visible" });
     assert.match((await timer.textContent()) ?? "", /^\d{2}:[0-5]\d$/u);
+    const widths = await timer.evaluate((element) => {
+      const probe = element.cloneNode(false) as HTMLElement;
+      probe.style.position = "absolute";
+      probe.style.visibility = "hidden";
+      element.parentElement?.append(probe);
+      try {
+        return Array.from({ length: 10 }, (_, digit) => {
+          probe.textContent = `${digit}${digit}:${digit}${digit}`;
+          return probe.getBoundingClientRect().width;
+        });
+      } finally {
+        probe.remove();
+      }
+    });
+    assert.ok(
+      Math.max(...widths) - Math.min(...widths) < 0.1,
+      `Countdown width stays stable for every digit: ${widths.join(", ")}`,
+    );
   }
   await trigger.press("Escape");
   await capture(page, path.join(outputDir, "session-timer-initial.png"));
