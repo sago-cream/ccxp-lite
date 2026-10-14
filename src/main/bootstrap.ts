@@ -276,8 +276,8 @@
     if (topBody.dataset.ccxpLiteHeaderRemoved === "true") {
       return;
     }
+    // Keep the host idle label available to its timer and the sidebar clock bridge.
     topDocument.documentElement.style.display = "none";
-    topBody.textContent = "";
     topBody.dataset.ccxpLiteHeaderRemoved = "true";
     topFrame.setAttribute("scrolling", "no");
   }

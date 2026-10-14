@@ -3,6 +3,49 @@ import path from "node:path";
 import type { Frame, Page } from "playwright";
 import { setProfileMenuMode, toggleProfileTimer } from "./profile-fixtures.js";
 
+export async function assertInitialSessionTimer(
+  page: Page,
+  nav: Frame,
+  outputDir: string,
+  capture: (page: Page, screenshotPath: string) => Promise<void>,
+  verifyVisible: boolean,
+): Promise<void> {
+  const profile = nav.locator(".ccxp-lite-sidebar-profile");
+  const trigger = profile.locator(".ccxp-lite-profile-trigger");
+  const toggle = profile.locator(".ccxp-lite-session-timer-toggle");
+  const timer = profile.locator(".ccxp-lite-session-timer");
+  await trigger.click();
+  await toggleProfileTimer(toggle);
+  if (verifyVisible) {
+    await timer.waitFor({ state: "visible" });
+    assert.match((await timer.textContent()) ?? "", /^\d{2}:[0-5]\d$/u);
+    const widths = await timer.evaluate((element) => {
+      const probe = element.cloneNode(false) as HTMLElement;
+      probe.style.position = "absolute";
+      probe.style.visibility = "hidden";
+      element.parentElement?.append(probe);
+      try {
+        return Array.from({ length: 10 }, (_, digit) => {
+          probe.textContent = `${digit}${digit}:${digit}${digit}`;
+          return probe.getBoundingClientRect().width;
+        });
+      } finally {
+        probe.remove();
+      }
+    });
+    assert.ok(
+      Math.max(...widths) - Math.min(...widths) < 0.1,
+      `Countdown width stays stable for every digit: ${widths.join(", ")}`,
+    );
+  }
+  await trigger.press("Escape");
+  await capture(page, path.join(outputDir, "session-timer-initial.png"));
+  await trigger.click();
+  await toggleProfileTimer(toggle);
+  assert.equal(await timer.isVisible(), false);
+  await trigger.press("Escape");
+}
+
 // Synthetic idle responses are served at the live legacy timer's original endpoint.
 export async function assertSessionTimer(
   page: Page,
