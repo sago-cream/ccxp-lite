@@ -1,0 +1,4 @@
+interface:
+  display_name: "Release ccxpLite"
+  short_description: "Release ccxpLite and prepare approved store updates"
+  default_prompt: "Use $release to release ccxpLite, prepare concise notes from each destination's last release, and pause for approval before submitting store updates."
