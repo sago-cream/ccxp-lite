@@ -148,6 +148,7 @@
   width: 100%;
   min-width: 0;
   max-width: 100%;
+  min-height: var(--ccxp-lite-size-sidebar-row-height);
   padding: 6px var(--ccxp-lite-sidebar-row-padding-x);
   padding-left: calc(
     var(--ccxp-lite-sidebar-row-padding-x) +

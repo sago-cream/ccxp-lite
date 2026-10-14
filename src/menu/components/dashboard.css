@@ -274,8 +274,7 @@
 }
 
 .ccxp-lite-link-card .ccxp-lite-row-label {
-  font: var(--ccxp-lite-font-weight-strong) var(--ccxp-lite-font-size-nav) / 1.3
-    var(--ccxp-lite-font-sans);
+  font: var(--ccxp-lite-type-body);
 }
 
 .ccxp-lite-category-card-summary {

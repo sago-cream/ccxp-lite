@@ -55,7 +55,7 @@
   border-radius: var(--ccxp-lite-radius-sm);
   background: var(--ccxp-lite-surface);
   color: var(--ccxp-lite-text);
-  font: var(--ccxp-lite-type-caption);
+  font: var(--ccxp-lite-type-button);
   cursor: pointer;
 }
 

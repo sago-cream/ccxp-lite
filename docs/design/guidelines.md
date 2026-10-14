@@ -6,12 +6,16 @@
 | ---------- | ------------------------------------------------------------------------------------------------------ |
 | Color      | Purple for primary actions and navigation; danger for removal and errors.                              |
 | Surfaces   | White for content, neutral tints for navigation and secondary groups. Use borders to separate content. |
-| Typography | Use semantic font roles: 16px body, 14px utilities and captions.                                       |
+| Typography | Use a 14px base for body, controls, utilities, and captions.                                           |
 | Language   | Support Traditional Chinese and English. Check CJK wrapping and long English labels.                   |
 | Numbers    | Align date and time columns. Use Arial with tabular numerals in work-log.                              |
 | Spacing    | Reuse spacing tokens. Use a 4px grid for new layouts; preserve existing optical adjustments.           |
 | Corners    | Match the input, control, surface, or pill role.                                                       |
 | Motion     | Keep action feedback brief: 120ms. Respect reduced-motion preferences.                                 |
+
+Body text and control labels use 14px regular. Action buttons and standalone text links use 14px semibold (600). Inline links inherit the surrounding text size and use semibold weight. Preserve existing heading and branding typography.
+
+The home search input, results, and function-card labels use 16px regular for emphasis. Sidebar navigation and preferences use 14px regular text; profile support links keep 14px semibold text. These rows share a 36px height. Logout uses the same regular weight and text color as the preferences controls.
 
 ## Reuse
 

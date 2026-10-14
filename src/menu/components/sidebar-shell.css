@@ -214,9 +214,9 @@
   align-items: center;
   gap: 8px;
   width: 100%;
-  height: 40px;
+  height: var(--ccxp-lite-size-sidebar-row-height);
   min-width: 0;
-  padding: 6px 8px;
+  padding: var(--ccxp-lite-spacing-2xs) var(--ccxp-lite-spacing-inline-sm);
   border: 0;
   background: transparent;
   border-radius: inherit;
@@ -229,7 +229,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font: var(--ccxp-lite-type-caption);
+  font: var(--ccxp-lite-type-body);
 }
 .ccxp-lite-profile-trigger:hover {
   background: var(--ccxp-lite-primary-hover-surface);
@@ -243,14 +243,14 @@
   gap: var(--ccxp-lite-spacing-inline-sm);
   box-sizing: border-box;
   width: 100%;
-  height: var(--ccxp-lite-size-dialog-action-height);
-  min-height: var(--ccxp-lite-size-dialog-action-height);
+  height: var(--ccxp-lite-size-sidebar-row-height);
+  min-height: var(--ccxp-lite-size-sidebar-row-height);
   padding: 0 var(--ccxp-lite-spacing-inline-sm);
   border: 0;
   border-radius: var(--ccxp-lite-radius-input);
   background: transparent;
   color: var(--ccxp-lite-text);
-  font: var(--ccxp-lite-type-caption);
+  font: var(--ccxp-lite-type-body);
   text-align: left;
   cursor: pointer;
 }
@@ -411,14 +411,14 @@
   align-items: center;
   gap: var(--ccxp-lite-spacing-inline-sm);
   box-sizing: border-box;
-  height: var(--ccxp-lite-size-dialog-action-height);
-  min-height: var(--ccxp-lite-size-dialog-action-height);
+  height: var(--ccxp-lite-size-sidebar-row-height);
+  min-height: var(--ccxp-lite-size-sidebar-row-height);
   margin: 0 !important;
   padding: 0 var(--ccxp-lite-spacing-inline-sm) !important;
   border: 0 !important;
   border-radius: var(--ccxp-lite-radius-input);
   color: var(--ccxp-lite-primary);
-  font: var(--ccxp-lite-type-caption) !important;
+  font: var(--ccxp-lite-type-primary-link) !important;
   text-decoration: none;
 }
 .ccxp-lite-profile-row svg {
@@ -431,7 +431,8 @@
 }
 .ccxp-lite-profile-popover
   .ccxp-lite-profile-logout:is(:link, :visited, :hover, :active, :focus-visible) {
-  color: var(--ccxp-lite-text-muted);
+  color: var(--ccxp-lite-text);
+  font-weight: var(--ccxp-lite-font-weight-regular) !important;
 }
 .ccxp-lite-profile-popover .ccxp-lite-profile-link:hover {
   background: var(--ccxp-lite-primary-hover-surface);

@@ -128,7 +128,8 @@ html[data-ccxp-lite-scope="main"] body {
 html[data-ccxp-lite-scope="main"]
   a:not(.button):not([class*="button" i]):where(:not(.k-icon, .k-calendar *)) {
   color: var(--ccxp-lite-type-primary-link-color);
-  font: var(--ccxp-lite-type-primary-link);
+  font: inherit;
+  font-weight: var(--ccxp-lite-font-weight-semibold);
   text-decoration: none;
 }
 
@@ -433,7 +434,7 @@ html[data-ccxp-lite-scope="main"] .ccxp-home-search > input {
   background: transparent;
   box-shadow: none;
   outline: none;
-  font: var(--ccxp-lite-type-body);
+  font: var(--ccxp-lite-type-home-control);
 }
 .ccxp-home-shortcuts {
   margin-top: 32px;
@@ -487,7 +488,7 @@ html[data-ccxp-lite-scope="main"] .ccxp-home-search > input {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font: var(--ccxp-lite-type-utility);
+  font: var(--ccxp-lite-type-home-control);
 }
 @media (max-width: 520px) {
   .ccxp-home-cards {
@@ -505,7 +506,7 @@ html[data-ccxp-lite-scope="main"] .ccxp-home-search > input {
   background: transparent;
   box-shadow: none;
   color: var(--ccxp-lite-type-primary-link-color);
-  font: var(--ccxp-lite-type-utility);
+  font: var(--ccxp-lite-type-body);
   cursor: pointer;
 }
 .ccxp-home-show-all[hidden] {
@@ -538,7 +539,7 @@ html[data-ccxp-lite-scope="main"] .ccxp-home-search > input {
   border-radius: 16px;
   background: transparent;
   color: var(--ccxp-lite-text);
-  font: var(--ccxp-lite-type-utility);
+  font: var(--ccxp-lite-type-home-control);
   text-align: left;
   cursor: pointer;
 }
@@ -549,6 +550,7 @@ html[data-ccxp-lite-scope="main"] .ccxp-home-search > input {
 }
 .ccxp-home-search-results p {
   margin: 12px;
+  font: var(--ccxp-lite-type-home-control);
 }
 
 .ccxp-home-brand-logo {
@@ -583,9 +585,7 @@ html[data-ccxp-lite-scope="main"] .ccxp-home-search > input {
   border-bottom-color: transparent;
 }
 html[data-ccxp-lite-scope="main"] .ccxp-home-header > .ccxp-home-contact {
-  font: var(--ccxp-lite-type-body) !important;
-  font-size: var(--ccxp-lite-font-size-utility) !important;
-  line-height: 1.4 !important;
+  font: var(--ccxp-lite-type-primary-link) !important;
 }
 
 .ccxp-home-search > input::-webkit-search-cancel-button {

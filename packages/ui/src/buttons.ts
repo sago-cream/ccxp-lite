@@ -47,7 +47,7 @@ export function createDialogActionButton(
     padding: "0 var(--ccxp-lite-spacing-md)",
     borderRadius: "var(--ccxp-lite-radius-sm)",
     border: "1px solid var(--ccxp-lite-border)",
-    font: "var(--ccxp-lite-type-utility)",
+    font: "var(--ccxp-lite-type-button)",
     cursor: "pointer",
     transition:
       "background-color var(--ccxp-lite-motion-fast) ease, border-color var(--ccxp-lite-motion-fast) ease, color var(--ccxp-lite-motion-fast) ease",

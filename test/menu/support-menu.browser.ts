@@ -151,7 +151,7 @@ test("packaged headers omit ccxpLite and profile menus expose support links", as
         expect(row.iconHidden).toBe("true");
         expect(row.iconX).toBe(rows[0].iconX);
         expect(row.labelX).toBe(rows[0].labelX);
-        expect(row.height).toBe(40);
+        expect(row.height).toBe(36);
       }
       await report.press("Escape");
       await popup.waitFor({ state: "hidden" });

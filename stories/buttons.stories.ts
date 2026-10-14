@@ -36,12 +36,14 @@ const meta = {
   parameters: {
     i18n: {
       description: {
-        component: "主要按鈕用於送出，次要按鈕用於取消，危險按鈕用於移除。",
+        component:
+          "主要按鈕用於送出，次要按鈕用於取消，危險按鈕用於移除。操作按鈕使用相同的 14px 半粗體（600）按鈕字體，以色彩區分用途。",
       },
     },
     docs: {
       description: {
-        component: "Use primary for submission, secondary for cancel, and danger for removal.",
+        component:
+          "Use primary for submission, secondary for cancel, and danger for removal. Action buttons share the 14px semibold (600) button type role; color distinguishes their purpose.",
       },
     },
   },

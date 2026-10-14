@@ -64,7 +64,17 @@ export const Dialog: Story = { args: { filter: "dialog" } };
 export const Typography: Story = {
   render: () => {
     const dom = createRenderer(document);
-    const roles = ["display", "page-title", "body-strong", "body", "utility", "caption"];
+    const roles = [
+      "display",
+      "page-title",
+      "body-strong",
+      "body",
+      "home-control",
+      "button",
+      "primary-link",
+      "utility",
+      "caption",
+    ];
     return surface(
       ...roles.map((role) =>
         dom.element("section", { className: "ds-token" }, [

@@ -101,17 +101,20 @@
   --ccxp-lite-font-sans: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
   --ccxp-lite-font-brand: "Futura", "Futura PT", "Avenir Next", sans-serif;
   --ccxp-lite-font-weight-regular: 400;
+  --ccxp-lite-font-weight-semibold: 600;
   --ccxp-lite-font-weight-strong: 700;
   --ccxp-lite-font-weight-heavy: 800;
   --ccxp-lite-font-variant-numeric-tabular: tabular-nums;
   --ccxp-lite-font-size-caption: 14px;
   --ccxp-lite-font-size-nav: 14px;
   --ccxp-lite-font-size-utility: 14px;
-  --ccxp-lite-font-size-body: 16px;
+  --ccxp-lite-font-size-body: 14px;
+  --ccxp-lite-font-size-home-control: 16px;
   --ccxp-lite-font-size-sidebar-brand: 20px;
   --ccxp-lite-size-sidebar-brand-logo: 30px;
   --ccxp-lite-size-sidebar-category-leading: 1.5em;
   --ccxp-lite-size-sidebar-control: 24px;
+  --ccxp-lite-size-sidebar-row-height: 36px;
   --ccxp-lite-size-sidebar-guide-line: 2px;
   --ccxp-lite-size-sidebar-search-spacer: 14px;
   --ccxp-lite-size-sidebar-search-width: 268px;
@@ -156,7 +159,7 @@
   --ccxp-lite-type-page-title: var(--ccxp-lite-font-weight-strong)
     var(--ccxp-lite-font-size-page-title)/1.2 var(--ccxp-lite-font-sans);
   --ccxp-lite-type-page-title-color: var(--ccxp-lite-text);
-  --ccxp-lite-type-primary-link: var(--ccxp-lite-type-body-strong);
+  --ccxp-lite-type-primary-link: var(--ccxp-lite-type-button);
   --ccxp-lite-type-primary-link-color: var(--ccxp-lite-primary);
   --ccxp-lite-type-info: var(--ccxp-lite-type-body-strong);
   --ccxp-lite-type-info-color: var(--ccxp-lite-legacy-blue-text);
@@ -168,6 +171,12 @@
   --ccxp-lite-type-body: var(--ccxp-lite-font-weight-regular) var(--ccxp-lite-font-size-body)/1.55
     var(--ccxp-lite-font-sans);
   --ccxp-lite-type-body-color: var(--ccxp-lite-text);
+  --ccxp-lite-type-home-control: var(--ccxp-lite-font-weight-regular)
+    var(--ccxp-lite-font-size-home-control)/1.55 var(--ccxp-lite-font-sans);
+  --ccxp-lite-type-home-control-color: var(--ccxp-lite-text);
+  --ccxp-lite-type-button: var(--ccxp-lite-font-weight-semibold)
+    var(--ccxp-lite-font-size-body)/1.55 var(--ccxp-lite-font-sans);
+  --ccxp-lite-type-button-color: var(--ccxp-lite-text);
   --ccxp-lite-type-body-muted: var(--ccxp-lite-font-weight-regular)
     var(--ccxp-lite-font-size-body)/1.55 var(--ccxp-lite-font-sans);
   --ccxp-lite-type-body-muted-color: var(--ccxp-lite-text-muted);
