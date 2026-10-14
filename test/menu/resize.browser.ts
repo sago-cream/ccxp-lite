@@ -91,13 +91,23 @@ test("packaged sidebar resizes only through its handle with stable snap threshol
     await expectWidth(404);
     await page.mouse.move(700, 400);
     await expectWidth(480);
-    await page.mouse.move(246, 400);
-    await expectWidth(280);
+    await page.mouse.move(236, 400);
+    await expectWidth(240);
     expect(await shell.getAttribute("data-ccxp-lite-sidebar-compact")).toBe("false");
-    await page.mouse.move(190, 400);
+    await page.mouse.move(124, 400);
+    await expectWidth(240);
+    await page.mouse.move(123, 400);
     await expectWidth(64);
     expect(await shell.getAttribute("data-ccxp-lite-sidebar-compact")).toBe("true");
-    await page.mouse.move(240, 400);
+    await page.mouse.move(155, 400);
+    await expectWidth(64);
+    await page.mouse.move(156, 400);
+    await expectWidth(240);
+    await page.mouse.move(124, 400);
+    await expectWidth(240);
+    await page.mouse.move(123, 400);
+    await expectWidth(64);
+    await page.mouse.move(155, 400);
     await expectWidth(64);
     await page.mouse.move(300, 400);
     await expectWidth(304);
@@ -124,11 +134,15 @@ test("packaged sidebar resizes only through its handle with stable snap threshol
     await handle.press("ArrowLeft");
     await expectWidth(288);
     await handle.press("ArrowLeft");
-    await expectWidth(280);
+    await expectWidth(272);
+    await handle.press("ArrowLeft");
+    await expectWidth(256);
+    await handle.press("ArrowLeft");
+    await expectWidth(240);
     await handle.press("ArrowLeft");
     await expectWidth(64);
     await handle.press("ArrowRight");
-    await expectWidth(280);
+    await expectWidth(240);
     await handle.press("End");
     await expectWidth(480);
     await handle.press("Home");
@@ -142,8 +156,10 @@ test("packaged sidebar resizes only through its handle with stable snap threshol
     await expectWidth(64);
     // Start a fresh drag from the rail and expand past the reopening threshold.
     await begin();
-    await page.mouse.move(270, 400);
+    await page.mouse.move(155, 400);
     await expectWidth(64);
+    await page.mouse.move(156, 400);
+    await expectWidth(240);
     await page.mouse.move(290, 400);
     await expectWidth(294);
     await page.mouse.up();
@@ -153,7 +169,18 @@ test("packaged sidebar resizes only through its handle with stable snap threshol
     await frame.locator(".ccxp-lite-sidebar-collapse").click();
     await page.mouse.move(700, 800);
     await expectWidth(64);
-    await page.mouse.move(32, 220);
+    // Enter through the resize strip, then move into the rail without another pointerenter.
+    await page.mouse.move(63, 220);
+    await expectWidth(64);
+    await page.mouse.move(32, 220, { steps: 5 });
+    await expectWidth(294);
+    expect(await shell.getAttribute("data-ccxp-lite-sidebar-collapsed")).toBe("true");
+    expect(await frame.evaluate(() => localStorage.getItem("ccxp-lite-sidebar-collapsed"))).toBe(
+      "true",
+    );
+    await page.mouse.move(700, 800);
+    await expectWidth(64);
+    await page.mouse.move(32, 220, { steps: 5 });
     await expectWidth(294);
     await frame.locator(".ccxp-lite-sidebar-collapse").click();
     await page.mouse.move(700, 800);
