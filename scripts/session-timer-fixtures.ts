@@ -3,15 +3,26 @@ import path from "node:path";
 import type { Frame, Page } from "playwright";
 import { setProfileMenuMode, toggleProfileTimer } from "./profile-fixtures.js";
 
-export async function assertInitialSessionTimer(nav: Frame): Promise<void> {
+export async function assertInitialSessionTimer(
+  page: Page,
+  nav: Frame,
+  outputDir: string,
+  capture: (page: Page, screenshotPath: string) => Promise<void>,
+  verifyVisible: boolean,
+): Promise<void> {
   const profile = nav.locator(".ccxp-lite-sidebar-profile");
   const trigger = profile.locator(".ccxp-lite-profile-trigger");
   const toggle = profile.locator(".ccxp-lite-session-timer-toggle");
   const timer = profile.locator(".ccxp-lite-session-timer");
   await trigger.click();
   await toggleProfileTimer(toggle);
-  await timer.waitFor({ state: "visible" });
-  assert.match((await timer.textContent()) ?? "", /^\d{2}:[0-5]\d$/u);
+  if (verifyVisible) {
+    await timer.waitFor({ state: "visible" });
+    assert.match((await timer.textContent()) ?? "", /^\d{2}:[0-5]\d$/u);
+  }
+  await trigger.press("Escape");
+  await capture(page, path.join(outputDir, "session-timer-initial.png"));
+  await trigger.click();
   await toggleProfileTimer(toggle);
   assert.equal(await timer.isVisible(), false);
   await trigger.press("Escape");

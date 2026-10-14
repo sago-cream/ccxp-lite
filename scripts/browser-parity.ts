@@ -594,9 +594,13 @@ async function captureRevision(
         markRecordingStep("sidebar-collapse-end");
       }
       if ((await navFrame.locator(".ccxp-lite-session-timer-toggle").count()) > 0) {
-        if (label === "head") {
-          await assertInitialSessionTimer(navFrame);
-        }
+        await assertInitialSessionTimer(
+          page,
+          navFrame,
+          revisionOutputDir,
+          capturePage,
+          label === "head",
+        );
         await assertSessionTimer(page, navFrame, revisionOutputDir, capturePage);
       }
 
