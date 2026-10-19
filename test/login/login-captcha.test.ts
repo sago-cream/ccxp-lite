@@ -260,3 +260,74 @@ test.each([
   expect(input.getAttribute("aria-busy")).toBe("false");
   await window.happyDOM.close();
 });
+
+test("refreshes the native image once without submitting or replacing credential fields", async () => {
+  const { window, input } = networkCaptcha("auth_img.php?pwdstr=fixture&v=original");
+  const document = window.document as Document;
+  await flushPromises();
+  const image = requireElement(document.querySelector<HTMLImageElement>("img"), "captcha image");
+  const refresh = requireElement(
+    document.querySelector<HTMLButtonElement>(".ccxp-lite-captcha-refresh"),
+    "refresh",
+  );
+  const account = requireElement(
+    document.querySelector<HTMLInputElement>("[name='account']"),
+    "account",
+  );
+  const password = requireElement(
+    document.querySelector<HTMLInputElement>("[name='passwd']"),
+    "password",
+  );
+  account.value = "fixture-account";
+  password.value = "fixture-password";
+  const hidden = [...document.querySelectorAll<HTMLInputElement>("input[type=hidden]")].map(
+    (field) => [field.name, field.value],
+  );
+  const submit = vi.fn();
+  input.form?.addEventListener("submit", () => {
+    submit("submitted");
+  });
+  expect(refresh.type).toBe("button");
+  refresh.click();
+  const first = new URL(image.src);
+  expect(first.pathname).toBe("/ccxp/INQUIRE/auth_img.php");
+  expect(first.searchParams.get("pwdstr")).toBe("fixture");
+  expect(first.searchParams.get("v")).toBe("original");
+  expect(first.searchParams.has("_ccxpRefresh")).toBe(true);
+  expect(input.value).toBe("");
+  expect(refresh.disabled).toBe(true);
+  refresh.click();
+  expect(image.src).toBe(first.href);
+  image.dispatchEvent(new TestEvent("error"));
+  expect(refresh.disabled).toBe(false);
+  refresh.click();
+  expect(image.src).not.toBe(first.href);
+  image.dispatchEvent(new TestEvent("load"));
+  expect(refresh.disabled).toBe(false);
+  expect(account.value).toBe("fixture-account");
+  expect(password.value).toBe("fixture-password");
+  expect(
+    [...document.querySelectorAll<HTMLInputElement>("input[type=hidden]")].map((field) => [
+      field.name,
+      field.value,
+    ]),
+  ).toEqual(hidden);
+  expect(submit).not.toHaveBeenCalled();
+  expect(document.querySelectorAll(".ccxp-lite-captcha-refresh")).toHaveLength(1);
+  await window.happyDOM.close();
+});
+
+test("manual refresh never navigates a rejected captcha source", async () => {
+  const { window, fetch } = networkCaptcha("https://attacker.example/auth_img.php");
+  const document = window.document as Document;
+  const refresh = requireElement(
+    document.querySelector<HTMLButtonElement>(".ccxp-lite-captcha-refresh"),
+    "refresh",
+  );
+  const image = requireElement(document.querySelector<HTMLImageElement>("img"), "captcha image");
+  refresh.click();
+  expect(image.src).toBe("https://attacker.example/auth_img.php");
+  expect(refresh.disabled).toBe(false);
+  expect(fetch).not.toHaveBeenCalled();
+  await window.happyDOM.close();
+});

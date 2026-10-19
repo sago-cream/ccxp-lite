@@ -41,6 +41,7 @@ interface CaptureResult {
   readonly screenshots: Readonly<Record<string, string>>;
   readonly styles: Readonly<Record<string, unknown>>;
   readonly searchFormBottom: number;
+  readonly captchaRegion?: { x: number; y: number; width: number; height: number };
 }
 
 const fixtureByPath = new Map<string, string>([
@@ -328,6 +329,7 @@ async function captureRevision(
   expectSupportLinksChange: boolean,
   expectSidebarCollapseChange: boolean,
   expectSidebarResizeChange: boolean,
+  expectCaptchaRefresh: boolean,
 ): Promise<CaptureResult> {
   const profileDir = path.join(tmpdir(), `ccxp-lite-parity-${label}-${process.pid}-${Date.now()}`);
   const revisionOutputDir = path.join(outputDir, label);
@@ -348,6 +350,7 @@ async function captureRevision(
       `--load-extension=${extensionDir}`,
     ],
   });
+  let captchaRegion: CaptureResult["captchaRegion"];
   const screenshots: Record<string, string> = {};
   const styles: Record<string, unknown> = {};
   const recordingSteps: Array<{ name: string; time: number }> = [];
@@ -667,6 +670,76 @@ async function captureRevision(
       if ((await password.getAttribute("type")) !== "text") {
         throw new Error("Password visibility control did not preserve interaction behavior");
       }
+      if (expectCaptchaRefresh) {
+        const row = page.locator(".ccxp-lite-captcha-media-row");
+        captchaRegion = (await row.boundingBox()) ?? undefined;
+        assert.ok(
+          captchaRegion && captchaRegion.height <= 100,
+          "Only the verification image row may change",
+        );
+        const account = page.locator('input[name="account"]');
+        await account.fill("fixture-account");
+        const hidden = await page
+          .locator('input[type="hidden"]')
+          .evaluateAll((inputs: readonly Element[]) =>
+            inputs.map((el) => [el.getAttribute("name"), (el as HTMLInputElement).value]),
+          );
+        const refresh = page.locator(".ccxp-lite-captcha-refresh");
+        if (label === "head") {
+          await page.locator('input[name="passwd2"]').fill("fixture-entry");
+          const before = await page.locator('img[src*="auth_img.php"]').getAttribute("src");
+          await refresh.click();
+          await page.waitForFunction(
+            () =>
+              document.querySelector<HTMLButtonElement>(".ccxp-lite-captcha-refresh")?.disabled ===
+              false,
+          );
+          assert.notEqual(
+            await page.locator('img[src*="auth_img.php"]').getAttribute("src"),
+            before,
+          );
+          assert.equal(await page.locator('input[name="passwd2"]').inputValue(), "");
+          assert.equal(await account.inputValue(), "fixture-account");
+          assert.equal(await password.inputValue(), "parity-only");
+          assert.deepEqual(
+            await page
+              .locator('input[type="hidden"]')
+              .evaluateAll((inputs: readonly Element[]) =>
+                inputs.map((el) => [el.getAttribute("name"), (el as HTMLInputElement).value]),
+              ),
+            hidden,
+          );
+          const audio = page.locator(
+            ".ccxp-lite-audio-icon-button:not(.ccxp-lite-captcha-refresh), .ccxp-lite-audio-icon-link",
+          );
+          const surface = (element: Element) => {
+            const computed = getComputedStyle(element);
+            return { background: computed.backgroundColor, image: computed.backgroundImage };
+          };
+          await refresh.blur();
+          await page.mouse.move(0, 0);
+          assert.deepEqual(await refresh.evaluate(surface), await audio.evaluate(surface));
+          await refresh.hover();
+          const hovered = await refresh.evaluate(surface);
+          await audio.hover();
+          assert.deepEqual(hovered, await audio.evaluate(surface));
+          await page.mouse.move(0, 0);
+          await audio.focus();
+          await page.keyboard.press("Tab");
+          assert.equal(
+            await refresh.evaluate((element) => element.matches(":focus-visible")),
+            true,
+          );
+          const focused = await refresh.evaluate(surface);
+          await page.keyboard.press("Shift+Tab");
+          assert.equal(await audio.evaluate((element) => element.matches(":focus-visible")), true);
+          assert.deepEqual(focused, await audio.evaluate(surface));
+          await audio.blur();
+        } else {
+          assert.equal(await refresh.count(), 0);
+        }
+        await account.fill("");
+      }
       const loginScreenshot = path.join(revisionOutputDir, "login.png");
       await capturePage(page, loginScreenshot);
       screenshots.login = loginScreenshot;
@@ -782,7 +855,7 @@ async function captureRevision(
     if (missingAssets.size > 0) {
       throw new Error(`Missing host visual assets: ${[...missingAssets].join(", ")}`);
     }
-    return { screenshots, styles, searchFormBottom };
+    return { screenshots, styles, searchFormBottom, captchaRegion };
   } finally {
     process.stdout.write(`[${label}] closing browser\n`);
     await Promise.all(
@@ -804,6 +877,7 @@ function compareScreenshot(
   maskSidebar = false,
   headerWidth = 0,
   maskResizeHandle = false,
+  captchaRegions: ReadonlyArray<NonNullable<CaptureResult["captchaRegion"]>> = [],
 ) {
   const base = PNG.sync.read(readFileSync(basePath));
   const head = PNG.sync.read(readFileSync(headPath));
@@ -841,6 +915,21 @@ function compareScreenshot(
       }
     }
   }
+  for (const png of [base, head]) {
+    for (const region of captchaRegions) {
+      for (
+        let y = Math.max(0, Math.floor(region.y));
+        y < Math.min(png.height, Math.ceil(region.y + region.height));
+        y++
+      ) {
+        png.data.fill(
+          0,
+          (y * png.width + Math.max(0, Math.floor(region.x))) * 4,
+          (y * png.width + Math.min(png.width, Math.ceil(region.x + region.width))) * 4,
+        );
+      }
+    }
+  }
   const diff = new PNG({ width: base.width, height: base.height });
   const differentPixels = pixelmatch(base.data, head.data, diff.data, base.width, base.height, {
     includeAA: false,
@@ -863,6 +952,7 @@ function compareCaptures(
   expectSupportLinksChange: boolean,
   expectSidebarCollapseChange: boolean,
   expectSidebarResizeChange: boolean,
+  expectCaptchaRefresh: boolean,
 ): readonly string[] {
   const failures: string[] = [];
   if (base.searchFormBottom !== head.searchFormBottom) {
@@ -912,6 +1002,9 @@ function compareCaptures(
       expectHomeChange && framedViews.has(name),
       name === "sidebar-layered-search" && headerChanges ? 520 : headerWidth,
       expectSidebarResizeChange && (name === "sidebar-classic" || framedViews.has(name)),
+      expectCaptchaRefresh && name === "login" && base.captchaRegion && head.captchaRegion
+        ? [base.captchaRegion, head.captchaRegion]
+        : [],
     );
     if (difference.ratio > maximumPixelDifferenceRatio) {
       failures.push(
@@ -961,6 +1054,7 @@ async function main() {
       "expect-support-links-change": { type: "boolean", default: false },
       "expect-sidebar-collapse-change": { type: "boolean", default: false },
       "expect-sidebar-resize-change": { type: "boolean", default: false },
+      "expect-captcha-refresh": { type: "boolean", default: false },
     },
     strict: true,
   });
@@ -981,6 +1075,7 @@ async function main() {
     values["expect-support-links-change"],
     values["expect-sidebar-collapse-change"],
     values["expect-sidebar-resize-change"],
+    values["expect-captcha-refresh"],
   );
   const head = await captureRevision(
     "head",
@@ -992,6 +1087,7 @@ async function main() {
     values["expect-support-links-change"],
     values["expect-sidebar-collapse-change"],
     values["expect-sidebar-resize-change"],
+    values["expect-captcha-refresh"],
   );
   if (values["expect-support-links-change"]) {
     // Captures above validate the profile links; the browser test covers keyboard/dismissal.
@@ -1006,6 +1102,7 @@ async function main() {
     values["expect-support-links-change"],
     values["expect-sidebar-collapse-change"],
     values["expect-sidebar-resize-change"],
+    values["expect-captcha-refresh"],
   );
   writeFileSync(
     path.join(outputDir, "report.json"),

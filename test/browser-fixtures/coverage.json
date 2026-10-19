@@ -13,7 +13,7 @@
       "file": "login.html",
       "path": "/ccxp/INQUIRE/index.php",
       "owners": ["src/login/", "src/inquire/"],
-      "state": "Logged-out Chinese landing page, full notices and layout; synthetic CAPTCHA"
+      "state": "Logged-out Chinese landing page, full notices and layout; synthetic CAPTCHA; native image URL with offline SVG response, refresh preserves account/password/hidden validation fields and clears only the CAPTCHA input"
     },
     {
       "file": "frameset.html",
@@ -85,7 +85,7 @@
       "file": "profile-header.big5",
       "path": "/ccxp/INQUIRE/JH/4/4.19/JH4j002.php",
       "owners": ["src/menu/ui/overlays.ts"],
-      "state": "Read-only profile response: identity header row and Big5 meta declaration observed live on 2026-09-14; only these cells retained, values replaced with synthetic student 123456789 / 測試同學 / STUDENT, TEST. This response is parsed, never shown as a page or used as a visual fixture."
+      "state": "Read-only profile response: identity header row and Big5 meta declaration observed live on 2026-09-14; only these cells retained, values replaced with synthetic student 123456789 / \u6e2c\u8a66\u540c\u5b78 / STUDENT, TEST. This response is parsed, never shown as a page or used as a visual fixture."
     }
   ],
   "gaps": [
