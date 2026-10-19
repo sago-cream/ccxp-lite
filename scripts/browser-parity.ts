@@ -709,6 +709,32 @@ async function captureRevision(
               ),
             hidden,
           );
+          const audio = page.locator(
+            ".ccxp-lite-audio-icon-button:not(.ccxp-lite-captcha-refresh), .ccxp-lite-audio-icon-link",
+          );
+          const surface = (element: Element) => {
+            const computed = getComputedStyle(element);
+            return { background: computed.backgroundColor, image: computed.backgroundImage };
+          };
+          await refresh.blur();
+          await page.mouse.move(0, 0);
+          assert.deepEqual(await refresh.evaluate(surface), await audio.evaluate(surface));
+          await refresh.hover();
+          const hovered = await refresh.evaluate(surface);
+          await audio.hover();
+          assert.deepEqual(hovered, await audio.evaluate(surface));
+          await page.mouse.move(0, 0);
+          await audio.focus();
+          await page.keyboard.press("Tab");
+          assert.equal(
+            await refresh.evaluate((element) => element.matches(":focus-visible")),
+            true,
+          );
+          const focused = await refresh.evaluate(surface);
+          await page.keyboard.press("Shift+Tab");
+          assert.equal(await audio.evaluate((element) => element.matches(":focus-visible")), true);
+          assert.deepEqual(focused, await audio.evaluate(surface));
+          await audio.blur();
         } else {
           assert.equal(await refresh.count(), 0);
         }
