@@ -106,6 +106,10 @@ jobs:
              grep -q 'bindResize' src/menu/ui/controller.ts; then
             expected_changes+=(--expect-sidebar-resize-change)
           fi
+          if ! grep -q 'function attachCaptchaRefresh' ../base/src/login/auth/captcha.ts &&
+             grep -q 'function attachCaptchaRefresh' src/login/auth/captcha.ts; then
+            expected_changes+=(--expect-captcha-refresh)
+          fi
           bun run test:browser-parity -- \
             --base-extension ../base/dist/crx/unpacked \
             --head-extension dist/crx/unpacked \

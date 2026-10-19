@@ -594,5 +594,9 @@
   "/style/JH/JH.css": {
     "file": "host-assets/e650a56fc577-JH.css",
     "contentType": "text/css"
+  },
+  "/ccxp/INQUIRE/auth_img.php": {
+    "file": "host-assets/captcha-fixture.svg",
+    "contentType": "image/svg+xml"
   }
 }
