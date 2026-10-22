@@ -6,7 +6,7 @@ import { createTestWindow, loadModules, requireValue } from "../helpers/module-l
 const fixturePath = path.resolve("test/browser-fixtures/course-result.html");
 
 describe("NTHUMods course-result parser", () => {
-  test("reads the submitted semester and scraper-compatible rows from the fixture", () => {
+  test("reads the hidden semester and only registered rows from the fixture", () => {
     const { window } = createTestWindow(
       readFileSync(fixturePath, "utf8"),
       "https://www.ccxp.nthu.edu.tw/ccxp/COURSE/JH/7/7.2/7.2.1/JH721003.php",
@@ -15,8 +15,14 @@ describe("NTHUMods course-result parser", () => {
     const parser = requireValue(window.CCXP_LITE.nthuModsParser);
 
     expect(parser.parseCourseResult(window.document)).toEqual({
-      semester: "11510",
-      courseIds: ["11510CS  535100", "11510EECS 123456", "11510MATH 246810"],
+      semester: "11420",
+      courseIds: [
+        "11420AIA 500200",
+        "11420AIA 500300",
+        "11420CS  541300",
+        "11420EECS391000",
+        "11420PE  206018",
+      ],
     });
     window.close();
   });
@@ -27,7 +33,7 @@ describe("NTHUMods course-result parser", () => {
       (_, index) => `<tr class="class3"><td>11510CS ${String(index).padStart(6, "0")}</td></tr>`,
     ).join("");
     const { window } = createTestWindow(
-      `<form><input type="hidden" name="semester" value="115,10"><table><tbody></tbody></table><table><tbody>${rows}<tr class="class3"><td>bad</td></tr></tbody></table></form>`,
+      `<form><input type="hidden" name="year" value="115"><input type="hidden" name="term" value="10"><table><tbody></tbody></table><table><tbody>${rows}<tr class="class3"><td>bad</td></tr></tbody></table></form>`,
     );
     loadModules(window, ["src/nthumods/parser.ts"]);
     const parser = requireValue(window.CCXP_LITE.nthuModsParser);

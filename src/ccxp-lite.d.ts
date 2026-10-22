@@ -212,6 +212,7 @@ declare global {
   }
 
   interface CcxpLiteNthuModsParser {
+    findRegisteredCoursesTable: (targetDocument: Document) => HTMLTableElement | undefined;
     parseCourseResult: (targetDocument: Document) => CcxpLiteNthuModsCourseResult;
   }
 

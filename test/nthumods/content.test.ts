@@ -35,7 +35,7 @@ test("mounts a scoped export action above the result table without reskinning th
   expect(document.querySelector("#ccxp-lite-nthumods-header")).toBeNull();
   button.click();
   expect(open).toHaveBeenCalledWith(
-    "https://nthumods.com/zh/timetable/view?semester_11510=11510CS%20%20535100,11510EECS%20123456,11510MATH%20246810&source=ccxp",
+    "https://nthumods.com/zh/timetable/view?semester_11420=11420AIA%20500200,11420AIA%20500300,11420CS%20%20541300,11420EECS391000,11420PE%20%20206018&source=ccxp",
     "_blank",
     "noopener,noreferrer",
   );
@@ -46,7 +46,7 @@ test("mounts a scoped export action above the result table without reskinning th
 
 test("disables the action and explains an empty result", () => {
   const { window } = createTestWindow(
-    '<table><tbody></tbody></table><table><tbody><tr class="class3"><td>not-a-course</td></tr></tbody></table><form><input name="semester" value="115,10"></form>',
+    '<table><tbody></tbody></table><table><tbody><tr><td>\u5DF2\u9078\u4E0A\u4E4B\u79D1\u76EE Courses registered for successfully</td></tr><tr><td>\u79D1\u865F Course Number</td></tr><tr class="class3"><td>not-a-course</td></tr></tbody></table><form><input name="semester" value="115,10"></form>',
     "https://www.ccxp.nthu.edu.tw/ccxp/COURSE/JH/7/7.2/7.2.1/JH721003.php",
   );
   const document = window.document as unknown as Document;

@@ -29,8 +29,11 @@ curriculum query, and keyword query in the main frame; standalone closed evaluat
 layered search; embedded closed evaluation; standalone work log; framed multi-day work log; and
 post-Add work log. The public query pages were navigated live and captured on 2026-09-12 to exercise
 the broad styles on native tables, links, and controls outside the dedicated extension modules.
-The `course-result.html` state is synthetic UTF-8 data with synthetic identity and course rows, not
-live-captured; it needs a maintainer capture with a real session before live fidelity can be claimed.
+The `course-result.html` state is a UTF-8 sanitized capture from a maintainer-saved logged-in
+session on 2026-10-22, confirmed against the live response for semester 114-20 / phase 200P.
+Its student name and number, college, department, minimum-credit value, and ACIXSTORE values are
+synthetic; the failed-courses table also contains one explicitly synthetic row to verify that
+failed courses are not exported. Course catalogue rows remain as captured.
 The harness waits for the shared main skin as well as page-specific readiness and loaded stylesheets.
 It fails on missing visual assets, missing readiness markers, and failed interactions before
 comparing screenshots and styles.

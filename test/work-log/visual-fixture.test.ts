@@ -32,7 +32,7 @@ test("work-log visual fixture retains host landmarks and sanitized data", () => 
   expect(doc.querySelector("script[src]")).toBeNull();
 });
 
-test("course-result fixture retains the synthetic parser landmarks", () => {
+test("course-result fixture retains the captured parser landmarks", () => {
   const window = new Window({
     settings: {
       disableJavaScriptEvaluation: true,
@@ -42,16 +42,24 @@ test("course-result fixture retains the synthetic parser landmarks", () => {
   });
   const html = readFileSync(path.join(root, "course-result.html"), "utf8");
   window.document.write(html);
-  expect(html).toContain("SYNTHETIC fixture");
-  const semester = window.document.querySelector(
-    "form select[name='semester']",
-  ) as unknown as HTMLSelectElement;
-  expect(semester.hasAttribute("value")).toBe(false);
-  expect(semester.value).toBe("115,10");
-  expect(window.document.querySelectorAll("table")).toHaveLength(2);
+  expect(html).not.toContain("saved from url");
+  expect(html).not.toContain("SYNTHETIC fixture");
+  expect(window.document.querySelector("form input[name='year']")?.getAttribute("value")).toBe(
+    "114",
+  );
+  expect(window.document.querySelector("form input[name='term']")?.getAttribute("value")).toBe(
+    "20",
+  );
+  expect(window.document.querySelectorAll("table")).toHaveLength(3);
   expect(
     window.document.querySelectorAll("table")[1].querySelectorAll("tbody > .class3"),
   ).toHaveLength(5);
+  expect(
+    window.document.querySelectorAll("table")[2].querySelectorAll("tbody > .class3"),
+  ).toHaveLength(1);
+  expect(window.document.querySelectorAll("table")[2].textContent).toContain(
+    "Synthetic failed course",
+  );
   expect(html).not.toContain("chrome-extension:");
   expect(html).not.toContain("codex-agent-overlay");
 });

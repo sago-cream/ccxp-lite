@@ -4,42 +4,85 @@
   const COURSE_ID_PATTERN = /^\d{5}[A-Za-z0-9]{1,4}\s*\d{6}$/u;
   const COURSE_SEMESTER_PATTERN = /^\d{5}/u;
   const COURSE_LIMIT = 60;
+  const COURSE_NUMBER_HEADER = "\u79D1\u865F";
+  const REGISTERED_COURSES_HEADER = "\u5DF2\u9078\u4E0A";
+  const REASON_HEADER = "\u539F\u56E0";
 
-  function readSubmittedSemester(
-    targetDocument: Document,
-    resultTable: HTMLTableElement | null,
-  ): string {
-    const resultForm = resultTable?.closest("form") as HTMLFormElement | null;
-    const submittedValue = resultForm ? new FormData(resultForm).get("semester") : undefined;
-    const fallbackControl = targetDocument.querySelector<HTMLSelectElement | HTMLInputElement>(
-      "select[name='semester'], input[name='semester']",
-    );
-    const rawValue =
-      typeof submittedValue === "string" && submittedValue !== ""
-        ? submittedValue
-        : fallbackControl?.value;
-    return (rawValue ?? "").trim().replaceAll(",", "");
+  function hasReasonHeader(table: HTMLTableElement): boolean {
+    return [...table.rows].some((row) => {
+      const rowText = row.textContent.replaceAll(/\s+/gu, " ").trim();
+      const isCourseHeader =
+        rowText.includes(COURSE_NUMBER_HEADER) || rowText.includes("Course Number");
+      return (
+        isCourseHeader &&
+        [...row.cells].some((cell) => {
+          const cellText = cell.textContent.replaceAll(/\s+/gu, " ").trim();
+          return cellText.includes(REASON_HEADER) || cellText.includes("Reason");
+        })
+      );
+    });
+  }
+
+  function hasCourseRows(table: HTMLTableElement): boolean {
+    return [...table.querySelectorAll<HTMLTableRowElement>("tr.class3")].some((row) => {
+      const firstCell = row.querySelector<HTMLTableCellElement>(":scope > td, :scope > th");
+      const candidate = firstCell?.textContent.trim() ?? "";
+      return COURSE_ID_PATTERN.test(candidate);
+    });
+  }
+
+  function findRegisteredCoursesTable(targetDocument: Document): HTMLTableElement | undefined {
+    const tables = [...targetDocument.querySelectorAll<HTMLTableElement>("table")];
+    const registeredTable = tables.find((table) => {
+      const text = table.textContent.replaceAll(/\s+/gu, " ").trim();
+      return (
+        text.includes(REGISTERED_COURSES_HEADER) || text.includes("registered for successfully")
+      );
+    });
+    if (registeredTable !== undefined) {
+      return registeredTable;
+    }
+
+    return tables.find((table) => !hasReasonHeader(table) && hasCourseRows(table));
+  }
+
+  function readSubmittedSemester(targetDocument: Document): string {
+    const year = targetDocument
+      .querySelector<HTMLInputElement>(
+        "form input[type='hidden'][name='year'], input[type='hidden'][name='year']",
+      )
+      ?.value.trim();
+    const term = targetDocument
+      .querySelector<HTMLInputElement>(
+        "form input[type='hidden'][name='term'], input[type='hidden'][name='term']",
+      )
+      ?.value.trim();
+    if (year !== undefined && year !== "" && term !== undefined && term !== "") {
+      return `${year}${term}`.replaceAll(",", "");
+    }
+    return "";
   }
 
   function parseCourseResult(targetDocument: Document): CcxpLiteNthuModsCourseResult {
-    const resultTable = targetDocument
-      .querySelectorAll<HTMLTableElement>("table")
-      .item(1) as HTMLTableElement | null;
+    const resultTable = findRegisteredCoursesTable(targetDocument);
     const courseIds: string[] = [];
     const seen = new Set<string>();
 
-    for (const row of resultTable?.querySelectorAll<HTMLTableRowElement>("tbody > .class3") ?? []) {
-      const candidate = row.children.length === 0 ? "" : row.children[0].textContent.trim();
-      if (!COURSE_ID_PATTERN.test(candidate) || seen.has(candidate)) {
-        continue;
-      }
-      seen.add(candidate);
-      if (courseIds.length < COURSE_LIMIT) {
-        courseIds.push(candidate);
+    if (resultTable !== undefined) {
+      for (const row of resultTable.querySelectorAll<HTMLTableRowElement>("tr.class3")) {
+        const firstCell = row.querySelector<HTMLTableCellElement>(":scope > td, :scope > th");
+        const candidate = firstCell?.textContent.trim() ?? "";
+        if (!COURSE_ID_PATTERN.test(candidate) || seen.has(candidate)) {
+          continue;
+        }
+        seen.add(candidate);
+        if (courseIds.length < COURSE_LIMIT) {
+          courseIds.push(candidate);
+        }
       }
     }
 
-    const submittedSemester = readSubmittedSemester(targetDocument, resultTable);
+    const submittedSemester = readSubmittedSemester(targetDocument);
     if (submittedSemester !== "") {
       return { semester: submittedSemester, courseIds };
     }
@@ -66,5 +109,5 @@
     };
   }
 
-  namespace.nthuModsParser = { parseCourseResult };
+  namespace.nthuModsParser = { findRegisteredCoursesTable, parseCourseResult };
 })(globalThis);

@@ -14,10 +14,8 @@
   const locale = sharedLocale.resolveLocaleFromDocument(document);
   const strings = sharedLocale.getLocalizedStrings(locale);
   const parsed = parser.parseCourseResult(document);
-  const resultTable = document
-    .querySelectorAll<HTMLTableElement>("table")
-    .item(1) as HTMLTableElement | null;
-  if (resultTable === null) {
+  const resultTable = parser.findRegisteredCoursesTable(document);
+  if (resultTable === undefined) {
     return;
   }
 

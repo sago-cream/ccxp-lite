@@ -1,66 +1,167 @@
 <!doctype html>
-<!-- SYNTHETIC fixture: not live-captured; all identity and course values are invented. -->
 <html lang="zh-TW">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>選課結果 Course selection results</title>
+    <title>學生選課結果4</title>
     <link href="/style/JH/JH.css" rel="stylesheet" type="text/css" />
+    <style></style>
   </head>
-  <body bgcolor="#FFFFFF" text="#000000" background="/img/back_3.jpg">
-    <p class="header">選課結果 Course selection results</p>
-    <table width="70%" border="0" cellspacing="0" cellpadding="0">
-      <tbody>
-        <tr>
-          <td class="class2">學生資料 Student: 測試同學 / 123456789</td>
-        </tr>
-        <tr>
-          <td class="class3">本頁資料為合成測試資料 Synthetic fixture data</td>
-        </tr>
-      </tbody>
-    </table>
-    <form name="form1" method="post" action="JH721002.php">
-      <input type="hidden" name="ACIXSTORE" value="fixture" />
-      <input type="hidden" name="studentNo" value="fixture" />
-      <select name="semester" id="semester">
-        <option value="114,20">114下 (2026-Spring)</option>
-        <option value="115,10" selected>115上 (2026-Fall)</option>
-      </select>
-      <table width="90%" border="1" cellspacing="0" cellpadding="4">
-        <thead>
-          <tr class="class1">
-            <th>課號 Course number</th>
-            <th>課程名稱 Course name</th>
-            <th>學分 Credits</th>
-          </tr>
-        </thead>
+  <body bgcolor="#E2E8FD" text="#000000" background="/img/back_3.jpg">
+    <div align="center">
+      <p class="header">學生選課結果 Course Selection Results</p>
+
+      <div align="center"></div>
+      <table width="100%" border="1" cellspacing="0" cellpadding="0">
         <tbody>
-          <tr class="class3">
-            <td>11510CS  535100</td>
-            <td>合成課程一 Synthetic Course One</td>
-            <td>3</td>
+          <tr class="class2">
+            <td align="center" colspan="6">
+              <font color="#000000" size="4"><b>學生基本資料 Student Data</b></font>
+            </td>
           </tr>
-          <tr class="class3">
-            <td>11510EECS 123456</td>
-            <td>合成課程二 Synthetic Course Two</td>
-            <td>3</td>
+          <tr>
+            <td class="class2" width="10%">選課階段：<br />Course Selection Stage</td>
+            <td class="class3" width="75%" colspan="5">第３次選課結束(已亂數處理)　3rd Selection (Result)</td>
           </tr>
-          <tr class="class3">
-            <td>11510CS  535100</td>
-            <td>重複課程 Duplicate Course</td>
-            <td>3</td>
+          <tr>
+            <td class="class2" width="16%">學號：<br />Student Number</td>
+            <td class="class3" width="17%">123456789</td>
+            <td class="class2" width="17%">學院：<br />College</td>
+            <td class="class3" width="16%">測試學院</td>
+            <td class="class2" width="17%">輔系／雙主修：<br />Minor/Double Major</td>
+            <td class="class3" width="17%">無／無</td>
           </tr>
-          <tr class="class3">
-            <td>not-a-course</td>
-            <td>不應匯出 Invalid row</td>
-            <td>0</td>
+          <tr>
+            <td class="class2" width="16%">姓名：<br />Name</td>
+            <td class="class3" width="17%">測試同學</td>
+            <td class="class2" width="17%">最低應修學分：<br />Minimum Credits</td>
+            <td class="class3" width="16%">3</td>
+            <td class="class2" width="17%">教育學程生：<br />Education Program</td>
+            <td class="class3" width="17%">無&nbsp;</td>
           </tr>
-          <tr class="class3">
-            <td>11510MATH 246810</td>
-            <td>合成課程三 Synthetic Course Three</td>
-            <td>3</td>
+          <tr>
+            <td class="class2" width="16%">所系：<br />Department</td>
+            <td class="class3" width="17%">測試系</td>
+            <td class="class2" width="17%">&nbsp;</td>
+            <td class="class3" width="16%">&nbsp;</td>
+            <td class="class2" width="17%">轉學生：<br />Transfer Student</td>
+            <td class="class3" width="17%">否&nbsp;</td>
           </tr>
         </tbody>
       </table>
-    </form>
+      <form
+        action="https://www.ccxp.nthu.edu.tw/ccxp/COURSE/JH/7/7.2/7.2.9/JH729002.php"
+        method="post"
+      >
+        <input type="hidden" name="ACIXSTORE" value="fixture" />
+        <input type="hidden" name="stu_no" value="123456789" />
+        <input type="hidden" name="phaseNo" value="200P" />
+        <input type="hidden" name="year" value="114" />
+        <input type="hidden" name="term" value="20" />
+        <input type="submit" value="預覽列印 Review" />　
+        <input type="button" value="回上一頁 Back" onclick="location='JH721002.php?ACIXSTORE=fixture'" />
+      </form>
+
+      <div align="left">
+        <hr width="100%" />
+        <br />
+        下列科目係本學期第３次選課結束(已亂數處理)＋亂數處理(不包含正在進行的階段)後，同學在網路選課之結果。請仔細核對。如有疑問，請至課務組查詢。<br />
+        <br />
+        <table width="100%" border="1" cellspacing="0" cellpadding="0" align="center">
+          <tbody>
+            <tr class="class2">
+              <td colspan="7"><font size="4"><b>已選上之科目：共5科11學分　Courses registered for successfully</b></font></td>
+            </tr>
+            <tr class="class2">
+              <td nowrap="">科號<br />Course Number</td>
+              <td nowrap="">科目名稱<br />Course Title</td>
+              <td nowrap="">學分<br />Credit</td>
+              <td nowrap="">時間<br />Time</td>
+              <td nowrap="">教室<br />Room</td>
+              <td nowrap="">教師<br />Teacher</td>
+              <td nowrap="">人限<br />Enrollment</td>
+            </tr>
+            <tr class="class3">
+              <td>11420AIA 500200</td>
+              <td>大型語言模型與資訊安全系統--台科大<br />Applying Large Language Models in Cybersecurity Systems--NTUST<br /><br /><font color="blue">(TAICA)人工智慧探索應用學分學程</font></td>
+              <td>3</td>
+              <td>M3M4Mn<br />&nbsp;</td>
+              <td>VC虛擬教室<br />&nbsp;</td>
+              <td>台科大林俊叡<br />&nbsp;</td>
+              <td>100&nbsp;</td>
+            </tr>
+            <tr class="class3">
+              <td>11420AIA 500300</td>
+              <td>生成式AI應用系統與工程--成大<br />Generative AI Application Systems and Engineering--NCKU<br /><br /><font color="blue">(TAICA)人工智慧探索應用學分學程</font></td>
+              <td>3</td>
+              <td>W6W7W8<br />&nbsp;</td>
+              <td>VC虛擬教室<br />&nbsp;</td>
+              <td>成大莊坤達<br />&nbsp;</td>
+              <td>100&nbsp;</td>
+            </tr>
+            <tr class="class3">
+              <td>11420CS  541300</td>
+              <td>雲端原生軟體開發與最佳實踐<br />Cloud Native Development and Best Practice<br /></td>
+              <td>3</td>
+              <td>RaRbRc<br />&nbsp;</td>
+              <td>DELTA台達107<br />&nbsp;</td>
+              <td>李哲榮<br />LEE, CHE-RUNG&nbsp;</td>
+              <td>100&nbsp;</td>
+            </tr>
+            <tr class="class3">
+              <td>11420EECS391000</td>
+              <td>實作專題二<br />Special Topic on Implementation (II)<br /></td>
+              <td>2</td>
+              <td>&nbsp;</td>
+              <td>&nbsp;</td>
+              <td>指導教授<br />&nbsp;</td>
+              <td>0&nbsp;</td>
+            </tr>
+            <tr class="class3">
+              <td>11420PE  206018</td>
+              <td>游泳初學<br />Swimming(basic)<br /></td>
+              <td>0</td>
+              <td>T3T4<br />&nbsp;</td>
+              <td>SWIM Pl.游泳池<br />&nbsp;</td>
+              <td>李大麟<br />LEE, TA-LIN&nbsp;</td>
+              <td>40&nbsp;</td>
+            </tr>
+          </tbody>
+        </table>
+        <br />
+        <hr width="100%" />
+        <br />
+        <table width="100%" border="1" align="center" cellpadding="0" cellspacing="0">
+          <tbody>
+            <tr class="class2">
+              <td colspan="8" height="35">
+                <font size="4"><b>未選上之科目 Registration failed for courses listed below<br />
+                  <font size="2" color="red">若未選上之原因為"衝堂"(排除志願衝堂)，請務必於選課系統開放期間，調整選課至不衝堂，最遲須於加退選前調整完畢。</font>
+                </b></font>
+              </td>
+            </tr>
+            <tr class="class2">
+              <td nowrap="">科號<br />Course Number</td>
+              <td nowrap="">科目名稱<br />Course Title</td>
+              <td nowrap="">學分<br />Credit</td>
+              <td nowrap="">時間<br />Time</td>
+              <td nowrap="">教室<br />Room</td>
+              <td nowrap="">教師<br />Teacher</td>
+              <td nowrap="">人限&nbsp;/&nbsp;新生保留<br />Enrollment</td>
+              <td nowrap="">原因<br />Reason</td>
+            </tr>
+            <tr class="class3">
+              <td>11420CS  999999</td>
+              <td>合成失敗課程 Synthetic failed course</td>
+              <td>3</td>
+              <td>&nbsp;</td>
+              <td>&nbsp;</td>
+              <td>測試教師 Synthetic teacher</td>
+              <td>0&nbsp;</td>
+              <td>合成測試列 Synthetic fixture row</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </body>
 </html>
