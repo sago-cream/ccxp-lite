@@ -1,0 +1,66 @@
+.ccxp-lite-nthumods-actions {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--ccxp-lite-spacing-inline-sm, 8px);
+  margin: var(--ccxp-lite-spacing-sm, 10px) 0;
+  font:
+    400 14px/1.55 "Noto Sans TC",
+    "PingFang TC",
+    "Microsoft JhengHei",
+    sans-serif;
+}
+
+.ccxp-lite-nthumods-actions .ccxp-lite-nthumods-button {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--ccxp-lite-size-control-height-md, 44px);
+  padding: 0 var(--ccxp-lite-spacing-md, 16px);
+  border: 1px solid var(--ccxp-lite-primary, #9f5fa5);
+  border-radius: var(--ccxp-lite-radius-input, 8px);
+  color: var(--ccxp-lite-surface, #ffffff);
+  background: var(--ccxp-lite-primary, #9f5fa5);
+  font:
+    600 14px/1.55 "Noto Sans TC",
+    "PingFang TC",
+    "Microsoft JhengHei",
+    sans-serif;
+  cursor: pointer;
+}
+
+.ccxp-lite-nthumods-actions .ccxp-lite-nthumods-button:hover:not(:disabled) {
+  background: var(--ccxp-lite-primary-hover-solid, #8e4e94);
+}
+
+.ccxp-lite-nthumods-actions .ccxp-lite-nthumods-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.ccxp-lite-nthumods-actions .ccxp-lite-nthumods-button:focus-visible {
+  outline: 2px solid var(--ccxp-lite-primary-focus-border, rgba(159, 95, 165, 0.28));
+  outline-offset: 2px;
+}
+
+.ccxp-lite-nthumods-actions .ccxp-lite-nthumods-reason {
+  color: var(--ccxp-lite-text-muted, #52606d);
+  font:
+    400 14px/1.4 "Noto Sans TC",
+    "PingFang TC",
+    "Microsoft JhengHei",
+    sans-serif;
+}
+
+.ccxp-lite-nthumods-actions .ccxp-lite-nthumods-reason[hidden] {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .ccxp-lite-nthumods-actions {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

@@ -1,6 +1,6 @@
 {
   "inspectedAt": "2026-09-12",
-  "captureMode": "Original DOM with ccxpLite disabled; initialized host widgets frozen; scripts removed except inert navigation declarations, explicit offline work-log shim, and live-inspected legacy header timer with offline idle responses",
+  "captureMode": "Original DOM with ccxpLite disabled; initialized host widgets frozen; scripts removed except inert navigation declarations, explicit offline work-log shim, and live-inspected legacy header timer with offline idle responses. course-result.html is a synthetic UTF-8 fixture, not a capture.",
   "sanitization": [
     "Credentials, account and identity values cleared",
     "Session URL parameters replaced or removed",
@@ -82,6 +82,12 @@
       "state": "Public course/teacher keyword query: native inputs and table layout in main frame"
     },
     {
+      "file": "course-result.html",
+      "path": "/ccxp/COURSE/JH/7/7.2/7.2.1/JH721003.php",
+      "owners": ["src/nthumods/"],
+      "state": "SYNTHETIC UTF-8 result-page fixture with a frameset-compatible form, synthetic student identity, and synthetic course rows; not live-captured"
+    },
+    {
       "file": "profile-header.big5",
       "path": "/ccxp/INQUIRE/JH/4/4.19/JH4j002.php",
       "owners": ["src/menu/ui/overlays.ts"],
@@ -112,6 +118,10 @@
     {
       "owners": ["src/work-log/"],
       "reason": "Real eligible tasks, server validation errors, and returned record variants not captured"
+    },
+    {
+      "owners": ["src/nthumods/"],
+      "reason": "The course result page fixture is synthetic, not live-captured; needs a maintainer capture with a real session"
     },
     {
       "owners": ["src/"],

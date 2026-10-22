@@ -32,6 +32,30 @@ test("work-log visual fixture retains host landmarks and sanitized data", () => 
   expect(doc.querySelector("script[src]")).toBeNull();
 });
 
+test("course-result fixture retains the synthetic parser landmarks", () => {
+  const window = new Window({
+    settings: {
+      disableJavaScriptEvaluation: true,
+      disableJavaScriptFileLoading: true,
+      disableCSSFileLoading: true,
+    },
+  });
+  const html = readFileSync(path.join(root, "course-result.html"), "utf8");
+  window.document.write(html);
+  expect(html).toContain("SYNTHETIC fixture");
+  const semester = window.document.querySelector(
+    "form select[name='semester']",
+  ) as unknown as HTMLSelectElement;
+  expect(semester.hasAttribute("value")).toBe(false);
+  expect(semester.value).toBe("115,10");
+  expect(window.document.querySelectorAll("table")).toHaveLength(2);
+  expect(
+    window.document.querySelectorAll("table")[1].querySelectorAll("tbody > .class3"),
+  ).toHaveLength(5);
+  expect(html).not.toContain("chrome-extension:");
+  expect(html).not.toContain("codex-agent-overlay");
+});
+
 test("all host CSS URLs resolve to bundled fixture assets", () => {
   const assets = JSON.parse(readFileSync(path.join(root, "host-assets.json"), "utf8")) as Record<
     string,

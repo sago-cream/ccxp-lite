@@ -17,6 +17,8 @@
   const LOCALIZED_STRINGS = {
     en: {
       sidebarTitle: "NTHU AIS",
+      nthumodsExport: "Export to NTHUMods",
+      nthumodsNoCourses: "No exportable courses",
       landingTitle: "NTHU AIS Login",
       loginTitle: "Login",
       emptyGroup: "No items available in this section",
@@ -108,6 +110,8 @@
     },
     zh: {
       sidebarTitle: "\u6821\u52D9\u8CC7\u8A0A\u7CFB\u7D71",
+      nthumodsExport: "\u532F\u51FA\u81F3 NTHUMods",
+      nthumodsNoCourses: "\u6C92\u6709\u53EF\u532F\u51FA\u7684\u8AB2\u7A0B",
       landingTitle: "\u6821\u52D9\u8CC7\u8A0A\u7CFB\u7D71\u767B\u5165",
       loginTitle: "\u767B\u5165",
       emptyGroup: "\u6B64\u5206\u985E\u66AB\u7121\u53EF\u986F\u793A\u9805\u76EE",
