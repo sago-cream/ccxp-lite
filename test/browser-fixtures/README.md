@@ -23,12 +23,17 @@ Duplicate assets share one local file. No private source captures are committed.
 
 ## Coverage and limits
 
-The packaged-extension harness captures fifteen states: login; assistant registration in Chinese,
+The packaged-extension harness captures sixteen states: login; assistant registration in Chinese,
 with English/reminders open, and scrolled to records; assistant history; the course directory,
 curriculum query, and keyword query in the main frame; standalone closed evaluation; classic sidebar;
 layered search; embedded closed evaluation; standalone work log; framed multi-day work log; and
 post-Add work log. The public query pages were navigated live and captured on 2026-09-12 to exercise
 the broad styles on native tables, links, and controls outside the dedicated extension modules.
+The `course-result.html` state is a UTF-8 sanitized capture from a maintainer-saved logged-in
+session on 2026-10-22, confirmed against the live response for semester 114-20 / phase 200P.
+Its student name and number, college, department, minimum-credit value, and ACIXSTORE values are
+synthetic; the failed-courses table also contains one explicitly synthetic row to verify that
+failed courses are not exported. Course catalogue rows remain as captured.
 The harness waits for the shared main skin as well as page-specific readiness and loaded stylesheets.
 It fails on missing visual assets, missing readiness markers, and failed interactions before
 comparing screenshots and styles.

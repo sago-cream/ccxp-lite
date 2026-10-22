@@ -45,6 +45,7 @@ interface CaptureResult {
 }
 
 const fixtureByPath = new Map<string, string>([
+  ["/ccxp/COURSE/JH/7/7.2/7.2.1/JH721003.php", "course-result.html"],
   ["/ccxp/INQUIRE/", "login.html"],
   ["/ccxp/INQUIRE/IN_INQ_STU.php", "navigation.html"],
   ["/ccxp/INQUIRE/index.php", "login.html"],
@@ -797,6 +798,35 @@ async function captureRevision(
         await capturePage(page, file);
         screenshots[name] = file;
       }
+      process.stdout.write(`[${label}] course result in main frame\n`);
+      await page.goto(`${ccxpOrigin}/ccxp/INQUIRE/select_entry.php?page=course-result`, {
+        waitUntil: "load",
+      });
+      await page.waitForTimeout(200);
+      const courseResultFrame = page.frames().find((frame) => frame.url().includes("JH721003.php"));
+      assert.ok(courseResultFrame, "Missing course-result main frame");
+      if (label === "head") {
+        await courseResultFrame.locator(".ccxp-lite-nthumods-actions").waitFor();
+        const exportButton = courseResultFrame.locator("#ccxp-lite-nthumods-export");
+        assert.equal(await exportButton.textContent(), "\u532F\u51FA\u81F3 NTHUMods");
+        assert.equal(await exportButton.isVisible(), true, "Export button is not visible");
+        assert.equal(await courseResultFrame.locator(".header").count(), 1);
+      } else {
+        await courseResultFrame.locator("table").nth(1).waitFor();
+      }
+      // The frame DOM is asserted above. Chromium paints this legacy frameset's direct child as a
+      // blank iframe screenshot, so capture the same packaged fixture directly for visual evidence.
+      await page.goto(`${ccxpOrigin}/ccxp/COURSE/JH/7/7.2/7.2.1/JH721003.php`, {
+        waitUntil: "domcontentloaded",
+      });
+      await (
+        label === "head"
+          ? page.locator(".ccxp-lite-nthumods-actions")
+          : page.locator("table").nth(1)
+      ).waitFor();
+      const courseResultScreenshot = path.join(revisionOutputDir, "course-result.png");
+      await capturePage(page, courseResultScreenshot);
+      screenshots["course-result"] = courseResultScreenshot;
       /* eslint-enable no-await-in-loop */
       process.stdout.write(`[${label}] standalone\n`);
       await page.goto(`${ccxpOrigin}/ccxp/INQUIRE/JH/B/B.2/B.2.3/JHB23001.php`, {
