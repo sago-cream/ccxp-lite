@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, test } from "vitest";
 
 import {
@@ -286,6 +287,34 @@ describe("sidebar data", () => {
     expect(model.categories.map((category: { label: string }) => category.label)).not.toContain(
       "New & Unsorted",
     );
+  });
+
+  test("keeps all English tuition links under Payments & Aid", () => {
+    // Labels and paths verified against NRT/RT_INQ_STU.php's English branch.
+    const { window } = createTestWindow(
+      readFileSync("test/menu/fixtures/english-payments.html", "utf8"),
+    );
+    loadModules(window, menuModulePaths);
+    const shared = requireValue(window.CCXP_LITE.shared, "shared");
+    const sidebarData = requireValue(window.CCXP_LITE.sidebarData, "sidebarData");
+    const model = requireValue(
+      sidebarData.buildSidebarModel(window.document, shared.getLocalizedStrings("en")),
+      "sidebar model",
+    );
+    expect(model.categories.map((category) => category.id)).toEqual(["category-payments-and-aid"]);
+    const tuition = model.categories[0].blocks.find((block) => block.label === "Tuition Payments");
+    expect(tuition?.links.map((link) => [link.label, link.href, link.target])).toEqual([
+      ["Tuition Bills Download", "NRT/RTQ92003.php?ACIXSTORE=fixture", "main"],
+      ["Payment Confirmation Proof(PDF Format)", "NRT/RTQ92330.php?ACIXSTORE=fixture", "main"],
+      ["Tuition Inquiry", "NRT/RTQ91111.php?ACIXSTORE=fixture", "main"],
+      ["Credit Fee Inquiry", "NRT/RTQ91211.php?ACIXSTORE=fixture", "main"],
+      ["Credit Fee Explanation", "JH/4/4.16/JH416001.php?ACIXSTORE=fixture", "main"],
+      ["Payment Authorization Form", "NRT/RTQ92511.php?ACIXSTORE=fixture", "main"],
+      ["Payment Authorization Status Inquiry", "NRT/RTQ92651.php?ACIXSTORE=fixture", "main"],
+    ]);
+    expect(
+      model.categories[0].blocks.find((block) => block.label === "Refund Inquiry")?.links,
+    ).toHaveLength(1);
   });
 
   test("uses nested english folder labels to classify the first layer node", () => {
