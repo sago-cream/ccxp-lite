@@ -258,17 +258,13 @@ export async function captureNarrowHome(
     }
     await input.fill("fixture-no-matching-function");
     await capture(page, "home-search-empty-narrow");
+    await input.fill("\u7CFB\u7D71");
+    await input.press("ArrowDown");
+    await capture(page, "home-search-overflow-narrow");
+    await main.locator(".ccxp-home-search-result").first().press("ArrowUp");
+    await capture(page, "home-search-overflow-end-narrow");
     if (assertHead && (await main.locator(".ccxp-home-search-scroll-hint").count()) > 0) {
-      await input.fill("\u7CFB\u7D71");
-      await main.waitForFunction(() => {
-        const hint = document.querySelector<HTMLElement>(".ccxp-home-search-scroll-hint");
-        return hint !== null && !hint.hidden;
-      });
-      await input.press("ArrowDown");
-      await main.locator(".ccxp-home-search-result").first().press("ArrowUp");
-      await main.waitForFunction(
-        () => document.querySelector<HTMLElement>(".ccxp-home-search-scroll-hint")?.hidden,
-      );
+      assert.equal(await main.locator(".ccxp-home-search-scroll-hint").isVisible(), false);
     }
     await input.press("Escape");
     await input.fill("");
@@ -317,9 +313,12 @@ export async function captureNarrowHome(
       assert.equal(await visible.count(), 10);
       await pinnedMore.press("Space");
       assert.equal(await visible.count(), 4);
+    }
+    const returnToSidebar = nav.locator(".ccxp-lite-menu-return");
+    if (assertHead && (await returnToSidebar.count()) > 0) {
       const heading = await nav.locator(".ccxp-lite-menu-heading").boundingBox();
       assert.ok(heading && heading.x >= 0 && heading.x + heading.width <= 375);
-      await nav.locator(".ccxp-lite-menu-return").click();
+      await returnToSidebar.click();
       assert.equal(
         await nav
           .locator(".ccxp-lite-sidebar-shell")
