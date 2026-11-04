@@ -301,6 +301,15 @@ try {
     throw new Error("TypeScript extension build failed");
   }
 
+  const analyticsPath = path.join(compiledSrcDir, "background", "analytics.js");
+  const analyticsSource = readFileSync(analyticsPath, "utf8");
+  writeFileSync(
+    analyticsPath,
+    analyticsSource.replace('"__CCXP_LITE_GA4_API_SECRET__"', () =>
+      JSON.stringify(process.env.CCXP_LITE_GA4_API_SECRET ?? ""),
+    ),
+  );
+
   copyTree(srcDir, stagingDir, shouldCopySourcePath);
   copyTree(srcDir, unpackedDir, shouldCopySourcePath);
   for (const directory of [stagingDir, unpackedDir]) {

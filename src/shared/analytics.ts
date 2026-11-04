@@ -43,11 +43,19 @@
     if (!isRecord(payload)) {
       return undefined;
     }
+    const menuModes: Readonly<Record<string, string>> = {
+      classic: "sidebar",
+      layered: "fullscreen",
+    };
     const params = compactEventProperties({
       page_host: targetDocument.location.hostname,
       page_path: targetDocument.location.pathname,
       page_title: targetDocument.title,
-      page_location: targetDocument.location.href,
+      page_location: `${targetDocument.location.origin}${targetDocument.location.pathname}`,
+      menu_mode:
+        typeof payload.sidebar_variant === "string"
+          ? menuModes[payload.sidebar_variant]
+          : undefined,
       ...payload,
     });
     const message: CcxpLiteAnalyticsMessage = {

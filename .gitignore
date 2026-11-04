@@ -17,3 +17,4 @@ __pycache__/
 .capture-profile/
 .browser-parity/
 .vercel/
+.env.local
