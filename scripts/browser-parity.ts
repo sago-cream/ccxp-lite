@@ -19,6 +19,7 @@ import {
   assertHomeFavorites,
   assertMenuProfile,
   captureNarrowHome,
+  captureNarrowDefaultMenu,
 } from "./home-fixtures.js";
 import { assertSidebarCollapse } from "./sidebar-collapse-fixtures.js";
 import { assertInitialSessionTimer, assertSessionTimer } from "./session-timer-fixtures.js";
@@ -303,8 +304,18 @@ async function collectStyles(scope: Page | Frame, probes: readonly Probe[]) {
   );
 }
 
-async function capturePage(page: Page, outputPath: string) {
+async function capturePage(page: Page, outputPath: string, topOfPage = false) {
   await stabilize(page);
+  if (topOfPage) {
+    await page.evaluate(() => {
+      document.querySelector(".ccxp-lite-landing-header")?.getBoundingClientRect();
+      window.scrollTo(0, 0);
+    });
+    await page.waitForFunction(() => {
+      const brand = document.querySelector(".ccxp-lite-landing-brand img");
+      return window.scrollY === 0 && brand !== null && brand.getBoundingClientRect().top >= 0;
+    });
+  }
   await page.screenshot({
     path: outputPath,
     animations: "disabled",
@@ -760,9 +771,12 @@ async function captureRevision(
       assert.equal(await password.getAttribute("type"), "password");
       await page.locator("input[name='account']").fill("123456789");
       await page.locator("input[name='passwd2']").fill("849976");
-      await page.locator("input[name='account']").blur();
+      await page.locator("input[name='passwd2']").blur();
+      await page.evaluate(() => {
+        window.scrollTo(0, 0);
+      });
       const loginScreenshot = path.join(revisionOutputDir, "login.png");
-      await capturePage(page, loginScreenshot);
+      await capturePage(page, loginScreenshot, true);
       screenshots.login = loginScreenshot;
       styles.login = await collectStyles(page, loginProbes);
       for (const [name, width] of [
@@ -771,9 +785,13 @@ async function captureRevision(
       ] as const) {
         // eslint-disable-next-line no-await-in-loop -- Capture the same state at each width.
         await page.setViewportSize({ width, height: viewport.height });
+        // eslint-disable-next-line no-await-in-loop -- Preserve the same top-of-page state after viewport reflow.
+        await page.evaluate(() => {
+          window.scrollTo(0, 0);
+        });
         const file = path.join(revisionOutputDir, `${name}.png`);
         // eslint-disable-next-line no-await-in-loop -- Resizing must settle before each capture.
-        await capturePage(page, file);
+        await capturePage(page, file, true);
         screenshots[name] = file;
       }
       await page.setViewportSize(viewport);
@@ -866,15 +884,18 @@ async function captureRevision(
           await capturePage(page, file);
           screenshots[name] = file;
         });
-        await captureNarrowHome(
-          page,
-          async (narrowPage, name) => {
-            const file = path.join(revisionOutputDir, `${name}.png`);
-            await capturePage(narrowPage, file);
-            screenshots[name] = file;
-          },
-          label === "head",
-        );
+        for (const captureNarrow of [captureNarrowHome, captureNarrowDefaultMenu]) {
+          // eslint-disable-next-line no-await-in-loop -- Each capture restores persisted preferences before the next flow.
+          await captureNarrow(
+            page,
+            async (narrowPage, name) => {
+              const file = path.join(revisionOutputDir, `${name}.png`);
+              await capturePage(narrowPage, file);
+              screenshots[name] = file;
+            },
+            label === "head",
+          );
+        }
       }
     }
     writeFileSync(

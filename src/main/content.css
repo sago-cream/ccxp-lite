@@ -514,15 +514,16 @@ html[data-ccxp-lite-scope="main"] .ccxp-home-search > input {
 
 .ccxp-home-show-all {
   display: flex;
-  margin: 12px 0 0 auto;
+  margin: 12px 0 0;
   min-height: 40px;
   align-items: center;
-  padding: 0;
-  border: 0;
+  padding: var(--ccxp-lite-spacing-inline-sm) var(--ccxp-lite-spacing-inset-sm);
+  border: 1px solid var(--ccxp-lite-border);
+  border-radius: var(--ccxp-lite-radius-input);
   background: transparent;
   box-shadow: none;
   color: var(--ccxp-lite-type-primary-link-color);
-  font: var(--ccxp-lite-type-body);
+  font: var(--ccxp-lite-type-button);
   cursor: pointer;
 }
 .ccxp-home-show-all[hidden] {
@@ -706,6 +707,11 @@ html[data-ccxp-lite-scope="main"] .ccxp-home-header > .ccxp-home-contact {
 @media (max-width: 520px) {
   .ccxp-home-search-status-category::before {
     content: none;
+  }
+  .ccxp-home-search-status-category {
+    padding-inline: var(--ccxp-lite-spacing-xs);
+    border-radius: var(--ccxp-lite-radius-sm);
+    background: var(--ccxp-lite-surface-muted);
   }
   .ccxp-home-header.ccxp-lite-page-header {
     gap: 0 var(--ccxp-lite-spacing-inset-sm);

@@ -8,6 +8,18 @@ import {
 } from "../helpers/module-loader.js";
 
 describe("sidebar state", () => {
+  test("starts unconfigured narrow screens in Menu and preserves an explicit Sidebar choice", () => {
+    for (const stored of [undefined, "classic"]) {
+      const { window } = createTestWindow();
+      Object.defineProperty(window, "innerWidth", { value: 375 });
+      if (stored !== undefined) {
+        window.localStorage.setItem("ccxp-lite-sidebar-variant", stored);
+      }
+      loadModules(window, menuModulePaths);
+      const api = requireValue(window.CCXP_LITE.sidebarState);
+      expect(api.getSidebarUiState(window.document).sidebarVariant).toBe(stored ?? "layered");
+    }
+  });
   test("shares sidebar state across frame documents in the same top-level page", () => {
     const { window } = createTestWindow();
     loadModules(window, menuModulePaths);

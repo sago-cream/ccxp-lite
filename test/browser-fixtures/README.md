@@ -101,3 +101,8 @@ require the repository's `accept-visual-change` label; this scope does not bypas
 The November 4 live audit observed an additional foreign-student survey in the current menu.
 The host rejected a complete fresh navigation source request. `coverage.json` keeps this
 current-content variant as a gap; six-result review images do not certify current entitlements.
+
+New unconfigured windows at600px or below start in Menu. `phone-menu-*` captures use this
+head default and select the same existing Menu mode through the base preference control for
+matching visual comparisons. Saved classic compact-rail captures remain explicit preference
+stress states, not the new narrow default. The harness asserts the head default before capture.

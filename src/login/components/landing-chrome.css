@@ -324,6 +324,10 @@ html[data-ccxp-lite-scope="landing"] .ccxp-lite-landing-footer > a:focus-visible
 }
 
 @media (max-width: 480px) {
+  .ccxp-lite-landing-header {
+    row-gap: var(--ccxp-lite-spacing-2xs);
+    padding-block: var(--ccxp-lite-spacing-inline-sm);
+  }
   .ccxp-lite-landing-utility {
     display: grid;
     grid-template-columns: repeat(2, auto);
@@ -335,5 +339,25 @@ html[data-ccxp-lite-scope="landing"] .ccxp-lite-landing-footer > a:focus-visible
   }
   .ccxp-lite-landing-login {
     padding-top: var(--ccxp-lite-spacing-inline-sm);
+  }
+}
+@media (min-width: 375px) and (max-width: 480px) {
+  .ccxp-lite-landing-utility {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--ccxp-lite-spacing-2xs);
+  }
+  .ccxp-lite-landing-utility-link {
+    position: relative;
+  }
+  .ccxp-lite-landing-utility-link:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    right: -3px;
+    top: 50%;
+    width: 1px;
+    height: 14px;
+    background: var(--ccxp-lite-control-border);
+    transform: translateY(-50%);
   }
 }

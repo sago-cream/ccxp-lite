@@ -213,6 +213,7 @@ export async function captureNarrowHome(
   await page.setViewportSize({ width: 375, height: 960 });
   await page.addInitScript(() => {
     localStorage.setItem("ccxp-lite-sidebar-collapsed", "true");
+    localStorage.setItem("ccxp-lite-sidebar-variant", "classic");
   });
   try {
     await page.goto(source.url(), { waitUntil: "load" });
@@ -257,6 +258,18 @@ export async function captureNarrowHome(
     }
     await input.fill("fixture-no-matching-function");
     await capture(page, "home-search-empty-narrow");
+    if (assertHead) {
+      await input.fill("\u7CFB\u7D71");
+      await main.waitForFunction(() => {
+        const hint = document.querySelector<HTMLElement>(".ccxp-home-search-scroll-hint");
+        return hint !== null && !hint.hidden;
+      });
+      await input.press("ArrowDown");
+      await main.locator(".ccxp-home-search-result").first().press("ArrowUp");
+      await main.waitForFunction(
+        () => document.querySelector<HTMLElement>(".ccxp-home-search-scroll-hint")?.hidden,
+      );
+    }
     await input.press("Escape");
     await input.fill("");
     await main.locator(".ccxp-home-card-wrap > .ccxp-lite-favorite-toggle").first().click();
@@ -313,6 +326,61 @@ export async function captureNarrowHome(
           .getAttribute("data-ccxp-lite-sidebar-variant"),
         "classic",
       );
+    }
+  } finally {
+    await page.close();
+    await source.evaluate(() => {
+      localStorage.setItem("ccxp-lite-sidebar-collapsed", "false");
+      localStorage.setItem("ccxp-lite-sidebar-variant", "classic");
+    });
+  }
+}
+
+export async function captureNarrowDefaultMenu(
+  source: Page,
+  capture: (page: Page, name: string) => Promise<void>,
+  assertHead: boolean,
+): Promise<void> {
+  const page = await source.context().newPage();
+  await page.setViewportSize({ width: 375, height: 960 });
+  await page.addInitScript(() => {
+    localStorage.removeItem("ccxp-lite-sidebar-variant");
+  });
+  try {
+    await page.goto(source.url(), { waitUntil: "load" });
+    const nav = page.frames().find((frame) => frame.url().includes("IN_INQ_STU.php"));
+    assert.ok(nav);
+    const shell = nav.locator(".ccxp-lite-sidebar-shell");
+    await shell.waitFor();
+    await nav.locator(".ccxp-lite-profile-trigger").waitFor();
+    if (assertHead) {
+      assert.equal(await shell.getAttribute("data-ccxp-lite-sidebar-variant"), "layered");
+    } else {
+      await nav.locator(".ccxp-lite-profile-trigger").click();
+      await setProfileMenuMode(nav.locator("#ccxp-lite-profile-mode"), "layered");
+    }
+    await page.waitForFunction(
+      () => document.querySelector("frameset[cols]")?.getAttribute("cols") === "*,0",
+    );
+    await nav.locator(".ccxp-lite-pinned-card").first().waitFor();
+    await nav.locator(".ccxp-lite-sidebar-content").click({ position: { x: 3, y: 3 } });
+    await capture(page, "phone-menu-favorites");
+    await nav.locator(".ccxp-lite-pinned-list .ccxp-lite-favorite-toggle").first().click();
+    const dialog =
+      (await page.locator("dialog[open]").count()) > 0
+        ? page.getByRole("dialog")
+        : nav.getByRole("dialog");
+    await dialog.waitFor();
+    await capture(page, "phone-menu-dialog");
+    await dialog.getByRole("button").first().press("Escape");
+    await nav.locator(".ccxp-lite-sidebar-search-input").fill("\u6559\u5B78");
+    await nav.locator(".ccxp-lite-category-card").first().click();
+    await nav.locator(".ccxp-lite-pane-detail").waitFor();
+    await capture(page, "phone-menu-search");
+    if (assertHead) {
+      await nav.locator(".ccxp-lite-profile-trigger").click();
+      await setProfileMenuMode(nav.locator("#ccxp-lite-profile-mode"), "classic");
+      await nav.locator(".ccxp-lite-sidebar-search-input").fill("");
       const visibleFavorites = nav.locator(
         '[data-ccxp-lite-order-group="category:category-favorites"] > [data-ccxp-lite-order-item]:visible',
       );
@@ -341,7 +409,6 @@ export async function captureNarrowHome(
   } finally {
     await page.close();
     await source.evaluate(() => {
-      localStorage.setItem("ccxp-lite-sidebar-collapsed", "false");
       localStorage.setItem("ccxp-lite-sidebar-variant", "classic");
     });
   }

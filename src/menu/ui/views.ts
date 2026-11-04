@@ -41,7 +41,7 @@
     const english = app.shared?.resolveLocaleFromDocument(targetDocument) === "en";
     const returnToSidebar = createButton(targetDocument, {
       className: "ccxp-lite-menu-return",
-      label: english ? "Back to sidebar" : "\u8FD4\u56DE\u5074\u908A\u6B04",
+      label: english ? "Use sidebar" : "\u4F7F\u7528\u5074\u908A\u6B04",
       icon: createBackIcon(targetDocument),
       onClick: () => {
         targetDocument.querySelector<HTMLButtonElement>("#ccxp-lite-profile-mode")?.click();

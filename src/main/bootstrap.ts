@@ -612,6 +612,9 @@
         });
       const visible = expanded ? matches : matches.slice(0, 8);
       showAll.hidden = expanded || matches.length <= 8;
+      showAll.textContent = english
+        ? `Show all favorites (${matches.length})`
+        : `\u986F\u793A\u5168\u90E8\u5E38\u7528\u529F\u80FD\uFF08${matches.length}\uFF09`;
       showAll.setAttribute("aria-expanded", String(expanded));
       const allLinks = categories.flatMap((category) =>
         flattenHomeCategory(category).map((link) => ({ category, link })),
