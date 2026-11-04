@@ -84,7 +84,8 @@
       sidebarFavoritesEmptyBody: "Star any function card to keep it here for quick access.",
       sidebarRemovePinnedDialogTitlePrefix: "Remove ",
       sidebarRemovePinnedDialogTitleSuffix: "?",
-      sidebarRemovePinnedDialogDescription: "this item will no longer be quick-accessible",
+      sidebarRemovePinnedDialogDescription:
+        "This function will be removed from Favorites. You can add it again from the menu.",
       sidebarRemovePinnedDialogCancel: "Keep it",
       sidebarRemovePinnedDialogConfirm: "Confirm",
       sidebarSearchEmptyTitle: "No matching items",
@@ -184,7 +185,7 @@
       sidebarRemovePinnedDialogTitlePrefix: "\u79FB\u9664\u300C",
       sidebarRemovePinnedDialogTitleSuffix: "\u300D\uFF1F",
       sidebarRemovePinnedDialogDescription:
-        "\u9019\u500B\u9805\u76EE\u5C07\u4E0D\u518D\u986F\u793A\u65BC\u5FEB\u901F\u5B58\u53D6\u3002",
+        "\u6B64\u529F\u80FD\u5C07\u5F9E\u5E38\u7528\u529F\u80FD\u79FB\u9664\uFF0C\u4ECD\u53EF\u96A8\u6642\u5F9E\u9078\u55AE\u52A0\u56DE\u3002",
       sidebarRemovePinnedDialogCancel: "\u4FDD\u7559",
       sidebarRemovePinnedDialogConfirm: "\u78BA\u8A8D\u79FB\u9664",
       sidebarSearchEmptyTitle: "\u627E\u4E0D\u5230\u7B26\u5408\u9805\u76EE",

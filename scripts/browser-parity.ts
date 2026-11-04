@@ -14,7 +14,12 @@ import path from "node:path";
 import { tmpdir } from "node:os";
 import { assertWorkLogReady, routeWorkLogFixture, workLogPath } from "./work-log-fixtures.js";
 import pixelmatch from "pixelmatch";
-import { assertHome, assertHomeFavorites, assertMenuProfile } from "./home-fixtures.js";
+import {
+  assertHome,
+  assertHomeFavorites,
+  assertMenuProfile,
+  captureNarrowHome,
+} from "./home-fixtures.js";
 import { assertSidebarCollapse } from "./sidebar-collapse-fixtures.js";
 import { assertInitialSessionTimer, assertSessionTimer } from "./session-timer-fixtures.js";
 import { recordProfileActions, setProfileMenuMode } from "./profile-fixtures.js";
@@ -331,6 +336,7 @@ async function captureRevision(
   expectSidebarResizeChange: boolean,
   expectCaptchaRefresh: boolean,
   uiReviewOnly: boolean,
+  reviewLocale: string,
 ): Promise<CaptureResult> {
   const profileDir = path.join(tmpdir(), `ccxp-lite-parity-${label}-${process.pid}-${Date.now()}`);
   const revisionOutputDir = path.join(outputDir, label);
@@ -371,6 +377,11 @@ async function captureRevision(
         // Storage is unavailable on browser-owned documents.
       }
     });
+    if (reviewLocale === "en") {
+      await context.addInitScript(() => {
+        sessionStorage.setItem("ccxp-lite-locale", "en");
+      });
+    }
     const page = context.pages()[0] ?? (await context.newPage());
 
     async function captureWorkLogPages() {
@@ -855,6 +866,15 @@ async function captureRevision(
           await capturePage(page, file);
           screenshots[name] = file;
         });
+        await captureNarrowHome(
+          page,
+          async (narrowPage, name) => {
+            const file = path.join(revisionOutputDir, `${name}.png`);
+            await capturePage(narrowPage, file);
+            screenshots[name] = file;
+          },
+          label === "head",
+        );
       }
     }
     writeFileSync(
@@ -862,7 +882,7 @@ async function captureRevision(
       `${JSON.stringify(
         {
           viewport,
-          locale: "zh-TW",
+          locale: reviewLocale,
           timezone: "Asia/Taipei",
           extensionDigest: directoryDigest(extensionDir),
           fixtureDigest: directoryDigest(fixtureRoot),
@@ -1080,6 +1100,7 @@ async function main() {
       output: { type: "string", default: defaultOutputDir },
       "work-log-only": { type: "boolean", default: false },
       "ui-review-only": { type: "boolean", default: false },
+      "review-locale": { type: "string", default: "zh" },
       "record-video": { type: "boolean", default: false },
       "expect-search-results-change": { type: "boolean", default: false },
       "expect-home-change": { type: "boolean", default: false },
@@ -1091,6 +1112,7 @@ async function main() {
     strict: true,
   });
   assert.ok(!(values["work-log-only"] && values["ui-review-only"]), "Choose one capture scope");
+  assert.ok(["en", "zh"].includes(values["review-locale"]), "Unsupported review locale");
   const baseExtensionDir = path.resolve(values["base-extension"]);
   const headExtensionDir = path.resolve(values["head-extension"]);
   const outputDir = path.resolve(values.output);
@@ -1110,6 +1132,7 @@ async function main() {
     values["expect-sidebar-resize-change"],
     values["expect-captcha-refresh"],
     values["ui-review-only"],
+    values["review-locale"],
   );
   const head = await captureRevision(
     "head",
@@ -1123,6 +1146,7 @@ async function main() {
     values["expect-sidebar-resize-change"],
     values["expect-captcha-refresh"],
     values["ui-review-only"],
+    values["review-locale"],
   );
   if (values["expect-support-links-change"]) {
     // Captures above validate the profile links; the browser test covers keyboard/dismissal.

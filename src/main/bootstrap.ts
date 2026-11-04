@@ -442,6 +442,17 @@
     search.append(results);
     const closeResults = () => {
       results.hidden = true;
+      input.setAttribute("aria-expanded", "false");
+    };
+    const appendMatch = (parent: HTMLElement, text: string, query: string) => {
+      const index = text.toLowerCase().indexOf(query.toLowerCase());
+      if (index === -1) {
+        parent.append(text);
+        return;
+      }
+      const match = targetDocument.createElement("mark");
+      match.textContent = text.slice(index, index + query.length);
+      parent.append(text.slice(0, index), match, text.slice(index + query.length));
     };
     const renderSearch = () => {
       const navDocument = findFrames().nav?.contentDocument;
@@ -450,6 +461,7 @@
       clear.hidden = input.value === "";
       results.textContent = "";
       results.hidden = query === "" || !model;
+      input.setAttribute("aria-expanded", String(!results.hidden));
       if (query === "" || !model || !navDocument) {
         return;
       }
@@ -463,16 +475,33 @@
           seen.add(id);
           const row = uiButtons.createButton(targetDocument, {
             className: "ccxp-home-search-result",
-            label: link.label,
+            ariaLabel: `${link.label} (${category.label})`,
             title: `${link.label} \u00B7 ${category.label}`,
             onClick: () => {
               closeResults();
               openHomeLink(link, navDocument);
             },
           });
+          const title = targetDocument.createElement("span");
+          title.className = "ccxp-home-search-title";
+          appendMatch(title, link.label, query);
+          const context = targetDocument.createElement("span");
+          context.className = "ccxp-home-search-context";
+          appendMatch(context, category.label, query);
+          row.append(title, context);
+          if (sidebarRuntime.isExternalLinkTarget(link, navDocument)) {
+            row.append(uiIcons.createExternalLinkIcon(targetDocument));
+          }
           results.append(row);
         }
       }
+      const resultStatus = targetDocument.createElement("p");
+      resultStatus.className = "ccxp-home-search-status";
+      resultStatus.setAttribute("role", "status");
+      resultStatus.textContent = english
+        ? `${seen.size} results`
+        : `${seen.size} \u500B\u7D50\u679C`;
+      results.prepend(resultStatus);
       if (seen.size === 0) {
         const empty = targetDocument.createElement("p");
         empty.setAttribute("role", "status");
@@ -589,7 +618,16 @@
         const name = targetDocument.createElement("span");
         name.className = "ccxp-home-card-name";
         name.textContent = link.label;
-        card.append(icon, name);
+        const copy = targetDocument.createElement("span");
+        copy.className = "ccxp-home-card-copy";
+        const context = targetDocument.createElement("span");
+        context.className = "ccxp-home-card-context";
+        context.textContent = category.label;
+        copy.append(name, context);
+        card.append(icon, copy);
+        if (sidebarRuntime.isExternalLinkTarget(link, navDocument)) {
+          card.append(uiIcons.createExternalLinkIcon(targetDocument));
+        }
         wrapper.append(card);
         const controls = namespace.sidebarFavoriteControls;
         if (controls) {

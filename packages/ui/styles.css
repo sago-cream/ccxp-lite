@@ -5,3 +5,17 @@
 @import url("../../src/menu/components/dashboard.css");
 @import url("../../src/menu/components/destination.css");
 @import url("../../src/menu/components/skeleton.css");
+/* The top layer spans the legacy frameset and makes every background frame inert. */
+.ccxp-lite-shell-dialog {
+  width: 100vw;
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.ccxp-lite-shell-dialog::backdrop {
+  background: transparent;
+}

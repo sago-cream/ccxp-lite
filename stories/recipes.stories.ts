@@ -19,6 +19,21 @@ export const Confirmation: Story = {
   render: (_args, context) => {
     const dom = createRenderer(document);
     const controller = createController(document);
+    const removal = _args.removal === true;
+    const titlePrefix = removal
+      ? localized(context.globals.locale, "移除「", "Remove ")
+      : localized(context.globals.locale, "確認登錄日期", "Confirm work dates");
+    const description = removal
+      ? localized(
+          context.globals.locale,
+          "此功能將從常用功能移除，仍可隨時從選單加回。",
+          "This function will be removed from Favorites. You can add it again from the menu.",
+        )
+      : localized(
+          context.globals.locale,
+          "共 3 天，送出前請檢查所選日期。",
+          "3 days selected. Review the dates before submitting.",
+        );
     const open = createDialogActionButton(
       document,
       localized(context.globals.locale, "預覽確認視窗", "Preview confirmation"),
@@ -32,27 +47,25 @@ export const Confirmation: Story = {
       const dialogController = createController(document);
       const view = createRemovePinnedDialog(
         document,
-        "",
+        removal
+          ? localized(
+              context.globals.locale,
+              "填寫教學意見調查 Course evaluation",
+              "Teaching feedback and course evaluation",
+            )
+          : "",
         {
-          sidebarRemovePinnedDialogTitlePrefix: localized(
-            context.globals.locale,
-            "確認登錄日期",
-            "Confirm work dates",
-          ),
-          sidebarRemovePinnedDialogTitleSuffix: "",
-          sidebarRemovePinnedDialogDescription: localized(
-            context.globals.locale,
-            "共 3 天，送出前請檢查所選日期。",
-            "3 days selected. Review the dates before submitting.",
-          ),
+          sidebarRemovePinnedDialogTitlePrefix: titlePrefix,
+          sidebarRemovePinnedDialogTitleSuffix: removal
+            ? localized(context.globals.locale, "」？", "?")
+            : "",
+          sidebarRemovePinnedDialogDescription: description,
           sidebarRemovePinnedDialogCancel: localized(context.globals.locale, "取消", "Cancel"),
-          sidebarRemovePinnedDialogConfirm: localized(
-            context.globals.locale,
-            "確認送出",
-            "Confirm",
-          ),
+          sidebarRemovePinnedDialogConfirm: removal
+            ? localized(context.globals.locale, "確認移除", "Remove favorite")
+            : localized(context.globals.locale, "確認送出", "Confirm"),
         },
-        "primary",
+        removal ? "danger" : "primary",
       );
       const close = () => {
         dialogController.destroy();
@@ -101,6 +114,18 @@ export const Confirmation: Story = {
     docs: {
       description: {
         story: "Cancel, Escape, or a backdrop click closes the dialog.",
+      },
+    },
+  },
+};
+export const RemovalLongName: Story = {
+  ...Confirmation,
+  args: { removal: true },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Long bilingual names wrap inside the shared dialog; the action row wraps at narrow widths. Destructive actions use the accessible danger token.",
       },
     },
   },

@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import type { Frame, Page } from "playwright";
+import { setProfileMenuMode } from "./profile-fixtures.js";
 
 export async function assertProfile(page: Page, nav: Frame, recordVideo = false): Promise<void> {
   const profile = nav.locator(".ccxp-lite-sidebar-profile");
@@ -43,10 +44,7 @@ export async function assertHome(page: Page, nav: Frame, recordVideo = false): P
   const main = page.frames().find((frame) => frame.name() === "main");
   assert.ok(main);
   await main.locator(".ccxp-home-wordmark").waitFor();
-  const help = main.getByRole("button", {
-    name: "\u7CFB\u7D71\u4F7F\u7528\u8AAA\u660E",
-    exact: true,
-  });
+  const help = main.locator(".ccxp-home-info button");
   await help.click();
   assert.equal(await main.locator(".ccxp-home-info li").count(), 4);
   if (recordVideo) {
@@ -78,6 +76,17 @@ export async function assertHomeFavorites(
 ): Promise<void> {
   const main = page.frames().find((frame) => frame.name() === "main");
   assert.ok(main);
+  // Establish the same real recent destination in full and scoped capture runs.
+  const recentSearch = main.locator(".ccxp-home-search > input");
+  await recentSearch.fill("\u586B\u5BEB\u6559\u5B78\u610F\u898B\u8ABF\u67E5");
+  await main.locator(".ccxp-home-search-result").first().click();
+  await main
+    .getByText("The system is not available because it is not the period to open.", {
+      exact: false,
+    })
+    .waitFor();
+  await nav.locator(".ccxp-lite-sidebar-brand-button").click();
+  await main.locator(".ccxp-home-wordmark").waitFor();
   const search = nav.locator(".ccxp-lite-sidebar-search-input");
   await search.fill("\u7CFB\u7D71");
   for (let index = 0; index < 10; index++) {
@@ -109,7 +118,10 @@ export async function assertHomeFavorites(
   assert.equal(await cards.count(), 10);
   const star = cards.first().locator(".ccxp-lite-favorite-toggle");
   await star.click();
-  const dialog = main.getByRole("dialog");
+  const dialog =
+    (await page.locator("dialog[open]").count()) > 0
+      ? page.getByRole("dialog")
+      : main.getByRole("dialog");
   await dialog.waitFor();
   if (capture) {
     await capture("dialog-remove-favorite");
@@ -168,4 +180,78 @@ export async function assertMenuProfile(page: Page, nav: Frame): Promise<void> {
     assert.equal(bounds.fits, true);
   }
   await page.setViewportSize(original);
+}
+
+export async function captureNarrowHome(
+  source: Page,
+  capture: (page: Page, name: string) => Promise<void>,
+  assertHead: boolean,
+): Promise<void> {
+  const page = await source.context().newPage();
+  await page.setViewportSize({ width: 375, height: 960 });
+  await page.addInitScript(() => {
+    localStorage.setItem("ccxp-lite-sidebar-collapsed", "true");
+  });
+  try {
+    await page.goto(source.url(), { waitUntil: "load" });
+    const nav = page.frames().find((frame) => frame.url().includes("IN_INQ_STU.php"));
+    const main = page.frames().find((frame) => frame.name() === "main");
+    assert.ok(nav && main);
+    await main.locator(".ccxp-home-wordmark").waitFor();
+    await main.locator(".ccxp-home-card").first().waitFor();
+    await page.mouse.move(350, 100);
+    await page.waitForFunction(
+      () => document.querySelector("frameset[cols]")?.getAttribute("cols") === "64,*",
+    );
+    await capture(page, "home-favorites-narrow");
+    const input = main.locator(".ccxp-home-search > input");
+    await input.fill("\u6559\u5B78");
+    await input.press("ArrowDown");
+    await capture(page, "home-search-narrow");
+    await input.press("Escape");
+    await input.fill("");
+    await main.locator(".ccxp-home-card-wrap > .ccxp-lite-favorite-toggle").first().click();
+    const dialog =
+      (await page.locator("dialog[open]").count()) > 0
+        ? page.getByRole("dialog")
+        : main.getByRole("dialog");
+    await dialog.waitFor();
+    if (assertHead) {
+      const bounds = await dialog.boundingBox();
+      assert.ok(bounds && bounds.x >= 0 && bounds.x + bounds.width <= 375);
+      if ((await page.locator("dialog[open]").count()) > 0) {
+        assert.equal(
+          await page.locator("dialog[open]").evaluate((element) => element.matches(":modal")),
+          true,
+        );
+      }
+      await dialog.getByRole("button").first().press("Shift+Tab");
+      assert.equal(
+        await dialog
+          .getByRole("button")
+          .last()
+          .evaluate((element) => element === element.ownerDocument.activeElement),
+        true,
+      );
+      await dialog.getByRole("button").last().press("Tab");
+    }
+    await capture(page, "dialog-remove-favorite-narrow");
+    await dialog.getByRole("button").first().press("Escape");
+    await nav.locator(".ccxp-lite-profile-trigger").click();
+    await setProfileMenuMode(nav.locator("#ccxp-lite-profile-mode"), "layered");
+    await page.waitForFunction(
+      () => document.querySelector("frameset[cols]")?.getAttribute("cols") === "*,0",
+    );
+    await nav.locator(".ccxp-lite-profile-trigger").click();
+    await nav.locator(".ccxp-lite-profile-popover").waitFor({ state: "visible" });
+    await capture(page, "profile-expanded-narrow");
+    await nav.locator(".ccxp-lite-profile-trigger").press("Escape");
+    await capture(page, "sidebar-menu-narrow");
+  } finally {
+    await page.close();
+    await source.evaluate(() => {
+      localStorage.setItem("ccxp-lite-sidebar-collapsed", "false");
+      localStorage.setItem("ccxp-lite-sidebar-variant", "classic");
+    });
+  }
 }

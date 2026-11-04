@@ -1,0 +1,51 @@
+# Independent UI review — reviewer A
+
+Suite overall: **8.7/10**. The interface is cohesive, readable, and restrained. Desktop layouts are particularly strong. The remaining opportunities concern narrow-screen density, the visibility of settings affordances, and communicating overflow in search results. No blocking visual defect is established by these captures.
+
+## Scope and method
+
+Read `docs/design/guidelines.md` and personally opened all 13 supplied PNGs at original detail: `login.png`, `login-wide.png`, `login-narrow.png`, `sidebar-classic.png`, `profile-expanded.png`, `dialog-remove-favorite.png`, `home-favorites.png`, `home-search.png`, `home-favorites-narrow.png`, `home-search-narrow.png`, `dialog-remove-favorite-narrow.png`, `profile-expanded-narrow.png`, and `sidebar-menu-narrow.png` under `.build/design-review/round-1-settled/head/`.
+
+This is an independent visual review; no previous reviewer reports were consulted, and no product files or browser state were changed. Captures were supplied as packaged-extension renders of complete sanitized live-derived host pages and assets. Login source was recaptured on 2026-11-04; native current-package inspection was supplied for sidebar, expanded profile, search, favorites, and removal dialog. Synthetic names/favorites and an expired anonymous CAPTCHA are provenance substitutions, not defects. The compact rail and menu-mode views are genuine different navigation configurations.
+
+Scores describe the visible states, not a complete accessibility or interaction audit. Component overall values are arithmetic means of the seven dimensions, rounded to one decimal. Suite overall is the mean of all 42 dimension scores, rounded to one decimal (unrounded 8.7452).
+
+## Scores
+
+| Component                 | Color / contrast | Typography | Spacing / alignment | Hierarchy | Affordance / state clarity | Consistency | Observable accessibility / responsiveness | Overall |
+| ------------------------- | ---------------: | ---------: | ------------------: | --------: | -------------------------: | ----------: | ----------------------------------------: | ------: |
+| Login                     |              9.0 |        9.0 |                 8.5 |       9.0 |                        8.7 |         9.0 |                                       8.5 | **8.8** |
+| Sidebar                   |              9.0 |        8.8 |                 8.2 |       8.5 |                        8.2 |         9.0 |                                       8.0 | **8.5** |
+| Expanded profile          |              9.0 |        9.0 |                 9.0 |       8.7 |                        8.0 |         9.0 |                                       8.5 | **8.7** |
+| Shared dialog             |              9.3 |        9.0 |                 9.0 |       9.2 |                        9.3 |         9.0 |                                       9.0 | **9.1** |
+| Favorite cards            |              9.0 |        8.5 |                 8.0 |       8.7 |                        8.8 |         9.0 |                                       8.0 | **8.6** |
+| Homepage search / results |              9.0 |        8.8 |                 8.3 |       9.0 |                        8.8 |         9.0 |                                       8.0 | **8.7** |
+
+## Strongest remaining issues
+
+1. **Narrow favorite cards spend too much of their width on supporting elements.** In `home-favorites-narrow.png`, the rail leaves a roughly 247px card column. The leading circular icon and trailing favorite control leave much less space for the title: “課程預排 Tentative schedule” occupies three lines, “填寫教學意見調查 Course evaluation” also occupies three, and “畢業生離校程序說明” leaves its final character on a second line. Nothing overlaps, and complete labels are preferable to truncation, but repeated tall cards make the list slower to scan. A necessary next responsive refinement is to give labels more width, for example by reducing horizontal padding/gaps or moving supplementary icon treatment at this breakpoint, while preserving a generous favorite target. Changing the compact rail configuration itself is an optional product choice, not a required fix.
+
+2. **Search overflow is only indirectly communicated.** Both `home-search.png` and `home-search-narrow.png` announce six results, but the bottom visible row is cut by the panel boundary with no visible scrollbar or explicit continuation cue. The count and clipped row suggest more content, so this is a moderate discoverability issue rather than evidence that results are unreachable. Make the scrollable area easier to recognize and consider ensuring the initially active row and first screenful settle cleanly. Keyboard traversal and actual scrolling remain unverified by the images.
+
+3. **Preference values look more like status badges than controls.** In `profile-expanded.png` and `profile-expanded-narrow.png`, “側邊欄” / “選單” and “關閉” are pale chips aligned at the right of otherwise plain rows. The current values read clearly, but the image provides little visual distinction between a value display and a control that changes it. A restrained chevron, switch treatment where semantically suitable, or clearer interactive row treatment would improve first-use discovery. The underlying click/keyboard behavior is unverified; this finding concerns the visible affordance only.
+
+4. **The narrow menu header visibly runs out of branding space.** In `sidebar-menu-narrow.png` and `profile-expanded-narrow.png`, the university-system title reaches the search control and appears clipped at its right edge. The controls remain separate and usable-looking, so severity is low. A deliberate compact brand treatment or explicit truncation would look more resolved than the current tight cutoff. This is a visible responsive polish issue, not evidence of horizontal page overflow.
+
+5. **Compact navigation relies entirely on icons for category identity.** `home-favorites-narrow.png` and `home-search-narrow.png` show a clear 64px rail, but several purple category icons must be learned without visible labels. This is a discoverability tradeoff inherent in the chosen compact mode. An obvious way to reveal full labels would help occasional users; whether existing tooltips or an expansion action already provide that is unverified. Do not infer missing accessible names from the screenshot.
+
+## Component observations
+
+- **Login:** Strong primary-action hierarchy, visible field labels, readable values, spacious 48px-class fields, and coherent purple secondary links. CAPTCHA audio/refresh and password visibility actions are visually separated. The narrow version reflows navigation into two rows without collision and keeps the entire form readable. The large heading-to-field gap and roomy stacked secondary actions push announcements below the first viewport; tightening them is an optional density preference because sign-in remains the primary task. The announcement card intentionally shows a partial feed above its all-announcements footer; this is not evidence of lost content.
+- **Sidebar:** Consistent icon/text/chevron columns and neutral grouping support scanning. Expanded trees show hierarchy through indentation and connecting rules, and the focused search has a visible purple outline. Long bilingual labels wrap without colliding with stars. Deep nesting plus a large favorites section consumes substantial height, but no unreachable item is established. Compact navigation carries the discovery tradeoff described above.
+- **Expanded profile:** Clear separation between preferences, support, and logout; consistent row alignment and adequate whitespace. The narrow popover fits with a sensible edge margin and shadows distinguish it from the page. Mode/off chips need stronger action cues. Logout's normal text treatment matches the project's explicit guidance.
+- **Shared dialog:** The strongest component. It names the exact favorite, explains reversibility, separates retention from danger, and gives the safe action a distinct visible focus ring. The mobile dialog has comfortable side margins, wraps its explanation cleanly, and keeps both actions on one row. The backdrop sufficiently de-emphasizes the page. No visible improvement is necessary in the supplied state.
+- **Favorite cards:** Strong desktop grid, clear title/category distinction, consistent icon treatment, and solid versus outline stars that distinguish saved and unsaved entries without color alone. External-link indicators are adjacent to the relevant title/action area. Narrow cards preserve content and separate targets but could allocate space more efficiently to long labels.
+- **Homepage search/results:** Prominent search, clear query and result count, visible clear action, category subtitles, and bold query matches. The active result uses both a border and pale fill. The narrow popup remains inside the content area and wraps English naturally; the main opportunity is overflow communication and the resulting small visible portion of the list.
+
+## Evidence limits
+
+Supplied contrast measurements—primary text on white 5.73:1, danger 5.47:1, and input boundaries above 3:1—support the otherwise strong visual contrast assessment. They do not certify every text/surface combination. Supplied packaged narrow checks assert a native top-layer modal and Tab/Shift+Tab containment; that supports the modal assessment without constituting a complete keyboard audit.
+
+Screen-reader semantics, icon-button names, expanded-state announcements, focus restoration, Escape dismissal, pointer hit areas, help behavior, result traversal, scrolling, zoom/reflow, English-mode layouts, validation/error/loading/disabled states, and reduced-motion behavior are **unverified here**. Missing evidence was not treated as a confirmed defect or automatically deducted from scores.
+
+Necessary refinements are modest: improve narrow title space, clarify visible settings interactivity, and resolve the narrow header cutoff. Overflow cues are a useful usability improvement. More compact login spacing, alternative card ornamentation, or replacing the compact rail are aesthetic/product preferences rather than requirements established by these captures.

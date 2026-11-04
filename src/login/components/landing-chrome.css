@@ -31,12 +31,13 @@
 
 .ccxp-lite-landing-body {
   display: grid;
-  grid-template-columns: 360px minmax(320px, 1fr) 360px;
+  grid-template-columns: minmax(0, 360px) minmax(0, 360px);
   align-items: stretch;
   justify-content: center;
-  gap: var(--ccxp-lite-spacing-lg);
+  gap: var(--ccxp-lite-spacing-xl);
   width: 100%;
-  max-width: 100%;
+  max-width: var(--ccxp-lite-landing-max-width);
+  margin-inline: auto;
   padding-left: var(--ccxp-lite-spacing-lg);
   padding-right: calc(var(--ccxp-lite-spacing-lg) + var(--ccxp-lite-spacing-sm));
   padding-bottom: var(--ccxp-lite-spacing-lg);
@@ -55,13 +56,13 @@
 }
 
 .ccxp-lite-landing-body > .ccxp-lite-landing-login {
-  grid-column: 2;
+  grid-column: 1;
   justify-self: center;
   align-self: flex-start;
 }
 
 .ccxp-lite-landing-body > .ccxp-lite-landing-notices {
-  grid-column: 3;
+  grid-column: 2;
   margin-top: var(--ccxp-lite-spacing-md);
 }
 
@@ -320,4 +321,19 @@ html[data-ccxp-lite-scope="landing"] .ccxp-lite-landing-footer > a:focus-visible
 html[data-ccxp-lite-scope="landing"] .ccxp-lite-landing-footer > a:focus-visible {
   outline: 2px solid currentColor;
   outline-offset: 2px;
+}
+
+@media (max-width: 480px) {
+  .ccxp-lite-landing-utility {
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    gap: 0 var(--ccxp-lite-spacing-lg);
+    justify-content: center;
+  }
+  html[data-ccxp-lite-scope="landing"] .ccxp-lite-landing-utility-link {
+    min-height: var(--ccxp-lite-size-dialog-action-height);
+  }
+  .ccxp-lite-landing-login {
+    padding-top: var(--ccxp-lite-spacing-inline-sm);
+  }
 }

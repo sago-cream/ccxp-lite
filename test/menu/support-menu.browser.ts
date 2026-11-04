@@ -89,7 +89,8 @@ test("packaged headers omit ccxpLite and profile menus expose support links", as
       }
       const preferences = popup.getByRole("region", { name: "\u504F\u597D\u8A2D\u5B9A" });
       const support = popup.getByRole("region", { name: "\u652F\u63F4\u8207\u9023\u7D50" });
-      expect(await preferences.getByRole("button").count()).toBe(3);
+      expect(await preferences.getByRole("button").count()).toBe(2);
+      expect(await preferences.getByRole("switch").count()).toBe(1);
       expect(
         await preferences
           .getByRole("button", { name: "\u9084\u539F\u9762\u677F\u6392\u5E8F", exact: true })
@@ -98,7 +99,7 @@ test("packaged headers omit ccxpLite and profile menus expose support links", as
       expect(await preferences.getByRole("link").count()).toBe(0);
       expect(await support.getByRole("link").count()).toBe(2);
       const mode = preferences.locator("#ccxp-lite-profile-mode");
-      expect(await mode.textContent()).toBe(
+      expect(await mode.getAttribute("title")).toBe(
         variant === "classic"
           ? "\u4F7F\u7528\u9078\u55AE\u6A21\u5F0F"
           : "\u4F7F\u7528\u5074\u6B04\u6A21\u5F0F",
@@ -108,11 +109,8 @@ test("packaged headers omit ccxpLite and profile menus expose support links", as
       const timerToggle = preferences.locator(".ccxp-lite-session-timer-toggle");
       expect(await timerToggle.evaluate((input) => input === document.activeElement)).toBe(true);
       await timerToggle.press("Space");
-      expect(await timerToggle.textContent()).toBe(
-        variant === "classic"
-          ? "\u96B1\u85CF\u767B\u51FA\u5012\u6578"
-          : "\u986F\u793A\u767B\u51FA\u5012\u6578",
-      );
+      expect(await timerToggle.getAttribute("role")).toBe("switch");
+      expect(await timerToggle.getAttribute("aria-checked")).toBe(String(variant === "classic"));
       await timerToggle.press("Tab");
       const restoreOrder = preferences.getByRole("button", {
         name: "\u9084\u539F\u9762\u677F\u6392\u5E8F",

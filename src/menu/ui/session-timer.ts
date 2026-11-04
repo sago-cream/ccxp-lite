@@ -82,7 +82,11 @@
       icon: createCategoryIcon(targetDocument, "clock"),
     });
     const toggleLabel = dom.element("span");
-    toggle.append(toggleLabel);
+    toggleLabel.textContent = english ? "Logout timer" : "\u767B\u51FA\u5012\u6578";
+    const toggleValue = dom.element("span", { className: "ccxp-lite-profile-value" });
+    toggle.setAttribute("role", "switch");
+    toggle.setAttribute("aria-label", toggleLabel.textContent);
+    toggle.append(toggleLabel, toggleValue);
     (popup.querySelector(".ccxp-lite-profile-settings") ?? popup).append(toggle);
     const icon = targetDocument.createElementNS("http://www.w3.org/2000/svg", "svg");
     for (const [key, value] of Object.entries({
@@ -123,8 +127,13 @@
     card.append(overlays);
     const showLabel = english ? "Show session timer" : "\u986F\u793A\u767B\u51FA\u5012\u6578";
     const hideLabel = english ? "Hide session timer" : "\u96B1\u85CF\u767B\u51FA\u5012\u6578";
+    const stateLabels = english
+      ? { on: "On", off: "Off" }
+      : { on: "\u958B\u555F", off: "\u95DC\u9589" };
     const update = () => {
-      toggleLabel.textContent = getVisible() ? hideLabel : showLabel;
+      toggle.title = getVisible() ? hideLabel : showLabel;
+      toggle.setAttribute("aria-checked", String(getVisible()));
+      toggleValue.textContent = getVisible() ? stateLabels.on : stateLabels.off;
       const remaining = readClock(topDocument);
       timer.hidden = !getVisible() || remaining === undefined;
       if (remaining === undefined) {

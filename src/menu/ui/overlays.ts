@@ -15,7 +15,8 @@
   const app = namespace;
   const { setPersistedSidebarVariant, persistSidebarScroll } = namespace.sidebarState;
   const { createRenderer } = namespace.uiRenderer;
-  const { createCategoryIcon, createExternalLinkIcon } = namespace.uiIcons;
+  const { createCategoryIcon, createExternalLinkIcon, createClassicChevronIcon } =
+    namespace.uiIcons;
   const { showRemovePinnedDialog, showRestoreOrderDialog } = namespace.sidebarDialogController;
 
   let layoutFrame = 0;
@@ -182,6 +183,10 @@
       },
       [avatar, name],
     );
+    const disclosure = createClassicChevronIcon(targetDocument, false);
+    disclosure.classList.remove("ccxp-lite-chevron");
+    disclosure.classList.add("ccxp-lite-profile-chevron");
+    settings.append(disclosure);
     const popup = dom.element("div", {
       className: "ccxp-lite-profile-popover",
       attributes: { id: "ccxp-lite-profile-popover", hidden: "" },
@@ -192,15 +197,26 @@
           classic: "\u4F7F\u7528\u9078\u55AE\u6A21\u5F0F",
           layered: "\u4F7F\u7528\u5074\u6B04\u6A21\u5F0F",
         };
+    const modeValues = english
+      ? { classic: "Sidebar", layered: "Menu" }
+      : { classic: "\u5074\u908A\u6B04", layered: "\u9078\u55AE" };
     const mode = dom.element(
       "button",
       {
         className: "ccxp-lite-profile-row ccxp-lite-profile-control ccxp-lite-profile-mode",
-        attributes: { id: "ccxp-lite-profile-mode", type: "button" },
+        attributes: {
+          id: "ccxp-lite-profile-mode",
+          type: "button",
+          title: modeLabels[state.sidebarVariant],
+        },
       },
       [
         createCategoryIcon(targetDocument, "panels-top-left"),
-        dom.element("span", { text: modeLabels[state.sidebarVariant] }),
+        dom.element("span", { text: english ? "Navigation" : "\u5C0E\u89BD\u6A21\u5F0F" }),
+        dom.element("span", {
+          className: "ccxp-lite-profile-value",
+          text: modeValues[state.sidebarVariant],
+        }),
       ],
     );
     mode.addEventListener("click", () => {

@@ -98,7 +98,8 @@ describe("extracted UI interactions", () => {
     const mode = requireElement(
       document.querySelector<HTMLButtonElement>("#ccxp-lite-profile-mode"),
     );
-    expect(mode.textContent).toBe("\u4F7F\u7528\u9078\u55AE\u6A21\u5F0F");
+    expect(mode.querySelector(".ccxp-lite-profile-value")?.textContent).toBe("\u5074\u908A\u6B04");
+    expect(mode.title).toBe("\u4F7F\u7528\u9078\u55AE\u6A21\u5F0F");
     mode.click();
     expect(state.sidebarVariant).toBe("layered");
     expect(state.currentCategoryId).toBe("");
@@ -109,7 +110,7 @@ describe("extracted UI interactions", () => {
     const nextMode = requireElement(
       document.querySelector<HTMLButtonElement>("#ccxp-lite-profile-mode"),
     );
-    expect(nextMode.textContent).toBe("\u4F7F\u7528\u5074\u6B04\u6A21\u5F0F");
+    expect(nextMode.querySelector(".ccxp-lite-profile-value")?.textContent).toBe("\u9078\u55AE");
     nextMode.click();
     expect(state.sidebarVariant).toBe("classic");
     expect(rerender).toHaveBeenCalledTimes(2);
