@@ -28,3 +28,17 @@ The live login was recaptured on November 4. Student shell/profile/home and dial
 English-control captures use the Chinese legacy host. Other roles, an English host login, all destinations, zoom and assistive-technology behavior are not certified. Contrast and packaged keyboard checks support specific claims only.
 
 Final round 9 suite scores are **9.0/10 from both reviewers**. Individual component scores remain separately recorded; the suite rating does not imply every component or category scored 9.
+
+## Published comparisons
+
+| Surface              | Before                                                                                    | After                                                                                    |
+| -------------------- | ----------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| Login                | [Before](https://github.com/user-attachments/assets/c0f13888-1c2f-4d14-a7c2-af626985f21b) | [After](https://github.com/user-attachments/assets/5f12a2d6-8c3a-4243-b55d-ba9111e8323c) |
+| Sidebar              | [Before](https://github.com/user-attachments/assets/45910997-91da-474f-a9e3-4c1ba7dc730b) | [After](https://github.com/user-attachments/assets/3fbfb284-ef28-4fb2-b4c5-cf23b3c92ae4) |
+| Expanded profile     | [Before](https://github.com/user-attachments/assets/96297864-4963-4f7d-aa48-435e3081e718) | [After](https://github.com/user-attachments/assets/775b2d6e-97c4-48cc-ac9b-350dbe40dc31) |
+| Shared dialog        | [Before](https://github.com/user-attachments/assets/e6893f3e-b020-4c55-95f4-aee0fc0eaa71) | [After](https://github.com/user-attachments/assets/4af8d21c-f595-4cb9-a015-3a1f79a8190d) |
+| Homepage favorites   | [Before](https://github.com/user-attachments/assets/cb2c6881-6de6-4f0e-9d71-ebc46847e48d) | [After](https://github.com/user-attachments/assets/d29e22e8-448c-4a3f-8dc8-411d9c7508ce) |
+| Homepage search      | [Before](https://github.com/user-attachments/assets/27238817-980b-40b2-8ec5-818883e2a2e5) | [After](https://github.com/user-attachments/assets/25c89bc1-7eab-4fb7-b0c9-dc07c560843e) |
+| Narrow login         | [Before](https://github.com/user-attachments/assets/1ea0f72f-607a-4840-bc05-b581283785c5) | [After](https://github.com/user-attachments/assets/45eb2d0a-320e-426c-811c-4782892e7ac0) |
+| Phone Menu favorites | [Before](https://github.com/user-attachments/assets/d40596c3-76ef-4a1f-9e31-879239e814da) | [After](https://github.com/user-attachments/assets/7b734857-de6f-4dec-a118-79be12adbc64) |
+| Phone Menu search    | [Before](https://github.com/user-attachments/assets/7cadeaf2-d9b3-47e3-a31b-aa3637158cac) | [After](https://github.com/user-attachments/assets/c8e0d9d1-da8b-4a65-992c-8f82377812b8) |

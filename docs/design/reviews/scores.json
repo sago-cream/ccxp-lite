@@ -341,7 +341,23 @@
           "sidebar-menu-narrow.png": "62c1a34cb96eaf57d621251cbd0ae0c3498f3116311b4ce788e9f0dd6de9d257"
         }
       },
-      "correction": "Reviewer B corrected arithmetic during round6: originally reported suite8.61/search8.71; category scores unchanged."
+      "correction": "Reviewer B corrected arithmetic during round6: originally reported suite8.61/search8.71; category scores unchanged.",
+      "englishControlEvidence": {
+        "localCaptureSet": "round-5-ready-english",
+        "sourceLanguage": "Chinese legacy host; English extension controls",
+        "extensionDigest": "586225c6741cadf3da5ef198ca63bf35b5057cbd6b5465bb0682a44162af8531",
+        "fixtureDigest": "537ffe4849910b4af12ddb76fe1ff131aa2d7f0bd346674c335d09f49e37a403",
+        "reviewedScreenshots": {
+          "profile-expanded.png": "82a949c93bfe00e24909d853d69b29d77c07384032c73d2b553fbce7f6653324",
+          "profile-expanded-narrow.png": "22ee025561baefd800ff1eddaa4e856e31ca7d60a33cb6202594f10613ef85a4",
+          "dialog-remove-favorite.png": "bd66029a060b1604e6f55eb25a3180a49787926b51bf21197128ce4715fd8d0f",
+          "dialog-remove-favorite-narrow.png": "e2089e2ec5bca576483b5dd7d35b8ed005b37dcc2920eb013795f186d7e27765",
+          "home-favorites.png": "7c433b2fc2955d13037c59f124d6713572d4fab3a0fef3a8ffd084d5b2442b0c",
+          "home-favorites-narrow.png": "601787e5d6929d7f074b79e7980dbe0d865043135932d500512045c12b0b9523",
+          "home-search.png": "42cce875d3caf9a39b918c59e43e94d188eacecbd2bcb864897351cf12ec33cf",
+          "home-search-narrow.png": "d613fcbb9b9d1ee6db1788e19c31b9e06b1bbf0334d1c0eb7b4dafcd74e2e93a"
+        }
+      }
     },
     {
       "round": 6,
@@ -396,6 +412,23 @@
           "sidebar-classic.png": "51ac4a666b5ef365c09ccf709a1675bc41bed6d13efc9dde228cd29f274d0ac5",
           "sidebar-menu-narrow.png": "a0afa9317ffc2d19076e1c961d788679ebcec0d22dd44d423bdb87c3c4afbbc8"
         }
+      },
+      "englishControlEvidence": {
+        "localCaptureSet": "round-6-english",
+        "sourceLanguage": "Chinese legacy host; English extension controls",
+        "extensionDigest": "c026ca832dcae40c4f2c16bbc9777a1828347427a0a4b01a6dfb4c38c844281e",
+        "fixtureDigest": "e2880242a5f6e283b51e0d74da9c1e7d711277c42bbaea91d1086b5883a37747",
+        "reviewedScreenshots": {
+          "profile-expanded.png": "3a69f9d771a3f7df6c2e8860d0847c2a00251807a8a3b68d921adbae27d2b5a3",
+          "profile-expanded-narrow.png": "69d265af8d4b6ae21eed61c2edd974b24565d75c96594432274c8e3e24ad0b53",
+          "dialog-remove-favorite.png": "36acc8d8df21f451c9fc5fda477dfd9e9d9fcd6e6a71ac9cf889c5cb99306ab8",
+          "dialog-remove-favorite-narrow.png": "455ee5f47262958cfab7477c218c7951f4244e18de92e2ee5f022cf2691dd8f4",
+          "home-favorites.png": "a529e58c5a927fe6667340efdb9308ed372a1ca0a932127f753761b6e1688959",
+          "home-favorites-narrow.png": "7f94abc4e17cd6e37873ad89f2bf882d90a1742fb5b373741bb040587e901ecd",
+          "home-search.png": "1250264816c9f2449bda7c47e695fcda70c82c5deda58436389293a94f311d09",
+          "home-search-narrow.png": "8521553c63bf896bb5026b14bf48051968b69ac7efa600d0ed8e91899850aac5",
+          "sidebar-menu-narrow.png": "1a2fee50e356ce8cfa2992c764e105903e9444a80fc6649e78d4529ffa32bb0b"
+        }
       }
     },
     {
@@ -449,6 +482,23 @@
           "profile-expanded.png": "6a60cc28ad3712978460a6523266c3d958034a130ee8646f8db92bd9fcfe3353",
           "sidebar-classic.png": "51ac4a666b5ef365c09ccf709a1675bc41bed6d13efc9dde228cd29f274d0ac5",
           "sidebar-menu-narrow.png": "700c5b71df3ff4f8dc02194a572bdaca4f119c5b489030fb6f5d44396891211c"
+        }
+      },
+      "englishControlEvidence": {
+        "localCaptureSet": "round-7-english",
+        "sourceLanguage": "Chinese legacy host; English extension controls",
+        "extensionDigest": "5080418526e5f8d468e8ae44820a546261b7571b17f1a5dfdad7212b1c18c213",
+        "fixtureDigest": "e2880242a5f6e283b51e0d74da9c1e7d711277c42bbaea91d1086b5883a37747",
+        "reviewedScreenshots": {
+          "profile-expanded.png": "3a69f9d771a3f7df6c2e8860d0847c2a00251807a8a3b68d921adbae27d2b5a3",
+          "profile-expanded-narrow.png": "6ef8dee2a3ba00347f050093c544ed8bf5a2f3b464ee3bc363a1adb0306105f2",
+          "dialog-remove-favorite.png": "36acc8d8df21f451c9fc5fda477dfd9e9d9fcd6e6a71ac9cf889c5cb99306ab8",
+          "dialog-remove-favorite-narrow.png": "455ee5f47262958cfab7477c218c7951f4244e18de92e2ee5f022cf2691dd8f4",
+          "home-favorites.png": "a529e58c5a927fe6667340efdb9308ed372a1ca0a932127f753761b6e1688959",
+          "home-favorites-narrow.png": "7f94abc4e17cd6e37873ad89f2bf882d90a1742fb5b373741bb040587e901ecd",
+          "home-search.png": "578949ca3e70b1ecae9fd91c302a93817729eec0f834d53d942616b8af5ecd05",
+          "home-search-narrow.png": "be9cffd5fe1f8fd192f2f3eedaaa4dbedbdbf9b28927b86656e119db79d9a307",
+          "sidebar-menu-narrow.png": "ba01052c18c4f94d890a2b6da86a4fd0c08704f84bc0d6814fcf9da78857c4a7"
         }
       }
     },
@@ -507,6 +557,26 @@
           "sidebar-classic.png": "51ac4a666b5ef365c09ccf709a1675bc41bed6d13efc9dde228cd29f274d0ac5",
           "sidebar-menu-narrow.png": "4faa557642737b6305f39cc779095025a69e409d5ef65123e69052cf49481cbd"
         }
+      },
+      "englishControlEvidence": {
+        "localCaptureSet": "round-8-audit-english",
+        "sourceLanguage": "Chinese legacy host; English extension controls",
+        "extensionDigest": "4146f4dc5cc768f6cf3b285bfdfeb26d03ccfb6ce86a0a6c6ed7a65f85f57994",
+        "fixtureDigest": "09c2079886cf7544c65e519d283b6d7f0d6bb7aa025181809bd53224a3c8891e",
+        "reviewedScreenshots": {
+          "profile-expanded.png": "7081bdddf3e7f13ba0b617372d26ac71cb4cddb71bda3450f30326c2db18fa9a",
+          "profile-expanded-narrow.png": "69d265af8d4b6ae21eed61c2edd974b24565d75c96594432274c8e3e24ad0b53",
+          "dialog-remove-favorite.png": "f3d5ed08315e5b249553a6c65863c916059be6bcb7a2ffa2d173dba787560104",
+          "dialog-remove-favorite-narrow.png": "455ee5f47262958cfab7477c218c7951f4244e18de92e2ee5f022cf2691dd8f4",
+          "home-favorites.png": "fe9dc83f6a3354030f4e079fe562b118d1cb1532ba973129ed9cc997ae30dcb6",
+          "home-favorites-narrow.png": "7f94abc4e17cd6e37873ad89f2bf882d90a1742fb5b373741bb040587e901ecd",
+          "home-search.png": "da3e505f0982503dff86e42a467f58c9cd871d56016dfa3fd3fa2140d46e63ea",
+          "home-search-narrow.png": "be9cffd5fe1f8fd192f2f3eedaaa4dbedbdbf9b28927b86656e119db79d9a307",
+          "sidebar-menu-narrow.png": "251d9381f653a18eb6f88d6b203dd350f70a2ea9af72a266b715cc220b11ec32",
+          "phone-menu-favorites.png": "036c11eede3e8ac6ceb7324afcd9448e9bf6bfb513be1834647b2c98505012d3",
+          "phone-menu-dialog.png": "25e184578c3c8f5afb51d161a4eef6edc00b419929536b13126c9425cf91d86e",
+          "phone-menu-search.png": "69ade4c0f128b556c74bda8a54ca96297fcd54ec358057544b0a49d6140b318a"
+        }
       }
     },
     {
@@ -563,6 +633,26 @@
           "profile-expanded.png": "807411a5a4d3a9ee4a46515a68d1d58e68c5f5243daeea56c5ac391949728000",
           "sidebar-classic.png": "51ac4a666b5ef365c09ccf709a1675bc41bed6d13efc9dde228cd29f274d0ac5",
           "sidebar-menu-narrow.png": "4faa557642737b6305f39cc779095025a69e409d5ef65123e69052cf49481cbd"
+        }
+      },
+      "englishControlEvidence": {
+        "localCaptureSet": "round-9-english",
+        "sourceLanguage": "Chinese legacy host; English extension controls",
+        "extensionDigest": "c956ef744a58db129088343e23675641a58351424a47be4e038c0807d2617c6d",
+        "fixtureDigest": "09c2079886cf7544c65e519d283b6d7f0d6bb7aa025181809bd53224a3c8891e",
+        "reviewedScreenshots": {
+          "profile-expanded.png": "7081bdddf3e7f13ba0b617372d26ac71cb4cddb71bda3450f30326c2db18fa9a",
+          "profile-expanded-narrow.png": "69d265af8d4b6ae21eed61c2edd974b24565d75c96594432274c8e3e24ad0b53",
+          "dialog-remove-favorite.png": "f3d5ed08315e5b249553a6c65863c916059be6bcb7a2ffa2d173dba787560104",
+          "dialog-remove-favorite-narrow.png": "455ee5f47262958cfab7477c218c7951f4244e18de92e2ee5f022cf2691dd8f4",
+          "home-favorites.png": "fe9dc83f6a3354030f4e079fe562b118d1cb1532ba973129ed9cc997ae30dcb6",
+          "home-favorites-narrow.png": "7f94abc4e17cd6e37873ad89f2bf882d90a1742fb5b373741bb040587e901ecd",
+          "home-search.png": "da3e505f0982503dff86e42a467f58c9cd871d56016dfa3fd3fa2140d46e63ea",
+          "home-search-narrow.png": "88aa45d8ab794d0bd2d2ca477a7c9396ddf4c0e2a63462c5fbffe3fb7c39c97c",
+          "sidebar-menu-narrow.png": "251d9381f653a18eb6f88d6b203dd350f70a2ea9af72a266b715cc220b11ec32",
+          "phone-menu-favorites.png": "036c11eede3e8ac6ceb7324afcd9448e9bf6bfb513be1834647b2c98505012d3",
+          "phone-menu-dialog.png": "25e184578c3c8f5afb51d161a4eef6edc00b419929536b13126c9425cf91d86e",
+          "phone-menu-search.png": "69ade4c0f128b556c74bda8a54ca96297fcd54ec358057544b0a49d6140b318a"
         }
       }
     }
