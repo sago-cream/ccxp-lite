@@ -71,7 +71,11 @@ export async function assertHome(page: Page, nav: Frame, recordVideo = false): P
   await input.fill("");
 }
 
-export async function assertHomeFavorites(page: Page, nav: Frame): Promise<void> {
+export async function assertHomeFavorites(
+  page: Page,
+  nav: Frame,
+  capture?: (name: string) => Promise<void>,
+): Promise<void> {
   const main = page.frames().find((frame) => frame.name() === "main");
   assert.ok(main);
   const search = nav.locator(".ccxp-lite-sidebar-search-input");
@@ -87,12 +91,29 @@ export async function assertHomeFavorites(page: Page, nav: Frame): Promise<void>
   await search.fill("");
   const cards = main.locator("#ccxp-home-cards > .ccxp-home-card-wrap");
   assert.equal(await cards.count(), 8);
+  if (capture) {
+    await capture("home-favorites");
+    const profile = nav.locator(".ccxp-lite-profile-trigger");
+    await profile.click();
+    await nav.locator(".ccxp-lite-profile-popover").waitFor({ state: "visible" });
+    await capture("profile-expanded");
+    await profile.press("Escape");
+    const homeSearch = main.locator(".ccxp-home-search > input");
+    await homeSearch.fill("\u6559\u5B78");
+    await homeSearch.press("ArrowDown");
+    await capture("home-search");
+    await homeSearch.press("Escape");
+    await homeSearch.fill("");
+  }
   await main.locator(".ccxp-home-show-all").click();
   assert.equal(await cards.count(), 10);
   const star = cards.first().locator(".ccxp-lite-favorite-toggle");
   await star.click();
   const dialog = main.getByRole("dialog");
   await dialog.waitFor();
+  if (capture) {
+    await capture("dialog-remove-favorite");
+  }
   await dialog.getByRole("button").first().click();
   assert.equal(await cards.count(), 10, "Cancel must keep the favorite");
   await star.click();

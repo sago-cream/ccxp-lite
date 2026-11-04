@@ -330,6 +330,7 @@ async function captureRevision(
   expectSidebarCollapseChange: boolean,
   expectSidebarResizeChange: boolean,
   expectCaptchaRefresh: boolean,
+  uiReviewOnly: boolean,
 ): Promise<CaptureResult> {
   const profileDir = path.join(tmpdir(), `ccxp-lite-parity-${label}-${process.pid}-${Date.now()}`);
   const revisionOutputDir = path.join(outputDir, label);
@@ -563,6 +564,9 @@ async function captureRevision(
       await capturePage(page, classicScreenshot);
       screenshots["sidebar-classic"] = classicScreenshot;
       styles["sidebar-classic"] = await collectStyles(navFrame, sidebarProbes);
+      if (uiReviewOnly) {
+        return;
+      }
       if (expectSupportLinksChange) {
         if (label === "head") {
           assert.equal(await navFrame.locator(".ccxp-lite-sidebar-brand-partner-link").count(), 0);
@@ -740,10 +744,32 @@ async function captureRevision(
         }
         await account.fill("");
       }
+      // Match a ready-to-submit login while keeping all credentials synthetic.
+      await page.locator(".ccxp-lite-password-toggle").click();
+      assert.equal(await password.getAttribute("type"), "password");
+      await page.locator("input[name='account']").fill("123456789");
+      await page.locator("input[name='passwd2']").fill("849976");
+      await page.locator("input[name='account']").blur();
       const loginScreenshot = path.join(revisionOutputDir, "login.png");
       await capturePage(page, loginScreenshot);
       screenshots.login = loginScreenshot;
       styles.login = await collectStyles(page, loginProbes);
+      for (const [name, width] of [
+        ["login-wide", 1600],
+        ["login-narrow", 375],
+      ] as const) {
+        // eslint-disable-next-line no-await-in-loop -- Capture the same state at each width.
+        await page.setViewportSize({ width, height: viewport.height });
+        const file = path.join(revisionOutputDir, `${name}.png`);
+        // eslint-disable-next-line no-await-in-loop -- Resizing must settle before each capture.
+        await capturePage(page, file);
+        screenshots[name] = file;
+      }
+      await page.setViewportSize(viewport);
+      if (uiReviewOnly) {
+        await captureSidebarPages();
+        return;
+      }
 
       /* eslint-disable no-await-in-loop -- Captures navigate the same page sequentially. */
       for (const [name, route, ready] of [
@@ -814,7 +840,7 @@ async function captureRevision(
     if (!workLogOnly) {
       await captureGeneralPages();
     }
-    const searchFormBottom = await captureWorkLogPages();
+    const searchFormBottom = uiReviewOnly ? 0 : await captureWorkLogPages();
     if (!workLogOnly) {
       await page.goto(
         `${ccxpOrigin}/ccxp/INQUIRE/select_entry.php?ACIXSTORE=fixture&hint=123456789`,
@@ -824,7 +850,11 @@ async function captureRevision(
       assert.ok(nav);
       await nav.locator(".ccxp-lite-sidebar-shell").waitFor();
       if ((await nav.locator("#ccxp-lite-profile-mode").count()) > 0) {
-        await assertHomeFavorites(page, nav);
+        await assertHomeFavorites(page, nav, async (name) => {
+          const file = path.join(revisionOutputDir, `${name}.png`);
+          await capturePage(page, file);
+          screenshots[name] = file;
+        });
       }
     }
     writeFileSync(
@@ -839,6 +869,7 @@ async function captureRevision(
           source: "test/browser-fixtures/coverage.json",
           screenshots,
           workLogOnly,
+          uiReviewOnly,
           recordVideo,
           recordingSteps,
           pipeline:
@@ -1048,6 +1079,7 @@ async function main() {
       "head-extension": { type: "string", default: defaultExtensionDir },
       output: { type: "string", default: defaultOutputDir },
       "work-log-only": { type: "boolean", default: false },
+      "ui-review-only": { type: "boolean", default: false },
       "record-video": { type: "boolean", default: false },
       "expect-search-results-change": { type: "boolean", default: false },
       "expect-home-change": { type: "boolean", default: false },
@@ -1058,6 +1090,7 @@ async function main() {
     },
     strict: true,
   });
+  assert.ok(!(values["work-log-only"] && values["ui-review-only"]), "Choose one capture scope");
   const baseExtensionDir = path.resolve(values["base-extension"]);
   const headExtensionDir = path.resolve(values["head-extension"]);
   const outputDir = path.resolve(values.output);
@@ -1076,6 +1109,7 @@ async function main() {
     values["expect-sidebar-collapse-change"],
     values["expect-sidebar-resize-change"],
     values["expect-captcha-refresh"],
+    values["ui-review-only"],
   );
   const head = await captureRevision(
     "head",
@@ -1088,6 +1122,7 @@ async function main() {
     values["expect-sidebar-collapse-change"],
     values["expect-sidebar-resize-change"],
     values["expect-captcha-refresh"],
+    values["ui-review-only"],
   );
   if (values["expect-support-links-change"]) {
     // Captures above validate the profile links; the browser test covers keyboard/dismissal.
