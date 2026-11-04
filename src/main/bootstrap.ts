@@ -439,10 +439,30 @@
     results.className = "ccxp-home-search-results";
     results.setAttribute("aria-label", english ? "Search results" : "\u641C\u5C0B\u7D50\u679C");
     results.hidden = true;
-    search.append(results);
+    results.setAttribute("role", "region");
+    const scrollHint = targetDocument.createElement("div");
+    scrollHint.className = "ccxp-home-search-scroll-hint";
+    scrollHint.textContent = english
+      ? "Scroll for more results"
+      : "\u6372\u52D5\u67E5\u770B\u66F4\u591A\u7D50\u679C";
+    scrollHint.hidden = true;
+    search.append(results, scrollHint);
+    const view = targetDocument.defaultView;
+    let scrollHintFrame = 0;
+    const updateScrollHint = () => {
+      const lastContext = results.querySelector(
+        ".ccxp-home-search-result:last-child .ccxp-home-search-context",
+      );
+      scrollHint.hidden =
+        results.hidden ||
+        !lastContext ||
+        lastContext.getBoundingClientRect().bottom <= results.getBoundingClientRect().bottom + 1;
+    };
+    results.addEventListener("scroll", updateScrollHint, { passive: true });
+    view?.addEventListener("resize", updateScrollHint);
     const closeResults = () => {
       results.hidden = true;
-      input.setAttribute("aria-expanded", "false");
+      scrollHint.hidden = true;
     };
     const appendMatch = (parent: HTMLElement, text: string, query: string) => {
       const index = text.toLowerCase().indexOf(query.toLowerCase());
@@ -461,7 +481,7 @@
       clear.hidden = input.value === "";
       results.textContent = "";
       results.hidden = query === "" || !model;
-      input.setAttribute("aria-expanded", String(!results.hidden));
+      scrollHint.hidden = true;
       if (query === "" || !model || !navDocument) {
         return;
       }
@@ -506,10 +526,12 @@
         const empty = targetDocument.createElement("p");
         empty.setAttribute("role", "status");
         empty.textContent = english
-          ? "No matching functions."
-          : "\u627E\u4E0D\u5230\u7B26\u5408\u7684\u529F\u80FD\u3002";
+          ? "No matching functions. Try another keyword."
+          : "\u627E\u4E0D\u5230\u7B26\u5408\u7684\u529F\u80FD\uFF0C\u8ACB\u8A66\u8A66\u5176\u4ED6\u95DC\u9375\u5B57\u3002";
         results.append(empty);
       }
+      view?.cancelAnimationFrame(scrollHintFrame);
+      scrollHintFrame = view?.requestAnimationFrame(updateScrollHint) ?? 0;
     };
 
     const section = targetDocument.createElement("section");
@@ -626,7 +648,7 @@
         copy.append(name, context);
         card.append(icon, copy);
         if (sidebarRuntime.isExternalLinkTarget(link, navDocument)) {
-          card.append(uiIcons.createExternalLinkIcon(targetDocument));
+          name.append(" ", uiIcons.createExternalLinkIcon(targetDocument));
         }
         wrapper.append(card);
         const controls = namespace.sidebarFavoriteControls;
@@ -705,6 +727,9 @@
       unsubscribe();
       unsubscribeRecent();
       targetDocument.removeEventListener("click", outsideClick);
+      results.removeEventListener("scroll", updateScrollHint);
+      view?.removeEventListener("resize", updateScrollHint);
+      view?.cancelAnimationFrame(scrollHintFrame);
       navFrame?.removeEventListener("load", render);
     };
     targetDocument.defaultView?.addEventListener("pagehide", cleanup, { once: true });

@@ -302,3 +302,28 @@
   > .ccxp-lite-row-leading {
   color: var(--ccxp-lite-brand);
 }
+
+.ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-variant="classic"]
+  [data-ccxp-lite-order-group="category:category-favorites"]
+  > [hidden] {
+  display: none;
+}
+.ccxp-lite-sidebar-show-more {
+  min-height: var(--ccxp-lite-size-dialog-action-height);
+  margin-left: var(--ccxp-lite-spacing-lg);
+  padding: var(--ccxp-lite-spacing-inline-sm) var(--ccxp-lite-spacing-inset-sm);
+  border: 0;
+  border-radius: var(--ccxp-lite-radius-input);
+  background: transparent;
+  color: var(--ccxp-lite-primary);
+  font: var(--ccxp-lite-type-button);
+  text-align: left;
+  cursor: pointer;
+}
+.ccxp-lite-sidebar-show-more:hover {
+  background: var(--ccxp-lite-primary-hover-surface);
+}
+.ccxp-lite-sidebar-show-more:focus-visible {
+  outline: 2px solid var(--ccxp-lite-primary-focus-border);
+  outline-offset: -2px;
+}

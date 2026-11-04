@@ -882,7 +882,14 @@ async function captureRevision(
       `${JSON.stringify(
         {
           viewport,
-          locale: reviewLocale,
+          locale: "zh-TW",
+          extensionLocale: reviewLocale,
+          screenshotViewports: Object.fromEntries(
+            Object.entries(screenshots).map(([name, file]) => {
+              const { width, height } = PNG.sync.read(readFileSync(file));
+              return [name, { width, height }];
+            }),
+          ),
           timezone: "Asia/Taipei",
           extensionDigest: directoryDigest(extensionDir),
           fixtureDigest: directoryDigest(fixtureRoot),

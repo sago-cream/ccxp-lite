@@ -630,3 +630,16 @@ html[data-ccxp-lite-scope="landing"] .ccxp-lite-action-control:focus-visible * {
     justify-content: center;
   }
 }
+
+.ccxp-lite-landing-login .ccxp-lite-login-action-group {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.ccxp-lite-landing-login .ccxp-lite-login-action-group > .ccxp-lite-login-primary-button {
+  grid-column: 1 / -1;
+}
+.ccxp-lite-landing-login .ccxp-lite-login-action-group > .ccxp-lite-login-secondary-button {
+  height: auto;
+  min-height: var(--ccxp-lite-size-control-height-md);
+  padding: var(--ccxp-lite-spacing-inline-sm) var(--ccxp-lite-spacing-inset-sm);
+}

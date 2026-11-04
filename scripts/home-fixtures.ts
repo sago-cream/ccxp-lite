@@ -100,6 +100,28 @@ export async function assertHomeFavorites(
   await search.fill("");
   const cards = main.locator("#ccxp-home-cards > .ccxp-home-card-wrap");
   assert.equal(await cards.count(), 8);
+  const more = nav.locator(".ccxp-lite-sidebar-show-more");
+  if ((await more.count()) > 0) {
+    const visibleFavorites = nav.locator(
+      '[data-ccxp-lite-order-group="category:category-favorites"] > [data-ccxp-lite-order-item]:visible',
+    );
+    assert.equal(await visibleFavorites.count(), 4);
+    await more.press("Enter");
+    assert.equal(await visibleFavorites.count(), 10);
+    assert.equal(await more.getAttribute("aria-expanded"), "true");
+    await more.press("Tab");
+    assert.equal(
+      await visibleFavorites.nth(4).evaluate((item) => item === item.ownerDocument.activeElement),
+      true,
+    );
+    await more.focus();
+    await more.press("Space");
+    assert.equal(await visibleFavorites.count(), 4);
+    assert.equal(await more.getAttribute("aria-expanded"), "false");
+    await more.blur();
+  }
+  await search.blur();
+  await page.mouse.move(1250, 920);
   if (capture) {
     await capture("home-favorites");
     const profile = nav.locator(".ccxp-lite-profile-trigger");
@@ -203,11 +225,38 @@ export async function captureNarrowHome(
     await page.waitForFunction(
       () => document.querySelector("frameset[cols]")?.getAttribute("cols") === "64,*",
     );
+    const compactMenu = nav.locator(".ccxp-lite-sidebar-open-menu");
+    if (assertHead && (await compactMenu.count()) > 0) {
+      await compactMenu.dispatchEvent("pointerdown", { pointerType: "touch" });
+      assert.equal(
+        await nav
+          .locator(".ccxp-lite-sidebar-search-input")
+          .evaluate((element) => element === element.ownerDocument.activeElement),
+        true,
+      );
+      await main.locator(".ccxp-home-search > input").focus();
+      await main.locator(".ccxp-home-search > input").blur();
+      await page.waitForFunction(
+        () => document.querySelector("frameset[cols]")?.getAttribute("cols") === "64,*",
+      );
+    }
     await capture(page, "home-favorites-narrow");
     const input = main.locator(".ccxp-home-search > input");
     await input.fill("\u6559\u5B78");
     await input.press("ArrowDown");
     await capture(page, "home-search-narrow");
+    const last = main.locator(".ccxp-home-search-result").last();
+    await main.locator(".ccxp-home-search-result").first().press("ArrowUp");
+    assert.equal(
+      await last.evaluate((element) => element === element.ownerDocument.activeElement),
+      true,
+    );
+    await capture(page, "home-search-end-narrow");
+    if (assertHead && (await main.locator(".ccxp-home-search-scroll-hint").count()) > 0) {
+      assert.equal(await main.locator(".ccxp-home-search-scroll-hint").isVisible(), false);
+    }
+    await input.fill("fixture-no-matching-function");
+    await capture(page, "home-search-empty-narrow");
     await input.press("Escape");
     await input.fill("");
     await main.locator(".ccxp-home-card-wrap > .ccxp-lite-favorite-toggle").first().click();

@@ -388,9 +388,21 @@
 }
 
 .ccxp-lite-announcement-footer {
+  position: relative;
   display: block;
   flex: 0 0 auto;
   border-top: 1px solid var(--ccxp-lite-border);
+}
+.ccxp-lite-landing-notices .ccxp-lite-announcement-footer::before {
+  content: "";
+  position: absolute;
+  inset: auto 0 100%;
+  height: 24px;
+  background: linear-gradient(transparent, var(--ccxp-lite-sidebar-surface));
+  pointer-events: none;
+}
+.ccxp-lite-announcements-expanded .ccxp-lite-announcement-footer::before {
+  display: none;
 }
 .ccxp-lite-announcement-footer > td {
   display: block;

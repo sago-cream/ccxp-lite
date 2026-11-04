@@ -86,7 +86,11 @@
     const toggleValue = dom.element("span", { className: "ccxp-lite-profile-value" });
     toggle.setAttribute("role", "switch");
     toggle.setAttribute("aria-label", toggleLabel.textContent);
-    toggle.append(toggleLabel, toggleValue);
+    const indicator = dom.element("span", {
+      className: "ccxp-lite-profile-toggle-indicator",
+      attributes: { "aria-hidden": "true" },
+    });
+    toggle.append(toggleLabel, toggleValue, indicator);
     (popup.querySelector(".ccxp-lite-profile-settings") ?? popup).append(toggle);
     const icon = targetDocument.createElementNS("http://www.w3.org/2000/svg", "svg");
     for (const [key, value] of Object.entries({

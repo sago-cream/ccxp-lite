@@ -160,7 +160,7 @@
     group: CcxpLiteSidebarCategoryNode | CcxpLiteSidebarBlock,
     depth: number,
   ) {
-    const { targetDocument, navDocument, strings, rerender } = context;
+    const { targetDocument, navDocument, strings, rerender, state } = context;
     const children = createRenderer(targetDocument).element("div", {
       className: "ccxp-lite-link-list ccxp-lite-link-list-layer",
       attributes: {
@@ -212,6 +212,49 @@
     if (children.childElementCount === 0) {
       const emptyText = getClassicEmptyText(group, strings);
       children.append(createClassicEmptyRow(targetDocument, emptyText, depth + 1));
+    }
+    if (
+      group.kind === "category" &&
+      group.id === "category-favorites" &&
+      state.searchQuery === "" &&
+      children.childElementCount > 4
+    ) {
+      const items = [...children.children] as HTMLElement[];
+      const overflowId = "category-favorites-overflow";
+      const showAll = context.expandedItemIds.has(overflowId);
+      for (const [index, item] of items.entries()) {
+        item.hidden = !showAll && index >= 4;
+      }
+      const english = namespace?.shared?.resolveLocaleFromDocument(targetDocument) === "en";
+      const expandLabel = english
+        ? `Show all favorites (${items.length})`
+        : `\u986F\u793A\u5168\u90E8\u5E38\u7528\u529F\u80FD\uFF08${items.length}\uFF09`;
+      const collapseLabel = english
+        ? "Show fewer favorites"
+        : "\u6536\u5408\u5E38\u7528\u529F\u80FD";
+      const more = createButton(targetDocument, {
+        className: "ccxp-lite-sidebar-show-more",
+        label: showAll ? collapseLabel : expandLabel,
+        onClick: () => {
+          const expanded = new Set(context.expandedItemIds);
+          if (showAll) {
+            expanded.delete(overflowId);
+          } else {
+            expanded.add(overflowId);
+          }
+          state.classicExpandedItemIds = [...expanded];
+          persistSidebarScroll(targetDocument, "root");
+          rerender();
+          targetDocument.querySelector<HTMLButtonElement>(".ccxp-lite-sidebar-show-more")?.focus();
+        },
+      });
+      more.setAttribute("aria-expanded", String(showAll));
+      const overflowItems = items.slice(4);
+      for (const [index, item] of overflowItems.entries()) {
+        item.id = `ccxp-lite-favorite-overflow-${index}`;
+      }
+      more.setAttribute("aria-controls", overflowItems.map((item) => item.id).join(" "));
+      children.insertBefore(more, overflowItems[0]);
     }
     return children;
   }

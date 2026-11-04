@@ -91,6 +91,9 @@ main frame. Favorite data is established through the extension's real star contr
 synthetic account/password values and is captured at 1280, 1600, and 375px widths.
 
 Use `--ui-review-only` with explicit base/head extension paths for these scoped iteration captures.
+The scope also captures the genuine compact rail, menu/profile, search, favorites and dialog at
+375px. `--review-locale en` exercises English extension controls over the captured Chinese host
+source; it does not certify an English source-page fixture.
 The final PR validation still runs the complete CI parity suite without that option. Capture
 manifests include the scope, package/fixture digests, viewport and locale. Visual changes still
 require the repository's `accept-visual-change` label; this scope does not bypass pixel checks.

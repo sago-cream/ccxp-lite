@@ -91,8 +91,8 @@
 }
 
 .ccxp-lite-landing-login-label {
-  margin: 0 0 var(--ccxp-lite-spacing-sm);
-  padding-block: var(--ccxp-lite-spacing-sm);
+  margin: 0 0 var(--ccxp-lite-spacing-2xs);
+  padding-block: var(--ccxp-lite-spacing-2xs);
   color: var(--ccxp-lite-type-page-title-color);
   font: var(--ccxp-lite-type-page-title);
 }

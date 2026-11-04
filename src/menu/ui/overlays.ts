@@ -219,6 +219,10 @@
         }),
       ],
     );
+    const modeAction = createClassicChevronIcon(targetDocument, false);
+    modeAction.classList.remove("ccxp-lite-chevron");
+    modeAction.classList.add("ccxp-lite-profile-mode-action");
+    mode.append(modeAction);
     mode.addEventListener("click", () => {
       const nextState = state;
       const previousVariant = state.sidebarVariant;

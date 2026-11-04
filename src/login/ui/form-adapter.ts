@@ -72,7 +72,10 @@
         continue;
       }
       const labelSourceNode = findLegacyInlineLabelNode(fieldNode, formNode);
-      const labelText = getNodeText(labelSourceNode);
+      const labelText = getNodeText(labelSourceNode).replaceAll(
+        /(?<=[\u3400-\u9FFF])\s+(?=[\u3400-\u9FFF])/gu,
+        "",
+      );
       if (!labelSourceNode || labelText === "") {
         continue;
       }
