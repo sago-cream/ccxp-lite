@@ -317,7 +317,7 @@
   max-width: 100% !important;
   min-width: 0 !important;
   padding: 0 var(--ccxp-lite-spacing-inset-sm) !important;
-  border: 1px solid var(--ccxp-lite-border) !important;
+  border: 1px solid var(--ccxp-lite-control-border) !important;
   border-radius: var(--ccxp-lite-radius-input) !important;
   outline: none !important;
   background: var(--ccxp-lite-surface) !important;

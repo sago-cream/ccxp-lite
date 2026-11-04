@@ -305,6 +305,7 @@
   border: 1px solid var(--ccxp-lite-border);
   border-radius: var(--ccxp-lite-radius-input);
   background: var(--ccxp-lite-surface);
+  box-shadow: var(--ccxp-lite-popover-shadow);
 }
 .ccxp-lite-profile-section + .ccxp-lite-profile-section {
   margin-top: var(--ccxp-lite-spacing-md);

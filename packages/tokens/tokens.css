@@ -11,7 +11,8 @@
   --ccxp-lite-surface: #ffffff;
   --ccxp-lite-sidebar-surface: #f5f7f9;
   --ccxp-lite-surface-muted: #f5f7f9;
-  --ccxp-lite-control-border: #8a929d;
+  --ccxp-lite-control-border: #b6bdc6;
+  --ccxp-lite-popover-shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.06);
   --ccxp-lite-danger: #a94b59;
   --ccxp-lite-border: rgba(31, 41, 51, 0.12);
   --ccxp-lite-sidebar-divider-color: rgba(31, 41, 51, 0.16);
