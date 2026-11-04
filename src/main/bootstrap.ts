@@ -523,7 +523,7 @@
       if (resultCategories.size === 1) {
         const category = targetDocument.createElement("span");
         category.className = "ccxp-home-search-status-category";
-        category.textContent = `\u00B7 ${[...resultCategories][0]}`;
+        category.textContent = [...resultCategories][0];
         resultStatus.append(category);
         for (const context of results.querySelectorAll<HTMLElement>(".ccxp-home-search-context")) {
           context.hidden = true;

@@ -313,6 +313,30 @@ export async function captureNarrowHome(
           .getAttribute("data-ccxp-lite-sidebar-variant"),
         "classic",
       );
+      const visibleFavorites = nav.locator(
+        '[data-ccxp-lite-order-group="category:category-favorites"] > [data-ccxp-lite-order-item]:visible',
+      );
+      const more = nav.locator(".ccxp-lite-sidebar-show-more");
+      const firstId = await visibleFavorites.first().getAttribute("data-ccxp-lite-order-item");
+      await visibleFavorites.first().press("Alt+Shift+ArrowDown");
+      assert.equal(
+        await visibleFavorites.nth(1).getAttribute("data-ccxp-lite-order-item"),
+        firstId,
+      );
+      assert.equal(await visibleFavorites.count(), 4);
+      await visibleFavorites.nth(1).press("Alt+Shift+ArrowUp");
+      assert.equal(
+        await visibleFavorites.first().getAttribute("data-ccxp-lite-order-item"),
+        firstId,
+      );
+      await visibleFavorites.last().press("Alt+Shift+ArrowDown");
+      assert.equal(await visibleFavorites.count(), 4);
+      assert.equal(
+        await more.evaluate((element) =>
+          element.previousElementSibling?.hasAttribute("data-ccxp-lite-order-item"),
+        ),
+        true,
+      );
     }
   } finally {
     await page.close();

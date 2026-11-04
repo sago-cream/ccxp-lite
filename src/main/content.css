@@ -606,6 +606,10 @@ html[data-ccxp-lite-scope="main"] .ccxp-home-search > input {
 .ccxp-home-search-status-category {
   white-space: nowrap;
 }
+.ccxp-home-search-status-category::before {
+  content: "\00b7";
+  margin-right: var(--ccxp-lite-spacing-inline-sm);
+}
 .ccxp-home-search-results p {
   margin: 12px;
   font: var(--ccxp-lite-type-home-control);
@@ -700,6 +704,9 @@ html[data-ccxp-lite-scope="main"] .ccxp-home-header > .ccxp-home-contact {
   display: none;
 }
 @media (max-width: 520px) {
+  .ccxp-home-search-status-category::before {
+    content: none;
+  }
   .ccxp-home-header.ccxp-lite-page-header {
     gap: 0 var(--ccxp-lite-spacing-inset-sm);
     padding: var(--ccxp-lite-spacing-inline-sm) var(--ccxp-lite-spacing-md);
