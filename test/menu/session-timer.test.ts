@@ -73,7 +73,7 @@ describe("legacy session countdown", () => {
     expect(ui.timer().hidden).toBe(true);
     expect(ui.timer().textContent).toBe("15:01");
     expect(ui.warning().hidden).toBe(true);
-    expect(ui.toggle().textContent).toBe("\u986F\u793A\u767B\u51FA\u5012\u6578");
+    expect(ui.toggle().getAttribute("aria-checked")).toBe("false");
     const icon = ui.toggle().querySelector("svg");
     expect(icon).not.toBeNull();
     ui.toggle().click();
@@ -85,11 +85,11 @@ describe("legacy session countdown", () => {
     expect(ui.timer().textContent).toBe("15:00");
     ui.mount();
     expect(ui.clear).toHaveBeenCalledWith(42);
-    expect(ui.toggle().textContent).toBe("\u96B1\u85CF\u767B\u51FA\u5012\u6578");
+    expect(ui.toggle().getAttribute("aria-checked")).toBe("true");
     expect(ui.timer().hidden).toBe(false);
     ui.toggle().click();
     expect(ui.timer().hidden).toBe(true);
-    expect(ui.toggle().textContent).toBe("\u986F\u793A\u767B\u51FA\u5012\u6578");
+    expect(ui.toggle().getAttribute("aria-checked")).toBe("false");
   });
 
   test("warns at five minutes while hidden, dismisses once per idle period, and rearms on activity", () => {
@@ -124,9 +124,11 @@ describe("legacy session countdown", () => {
   test("hides unknown or stale clocks and supports English", () => {
     const ui = setup(true);
     ui.mount();
-    expect(ui.toggle().textContent).toBe("Show session timer");
+    expect(ui.toggle().textContent).toBe("Logout timerOff");
+    expect(ui.toggle().getAttribute("aria-checked")).toBe("false");
     ui.toggle().click();
-    expect(ui.toggle().textContent).toBe("Hide session timer");
+    expect(ui.toggle().textContent).toBe("Logout timerOn");
+    expect(ui.toggle().getAttribute("aria-checked")).toBe("true");
     expect(ui.timer().hidden).toBe(true);
     expect(ui.warning().hidden).toBe(true);
     ui.clock(240);

@@ -38,7 +38,21 @@
     rerender: () => void,
   ): HTMLElement {
     const dom = createRenderer(targetDocument);
+    const english = app.shared?.resolveLocaleFromDocument(targetDocument) === "en";
+    const returnToSidebar = createButton(targetDocument, {
+      className: "ccxp-lite-menu-return",
+      label: english ? "Use sidebar" : "\u4F7F\u7528\u5074\u908A\u6B04",
+      icon: createBackIcon(targetDocument),
+      onClick: () => {
+        targetDocument.querySelector<HTMLButtonElement>("#ccxp-lite-profile-mode")?.click();
+        targetDocument.querySelector<HTMLButtonElement>(".ccxp-lite-profile-trigger")?.focus();
+      },
+    });
     return dom.element("div", { className: "ccxp-lite-dashboard" }, [
+      dom.element("div", { className: "ccxp-lite-menu-heading" }, [
+        createSectionHeading(targetDocument, english ? "Menu" : "\u9078\u55AE"),
+        returnToSidebar,
+      ]),
       dom.element("section", { className: "ccxp-lite-dashboard-shell" }, [
         createPinnedSection(targetDocument, navDocument, favorites, state, strings, rerender),
         createAllSection(targetDocument, categories, state, strings, rerender),

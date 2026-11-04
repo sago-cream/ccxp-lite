@@ -70,11 +70,20 @@
     }
     try {
       const storedValue = globalThis.localStorage.getItem(SIDEBAR_VARIANT_STORAGE_KEY);
-      persistedSidebarVariant = storedValue === "layered" ? "layered" : "classic";
+      persistedSidebarVariant =
+        storedValue === "layered" || storedValue === "classic" ? storedValue : defaultVariant();
       return persistedSidebarVariant;
     } catch {
-      persistedSidebarVariant = "classic";
+      persistedSidebarVariant = defaultVariant();
       return persistedSidebarVariant;
+    }
+  }
+
+  function defaultVariant(): "classic" | "layered" {
+    try {
+      return (globalThis.top?.innerWidth ?? globalThis.innerWidth) <= 600 ? "layered" : "classic";
+    } catch {
+      return "classic";
     }
   }
 

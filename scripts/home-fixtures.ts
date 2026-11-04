@@ -1,5 +1,22 @@
 import assert from "node:assert/strict";
 import type { Frame, Page } from "playwright";
+import { setProfileMenuMode } from "./profile-fixtures.js";
+
+async function assertSingleLineFavoriteNames(main: Frame) {
+  const names = await main
+    .locator(".ccxp-home-card-name")
+    .evaluateAll((elements: readonly Element[]) =>
+      elements.map((element) => ({
+        height: element.getBoundingClientRect().height,
+        lineHeight: Number.parseFloat(getComputedStyle(element).lineHeight),
+      })),
+    );
+  assert.ok(names.length > 0);
+  assert.ok(
+    names.every((name) => name.height <= name.lineHeight + 1),
+    `Favorite names must remain on one line: ${JSON.stringify(names)}`,
+  );
+}
 
 export async function assertProfile(page: Page, nav: Frame, recordVideo = false): Promise<void> {
   const profile = nav.locator(".ccxp-lite-sidebar-profile");
@@ -43,10 +60,7 @@ export async function assertHome(page: Page, nav: Frame, recordVideo = false): P
   const main = page.frames().find((frame) => frame.name() === "main");
   assert.ok(main);
   await main.locator(".ccxp-home-wordmark").waitFor();
-  const help = main.getByRole("button", {
-    name: "\u7CFB\u7D71\u4F7F\u7528\u8AAA\u660E",
-    exact: true,
-  });
+  const help = main.locator(".ccxp-home-info button");
   await help.click();
   assert.equal(await main.locator(".ccxp-home-info li").count(), 4);
   if (recordVideo) {
@@ -71,9 +85,24 @@ export async function assertHome(page: Page, nav: Frame, recordVideo = false): P
   await input.fill("");
 }
 
-export async function assertHomeFavorites(page: Page, nav: Frame): Promise<void> {
+export async function assertHomeFavorites(
+  page: Page,
+  nav: Frame,
+  capture?: (name: string) => Promise<void>,
+): Promise<void> {
   const main = page.frames().find((frame) => frame.name() === "main");
   assert.ok(main);
+  // Establish the same real recent destination in full and scoped capture runs.
+  const recentSearch = main.locator(".ccxp-home-search > input");
+  await recentSearch.fill("\u586B\u5BEB\u6559\u5B78\u610F\u898B\u8ABF\u67E5");
+  await main.locator(".ccxp-home-search-result").first().click();
+  await main
+    .getByText("The system is not available because it is not the period to open.", {
+      exact: false,
+    })
+    .waitFor();
+  await nav.locator(".ccxp-lite-sidebar-brand-button").click();
+  await main.locator(".ccxp-home-wordmark").waitFor();
   const search = nav.locator(".ccxp-lite-sidebar-search-input");
   await search.fill("\u7CFB\u7D71");
   for (let index = 0; index < 10; index++) {
@@ -87,12 +116,56 @@ export async function assertHomeFavorites(page: Page, nav: Frame): Promise<void>
   await search.fill("");
   const cards = main.locator("#ccxp-home-cards > .ccxp-home-card-wrap");
   assert.equal(await cards.count(), 8);
+  await assertSingleLineFavoriteNames(main);
+  const more = nav.locator(".ccxp-lite-sidebar-show-more");
+  if ((await more.count()) > 0) {
+    const visibleFavorites = nav.locator(
+      '[data-ccxp-lite-order-group="category:category-favorites"] > [data-ccxp-lite-order-item]:visible',
+    );
+    assert.equal(await visibleFavorites.count(), 4);
+    await more.press("Enter");
+    assert.equal(await visibleFavorites.count(), 10);
+    assert.equal(await more.getAttribute("aria-expanded"), "true");
+    await more.press("Tab");
+    assert.equal(
+      await visibleFavorites.nth(4).evaluate((item) => item === item.ownerDocument.activeElement),
+      true,
+    );
+    await more.focus();
+    await more.press("Space");
+    assert.equal(await visibleFavorites.count(), 4);
+    assert.equal(await more.getAttribute("aria-expanded"), "false");
+    await more.blur();
+  }
+  await search.blur();
+  await page.mouse.move(1250, 920);
+  if (capture) {
+    await capture("home-favorites");
+    const profile = nav.locator(".ccxp-lite-profile-trigger");
+    await profile.click();
+    await nav.locator(".ccxp-lite-profile-popover").waitFor({ state: "visible" });
+    await page.mouse.move(1250, 920);
+    await capture("profile-expanded");
+    await profile.press("Escape");
+    const homeSearch = main.locator(".ccxp-home-search > input");
+    await homeSearch.fill("\u6559\u5B78");
+    await homeSearch.press("ArrowDown");
+    await capture("home-search");
+    await homeSearch.press("Escape");
+    await homeSearch.fill("");
+  }
   await main.locator(".ccxp-home-show-all").click();
   assert.equal(await cards.count(), 10);
   const star = cards.first().locator(".ccxp-lite-favorite-toggle");
   await star.click();
-  const dialog = main.getByRole("dialog");
+  const dialog =
+    (await page.locator("dialog[open]").count()) > 0
+      ? page.getByRole("dialog")
+      : main.getByRole("dialog");
   await dialog.waitFor();
+  if (capture) {
+    await capture("dialog-remove-favorite");
+  }
   await dialog.getByRole("button").first().click();
   assert.equal(await cards.count(), 10, "Cancel must keep the favorite");
   await star.click();
@@ -147,4 +220,207 @@ export async function assertMenuProfile(page: Page, nav: Frame): Promise<void> {
     assert.equal(bounds.fits, true);
   }
   await page.setViewportSize(original);
+}
+
+export async function captureNarrowHome(
+  source: Page,
+  capture: (page: Page, name: string) => Promise<void>,
+  assertHead: boolean,
+): Promise<void> {
+  const page = await source.context().newPage();
+  await page.setViewportSize({ width: 375, height: 960 });
+  await page.addInitScript(() => {
+    localStorage.setItem("ccxp-lite-sidebar-collapsed", "true");
+    localStorage.setItem("ccxp-lite-sidebar-variant", "classic");
+  });
+  try {
+    await page.goto(source.url(), { waitUntil: "load" });
+    const nav = page.frames().find((frame) => frame.url().includes("IN_INQ_STU.php"));
+    const main = page.frames().find((frame) => frame.name() === "main");
+    assert.ok(nav && main);
+    await main.locator(".ccxp-home-wordmark").waitFor();
+    await main.locator(".ccxp-home-card").first().waitFor();
+    await page.mouse.move(350, 100);
+    await page.waitForFunction(
+      () => document.querySelector("frameset[cols]")?.getAttribute("cols") === "64,*",
+    );
+    const compactMenu = nav.locator(".ccxp-lite-sidebar-open-menu");
+    if (assertHead && (await compactMenu.count()) > 0) {
+      await compactMenu.dispatchEvent("pointerdown", { pointerType: "touch" });
+      assert.equal(
+        await nav
+          .locator(".ccxp-lite-sidebar-search-input")
+          .evaluate((element) => element === element.ownerDocument.activeElement),
+        true,
+      );
+      await main.locator(".ccxp-home-search > input").focus();
+      await main.locator(".ccxp-home-search > input").blur();
+      await page.waitForFunction(
+        () => document.querySelector("frameset[cols]")?.getAttribute("cols") === "64,*",
+      );
+    }
+    await capture(page, "home-favorites-narrow");
+    await assertSingleLineFavoriteNames(main);
+    const input = main.locator(".ccxp-home-search > input");
+    await input.fill("\u6559\u5B78");
+    await input.press("ArrowDown");
+    await capture(page, "home-search-narrow");
+    const last = main.locator(".ccxp-home-search-result").last();
+    await main.locator(".ccxp-home-search-result").first().press("ArrowUp");
+    assert.equal(
+      await last.evaluate((element) => element === element.ownerDocument.activeElement),
+      true,
+    );
+    await capture(page, "home-search-end-narrow");
+    if (assertHead && (await main.locator(".ccxp-home-search-scroll-hint").count()) > 0) {
+      assert.equal(await main.locator(".ccxp-home-search-scroll-hint").isVisible(), false);
+    }
+    await input.fill("fixture-no-matching-function");
+    await capture(page, "home-search-empty-narrow");
+    await input.fill("\u7CFB\u7D71");
+    await input.press("ArrowDown");
+    await capture(page, "home-search-overflow-narrow");
+    await main.locator(".ccxp-home-search-result").first().press("ArrowUp");
+    await capture(page, "home-search-overflow-end-narrow");
+    if (assertHead && (await main.locator(".ccxp-home-search-scroll-hint").count()) > 0) {
+      assert.equal(await main.locator(".ccxp-home-search-scroll-hint").isVisible(), false);
+    }
+    await input.press("Escape");
+    await input.fill("");
+    await main.locator(".ccxp-home-card-wrap > .ccxp-lite-favorite-toggle").first().click();
+    const dialog =
+      (await page.locator("dialog[open]").count()) > 0
+        ? page.getByRole("dialog")
+        : main.getByRole("dialog");
+    await dialog.waitFor();
+    if (assertHead) {
+      const bounds = await dialog.boundingBox();
+      assert.ok(bounds && bounds.x >= 0 && bounds.x + bounds.width <= 375);
+      if ((await page.locator("dialog[open]").count()) > 0) {
+        assert.equal(
+          await page.locator("dialog[open]").evaluate((element) => element.matches(":modal")),
+          true,
+        );
+      }
+      await dialog.getByRole("button").first().press("Shift+Tab");
+      assert.equal(
+        await dialog
+          .getByRole("button")
+          .last()
+          .evaluate((element) => element === element.ownerDocument.activeElement),
+        true,
+      );
+      await dialog.getByRole("button").last().press("Tab");
+    }
+    await capture(page, "dialog-remove-favorite-narrow");
+    await dialog.getByRole("button").first().press("Escape");
+    await nav.locator(".ccxp-lite-profile-trigger").click();
+    await setProfileMenuMode(nav.locator("#ccxp-lite-profile-mode"), "layered");
+    await page.waitForFunction(
+      () => document.querySelector("frameset[cols]")?.getAttribute("cols") === "*,0",
+    );
+    await nav.locator(".ccxp-lite-profile-trigger").click();
+    await nav.locator(".ccxp-lite-profile-popover").waitFor({ state: "visible" });
+    await capture(page, "profile-expanded-narrow");
+    await nav.locator(".ccxp-lite-profile-trigger").press("Escape");
+    await capture(page, "sidebar-menu-narrow");
+    const pinnedMore = nav.locator(".ccxp-lite-pinned-show-more");
+    if (assertHead && (await pinnedMore.count()) > 0) {
+      const visible = nav.locator(".ccxp-lite-pinned-list > [data-ccxp-lite-order-item]:visible");
+      assert.equal(await visible.count(), 4);
+      await pinnedMore.press("Enter");
+      assert.equal(await visible.count(), 10);
+      await pinnedMore.press("Space");
+      assert.equal(await visible.count(), 4);
+    }
+    const returnToSidebar = nav.locator(".ccxp-lite-menu-return");
+    if (assertHead && (await returnToSidebar.count()) > 0) {
+      const heading = await nav.locator(".ccxp-lite-menu-heading").boundingBox();
+      assert.ok(heading && heading.x >= 0 && heading.x + heading.width <= 375);
+      await returnToSidebar.click();
+      assert.equal(
+        await nav
+          .locator(".ccxp-lite-sidebar-shell")
+          .getAttribute("data-ccxp-lite-sidebar-variant"),
+        "classic",
+      );
+    }
+  } finally {
+    await page.close();
+    await source.evaluate(() => {
+      localStorage.setItem("ccxp-lite-sidebar-collapsed", "false");
+      localStorage.setItem("ccxp-lite-sidebar-variant", "classic");
+    });
+  }
+}
+
+export async function captureNarrowDefaultMenu(
+  source: Page,
+  capture: (page: Page, name: string) => Promise<void>,
+  assertHead: boolean,
+): Promise<void> {
+  const page = await source.context().newPage();
+  await page.setViewportSize({ width: 375, height: 960 });
+  await page.addInitScript(() => {
+    localStorage.removeItem("ccxp-lite-sidebar-variant");
+  });
+  try {
+    await page.goto(source.url(), { waitUntil: "load" });
+    const nav = page.frames().find((frame) => frame.url().includes("IN_INQ_STU.php"));
+    assert.ok(nav);
+    const shell = nav.locator(".ccxp-lite-sidebar-shell");
+    await shell.waitFor();
+    await nav.locator(".ccxp-lite-profile-trigger").waitFor();
+    if (assertHead) {
+      assert.equal(await shell.getAttribute("data-ccxp-lite-sidebar-variant"), "layered");
+    } else {
+      await nav.locator(".ccxp-lite-profile-trigger").click();
+      await setProfileMenuMode(nav.locator("#ccxp-lite-profile-mode"), "layered");
+    }
+    await page.waitForFunction(
+      () => document.querySelector("frameset[cols]")?.getAttribute("cols") === "*,0",
+    );
+    await nav.locator(".ccxp-lite-pinned-card").first().waitFor();
+    await nav.locator(".ccxp-lite-sidebar-content").click({ position: { x: 3, y: 3 } });
+    await capture(page, "phone-menu-favorites");
+    await nav.locator(".ccxp-lite-pinned-list .ccxp-lite-favorite-toggle").first().click();
+    const dialog =
+      (await page.locator("dialog[open]").count()) > 0
+        ? page.getByRole("dialog")
+        : nav.getByRole("dialog");
+    await dialog.waitFor();
+    await capture(page, "phone-menu-dialog");
+    await dialog.getByRole("button").first().press("Escape");
+    await nav.locator(".ccxp-lite-sidebar-search-input").fill("\u6559\u5B78");
+    await nav.locator(".ccxp-lite-category-card").first().click();
+    await nav.locator(".ccxp-lite-pane-detail").waitFor();
+    await capture(page, "phone-menu-search");
+    if (assertHead) {
+      await nav.locator(".ccxp-lite-profile-trigger").click();
+      await setProfileMenuMode(nav.locator("#ccxp-lite-profile-mode"), "classic");
+      await nav.locator(".ccxp-lite-sidebar-search-input").fill("");
+      const visibleFavorites = nav.locator(
+        '[data-ccxp-lite-order-group="category:category-favorites"] > [data-ccxp-lite-order-item]:visible',
+      );
+      const firstId = await visibleFavorites.first().getAttribute("data-ccxp-lite-order-item");
+      await visibleFavorites.first().press("Alt+Shift+ArrowDown");
+      assert.equal(
+        await visibleFavorites.nth(1).getAttribute("data-ccxp-lite-order-item"),
+        firstId,
+      );
+      assert.equal(await visibleFavorites.count(), 10);
+      await visibleFavorites.nth(1).press("Alt+Shift+ArrowUp");
+      assert.equal(
+        await visibleFavorites.first().getAttribute("data-ccxp-lite-order-item"),
+        firstId,
+      );
+      await visibleFavorites.last().press("Alt+Shift+ArrowDown");
+      assert.equal(await visibleFavorites.count(), 10);
+    }
+  } finally {
+    await page.close();
+    await source.evaluate(() => {
+      localStorage.setItem("ccxp-lite-sidebar-variant", "classic");
+    });
+  }
 }

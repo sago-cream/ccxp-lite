@@ -224,3 +224,13 @@
     transition: none !important;
   }
 }
+
+.ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-compact="true"] .ccxp-lite-row-label-wrap {
+  height: 0;
+  max-width: 0;
+  overflow: hidden;
+}
+.ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-compact="true"] .ccxp-lite-row-button {
+  height: var(--ccxp-lite-size-sidebar-row-height);
+  min-height: var(--ccxp-lite-size-sidebar-row-height);
+}

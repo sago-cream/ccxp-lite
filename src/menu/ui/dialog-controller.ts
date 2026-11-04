@@ -44,7 +44,7 @@
       const overlayDocument = resolveOverlayDocument(targetDocument);
       ensureThemeDocument(
         overlayDocument,
-        overlayDocument.documentElement.dataset.ccxpLiteScope ?? "nav",
+        overlayDocument.documentElement.dataset.ccxpLiteScope ?? "dialog",
       );
       if (
         signal?.aborted === true ||
@@ -122,13 +122,45 @@
           }
         });
       }
-      getOverlayMountNode(overlayDocument).append(view.overlay);
+      if (overlayDocument.body.tagName === "FRAMESET") {
+        const modal = overlayDocument.createElement("dialog");
+        modal.className = "ccxp-lite-shell-dialog";
+        modal.setAttribute("aria-labelledby", view.dialog.getAttribute("aria-labelledby") ?? "");
+        modal.setAttribute("aria-describedby", view.dialog.getAttribute("aria-describedby") ?? "");
+        view.dialog.removeAttribute("role");
+        view.dialog.removeAttribute("aria-modal");
+        modal.append(view.overlay);
+        overlayDocument.documentElement.append(modal);
+        controller.addCleanup(() => {
+          modal.close();
+          modal.remove();
+        });
+        controller.listen(modal, "cancel", (event) => {
+          event.preventDefault();
+          finish(false);
+        });
+        modal.showModal();
+      } else {
+        getOverlayMountNode(overlayDocument).append(view.overlay);
+      }
+      if (targetDocument.defaultView) {
+        controller.listen(targetDocument.defaultView, "pagehide", () => {
+          finish(false);
+        });
+      }
       view.keepButton.focus();
     });
   }
 
   function resolveOverlayDocument(targetDocument: Document) {
     try {
+      const topDocument = targetDocument.defaultView?.top?.document;
+      if (
+        topDocument?.body.tagName === "FRAMESET" &&
+        typeof topDocument.createElement("dialog").showModal === "function"
+      ) {
+        return topDocument;
+      }
       const mainDocument = getLegacyMainFrame()?.contentDocument;
       if (mainDocument?.body && mainDocument.body.clientWidth > 100) {
         return mainDocument;

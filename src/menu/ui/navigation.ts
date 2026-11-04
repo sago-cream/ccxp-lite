@@ -36,6 +36,16 @@
     rerender: () => void;
   }
 
+  function displayLabel(targetDocument: Document, label: string) {
+    if (
+      namespace?.shared?.resolveLocaleFromDocument(targetDocument) !== "zh" ||
+      !/\p{Script=Han}/u.test(label)
+    ) {
+      return label;
+    }
+    return label.replace(/\s+[A-Za-z][A-Za-z0-9 ()/,.'&-]*$/u, "").trim();
+  }
+
   const categoryIcons = new WeakMap<Document, Map<string, string>>();
 
   function createClassicSidebarView(
@@ -254,7 +264,11 @@
       ]),
     );
     button.append(
-      createRowLabel(targetDocument, linkItem.label, isExternalLinkTarget(linkItem, navDocument)),
+      createRowLabel(
+        targetDocument,
+        displayLabel(targetDocument, linkItem.label),
+        isExternalLinkTarget(linkItem, navDocument),
+      ),
     );
     if (depth > 0) {
       button.classList.add("ccxp-lite-row-button-has-dual-trailing");
@@ -445,7 +459,11 @@
     button.setAttribute("title", linkItem.label);
     button.dataset.ccxpLiteOrderItem = `link:${linkItem.id}`;
     button.append(
-      createRowLabel(targetDocument, linkItem.label, isExternalLinkTarget(linkItem, navDocument)),
+      createRowLabel(
+        targetDocument,
+        displayLabel(targetDocument, linkItem.label),
+        isExternalLinkTarget(linkItem, navDocument),
+      ),
     );
     button.append(createFavoriteToggle(targetDocument, linkItem, strings, rerender));
     button.addEventListener("click", () => {
@@ -487,7 +505,9 @@
     });
     button.setAttribute("title", blockItem.label);
     button.dataset.ccxpLiteOrderItem = `block:${blockItem.id}`;
-    button.append(createRowLabel(targetDocument, blockItem.label, false));
+    button.append(
+      createRowLabel(targetDocument, displayLabel(targetDocument, blockItem.label), false),
+    );
     button.append(createBlockFavoriteToggle(targetDocument, blockItem, strings, rerender));
     button.addEventListener("click", () => {
       persistSidebarScroll(targetDocument, "root");
