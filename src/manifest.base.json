@@ -7,8 +7,7 @@
   "host_permissions": [
     "https://www.ccxp.nthu.edu.tw/*",
     "https://ccxp.nthu.edu.tw/*",
-    "https://oauth.ccxp.nthu.edu.tw/*",
-    "https://www.google-analytics.com/*"
+    "https://oauth.ccxp.nthu.edu.tw/*"
   ],
   "background": {
     "service_worker": "background/analytics.js"
