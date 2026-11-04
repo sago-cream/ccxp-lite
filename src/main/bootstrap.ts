@@ -391,6 +391,18 @@
     if (!uiIcons || !uiButtons || !sidebarData || !sidebarFavorites || !sidebarRuntime) {
       return;
     }
+    const openHomeLink = (link: CcxpLiteSidebarLinkItem, navDocument: Document) => {
+      sharedLib.trackEvent?.(targetDocument, {
+        feature: "navigation",
+        action: "open_link",
+        surface: "home",
+        sidebar_variant: readSidebarVariant(),
+        navigation_mode: "legacy_frame",
+        link_id: link.id,
+        link_label: link.label,
+      });
+      sidebarRuntime.activateLegacyLink(link, navDocument);
+    };
     const wordmark = targetDocument.createElement("div");
     wordmark.className = "ccxp-home-wordmark";
     const logo = sharedLib.createBrandImage(
@@ -455,7 +467,7 @@
             title: `${link.label} \u00B7 ${category.label}`,
             onClick: () => {
               closeResults();
-              sidebarRuntime.activateLegacyLink(link, navDocument);
+              openHomeLink(link, navDocument);
             },
           });
           results.append(row);
@@ -567,7 +579,7 @@
           ariaLabel: `${link.label} (${category.label})`,
           title: `${link.label} \u00B7 ${category.label}`,
           onClick: () => {
-            sidebarRuntime.activateLegacyLink(link, navDocument);
+            openHomeLink(link, navDocument);
           },
         });
         const icon = targetDocument.createElement("span");

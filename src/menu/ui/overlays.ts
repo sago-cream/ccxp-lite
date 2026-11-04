@@ -205,8 +205,18 @@
     );
     mode.addEventListener("click", () => {
       const nextState = state;
-      nextState.sidebarVariant = setPersistedSidebarVariant(
-        state.sidebarVariant === "classic" ? "layered" : "classic",
+      const previousVariant = state.sidebarVariant;
+      const nextVariant = previousVariant === "classic" ? "layered" : "classic";
+      nextState.sidebarVariant = setPersistedSidebarVariant(nextVariant);
+      app.shared?.trackEvent?.(
+        targetDocument,
+        {
+          feature: "navigation",
+          action: "change_menu_mode",
+          sidebar_variant: nextVariant,
+          previous_menu_mode: previousVariant === "classic" ? "sidebar" : "fullscreen",
+        },
+        { eventName: "ccxp_lite_menu_mode_change" },
       );
       syncTopLevelFramesetLayout(state.sidebarVariant, state.sidebarCollapsed);
       nextState.sidebarPreview = false;

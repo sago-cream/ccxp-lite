@@ -89,6 +89,26 @@ describe("shared theme", () => {
 });
 
 describe("shared analytics", () => {
+  test("labels menu modes and excludes session query strings and fragments", () => {
+    const { window } = createTestWindow(
+      undefined,
+      "https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/select_entry.php?ACIXSTORE=private#private",
+    );
+    loadModules(window, sharedModulePaths);
+    const analytics = requireValue(window.CCXP_LITE.sharedAnalytics, "sharedAnalytics");
+    for (const [variant, mode] of [
+      ["classic", "sidebar"],
+      ["layered", "fullscreen"],
+    ]) {
+      const event = analytics.trackEvent?.(window.document, { sidebar_variant: variant });
+      expect(event?.params).toMatchObject({
+        menu_mode: mode,
+        page_location: "https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/select_entry.php",
+      });
+      expect(JSON.stringify(event)).not.toContain("private");
+    }
+  });
+
   test("sends normalized interaction events to the extension runtime", () => {
     const { window } = createTestWindow();
     const document = window.document as Document;
