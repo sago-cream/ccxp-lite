@@ -338,7 +338,7 @@
       item.textContent = point;
       list.append(item);
     }
-    const label = english ? "System usage guide" : "\u7CFB\u7D71\u4F7F\u7528\u8AAA\u660E";
+    const label = english ? "Usage guide" : "\u7CFB\u7D71\u4F7F\u7528\u8AAA\u660E";
     const info = namespace.uiPopover.mountInfoPopoverContent(targetDocument, list, label);
     info.element.classList.add("ccxp-home-info");
     info.element.querySelector("button")?.append(label);
@@ -349,9 +349,7 @@
     content.className = "ccxp-home-content";
     mountHomeSearch(targetDocument, content, english);
     if (contact) {
-      contact.textContent = english
-        ? "Contact campus offices"
-        : "\u806F\u7D61\u6821\u5712\u55AE\u4F4D";
+      contact.textContent = english ? "Campus contacts" : "\u806F\u7D61\u6821\u5712\u55AE\u4F4D";
       contact.classList.remove("td15");
       contact.classList.add("ccxp-home-contact");
       header.insertBefore(contact, info.element);
@@ -417,9 +415,7 @@
     search.setAttribute("role", "search");
     const input = targetDocument.createElement("input");
     input.type = "search";
-    input.placeholder = english
-      ? "Search system functions"
-      : "\u641C\u5C0B\u7CFB\u7D71\u529F\u80FD";
+    input.placeholder = english ? "Search functions" : "\u641C\u5C0B\u7CFB\u7D71\u529F\u80FD";
     input.setAttribute("aria-label", input.placeholder);
     input.setAttribute("aria-controls", "ccxp-home-search-results");
     const clear = uiButtons.createButton(targetDocument, {
@@ -450,9 +446,10 @@
     const view = targetDocument.defaultView;
     let scrollHintFrame = 0;
     const updateScrollHint = () => {
-      const lastContext = results.querySelector(
-        ".ccxp-home-search-result:last-child .ccxp-home-search-context",
-      );
+      const lastContext =
+        results.querySelector(
+          ".ccxp-home-search-result:last-child .ccxp-home-search-context:not([hidden])",
+        ) ?? results.querySelector(".ccxp-home-search-result:last-child .ccxp-home-search-title");
       scrollHint.hidden =
         results.hidden ||
         !lastContext ||
@@ -486,6 +483,7 @@
         return;
       }
       const seen = new Set<string>();
+      const resultCategories = new Set<string>();
       for (const category of sidebarData.filterCategories(model.categories, query)) {
         for (const link of flattenHomeCategory(category)) {
           const id = sidebarFavorites.createLinkId(link);
@@ -493,6 +491,7 @@
             continue;
           }
           seen.add(id);
+          resultCategories.add(category.label);
           const row = uiButtons.createButton(targetDocument, {
             className: "ccxp-home-search-result",
             ariaLabel: `${link.label} (${category.label})`,
@@ -521,6 +520,15 @@
       resultStatus.textContent = english
         ? `${seen.size} results`
         : `${seen.size} \u500B\u7D50\u679C`;
+      if (resultCategories.size === 1) {
+        const category = targetDocument.createElement("span");
+        category.className = "ccxp-home-search-status-category";
+        category.textContent = `\u00B7 ${[...resultCategories][0]}`;
+        resultStatus.append(category);
+        for (const context of results.querySelectorAll<HTMLElement>(".ccxp-home-search-context")) {
+          context.hidden = true;
+        }
+      }
       results.prepend(resultStatus);
       if (seen.size === 0) {
         const empty = targetDocument.createElement("p");

@@ -120,13 +120,17 @@
     {
       "owners": ["src/menu/ui/overlays.ts"],
       "reason": "Profile adapter covers the observed student identity header; non-student profile routes and transient login/server errors have no live capture."
+    },
+    {
+      "owners": ["src/menu/", "src/main/"],
+      "reason": "2026-11-04 live student search contains a seventh Teaching Feedback entry, 外籍生問卷填寫, absent from the six-entry legacy fixture. A fresh navigation source request returned Out of Sequence access is NOT allowed before the complete tree. This current-content variant is not certified by the published six-result screenshots; retained student navigation is representative, not an exact current entitlement inventory."
     }
   ],
   "liveAudit": "2026-09-12: navigated registration with ccxpLite enabled, verified header, reminder contents and English switch; navigated public course directory, curriculum and keyword forms. Public query HTML retrieved from those same routes without session data.",
   "designReviewAudit": {
     "date": "2026-11-04",
-    "liveExtension": "Packaged v1.12.0 baseline reloaded from Chrome Details Loaded from. Prefilled sign-in and extension-filled CAPTCHA used; final settled student navigation, expanded profile, homepage favorites/search and removal dialog inspected with original frames.",
-    "hostFidelity": "Public login was recaptured as complete initialized legacy DOM with its host assets. Settled student navigation categories and homepage/frame landmarks match the retained full legacy fixtures. Private live values are never published.",
+    "liveExtension": "Packaged v1.12.0 base and revised UI reloaded from Chrome Details Loaded from on 2026-11-04. Prefilled sign-in and extension-filled CAPTCHA used. Student navigation, expanded profile, homepage favorites/search, announcement disclosure and full-shell removal dialog inspected in original frames. Live Tab cycling, Escape cancellation and focus restoration checked without removing a favorite.",
+    "hostFidelity": "Public login recaptured as complete initialized legacy DOM with host assets. Student category hierarchy and home/frame landmarks match the retained legacy fixtures. The live menu now includes an additional foreign-student survey item; that exact current-content state is an explicit gap below. Private live identity/session values and screenshots are never published.",
     "captures": [
       "Login ready to submit at 1280/1600/375px",
       "Classic sidebar with empty and populated favorites",

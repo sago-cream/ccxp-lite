@@ -250,7 +250,9 @@
 }
 
 .ccxp-lite-landing-login .ccxp-lite-login-field-label {
-  display: block;
+  display: flex;
+  align-items: center;
+  min-height: var(--ccxp-lite-size-dialog-action-height);
   flex: 0 1 auto;
   min-width: 0;
   text-align: left;

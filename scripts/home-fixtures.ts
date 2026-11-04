@@ -296,6 +296,24 @@ export async function captureNarrowHome(
     await capture(page, "profile-expanded-narrow");
     await nav.locator(".ccxp-lite-profile-trigger").press("Escape");
     await capture(page, "sidebar-menu-narrow");
+    const pinnedMore = nav.locator(".ccxp-lite-pinned-show-more");
+    if (assertHead && (await pinnedMore.count()) > 0) {
+      const visible = nav.locator(".ccxp-lite-pinned-list > [data-ccxp-lite-order-item]:visible");
+      assert.equal(await visible.count(), 4);
+      await pinnedMore.press("Enter");
+      assert.equal(await visible.count(), 10);
+      await pinnedMore.press("Space");
+      assert.equal(await visible.count(), 4);
+      const heading = await nav.locator(".ccxp-lite-menu-heading").boundingBox();
+      assert.ok(heading && heading.x >= 0 && heading.x + heading.width <= 375);
+      await nav.locator(".ccxp-lite-menu-return").click();
+      assert.equal(
+        await nav
+          .locator(".ccxp-lite-sidebar-shell")
+          .getAttribute("data-ccxp-lite-sidebar-variant"),
+        "classic",
+      );
+    }
   } finally {
     await page.close();
     await source.evaluate(() => {
