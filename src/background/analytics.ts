@@ -33,7 +33,7 @@
 
   function getGa4Config(): Ga4Config {
     return {
-      measurementId: "G-Z6QQ37YNZP",
+      measurementId: "__CCXP_LITE_GA4_MEASUREMENT_ID__",
       apiSecret: "__CCXP_LITE_GA4_API_SECRET__",
     };
   }
@@ -147,7 +147,12 @@
 
   async function postEvent(message: CcxpLiteAnalyticsMessage) {
     const { measurementId, apiSecret } = getGa4Config();
-    if (measurementId === "" || apiSecret === "" || apiSecret.startsWith("__CCXP_LITE_")) {
+    if (
+      measurementId === "" ||
+      apiSecret === "" ||
+      measurementId.startsWith("__CCXP_LITE_") ||
+      apiSecret.startsWith("__CCXP_LITE_")
+    ) {
       if (!hasShownConfigWarning) {
         hasShownConfigWarning = true;
         console.warn(

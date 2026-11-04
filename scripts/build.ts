@@ -305,9 +305,13 @@ try {
   const analyticsSource = readFileSync(analyticsPath, "utf8");
   writeFileSync(
     analyticsPath,
-    analyticsSource.replace('"__CCXP_LITE_GA4_API_SECRET__"', () =>
-      JSON.stringify(process.env.CCXP_LITE_GA4_API_SECRET ?? ""),
-    ),
+    analyticsSource
+      .replace('"__CCXP_LITE_GA4_MEASUREMENT_ID__"', () =>
+        JSON.stringify(process.env.CCXP_LITE_GA4_MEASUREMENT_ID ?? ""),
+      )
+      .replace('"__CCXP_LITE_GA4_API_SECRET__"', () =>
+        JSON.stringify(process.env.CCXP_LITE_GA4_API_SECRET ?? ""),
+      ),
   );
 
   copyTree(srcDir, stagingDir, shouldCopySourcePath);

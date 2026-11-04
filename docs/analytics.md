@@ -1,10 +1,27 @@
 # Menu mode analytics
 
-GA4 measurement ID: `G-Z6QQ37YNZP`.
+Use a dedicated GA4 web stream for extension runtime events. The existing
+`G-Z6QQ37YNZP` stream belongs to the managed Chrome Web Store listing property;
+keep that stream for listing traffic.
 
-Set `CCXP_LITE_GA4_API_SECRET` in the build environment or an ignored `.env.local`,
+The prepared runtime setup is account `414707512`, property
+[`ccxpLite Extension Runtime`](https://analytics.google.com/analytics/web/#/a414707512p562305718/admin),
+web stream `16270665475`, measurement ID `G-JC8PYML0BP` (Taiwan reporting time).
+Runtime collection is intentionally disabled: no Measurement Protocol API secret
+has been created. Before activation, the account owner must complete Google's
+user-data collection acknowledgement confirming the required disclosures and
+user authorization.
+
+Event-scoped custom dimensions **Menu mode** (`menu_mode`) and **Previous menu
+mode** (`previous_menu_mode`) are already registered in the runtime property.
+
+The obsolete `GTM-MVCTGKXT` container's **[Retired] GA4 - config** tag is paused
+in published version 3. Current extension packages do not load GTM. Preserve the
+managed Chrome Web Store property for listing analytics.
+
+Set `CCXP_LITE_GA4_MEASUREMENT_ID` and `CCXP_LITE_GA4_API_SECRET` in the build environment or an ignored `.env.local`,
 then run `bun run build:crx` (or `bun run build:firefox`). Bun loads `.env.local`
-automatically. Builds without the secret disable analytics, including CI fixture
+automatically. Builds without either setting disable analytics, including CI fixture
 builds. The secret is included in the packaged background worker, as required by
 the extension's direct Measurement Protocol integration; use a dedicated secret
 for this extension and rotate it through GA4 when needed. Do not commit it.
@@ -20,9 +37,7 @@ All these events include `menu_mode=sidebar` or `menu_mode=fullscreen`. Existing
 views also include the mode. Page URLs exclude query strings and fragments so
 CCXP session tokens are not sent.
 
-In GA4 **Admin → Custom definitions**, create an event-scoped dimension named
-**Menu mode** with event parameter `menu_mode`. Optionally create another for
-`previous_menu_mode`. In **Explore**, use Menu mode as rows and Event name as
+In **Explore**, use Menu mode as rows and Event name as
 columns, with Event count and Total users as values. Filter to the events above;
 for link usage, also filter to `feature=navigation` and `action=open_link` using
 event-scoped custom dimensions for those existing parameters. Menu views count

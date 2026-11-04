@@ -3,7 +3,7 @@ import vm from "node:vm";
 import ts from "typescript";
 import { describe, expect, test, vi } from "vitest";
 
-function createBackground(apiSecret = "test-secret") {
+function createBackground(apiSecret = "test-secret", measurementId = "G-CCXPLITETEST") {
   const storage: Record<string, unknown> = {};
   type Listener = (
     message: unknown,
@@ -17,6 +17,7 @@ function createBackground(apiSecret = "test-secret") {
   const warn = vi.fn();
   const source = fs
     .readFileSync("src/background/analytics.ts", "utf8")
+    .replace('"__CCXP_LITE_GA4_MEASUREMENT_ID__"', JSON.stringify(measurementId))
     .replace('"__CCXP_LITE_GA4_API_SECRET__"', JSON.stringify(apiSecret));
   vm.runInNewContext(
     ts.transpileModule(source, {
@@ -75,7 +76,7 @@ describe("background analytics delivery", () => {
     ]);
     expect(results).toEqual([true, true]);
     const [url, request] = background.fetch.mock.calls[0] as [string, { body: string }];
-    expect(new URL(url).searchParams.get("measurement_id")).toBe("G-Z6QQ37YNZP");
+    expect(new URL(url).searchParams.get("measurement_id")).toBe("G-CCXPLITETEST");
     expect(new URL(url).searchParams.get("api_secret")).toBe("test-secret");
     interface Payload {
       client_id: string;
@@ -111,6 +112,12 @@ describe("background analytics delivery", () => {
       expect(background.warn).toHaveBeenCalledTimes(1);
     },
   );
+
+  test("does not send events without a configured runtime measurement ID", async () => {
+    const background = createBackground("test-secret", "");
+    await background.dispatch({ menu_mode: "sidebar" });
+    expect(background.fetch).not.toHaveBeenCalled();
+  });
 
   test("reports rejected requests without logging the API secret", async () => {
     const background = createBackground();
