@@ -39,5 +39,5 @@ containment, and focus restoration.
 Check focus, disabled, expanded, loading, empty, and error states at narrow widths in both
 languages. Update examples with shared UI changes and verify the affected CCXP pages.
 
-New windows at600px or below start in the full-width Menu when no mode has been saved. A saved
+New windows at 600px or below start in the full-width Menu when no mode has been saved. A saved
 Sidebar or Menu choice takes precedence. Keep the compact Sidebar available as an explicit preference.

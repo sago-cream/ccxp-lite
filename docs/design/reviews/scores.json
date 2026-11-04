@@ -1,0 +1,570 @@
+{
+  "date": "2026-11-04",
+  "method": "Independent visual judgments, not measurements or accessibility certification. Rounds 0\u20133 use fresh independent pairs; rounds 4\u20136 return to the original pair; a fresh pair starts round 7 and continues through round 9. Reviewers were not given a target score. Category scores and feedback remain in each report.",
+  "rounds": [
+    {
+      "round": 0,
+      "model": "gpt-6.1-sol",
+      "reasoningEffort": "high",
+      "suiteScores": {
+        "a": 8.0,
+        "b": 7.37
+      },
+      "componentScores": {
+        "a": {
+          "login": 8.2,
+          "sidebar": 8.2,
+          "profile": 8.2,
+          "dialog": 7.6,
+          "favorites": 8.1,
+          "search": 8.3
+        },
+        "b": {
+          "login": 7.5,
+          "sidebar": 7.5,
+          "profile": 7.43,
+          "dialog": 7.29,
+          "favorites": 7.36,
+          "search": 7.14
+        }
+      },
+      "changes": "Baseline",
+      "reports": {
+        "a": "round-0-a.md",
+        "b": "round-0-b.md"
+      },
+      "evidence": {
+        "localCaptureSet": "round-0-final",
+        "extensionDigest": "dcc44e5e079a2655445ac3fe4e02dfffdadc7bd2999644f03ece7d6c83ce095c",
+        "fixtureDigest": "52e41ee6bea8eef1db41ca0606a2fef5692d3a9134e33aff4400d8c944a3b461",
+        "screenshots": {
+          "course-hub.png": "95dcaea86dc13a00d2c07fc16d99a09257be2b20674a7207f19be516df88373b",
+          "curriculum.png": "f38ab31751e3324876188c9c0bfed06a52c87b79d274e1625b008bceca9a5a11",
+          "dialog-remove-favorite.png": "d54ebf97bfe80292e7d6e195304a22e6cb8c7bdc80a2fd1d4c9cb33f0c7e5f01",
+          "embedded-destination.png": "72880002ddb23395da0ebdd7f88426c6fb12d3cd331f90fbdccb56fea04e0b9f",
+          "home-favorites.png": "2a3b50231c65983f732be4129db49b9666cf7a9ef2df52826cfd070226e86835",
+          "home-search.png": "9774809e58d8f3f5f14638dca726f1e0502c181f1138cd6ab2d1eca70053804c",
+          "keyword.png": "8960b52ebd77e945ffdbec2a910d6a14c7d605b2f92a4ded6dd8799be8564de3",
+          "login-narrow.png": "1993afbf53a3e66f322c6d9af656d61ab9f12c232cf107cfc2f0671a65394abf",
+          "login-wide.png": "9643cbf1a633956bd0055049b6664eb290a25b5862c572e1e2a61cca03db896f",
+          "login.png": "c5ea0ec74cb463d9c1e8ab2b95d0708407aee36298417e1388c6bf8951b8cd44",
+          "profile-english-layered-375.png": "045a3de9d0b6953e35aec78e79e3ba985263e8d3a0bb8864b63c78e5da761db4",
+          "profile-expanded.png": "194d87bc351414e27b16d00d505e8f8bf8b71980d1b08badefa800d76748659c",
+          "session-timer-classic.png": "e2719e59c9e8cd3e1b874357eafe9db70305b9bc1bc31990b700f85fd060f12c",
+          "session-timer-english-layered-375.png": "05783ed1aafbe7b47fbd58779bffd5f000f3f64aae28615029af409120b2e0a4",
+          "session-timer-english.png": "df4e3c47cef5274a37e90482f2c30176d814c3d18352ef6c1224ad3c39bea659",
+          "session-timer-initial.png": "8312fb12819556f0decd0ef67643fa5e92b24f1f457b2edffa8d37c872e07fd3",
+          "session-timer-layered-1280.png": "3e6674134ebe303c65a3f5d71d7bffaafefab6ccb5a125b6606686251a5b86a1",
+          "session-timer-layered-375.png": "9f96a5e2a7733d21520793fa6dc28c29b1ebd75f62aaf546313b41da84bf5203",
+          "session-timer-layered-600.png": "977629cd598d45ceb23f70714efd4c564e0ed43e6241d0b40071278d106e1f12",
+          "session-timer-settings.png": "6a51405449b6c5645e00fc2dfdf11f0bf8b20c1a52c2985b9ff0d7d00de6ae29",
+          "sidebar-classic.png": "546ba133e2ae6d8a2d8aa508e923ab36c288483c2c9553953a164de99e6e0f62",
+          "sidebar-layered-search.png": "2e29a93f1954c8c3d5ed37944389bce0e7e9f6717aa83fe0c502e57847a028fa",
+          "staff-history.png": "3efb605f4de222113cd2bb9629df984a3a9f5eb52a382c9e4c4bef80bfed1a41",
+          "staff-registration-records.png": "8d0ab66ca2f9e88b334545d4fb61287197ed01a934da185049f762ed22bea602",
+          "staff-registration-reminders.png": "ce205c40782cdc1c1dd9ab270082ca44dfcb8ff67206b5ae43d9df14490967b5",
+          "staff-registration.png": "023fbfaf6ffa8538b74063e813b5e20680158504bf9b72bf161494da713239fe",
+          "standalone.png": "59c4ed6b2abd332f49d0ef1281dcb8733df4318c831ba52bb389cae4dba28e94",
+          "work-log-department-filtered.png": "93c88fc9dc2652ea7940d22613771380b45c91c2213451a70c1f914fa6b843d7",
+          "work-log-department-results.png": "2308c14a124bd2dd4472e369519a3468a9588eda56a64645d4501dfa1a713235",
+          "work-log-multiday.png": "ff93cb693ca67fb0d683ef06865002bbb578a0f4af23bfca47e49d9a09445085",
+          "work-log-search-empty.png": "32259f20b56d84822cfca0748b41f6feee91ddcda617fc0bc79684da060c0da6",
+          "work-log-search-english.png": "3079411c9c49ee236206175099ca0f27d4041562c61ce7d6a0c969ff8bb1ba6b",
+          "work-log-search-initial.png": "b6cd70387fc308f827c00da127ddf61a27964b626fafb2605eed75069c66d750",
+          "work-log-standalone.png": "1d65c5dd4419b60afae3e7e4ea107bcab3821d821979992efe53dd71d4e2bc87",
+          "work-log-submit.png": "986044dee6a40f700b72ad503b31f73e691e1ba6450399075757013473aca34b"
+        }
+      }
+    },
+    {
+      "round": 1,
+      "model": "gpt-6.1-sol",
+      "reasoningEffort": "high",
+      "suiteScores": {
+        "a": 8.7,
+        "b": 8.8
+      },
+      "componentScores": {
+        "a": {
+          "login": 8.8,
+          "sidebar": 8.5,
+          "profile": 8.7,
+          "dialog": 9.1,
+          "favorites": 8.6,
+          "search": 8.7
+        },
+        "b": {
+          "login": 8.9,
+          "sidebar": 8.5,
+          "profile": 8.8,
+          "dialog": 9.3,
+          "favorites": 8.4,
+          "search": 8.6
+        }
+      },
+      "changes": "Contrast, bounded login, modal scope, preference states, wrapping and search context",
+      "reports": {
+        "a": "round-1-a.md",
+        "b": "round-1-b.md"
+      },
+      "evidence": {
+        "localCaptureSet": "round-1-settled",
+        "extensionDigest": "0bc9818b8ae16477cf8968f92e2323d13aaadac4a6bd439fd4db94535baf5972",
+        "fixtureDigest": "cfa12d98358bdc3ee7d91980d05066d41e2f6b7ededc51ef719a69d0f925822f",
+        "screenshots": {
+          "dialog-remove-favorite-narrow.png": "40b1aa64ff9804e7ba0017c05a62ba496b5ebb261d7f5999a2b7b1860c272906",
+          "dialog-remove-favorite.png": "571b83fe329666a442f90c6e26aba2ecb45b97151e8e21daa7a751d62959a319",
+          "home-favorites-narrow.png": "e6e8f3446ae47736bc7ba16aaea020891b242c392ed9f83cbb11f7c716f01f2b",
+          "home-favorites.png": "179d2b1c41d6a4de486400e9d981a52e41a9910d825e60b0f8c2f1658df42a9e",
+          "home-search-narrow.png": "30f92292262dda8ca5ce2f5d3f47ee84cbe0059b072d4d5b2079224072493673",
+          "home-search.png": "93a4decd54e9f570d4bae5bd284f4927bf9d0dce441f893376e87aff5a406dc1",
+          "login-narrow.png": "fdf79e7e0206a2977941953ef0c16c2f1c054456e6cec7e9fed12709fd32ce33",
+          "login-wide.png": "083a545ec2289ebf19fec9202cb27f7c151915d49dfeae1d0079957bc354dbb0",
+          "login.png": "469c1f206b4e0e35ed271069da8862981641031a13ed42d90abd678393beced4",
+          "profile-expanded-narrow.png": "fef863cccdb9829ce47bc129253adfe216ef3be1ce05fcfaeba1860fa2010980",
+          "profile-expanded.png": "9cf0ea1635f348cab5e0012ebd1eebb051fdec4683880d9a0f742ae853bd741b",
+          "sidebar-classic.png": "51ac4a666b5ef365c09ccf709a1675bc41bed6d13efc9dde228cd29f274d0ac5",
+          "sidebar-menu-narrow.png": "342bce7a0fe37e404dad75f5c5c1fbca5552031477d72eafd30d3a8ad45083d6"
+        }
+      }
+    },
+    {
+      "round": 2,
+      "model": "gpt-6.1-sol",
+      "reasoningEffort": "high",
+      "suiteScores": {
+        "a": 8.8,
+        "b": 8.8
+      },
+      "componentScores": {
+        "a": {
+          "login": 8.8,
+          "sidebar": 8.5,
+          "profile": 8.8,
+          "dialog": 9.1,
+          "favorites": 8.8,
+          "search": 8.7
+        },
+        "b": {
+          "login": 8.7,
+          "sidebar": 8.6,
+          "profile": 8.6,
+          "dialog": 9.1,
+          "favorites": 8.9,
+          "search": 8.7
+        }
+      },
+      "changes": "Narrow branding/cards, preference affordances and scroll continuation",
+      "reports": {
+        "a": "round-2-a.md",
+        "b": "round-2-b.md"
+      },
+      "evidence": {
+        "localCaptureSet": "round-2-final",
+        "extensionDigest": "d9c813e5b54e142b2011c0a9321495d5bbb4a0c8665b262ce4b84507fcfd4955",
+        "fixtureDigest": "cfa12d98358bdc3ee7d91980d05066d41e2f6b7ededc51ef719a69d0f925822f",
+        "screenshots": {
+          "dialog-remove-favorite-narrow.png": "1ce59ff7f3e35c7ffb6b43e38e0e63da2f762783f3f30ef0917f808b8266835a",
+          "dialog-remove-favorite.png": "3b6c21339550a7ad881b12804bfbbd08737e226404761d453ba4b57905c4f4d8",
+          "home-favorites-narrow.png": "66ea2fc39842130b1a4a7788dd648bc84cc1d2bc3485eabeb817a9e38623b21e",
+          "home-favorites.png": "3d2af5c9ba161fe0b8c2fc5e008fa08599a0f2ac9507c66dd5d40c210aa34d90",
+          "home-search-narrow.png": "0b62fbee5de096e3ffb84aad38f220b3b4c7aca319cb59152757c5344682f6e6",
+          "home-search.png": "3c4ec4fc37ab4051d36a0e25c323e74ed063ee59f3009f836b2c98413ba663b2",
+          "login-narrow.png": "05780e53983076c6e035b00b5cb2ba7ee4eefead7a433bc7e156a805b7ffa962",
+          "login-wide.png": "1aff500572771327d5dd955c65630c57d2958261db1711a6194d03677873e092",
+          "login.png": "4fd930dd213d2c87e9cdec15e8a10afda93fa78e2ef0d38330f9ef94e6c147aa",
+          "profile-expanded-narrow.png": "c3a3727f720ebb012e692eb6ac95ac5dbf1317de8c4fc3643cd61a8aa948907b",
+          "profile-expanded.png": "826124fc92759805fde557500e3823e5db7d62da7b449c69c047fa741d9a0062",
+          "sidebar-classic.png": "51ac4a666b5ef365c09ccf709a1675bc41bed6d13efc9dde228cd29f274d0ac5",
+          "sidebar-menu-narrow.png": "bc39fcb45e0184be413db6d4af21c00417092ef32f697bcb21e682d18fe160d3"
+        }
+      }
+    },
+    {
+      "round": 3,
+      "model": "gpt-6.1-sol",
+      "reasoningEffort": "high",
+      "suiteScores": {
+        "a": 8.3,
+        "b": 8.7
+      },
+      "componentScores": {
+        "a": {
+          "login": 8.5,
+          "sidebar": 7.9,
+          "profile": 8.7,
+          "dialog": 9.1,
+          "favorites": 8.2,
+          "search": 8.3
+        },
+        "b": {
+          "login": 8.8,
+          "sidebar": 8.4,
+          "profile": 9.0,
+          "dialog": 9.2,
+          "favorites": 8.6,
+          "search": 8.5
+        }
+      },
+      "changes": "Accurate overflow cues, anchor-aware chevrons, shorter favorites and secondary login hierarchy",
+      "reports": {
+        "a": "round-3-a.md",
+        "b": "round-3-b.md"
+      },
+      "evidence": {
+        "localCaptureSet": "round-3-final",
+        "extensionDigest": "be8ce492f0ef3b9dd9a76b6e08eb13d0db5180ca02c7fbca2964488f86a3cb8f",
+        "fixtureDigest": "537ffe4849910b4af12ddb76fe1ff131aa2d7f0bd346674c335d09f49e37a403",
+        "screenshots": {
+          "dialog-remove-favorite-narrow.png": "1ce59ff7f3e35c7ffb6b43e38e0e63da2f762783f3f30ef0917f808b8266835a",
+          "dialog-remove-favorite.png": "53d6e398d85b6db66e99698c608f18f722ecce0dc38fd16d6cd2403fed0157c1",
+          "home-favorites-narrow.png": "66ea2fc39842130b1a4a7788dd648bc84cc1d2bc3485eabeb817a9e38623b21e",
+          "home-favorites.png": "76d9f611983cd7ed4f2c6e998ab2cf5cc0777939579290d2b10a376a05c68b42",
+          "home-search-empty-narrow.png": "9241cbdcce85b60e2913b8059cb14a86fc18edb95433d4195bd88db08f246523",
+          "home-search-end-narrow.png": "4963f4454570cf763f3421d0997ad6f849b704fbb7aaa36733bff5853d129d14",
+          "home-search-narrow.png": "0b62fbee5de096e3ffb84aad38f220b3b4c7aca319cb59152757c5344682f6e6",
+          "home-search.png": "2ad7560ba9fee0172840d1016875f07b7bfcd41b0bd8aedb8dfb80f6c636a0c2",
+          "login-narrow.png": "467944b4de0273a734412416c13bafa02b16b8239270376ec20c8a4d1dfcecbe",
+          "login-wide.png": "3e15639ce5f5f8f2816fe55c05c0149e1d1ddddab0b5a160cbb48735327ff79b",
+          "login.png": "9acf0825a89de99c75a52a4ec380c85172eeb7f507855440dac24995e1edcdd5",
+          "profile-expanded-narrow.png": "a6ba9b9a87cc1ed4a03f1f9ff0896e14e178646c3d858970fe5cc7c9a37ac69b",
+          "profile-expanded.png": "af7a8d35858cf04d31534298a262fd6a540498ec63be178a200628216cdc20a5",
+          "sidebar-classic.png": "51ac4a666b5ef365c09ccf709a1675bc41bed6d13efc9dde228cd29f274d0ac5",
+          "sidebar-menu-narrow.png": "05d55e682bb2ba6a1893ded92a5e347e0ef6add644c2e6db11447ef57a0e9852"
+        }
+      }
+    },
+    {
+      "round": 4,
+      "model": "gpt-6.1-sol",
+      "reasoningEffort": "high",
+      "suiteScores": {
+        "a": 8.9,
+        "b": 8.43
+      },
+      "componentScores": {
+        "a": {
+          "login": 8.9,
+          "sidebar": 8.6,
+          "profile": 9.0,
+          "dialog": 9.2,
+          "favorites": 8.9,
+          "search": 9.0
+        },
+        "b": {
+          "login": 8.36,
+          "sidebar": 8.21,
+          "profile": 8.57,
+          "dialog": 8.93,
+          "favorites": 8.29,
+          "search": 8.21
+        }
+      },
+      "changes": "Visible compact Menu entry and more room for narrow content",
+      "reports": {
+        "a": "round-4-a.md",
+        "b": "round-4-b.md"
+      },
+      "evidence": {
+        "localCaptureSet": "round-4-final",
+        "extensionDigest": "2b38474b2a191bbed36ef90c7902b3b432e69ceccdaa3fc99a565fa005ccb2fa",
+        "fixtureDigest": "537ffe4849910b4af12ddb76fe1ff131aa2d7f0bd346674c335d09f49e37a403",
+        "screenshots": {
+          "dialog-remove-favorite-narrow.png": "b0f9ca3fdc5ec3d9fffa6b58ffae6f727ff5e8cf84d491696ec23c6622c39955",
+          "dialog-remove-favorite.png": "fed650ef2d2a1b25a67a1549395c850a4facfd8ca08771baaa0d08e9597b351e",
+          "home-favorites-narrow.png": "f17df49c3db5b1469d0fd0bad792727bd48a718a7e1b0944957897ffcfe46259",
+          "home-favorites.png": "6a6c5574f8237acf35bde5c6b18a38520ebfb015e5bbc6df5c3d7d496c68354f",
+          "home-search-empty-narrow.png": "a8ac67d4fa81e9a0fa6ae420c40738c5842af66c5f7cd442661ab5f4adbd0534",
+          "home-search-end-narrow.png": "de12c971c18afa01798ac0f099c4ba3521e80573c08344d768867b2c128379ec",
+          "home-search-narrow.png": "f2febb9965466d5440e19f256a9d622951f76ad3011f3af35de1205c7a53904a",
+          "home-search.png": "c2f4b02216bef275ec9a300b751937b841fb56007947c28da91123ef47f42cc2",
+          "login-narrow.png": "361831e832be4d5cb88fc544c5c943a5bd121ae908187473211953b9b77b8e4d",
+          "login-wide.png": "4da084944c44c108289ca11c267eb926bc3cff044e48efac6ac1bf0918b31ff9",
+          "login.png": "c567b02e9391d4224dff9415d2e1ab608e9a52b0238236a5327018551a5e82e3",
+          "profile-expanded-narrow.png": "a6ba9b9a87cc1ed4a03f1f9ff0896e14e178646c3d858970fe5cc7c9a37ac69b",
+          "profile-expanded.png": "55508c24680a80351bdc5536fd5892a0947e6b7910415551a1edfdc104a36286",
+          "sidebar-classic.png": "51ac4a666b5ef365c09ccf709a1675bc41bed6d13efc9dde228cd29f274d0ac5",
+          "sidebar-menu-narrow.png": "05d55e682bb2ba6a1893ded92a5e347e0ef6add644c2e6db11447ef57a0e9852"
+        }
+      }
+    },
+    {
+      "round": 5,
+      "model": "gpt-6.1-sol",
+      "reasoningEffort": "high",
+      "suiteScores": {
+        "a": 9.2,
+        "b": 8.6
+      },
+      "componentScores": {
+        "a": {
+          "login": 9.2,
+          "sidebar": 9.0,
+          "profile": 9.2,
+          "dialog": 9.2,
+          "favorites": 9.0,
+          "search": 9.3
+        },
+        "b": {
+          "login": 8.57,
+          "sidebar": 8.5,
+          "profile": 8.64,
+          "dialog": 8.86,
+          "favorites": 8.36,
+          "search": 8.64
+        }
+      },
+      "changes": "Menu identity/return, shared category context, complete notice preview and English-control evidence",
+      "reports": {
+        "a": "round-5-a.md",
+        "b": "round-5-b.md"
+      },
+      "evidence": {
+        "localCaptureSet": "round-5-ready",
+        "extensionDigest": "9c66fa0a6c751080b17afa93ee11e0a90d658da065272d672ba6ef84029e9ca0",
+        "fixtureDigest": "537ffe4849910b4af12ddb76fe1ff131aa2d7f0bd346674c335d09f49e37a403",
+        "screenshots": {
+          "dialog-remove-favorite-narrow.png": "b0f9ca3fdc5ec3d9fffa6b58ffae6f727ff5e8cf84d491696ec23c6622c39955",
+          "dialog-remove-favorite.png": "c81d2060bde51b26300c023973c6e49474fda22c362246e77a01458dfdd80a99",
+          "home-favorites-narrow.png": "f17df49c3db5b1469d0fd0bad792727bd48a718a7e1b0944957897ffcfe46259",
+          "home-favorites.png": "24bb63eb75a1428bfc7f8f3d4dae7281e6a51a317cf29e03873eabadea11eabb",
+          "home-search-empty-narrow.png": "fbfa6f16ffeaf3c5ca2f53eed392c80521b0247b1ddf1d78db3af87e7141b6d1",
+          "home-search-end-narrow.png": "f1165fe1324d054579df55736300d5d7b493eb07b0d0ac028efa535a9a826778",
+          "home-search-narrow.png": "f829b325dccf1ca6fd6306547ddc24fea7ccb61e46706aa49db9b17d131d07d7",
+          "home-search.png": "cd1fb4b8483818aed9621e07bab0148065225a7f6bb09be3a20b81faec9185a3",
+          "login-narrow.png": "94117cf621178b4b4c13adb61ea117fb82a29d3422759e81008a035bea5701b9",
+          "login-wide.png": "11c366f85b5503275ba02ae6344d45011c3d675585a83bb53ad4eacfa3538cdd",
+          "login.png": "69b252ecbff0c2f11742a903e4fd4625257e72a7f8fe2526b8b9e245b02c0f36",
+          "profile-expanded-narrow.png": "8c642e0b0fb597bbeda0a08f6660806fe586250261a35989e5212b113128b48f",
+          "profile-expanded.png": "55508c24680a80351bdc5536fd5892a0947e6b7910415551a1edfdc104a36286",
+          "sidebar-classic.png": "51ac4a666b5ef365c09ccf709a1675bc41bed6d13efc9dde228cd29f274d0ac5",
+          "sidebar-menu-narrow.png": "62c1a34cb96eaf57d621251cbd0ae0c3498f3116311b4ce788e9f0dd6de9d257"
+        }
+      },
+      "correction": "Reviewer B corrected arithmetic during round6: originally reported suite8.61/search8.71; category scores unchanged."
+    },
+    {
+      "round": 6,
+      "model": "gpt-6.1-sol",
+      "reasoningEffort": "high",
+      "suiteScores": {
+        "a": 9.3,
+        "b": 8.71
+      },
+      "componentScores": {
+        "a": {
+          "login": 9.2,
+          "sidebar": 9.3,
+          "profile": 9.3,
+          "dialog": 9.4,
+          "favorites": 9.3,
+          "search": 9.3
+        },
+        "b": {
+          "login": 8.57,
+          "sidebar": 8.64,
+          "profile": 8.79,
+          "dialog": 9.0,
+          "favorites": 8.57,
+          "search": 8.71
+        }
+      },
+      "changes": "Compact English utilities, consistent saved-item terminology, explicit removal action and quieter preference values",
+      "reports": {
+        "a": "round-6-a.md",
+        "b": "round-6-b.md",
+        "bClarification": "round-6-b-followup.md"
+      },
+      "evidence": {
+        "localCaptureSet": "round-6",
+        "extensionDigest": "c026ca832dcae40c4f2c16bbc9777a1828347427a0a4b01a6dfb4c38c844281e",
+        "fixtureDigest": "537ffe4849910b4af12ddb76fe1ff131aa2d7f0bd346674c335d09f49e37a403",
+        "screenshots": {
+          "dialog-remove-favorite-narrow.png": "4dd10819fbb6c2db66be03254cadb96c6784f18f1233169685a945f398e6f912",
+          "dialog-remove-favorite.png": "c81d2060bde51b26300c023973c6e49474fda22c362246e77a01458dfdd80a99",
+          "home-favorites-narrow.png": "1a9bdcaa0b3eafc02a7d826c59c8a6b24711aff897b57a192acababfcf455dca",
+          "home-favorites.png": "24bb63eb75a1428bfc7f8f3d4dae7281e6a51a317cf29e03873eabadea11eabb",
+          "home-search-empty-narrow.png": "f96920c01ef827c5e95962c7e7c280a9bb76d708902836de87f983a953cc56da",
+          "home-search-end-narrow.png": "d1a2fe78ccccbe66225ace2a2b2933bf393e4acab731fbcac7ffd7513773e802",
+          "home-search-narrow.png": "b59cc761002ae192dfbf14cc3043243c7e750c09f98f0f5d1768d9793a141178",
+          "home-search.png": "bc899516b6cfa7376003d75314063d2e0b4e475b6630679a61300ad8f3f4f7bd",
+          "login-narrow.png": "0cfdcffa6fd628f3e1e02f4141f774fb39d393631482e1a288870ce8ece76e3e",
+          "login-wide.png": "223eeda96580c4d7c71d00a86ea72aa29dfc9686e339143e453dd5ada084ce71",
+          "login.png": "668e65ead77588a8af814ec499ec2d622bcdba61e8d0e579fd08a29aaa65bbe6",
+          "profile-expanded-narrow.png": "d03ce2a71ae39ceae3ac35376d013223d6e767bf9683a43cca95670cd626c96c",
+          "profile-expanded.png": "6a60cc28ad3712978460a6523266c3d958034a130ee8646f8db92bd9fcfe3353",
+          "sidebar-classic.png": "51ac4a666b5ef365c09ccf709a1675bc41bed6d13efc9dde228cd29f274d0ac5",
+          "sidebar-menu-narrow.png": "a0afa9317ffc2d19076e1c961d788679ebcec0d22dd44d423bdb87c3c4afbbc8"
+        }
+      }
+    },
+    {
+      "round": 7,
+      "model": "gpt-6.1-sol",
+      "reasoningEffort": "high",
+      "suiteScores": {
+        "a": 8.7,
+        "b": 8.7
+      },
+      "componentScores": {
+        "a": {
+          "login": 8.7,
+          "sidebar": 8.3,
+          "profile": 8.8,
+          "dialog": 9.2,
+          "favorites": 8.5,
+          "search": 8.8
+        },
+        "b": {
+          "login": 8.7,
+          "sidebar": 8.4,
+          "profile": 8.9,
+          "dialog": 9.2,
+          "favorites": 8.6,
+          "search": 8.9
+        }
+      },
+      "changes": "Narrow metadata punctuation and independent fresh-pair assessment",
+      "reports": {
+        "a": "round-7-a.md",
+        "b": "round-7-b.md"
+      },
+      "evidence": {
+        "localCaptureSet": "round-7",
+        "extensionDigest": "5080418526e5f8d468e8ae44820a546261b7571b17f1a5dfdad7212b1c18c213",
+        "fixtureDigest": "e2880242a5f6e283b51e0d74da9c1e7d711277c42bbaea91d1086b5883a37747",
+        "screenshots": {
+          "dialog-remove-favorite-narrow.png": "4dd10819fbb6c2db66be03254cadb96c6784f18f1233169685a945f398e6f912",
+          "dialog-remove-favorite.png": "c81d2060bde51b26300c023973c6e49474fda22c362246e77a01458dfdd80a99",
+          "home-favorites-narrow.png": "1a9bdcaa0b3eafc02a7d826c59c8a6b24711aff897b57a192acababfcf455dca",
+          "home-favorites.png": "24bb63eb75a1428bfc7f8f3d4dae7281e6a51a317cf29e03873eabadea11eabb",
+          "home-search-empty-narrow.png": "f96920c01ef827c5e95962c7e7c280a9bb76d708902836de87f983a953cc56da",
+          "home-search-end-narrow.png": "3406efa80e9640f55d19fecc935da264d0609edf47ba49ec38fad729a587b4b3",
+          "home-search-narrow.png": "253a6b019525a21d12bc2df56144cdaf16333050585f1a637dd5e1295647015f",
+          "home-search.png": "9107fb95006fe67e05f9de99dd87029392d569645ad4f778b7183dbb881d128c",
+          "login-narrow.png": "94117cf621178b4b4c13adb61ea117fb82a29d3422759e81008a035bea5701b9",
+          "login-wide.png": "11c366f85b5503275ba02ae6344d45011c3d675585a83bb53ad4eacfa3538cdd",
+          "login.png": "69b252ecbff0c2f11742a903e4fd4625257e72a7f8fe2526b8b9e245b02c0f36",
+          "profile-expanded-narrow.png": "8fb311a0ff9ae3bc2c68062720d73ed3a2c682f15cf642ce47eebc89e964eca7",
+          "profile-expanded.png": "6a60cc28ad3712978460a6523266c3d958034a130ee8646f8db92bd9fcfe3353",
+          "sidebar-classic.png": "51ac4a666b5ef365c09ccf709a1675bc41bed6d13efc9dde228cd29f274d0ac5",
+          "sidebar-menu-narrow.png": "700c5b71df3ff4f8dc02194a572bdaca4f119c5b489030fb6f5d44396891211c"
+        }
+      }
+    },
+    {
+      "round": 8,
+      "model": "gpt-6.1-sol",
+      "reasoningEffort": "high",
+      "suiteScores": {
+        "a": 8.9,
+        "b": 9.0
+      },
+      "componentScores": {
+        "a": {
+          "login": 8.9,
+          "sidebar": 8.9,
+          "profile": 8.8,
+          "dialog": 9.2,
+          "favorites": 9.0,
+          "search": 8.8
+        },
+        "b": {
+          "login": 8.8,
+          "sidebar": 8.9,
+          "profile": 8.9,
+          "dialog": 9.2,
+          "favorites": 9.1,
+          "search": 8.9
+        }
+      },
+      "changes": "Full-width Menu default for unconfigured narrow screens, counted homepage disclosure, compact login utilities",
+      "reports": {
+        "a": "round-8-a.md",
+        "b": "round-8-b.md"
+      },
+      "evidence": {
+        "localCaptureSet": "round-8-audit",
+        "extensionDigest": "4146f4dc5cc768f6cf3b285bfdfeb26d03ccfb6ce86a0a6c6ed7a65f85f57994",
+        "fixtureDigest": "09c2079886cf7544c65e519d283b6d7f0d6bb7aa025181809bd53224a3c8891e",
+        "screenshots": {
+          "dialog-remove-favorite-narrow.png": "4dd10819fbb6c2db66be03254cadb96c6784f18f1233169685a945f398e6f912",
+          "dialog-remove-favorite.png": "9b3d3b0b084f85e1093f47ca3ebefe6ae506c7e937f20f107125c7d25fd4f08b",
+          "home-favorites-narrow.png": "1a9bdcaa0b3eafc02a7d826c59c8a6b24711aff897b57a192acababfcf455dca",
+          "home-favorites.png": "f6be27d8e198a982aad87658139548c28859470608fae0ca6f706955c3140175",
+          "home-search-empty-narrow.png": "f96920c01ef827c5e95962c7e7c280a9bb76d708902836de87f983a953cc56da",
+          "home-search-end-narrow.png": "3406efa80e9640f55d19fecc935da264d0609edf47ba49ec38fad729a587b4b3",
+          "home-search-narrow.png": "253a6b019525a21d12bc2df56144cdaf16333050585f1a637dd5e1295647015f",
+          "home-search.png": "84f242b0ae4e6c2dc879553da591c800cab401cf70b75508d81f1f9020888970",
+          "login-narrow.png": "5d503973984fd057b510a65d721f81c760c6a072960b067e7e31c3f72cc696d3",
+          "login-wide.png": "9ec929daaa923fa88e815d646223f788786b2eb94cf5558756bb8784ec034b9e",
+          "login.png": "c1b45bf9cf9d66deb401bb1477ef3b75ce72211704ab967519dd34686e6484e0",
+          "phone-menu-dialog.png": "8493f8b98c279296a113c32d3f7ee1de0094a04f4ae754711ddf53b92c8024e6",
+          "phone-menu-favorites.png": "90255fd3f1c48c8b620c4223ff4498db30419f91a7fe091a6648e5c9b1033bcc",
+          "phone-menu-search.png": "343f7a757c3e368d8ef7490647d63dda1a523a492462dd1cf7af838e728f561f",
+          "profile-expanded-narrow.png": "d03ce2a71ae39ceae3ac35376d013223d6e767bf9683a43cca95670cd626c96c",
+          "profile-expanded.png": "807411a5a4d3a9ee4a46515a68d1d58e68c5f5243daeea56c5ac391949728000",
+          "sidebar-classic.png": "51ac4a666b5ef365c09ccf709a1675bc41bed6d13efc9dde228cd29f274d0ac5",
+          "sidebar-menu-narrow.png": "4faa557642737b6305f39cc779095025a69e409d5ef65123e69052cf49481cbd"
+        }
+      }
+    },
+    {
+      "round": 9,
+      "model": "gpt-6.1-sol",
+      "reasoningEffort": "high",
+      "suiteScores": {
+        "a": 9.0,
+        "b": 9.0
+      },
+      "componentScores": {
+        "a": {
+          "login": 9.0,
+          "sidebar": 8.9,
+          "profile": 8.8,
+          "dialog": 9.2,
+          "favorites": 9.0,
+          "search": 9.0
+        },
+        "b": {
+          "login": 8.9,
+          "sidebar": 8.9,
+          "profile": 8.9,
+          "dialog": 9.2,
+          "favorites": 9.1,
+          "search": 9.0
+        }
+      },
+      "changes": "Clear narrow utility-link boundaries and discrete search category metadata",
+      "reports": {
+        "a": "round-9-a.md",
+        "b": "round-9-b.md"
+      },
+      "evidence": {
+        "localCaptureSet": "round-9",
+        "extensionDigest": "c956ef744a58db129088343e23675641a58351424a47be4e038c0807d2617c6d",
+        "fixtureDigest": "09c2079886cf7544c65e519d283b6d7f0d6bb7aa025181809bd53224a3c8891e",
+        "screenshots": {
+          "dialog-remove-favorite-narrow.png": "4dd10819fbb6c2db66be03254cadb96c6784f18f1233169685a945f398e6f912",
+          "dialog-remove-favorite.png": "9b3d3b0b084f85e1093f47ca3ebefe6ae506c7e937f20f107125c7d25fd4f08b",
+          "home-favorites-narrow.png": "1a9bdcaa0b3eafc02a7d826c59c8a6b24711aff897b57a192acababfcf455dca",
+          "home-favorites.png": "f6be27d8e198a982aad87658139548c28859470608fae0ca6f706955c3140175",
+          "home-search-empty-narrow.png": "f96920c01ef827c5e95962c7e7c280a9bb76d708902836de87f983a953cc56da",
+          "home-search-end-narrow.png": "03b979e4a2fea6701db5a7020cbabc9375a3b8eeccf722604504699a261d91db",
+          "home-search-narrow.png": "76d8faa146523f126eda7af2496a9a5dd584d4657d965b8e1881a40aadac16a1",
+          "home-search.png": "84f242b0ae4e6c2dc879553da591c800cab401cf70b75508d81f1f9020888970",
+          "login-narrow.png": "efd2c3637623996f9e886a928dab0899ad6551a95eca98a0875af116b213d9cf",
+          "login-wide.png": "9ec929daaa923fa88e815d646223f788786b2eb94cf5558756bb8784ec034b9e",
+          "login.png": "c1b45bf9cf9d66deb401bb1477ef3b75ce72211704ab967519dd34686e6484e0",
+          "phone-menu-dialog.png": "8493f8b98c279296a113c32d3f7ee1de0094a04f4ae754711ddf53b92c8024e6",
+          "phone-menu-favorites.png": "90255fd3f1c48c8b620c4223ff4498db30419f91a7fe091a6648e5c9b1033bcc",
+          "phone-menu-search.png": "343f7a757c3e368d8ef7490647d63dda1a523a492462dd1cf7af838e728f561f",
+          "profile-expanded-narrow.png": "d03ce2a71ae39ceae3ac35376d013223d6e767bf9683a43cca95670cd626c96c",
+          "profile-expanded.png": "807411a5a4d3a9ee4a46515a68d1d58e68c5f5243daeea56c5ac391949728000",
+          "sidebar-classic.png": "51ac4a666b5ef365c09ccf709a1675bc41bed6d13efc9dde228cd29f274d0ac5",
+          "sidebar-menu-narrow.png": "4faa557642737b6305f39cc779095025a69e409d5ef65123e69052cf49481cbd"
+        }
+      }
+    }
+  ]
+}
