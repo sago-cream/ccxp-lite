@@ -86,43 +86,6 @@
       for (const linkItem of pinnedLinks) {
         body.append(createPinnedLinkCard(targetDocument, navDocument, linkItem, strings, rerender));
       }
-      if (state.searchQuery === "" && body.childElementCount > 4) {
-        const items = [...body.children] as HTMLElement[];
-        const overflowId = "category-favorites-overflow";
-        const expanded = new Set(state.classicExpandedItemIds);
-        const showAll = expanded.has(overflowId);
-        const overflowItems = items.slice(4);
-        for (const [index, item] of overflowItems.entries()) {
-          item.hidden = !showAll;
-          item.id = `ccxp-lite-pinned-overflow-${index}`;
-        }
-        const english = app.shared?.resolveLocaleFromDocument(targetDocument) === "en";
-        const expandLabel = english
-          ? `Show all favorites (${items.length})`
-          : `\u986F\u793A\u5168\u90E8\u5E38\u7528\u529F\u80FD\uFF08${items.length}\uFF09`;
-        const collapseLabel = english
-          ? "Show fewer favorites"
-          : "\u6536\u5408\u5E38\u7528\u529F\u80FD";
-        const more = createButton(targetDocument, {
-          className: "ccxp-lite-pinned-show-more",
-          label: showAll ? collapseLabel : expandLabel,
-          onClick: () => {
-            if (showAll) {
-              expanded.delete(overflowId);
-            } else {
-              expanded.add(overflowId);
-            }
-            const nextState = state;
-            nextState.classicExpandedItemIds = [...expanded];
-            persistSidebarScroll(targetDocument, "root");
-            rerender();
-            targetDocument.querySelector<HTMLButtonElement>(".ccxp-lite-pinned-show-more")?.focus();
-          },
-        });
-        more.setAttribute("aria-expanded", String(showAll));
-        more.setAttribute("aria-controls", overflowItems.map((item) => item.id).join(" "));
-        body.insertBefore(more, overflowItems[0]);
-      }
     }
     return dom.element(
       "section",

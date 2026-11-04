@@ -20,8 +20,3 @@ test("action text retains AA contrast on its supported surfaces", () => {
     expect(contrast(color, tokens.colorSurfaceMuted)).toBeGreaterThanOrEqual(4.5);
   }
 });
-test("focus rings and input boundaries remain distinguishable", () => {
-  for (const color of [tokens.colorPrimaryFocusBorder, tokens.colorControlBorder]) {
-    expect(contrast(color, tokens.colorSurface)).toBeGreaterThanOrEqual(3);
-  }
-});

@@ -61,34 +61,9 @@
       list.append(dom.element("article", { className: "ccxp-lite-announcement-row" }, [entryRow]));
     }
     const contentRow = dom.element("tr", { className: "ccxp-lite-announcement-scroll-row" }, [
-      dom.element(
-        "td",
-        {
-          className: "ccxp-lite-announcement-content-cell",
-          attributes: { tabindex: "0", role: "region", "aria-label": titleText },
-        },
-        [list],
-      ),
+      dom.element("td", { className: "ccxp-lite-announcement-content-cell" }, [list]),
     ]);
-    const english = namespace?.shared?.resolveLocaleFromDocument(targetDocument) === "en";
-    const expandLabel = english
-      ? `Show all announcements (${entries.length})`
-      : `\u986F\u793A\u5168\u90E8\u516C\u544A\uFF08${entries.length}\uFF09`;
-    const collapseLabel = english ? "Collapse announcements" : "\u6536\u5408\u516C\u544A";
-    const expand = dom.element("button", {
-      className: "ccxp-lite-announcement-expand",
-      text: expandLabel,
-      attributes: { type: "button", "aria-expanded": "false" },
-    });
-    expand.addEventListener("click", () => {
-      const expanded = table.classList.toggle("ccxp-lite-announcements-expanded");
-      expand.setAttribute("aria-expanded", String(expanded));
-      expand.textContent = expanded ? collapseLabel : expandLabel;
-    });
-    const footer = dom.element("tr", { className: "ccxp-lite-announcement-footer" }, [
-      dom.element("td", {}, [expand]),
-    ]);
-    dom.append(tbody, titleRow, contentRow, footer);
+    dom.append(tbody, titleRow, contentRow);
   }
 
   function removeEmptyAnnouncementDecorators(topicContent: HTMLElement) {

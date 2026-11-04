@@ -436,30 +436,9 @@
     results.setAttribute("aria-label", english ? "Search results" : "\u641C\u5C0B\u7D50\u679C");
     results.hidden = true;
     results.setAttribute("role", "region");
-    const scrollHint = targetDocument.createElement("div");
-    scrollHint.className = "ccxp-home-search-scroll-hint";
-    scrollHint.textContent = english
-      ? "Scroll for more results"
-      : "\u6372\u52D5\u67E5\u770B\u66F4\u591A\u7D50\u679C";
-    scrollHint.hidden = true;
-    search.append(results, scrollHint);
-    const view = targetDocument.defaultView;
-    let scrollHintFrame = 0;
-    const updateScrollHint = () => {
-      const lastContext =
-        results.querySelector(
-          ".ccxp-home-search-result:last-child .ccxp-home-search-context:not([hidden])",
-        ) ?? results.querySelector(".ccxp-home-search-result:last-child .ccxp-home-search-title");
-      scrollHint.hidden =
-        results.hidden ||
-        !lastContext ||
-        lastContext.getBoundingClientRect().bottom <= results.getBoundingClientRect().bottom + 1;
-    };
-    results.addEventListener("scroll", updateScrollHint, { passive: true });
-    view?.addEventListener("resize", updateScrollHint);
+    search.append(results);
     const closeResults = () => {
       results.hidden = true;
-      scrollHint.hidden = true;
     };
     const appendMatch = (parent: HTMLElement, text: string, query: string) => {
       const index = text.toLowerCase().indexOf(query.toLowerCase());
@@ -478,12 +457,10 @@
       clear.hidden = input.value === "";
       results.textContent = "";
       results.hidden = query === "" || !model;
-      scrollHint.hidden = true;
       if (query === "" || !model || !navDocument) {
         return;
       }
       const seen = new Set<string>();
-      const resultCategories = new Set<string>();
       for (const category of sidebarData.filterCategories(model.categories, query)) {
         for (const link of flattenHomeCategory(category)) {
           const id = sidebarFavorites.createLinkId(link);
@@ -491,7 +468,6 @@
             continue;
           }
           seen.add(id);
-          resultCategories.add(category.label);
           const row = uiButtons.createButton(targetDocument, {
             className: "ccxp-home-search-result",
             ariaLabel: `${link.label} (${category.label})`,
@@ -504,32 +480,13 @@
           const title = targetDocument.createElement("span");
           title.className = "ccxp-home-search-title";
           appendMatch(title, link.label, query);
-          const context = targetDocument.createElement("span");
-          context.className = "ccxp-home-search-context";
-          appendMatch(context, category.label, query);
-          row.append(title, context);
+          row.append(title);
           if (sidebarRuntime.isExternalLinkTarget(link, navDocument)) {
             row.append(uiIcons.createExternalLinkIcon(targetDocument));
           }
           results.append(row);
         }
       }
-      const resultStatus = targetDocument.createElement("p");
-      resultStatus.className = "ccxp-home-search-status";
-      resultStatus.setAttribute("role", "status");
-      resultStatus.textContent = english
-        ? `${seen.size} results`
-        : `${seen.size} \u500B\u7D50\u679C`;
-      if (resultCategories.size === 1) {
-        const category = targetDocument.createElement("span");
-        category.className = "ccxp-home-search-status-category";
-        category.textContent = [...resultCategories][0];
-        resultStatus.append(category);
-        for (const context of results.querySelectorAll<HTMLElement>(".ccxp-home-search-context")) {
-          context.hidden = true;
-        }
-      }
-      results.prepend(resultStatus);
       if (seen.size === 0) {
         const empty = targetDocument.createElement("p");
         empty.setAttribute("role", "status");
@@ -538,8 +495,6 @@
           : "\u627E\u4E0D\u5230\u7B26\u5408\u7684\u529F\u80FD\uFF0C\u8ACB\u8A66\u8A66\u5176\u4ED6\u95DC\u9375\u5B57\u3002";
         results.append(empty);
       }
-      view?.cancelAnimationFrame(scrollHintFrame);
-      scrollHintFrame = view?.requestAnimationFrame(updateScrollHint) ?? 0;
     };
 
     const section = targetDocument.createElement("section");
@@ -612,9 +567,6 @@
         });
       const visible = expanded ? matches : matches.slice(0, 8);
       showAll.hidden = expanded || matches.length <= 8;
-      showAll.textContent = english
-        ? `Show all favorites (${matches.length})`
-        : `\u986F\u793A\u5168\u90E8\u5E38\u7528\u529F\u80FD\uFF08${matches.length}\uFF09`;
       showAll.setAttribute("aria-expanded", String(expanded));
       const allLinks = categories.flatMap((category) =>
         flattenHomeCategory(category).map((link) => ({ category, link })),
@@ -651,16 +603,7 @@
         const name = targetDocument.createElement("span");
         name.className = "ccxp-home-card-name";
         name.textContent = link.label;
-        const copy = targetDocument.createElement("span");
-        copy.className = "ccxp-home-card-copy";
-        const context = targetDocument.createElement("span");
-        context.className = "ccxp-home-card-context";
-        context.textContent = category.label;
-        copy.append(name, context);
-        card.append(icon, copy);
-        if (sidebarRuntime.isExternalLinkTarget(link, navDocument)) {
-          name.append(" ", uiIcons.createExternalLinkIcon(targetDocument));
-        }
+        card.append(icon, name);
         wrapper.append(card);
         const controls = namespace.sidebarFavoriteControls;
         if (controls) {
@@ -738,9 +681,6 @@
       unsubscribe();
       unsubscribeRecent();
       targetDocument.removeEventListener("click", outsideClick);
-      results.removeEventListener("scroll", updateScrollHint);
-      view?.removeEventListener("resize", updateScrollHint);
-      view?.cancelAnimationFrame(scrollHintFrame);
       navFrame?.removeEventListener("load", render);
     };
     targetDocument.defaultView?.addEventListener("pagehide", cleanup, { once: true });

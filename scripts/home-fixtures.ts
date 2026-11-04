@@ -258,7 +258,7 @@ export async function captureNarrowHome(
     }
     await input.fill("fixture-no-matching-function");
     await capture(page, "home-search-empty-narrow");
-    if (assertHead) {
+    if (assertHead && (await main.locator(".ccxp-home-search-scroll-hint").count()) > 0) {
       await input.fill("\u7CFB\u7D71");
       await main.waitForFunction(() => {
         const hint = document.querySelector<HTMLElement>(".ccxp-home-search-scroll-hint");
@@ -384,27 +384,20 @@ export async function captureNarrowDefaultMenu(
       const visibleFavorites = nav.locator(
         '[data-ccxp-lite-order-group="category:category-favorites"] > [data-ccxp-lite-order-item]:visible',
       );
-      const more = nav.locator(".ccxp-lite-sidebar-show-more");
       const firstId = await visibleFavorites.first().getAttribute("data-ccxp-lite-order-item");
       await visibleFavorites.first().press("Alt+Shift+ArrowDown");
       assert.equal(
         await visibleFavorites.nth(1).getAttribute("data-ccxp-lite-order-item"),
         firstId,
       );
-      assert.equal(await visibleFavorites.count(), 4);
+      assert.equal(await visibleFavorites.count(), 10);
       await visibleFavorites.nth(1).press("Alt+Shift+ArrowUp");
       assert.equal(
         await visibleFavorites.first().getAttribute("data-ccxp-lite-order-item"),
         firstId,
       );
       await visibleFavorites.last().press("Alt+Shift+ArrowDown");
-      assert.equal(await visibleFavorites.count(), 4);
-      assert.equal(
-        await more.evaluate((element) =>
-          element.previousElementSibling?.hasAttribute("data-ccxp-lite-order-item"),
-        ),
-        true,
-      );
+      assert.equal(await visibleFavorites.count(), 10);
     }
   } finally {
     await page.close();

@@ -379,7 +379,7 @@ body.ccxp-lite-main-skin:has(.ccxp-home-header) {
 
 .ccxp-home-content {
   width: min(100%, 768px);
-  margin: clamp(32px, 6vh, 64px) auto 0;
+  margin: clamp(48px, 12vh, 128px) auto 0;
   padding: 0 24px 48px;
 }
 html[data-ccxp-lite-scope="main"] .ccxp-home-wordmark {
@@ -390,7 +390,7 @@ html[data-ccxp-lite-scope="main"] .ccxp-home-wordmark {
   margin-bottom: 32px;
   text-align: center;
   font-family: Arial, sans-serif !important;
-  font-size: clamp(40px, 5vw, 56px);
+  font-size: clamp(48px, 7vw, 76px);
   font-weight: 600;
   line-height: 1.15;
   letter-spacing: -0.01em;
@@ -417,9 +417,6 @@ html[data-ccxp-lite-scope="main"] .ccxp-home-wordmark {
 .ccxp-home-search:focus-within {
   outline: 2px solid var(--ccxp-lite-primary-focus-border);
   outline-offset: 0;
-}
-.ccxp-home-search:has(.ccxp-home-search-results:not([hidden])) {
-  box-shadow: var(--ccxp-lite-popover-shadow);
 }
 .ccxp-home-search > svg {
   width: 20px;
@@ -488,23 +485,10 @@ html[data-ccxp-lite-scope="main"] .ccxp-home-search > input {
   height: 18px;
 }
 .ccxp-home-card-name {
-  white-space: normal;
-  overflow-wrap: anywhere;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font: var(--ccxp-lite-type-home-control);
-}
-.ccxp-home-card-copy {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  gap: var(--ccxp-lite-spacing-2xs);
-}
-.ccxp-home-card-context,
-.ccxp-home-search-context {
-  color: var(--ccxp-lite-text-muted);
-  font: var(--ccxp-lite-type-body-muted);
-}
-.ccxp-home-card > .ccxp-lite-link-icon {
-  margin-left: auto;
 }
 @media (max-width: 520px) {
   .ccxp-home-cards {
@@ -514,16 +498,15 @@ html[data-ccxp-lite-scope="main"] .ccxp-home-search > input {
 
 .ccxp-home-show-all {
   display: flex;
-  margin: 12px 0 0;
+  margin: 12px 0 0 auto;
   min-height: 40px;
   align-items: center;
-  padding: var(--ccxp-lite-spacing-inline-sm) var(--ccxp-lite-spacing-inset-sm);
-  border: 1px solid var(--ccxp-lite-border);
-  border-radius: var(--ccxp-lite-radius-input);
+  padding: 0;
+  border: 0;
   background: transparent;
   box-shadow: none;
   color: var(--ccxp-lite-type-primary-link-color);
-  font: var(--ccxp-lite-type-button);
+  font: var(--ccxp-lite-type-body);
   cursor: pointer;
 }
 .ccxp-home-show-all[hidden] {
@@ -537,12 +520,11 @@ html[data-ccxp-lite-scope="main"] .ccxp-home-search > input {
 .ccxp-home-search-results {
   grid-column: 1 / -1;
   min-width: 0;
-  max-height: min(480px, calc(100dvh - 320px));
+  max-height: min(360px, 50vh);
   overflow-y: auto;
   margin: 0 -8px;
   padding: 4px 0 12px;
   border: 0;
-  border-top: 1px solid var(--ccxp-lite-border);
   background: transparent;
 }
 .ccxp-home-search-results[hidden] {
@@ -562,21 +544,17 @@ html[data-ccxp-lite-scope="main"] .ccxp-home-search > input {
   min-height: 44px;
   padding: 12px 16px;
   border: 0;
-  border-radius: var(--ccxp-lite-radius-input);
+  border-radius: 16px;
   background: transparent;
   color: var(--ccxp-lite-text);
   font: var(--ccxp-lite-type-home-control);
   text-align: left;
   cursor: pointer;
 }
-.ccxp-home-search-result:hover {
+.ccxp-home-search-result:hover,
+.ccxp-home-search-result:focus-visible {
   background: var(--ccxp-lite-surface-muted);
   outline: none;
-}
-.ccxp-home-search-result:focus-visible {
-  background: var(--ccxp-lite-primary-hover-surface);
-  outline: 2px solid var(--ccxp-lite-primary-focus-border);
-  outline-offset: -2px;
 }
 .ccxp-home-search-title,
 .ccxp-home-search-context {
@@ -596,29 +574,14 @@ html[data-ccxp-lite-scope="main"] .ccxp-home-search > input {
   color: inherit;
   font-weight: var(--ccxp-lite-font-weight-strong);
 }
-.ccxp-home-search-results .ccxp-home-search-status {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0 var(--ccxp-lite-spacing-inline-sm);
-  margin: var(--ccxp-lite-spacing-inline-sm) var(--ccxp-lite-spacing-md);
-  color: var(--ccxp-lite-text-muted);
-  font: var(--ccxp-lite-type-body-muted);
-}
-.ccxp-home-search-status-category {
-  white-space: nowrap;
-}
-.ccxp-home-search-status-category::before {
-  content: "\00b7";
-  margin-right: var(--ccxp-lite-spacing-inline-sm);
-}
 .ccxp-home-search-results p {
   margin: 12px;
   font: var(--ccxp-lite-type-home-control);
 }
 
 .ccxp-home-brand-logo {
-  width: clamp(40px, 5vw, 56px);
-  height: clamp(40px, 5vw, 56px);
+  width: clamp(48px, 7vw, 76px);
+  height: clamp(48px, 7vw, 76px);
   object-fit: contain;
   filter: var(--ccxp-lite-brand-logo-filter);
 }
@@ -680,56 +643,7 @@ html[data-ccxp-lite-scope="main"] .ccxp-home-header > .ccxp-home-contact {
   outline-offset: 0;
 }
 
-.ccxp-home-search-results {
-  scrollbar-gutter: stable;
-}
-.ccxp-home-search-results::-webkit-scrollbar {
-  width: 8px;
-}
-.ccxp-home-search-results::-webkit-scrollbar-thumb {
-  border: 2px solid var(--ccxp-lite-surface);
-  border-radius: var(--ccxp-lite-radius-full);
-  background: var(--ccxp-lite-text-muted);
-}
-
-.ccxp-home-search-scroll-hint {
-  grid-column: 1 / -1;
-  margin: 0;
-  padding: var(--ccxp-lite-spacing-inline-sm) var(--ccxp-lite-spacing-md)
-    var(--ccxp-lite-spacing-inset-sm);
-  color: var(--ccxp-lite-text-muted);
-  font: var(--ccxp-lite-type-body-muted);
-  text-align: center;
-}
-.ccxp-home-search-scroll-hint[hidden] {
-  display: none;
-}
 @media (max-width: 520px) {
-  .ccxp-home-search-status-category::before {
-    content: none;
-  }
-  .ccxp-home-search-status-category {
-    padding-inline: var(--ccxp-lite-spacing-xs);
-    border-radius: var(--ccxp-lite-radius-sm);
-    background: var(--ccxp-lite-surface-muted);
-  }
-  .ccxp-home-header.ccxp-lite-page-header {
-    gap: 0 var(--ccxp-lite-spacing-inset-sm);
-    padding: var(--ccxp-lite-spacing-inline-sm) var(--ccxp-lite-spacing-md);
-    margin-bottom: 0;
-  }
-  .ccxp-home-content {
-    padding-inline: var(--ccxp-lite-spacing-md);
-    margin-top: var(--ccxp-lite-spacing-md);
-  }
-  html[data-ccxp-lite-scope="main"] .ccxp-home-wordmark {
-    font-size: 32px;
-    margin-bottom: var(--ccxp-lite-spacing-lg);
-  }
-  .ccxp-home-wordmark img {
-    width: 36px;
-    height: 36px;
-  }
   .ccxp-home-card {
     gap: var(--ccxp-lite-spacing-inline-sm);
     padding-inline: var(--ccxp-lite-spacing-inset-sm);
@@ -737,14 +651,4 @@ html[data-ccxp-lite-scope="main"] .ccxp-home-header > .ccxp-home-contact {
   .ccxp-home-card-icon {
     display: none;
   }
-  .ccxp-home-search-result {
-    padding-inline: var(--ccxp-lite-spacing-inline-sm);
-  }
-}
-.ccxp-home-card-name > svg {
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  vertical-align: -2px;
-  color: var(--ccxp-lite-text-muted);
 }

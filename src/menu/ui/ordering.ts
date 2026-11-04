@@ -166,27 +166,6 @@
           }
         }
       }
-      const disclosure = list.querySelector<HTMLButtonElement>(
-        ":scope > .ccxp-lite-sidebar-show-more, :scope > .ccxp-lite-pinned-show-more",
-      );
-      if (disclosure) {
-        const orderedItems = getItems(list);
-        const expanded = disclosure.getAttribute("aria-expanded") === "true";
-        const prefix = disclosure.classList.contains("ccxp-lite-pinned-show-more")
-          ? "ccxp-lite-pinned-overflow-"
-          : "ccxp-lite-favorite-overflow-";
-        for (const [index, item] of orderedItems.entries()) {
-          item.hidden = !expanded && index >= 4;
-          if (index >= 4) {
-            item.id = `${prefix}${index - 4}`;
-          } else if (item.id.startsWith(prefix)) {
-            item.removeAttribute("id");
-          }
-        }
-        const overflow = orderedItems.slice(4);
-        disclosure.setAttribute("aria-controls", overflow.map((item) => item.id).join(" "));
-        list.insertBefore(disclosure, overflow[0]);
-      }
       for (const item of items) {
         const handle = getHandle(item);
         handle.draggable = true;
@@ -233,7 +212,7 @@
           }
           event.preventDefault();
           event.stopPropagation();
-          const visible = getItems(list).filter((candidate) => !candidate.hidden);
+          const visible = getItems(list);
           const nextIndex = visible.indexOf(item) + direction;
           const target = nextIndex < 0 ? undefined : visible.at(nextIndex);
           if (target !== undefined) {

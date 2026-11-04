@@ -16,7 +16,7 @@
     return;
   }
   const app = namespace;
-  const { TOKENS, STRINGS, resolveLocaleFromDocument } = namespace.shared;
+  const { TOKENS, STRINGS } = namespace.shared;
   const { createController } = namespace.uiController;
   const { createSidebarSearch } = namespace.uiDisplay;
   const { getSidebarUiState, restoreSidebarScroll } = namespace.sidebarState;
@@ -213,27 +213,6 @@
       }
       this.collapseButton = button;
       header.append(button);
-      const menu = app.uiButtons?.createButton(this.hostDocument, {
-        className: "ccxp-lite-sidebar-open-menu",
-        label: resolveLocaleFromDocument(this.hostDocument) === "en" ? "Menu" : "\u9078\u55AE",
-      });
-      if (menu) {
-        header.parentElement?.append(menu);
-        const openMenu = () => {
-          this.focused = true;
-          this.previewCollapse(shell);
-          this.searchInput?.focus();
-        };
-        this.shellController.listen(menu, "focus", openMenu);
-        this.shellController.listen(menu, "pointerdown", (event) => {
-          event.preventDefault();
-          openMenu();
-        });
-        this.shellController.listen(menu, "click", openMenu);
-        this.shellController.addCleanup(() => {
-          menu.remove();
-        });
-      }
       this.shellController.addCleanup(() => {
         button.remove();
       });
