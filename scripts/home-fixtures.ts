@@ -7,9 +7,9 @@ async function assertSingleLineFavoriteNames(main: Frame) {
     .locator(".ccxp-home-card-name")
     .evaluateAll((elements: readonly Element[]) =>
       elements.map((element) => ({
-          height: element.getBoundingClientRect().height,
-          lineHeight: Number.parseFloat(getComputedStyle(element).lineHeight),
-        })),
+        height: element.getBoundingClientRect().height,
+        lineHeight: Number.parseFloat(getComputedStyle(element).lineHeight),
+      })),
     );
   assert.ok(names.length > 0);
   assert.ok(
