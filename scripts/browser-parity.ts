@@ -323,6 +323,33 @@ async function capturePage(page: Page, outputPath: string, topOfPage = false) {
   });
 }
 
+async function assertLoginFieldAlignment(page: Page) {
+  const rows = await page
+    .locator(".ccxp-lite-login-field-label-row")
+    .evaluateAll((elements: readonly Element[]) =>
+      elements.flatMap((row) => {
+        const label = row.querySelector(".ccxp-lite-login-field-label");
+        const icon = row.querySelector(".ccxp-lite-account-guide-info-button svg");
+        if (!label || !icon) {
+          return [];
+        }
+        const range = row.ownerDocument.createRange();
+        range.selectNodeContents(label);
+        const text = range.getBoundingClientRect();
+        const help = icon.getBoundingClientRect();
+        return [
+          { textCenter: (text.top + text.bottom) / 2, iconCenter: (help.top + help.bottom) / 2 },
+        ];
+      }),
+    );
+  assert.equal(rows.length, 2);
+  assert.ok(
+    rows.every((row) => Math.abs(row.textCenter - row.iconCenter) <= 2),
+    `Login labels and help icons must share a visual center: ${JSON.stringify(rows)}`,
+  );
+  return Object.freeze(rows);
+}
+
 function directoryDigest(directory: string): string {
   const hash = createHash("sha256");
   for (const name of readdirSync(directory, { recursive: true }).map(String).toSorted()) {
@@ -777,6 +804,9 @@ async function captureRevision(
       });
       const loginScreenshot = path.join(revisionOutputDir, "login.png");
       await capturePage(page, loginScreenshot, true);
+      if (label === "head") {
+        styles["login-label-alignment"] = await assertLoginFieldAlignment(page);
+      }
       screenshots.login = loginScreenshot;
       styles.login = await collectStyles(page, loginProbes);
       for (const [name, width] of [
@@ -792,6 +822,10 @@ async function captureRevision(
         const file = path.join(revisionOutputDir, `${name}.png`);
         // eslint-disable-next-line no-await-in-loop -- Resizing must settle before each capture.
         await capturePage(page, file, true);
+        if (label === "head") {
+          // eslint-disable-next-line no-await-in-loop -- Verify each captured viewport.
+          styles[`${name}-label-alignment`] = await assertLoginFieldAlignment(page);
+        }
         screenshots[name] = file;
       }
       await page.setViewportSize(viewport);

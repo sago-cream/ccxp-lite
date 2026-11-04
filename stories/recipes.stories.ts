@@ -26,7 +26,7 @@ export const Confirmation: Story = {
     const description = removal
       ? localized(
           context.globals.locale,
-          "此功能將從常用功能移除，仍可隨時從選單加回。",
+          "此功能將從常用功能移除。",
           "This function will be removed from Favorites. You can add it again from the menu.",
         )
       : localized(
@@ -62,7 +62,7 @@ export const Confirmation: Story = {
           sidebarRemovePinnedDialogDescription: description,
           sidebarRemovePinnedDialogCancel: localized(context.globals.locale, "取消", "Cancel"),
           sidebarRemovePinnedDialogConfirm: removal
-            ? localized(context.globals.locale, "確認移除", "Remove favorite")
+            ? localized(context.globals.locale, "移除", "Remove")
             : localized(context.globals.locale, "確認送出", "Confirm"),
         },
         removal ? "danger" : "primary",

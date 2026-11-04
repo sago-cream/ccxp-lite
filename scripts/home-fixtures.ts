@@ -2,6 +2,22 @@ import assert from "node:assert/strict";
 import type { Frame, Page } from "playwright";
 import { setProfileMenuMode } from "./profile-fixtures.js";
 
+async function assertSingleLineFavoriteNames(main: Frame) {
+  const names = await main
+    .locator(".ccxp-home-card-name")
+    .evaluateAll((elements: readonly Element[]) =>
+      elements.map((element) => ({
+          height: element.getBoundingClientRect().height,
+          lineHeight: Number.parseFloat(getComputedStyle(element).lineHeight),
+        })),
+    );
+  assert.ok(names.length > 0);
+  assert.ok(
+    names.every((name) => name.height <= name.lineHeight + 1),
+    `Favorite names must remain on one line: ${JSON.stringify(names)}`,
+  );
+}
+
 export async function assertProfile(page: Page, nav: Frame, recordVideo = false): Promise<void> {
   const profile = nav.locator(".ccxp-lite-sidebar-profile");
   await profile.getByText("\u6E2C\u8A66\u540C\u5B78", { exact: true }).waitFor();
@@ -100,6 +116,7 @@ export async function assertHomeFavorites(
   await search.fill("");
   const cards = main.locator("#ccxp-home-cards > .ccxp-home-card-wrap");
   assert.equal(await cards.count(), 8);
+  await assertSingleLineFavoriteNames(main);
   const more = nav.locator(".ccxp-lite-sidebar-show-more");
   if ((await more.count()) > 0) {
     const visibleFavorites = nav.locator(
@@ -127,6 +144,7 @@ export async function assertHomeFavorites(
     const profile = nav.locator(".ccxp-lite-profile-trigger");
     await profile.click();
     await nav.locator(".ccxp-lite-profile-popover").waitFor({ state: "visible" });
+    await page.mouse.move(1250, 920);
     await capture("profile-expanded");
     await profile.press("Escape");
     const homeSearch = main.locator(".ccxp-home-search > input");
@@ -242,6 +260,7 @@ export async function captureNarrowHome(
       );
     }
     await capture(page, "home-favorites-narrow");
+    await assertSingleLineFavoriteNames(main);
     const input = main.locator(".ccxp-home-search > input");
     await input.fill("\u6559\u5B78");
     await input.press("ArrowDown");

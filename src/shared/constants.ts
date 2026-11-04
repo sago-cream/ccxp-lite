@@ -185,9 +185,9 @@
       sidebarRemovePinnedDialogTitlePrefix: "\u79FB\u9664\u300C",
       sidebarRemovePinnedDialogTitleSuffix: "\u300D\uFF1F",
       sidebarRemovePinnedDialogDescription:
-        "\u6B64\u529F\u80FD\u5C07\u5F9E\u5E38\u7528\u529F\u80FD\u79FB\u9664\uFF0C\u4ECD\u53EF\u96A8\u6642\u5F9E\u9078\u55AE\u52A0\u56DE\u3002",
+        "\u6B64\u529F\u80FD\u5C07\u5F9E\u5E38\u7528\u529F\u80FD\u79FB\u9664\u3002",
       sidebarRemovePinnedDialogCancel: "\u4FDD\u7559",
-      sidebarRemovePinnedDialogConfirm: "\u78BA\u8A8D\u79FB\u9664",
+      sidebarRemovePinnedDialogConfirm: "\u79FB\u9664",
       sidebarSearchEmptyTitle: "\u627E\u4E0D\u5230\u7B26\u5408\u9805\u76EE",
       sidebarSearchEmptyBody:
         "\u8A66\u8A66\u5176\u4ED6\u95DC\u9375\u5B57\uFF0C\u6216\u8FD4\u56DE\u4E0A\u4E00\u5C64\u700F\u89BD\u5206\u985E\u3002",
