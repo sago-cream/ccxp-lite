@@ -4,5 +4,11 @@
   },
   "appDescription": {
     "message": "更現代、更直覺的使用體驗，以及超過99.95%準確率的登入驗證碼自動填寫"
+  },
+  "nthumodsExport": {
+    "message": "匯出至 NTHUMods"
+  },
+  "nthumodsNoCourses": {
+    "message": "沒有可匯出的課程"
   }
 }

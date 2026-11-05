@@ -4,5 +4,11 @@
   },
   "appDescription": {
     "message": "Provide a cleaner UI and 99.95% accuracy login decaptcha."
+  },
+  "nthumodsExport": {
+    "message": "Export to NTHUMods"
+  },
+  "nthumodsNoCourses": {
+    "message": "No exportable courses"
   }
 }

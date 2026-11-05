@@ -1,9 +1,11 @@
 {
   "inspectedAt": "2026-09-12",
-  "captureMode": "Original DOM with ccxpLite disabled; initialized host widgets frozen; scripts removed except inert navigation declarations, explicit offline work-log shim, and live-inspected legacy header timer with offline idle responses",
+  "captureMode": "Original DOM with ccxpLite disabled; initialized host widgets frozen; scripts removed except inert navigation declarations, explicit offline work-log shim, and live-inspected legacy header timer with offline idle responses. course-result.html is a UTF-8 sanitized maintainer-saved logged-in capture from 2026-10-22, confirmed against the live response for semester 114-20 / phase 200P.",
   "sanitization": [
     "Credentials, account and identity values cleared",
     "Session URL parameters replaced or removed",
+    "course-result.html student name and number replaced with 測試同學 / 123456789; college, department, and minimum-credit cells replaced with 測試學院 / 測試系 / 3",
+    "course-result.html every ACIXSTORE value replaced with fixture; one failed-course row added and marked synthetic in this coverage entry",
     "All staff grid data cells replaced with synthetic records",
     "Staff dropdown options replaced with synthetic options",
     "No live form submissions or host polling; legacy header polling is routed to synthetic offline idle responses"
@@ -80,6 +82,12 @@
       "path": "/ccxp/INQUIRE/JH/6/6.2/6.2.I/JH62i001.php",
       "owners": ["src/main/", "src/shared/"],
       "state": "Public course/teacher keyword query: native inputs and table layout in main frame"
+    },
+    {
+      "file": "course-result.html",
+      "path": "/ccxp/COURSE/JH/7/7.2/7.2.1/JH721003.php",
+      "owners": ["src/nthumods/"],
+      "state": "Sanitized UTF-8 capture from a maintainer-saved logged-in session on 2026-10-22, confirmed against the live response for semester 114-20 / phase 200P; preserves the three-table result DOM, hidden year/term fields, five captured registered courses, and one synthetic failed-course row"
     },
     {
       "file": "profile-header.big5",
