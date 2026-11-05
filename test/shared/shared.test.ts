@@ -1,4 +1,5 @@
 import { describe, expect, test, vi } from "vitest";
+import { tokens } from "@ccxp-lite/tokens";
 import {
   createTestWindow,
   loadModules,
@@ -49,7 +50,9 @@ describe("shared theme", () => {
     const stylesheetLinks = document.head.querySelectorAll("[data-ccxp-lite-stylesheet='true']");
     expect(stylesheetLinks).toHaveLength(1);
     expect(document.documentElement.dataset.ccxpLiteScope).toBe("nav");
-    expect(document.documentElement.style.getPropertyValue("--ccxp-lite-primary")).toBe("#9F5FA5");
+    expect(document.documentElement.style.getPropertyValue("--ccxp-lite-primary")).toBe(
+      tokens.colorPrimary,
+    );
   });
   test("creates a head before injecting the stylesheet", () => {
     const { window } = createTestWindow("<!doctype html><html lang='zh'><body></body></html>");
@@ -89,6 +92,26 @@ describe("shared theme", () => {
 });
 
 describe("shared analytics", () => {
+  test("labels menu modes and excludes session query strings and fragments", () => {
+    const { window } = createTestWindow(
+      undefined,
+      "https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/select_entry.php?ACIXSTORE=private#private",
+    );
+    loadModules(window, sharedModulePaths);
+    const analytics = requireValue(window.CCXP_LITE.sharedAnalytics, "sharedAnalytics");
+    for (const [variant, mode] of [
+      ["classic", "sidebar"],
+      ["layered", "fullscreen"],
+    ]) {
+      const event = analytics.trackEvent?.(window.document, { sidebar_variant: variant });
+      expect(event?.params).toMatchObject({
+        menu_mode: mode,
+        page_location: "https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/select_entry.php",
+      });
+      expect(JSON.stringify(event)).not.toContain("private");
+    }
+  });
+
   test("sends normalized interaction events to the extension runtime", () => {
     const { window } = createTestWindow();
     const document = window.document as Document;

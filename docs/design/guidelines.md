@@ -15,7 +15,7 @@
 
 Body text and control labels use 14px regular. Action buttons and standalone text links use 14px semibold (600). Inline links inherit the surrounding text size and use semibold weight. Preserve existing heading and branding typography.
 
-The home search input, results, and function-card labels use 16px regular for emphasis. Sidebar navigation and preferences use 14px regular text; profile support links keep 14px semibold text. These rows share a 36px height. Logout uses the same regular weight and text color as the preferences controls.
+The home search input, results, and function-card labels use 16px regular for emphasis. Sidebar navigation and preferences use 14px regular text; profile support links keep 14px semibold text. Sidebar rows use a 36px height; profile and support rows use 40px. Logout uses the same regular weight and text color as the preferences controls.
 
 ## Reuse
 
@@ -38,3 +38,6 @@ containment, and focus restoration.
 
 Check focus, disabled, expanded, loading, empty, and error states at narrow widths in both
 languages. Update examples with shared UI changes and verify the affected CCXP pages.
+
+New windows at 600px or below start in the full-width Menu when no mode has been saved. A saved
+Sidebar or Menu choice takes precedence. Keep the compact Sidebar available as an explicit preference.

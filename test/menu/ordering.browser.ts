@@ -109,7 +109,7 @@ test("packaged sidebar supports native dragging and persists order across a fram
     if (!main) {
       throw new Error("Missing main fixture frame");
     }
-    const dialog = main.getByRole("dialog", {
+    const dialog = page.getByRole("dialog", {
       name: "\u9084\u539F\u9078\u55AE\u7684\u539F\u59CB\u9806\u5E8F\uFF1F",
     });
     await dialog.waitFor();
@@ -214,8 +214,7 @@ async function assertRestoreDialogLayouts(page: Page, nav: Frame, locale: "en" |
       );
       await settings.click();
       await nav.getByRole("button", { name: label, exact: true }).click();
-      const host = (await main.evaluate(() => document.body.clientWidth > 100)) ? main : nav;
-      const dialog = host.getByRole("dialog");
+      const dialog = page.getByRole("dialog");
       await dialog.waitFor();
       await page.waitForFunction(
         () => document.documentElement.dataset.ccxpLiteLoadingReady === "true",

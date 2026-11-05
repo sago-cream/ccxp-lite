@@ -333,7 +333,20 @@
   }
 
   function findCategoryForItem(item: CcxpLiteSidebarTreeNode) {
-    const candidateLabels = collectSidebarLabels(item);
+    // English headings use keyword inference; child topics such as Credit Fee must not outweigh
+    // their Tuition Payments heading. Keep the existing Chinese label matching and the descendant
+    // fallback for generic English headings.
+    const heading = normalizeSidebarLabel(item.label);
+    if (detectLabelLocale([heading]) === "en") {
+      const headingCategory = findCategoryForLabels([heading]);
+      if (headingCategory) {
+        return headingCategory;
+      }
+    }
+    return findCategoryForLabels(collectSidebarLabels(item));
+  }
+
+  function findCategoryForLabels(candidateLabels: readonly string[]) {
     const exactCategory = SIDEBAR_CATEGORIES.find((category) =>
       category.itemLabels.some((label: string) => {
         const normalizedCategoryLabel = normalizeSidebarLabel(label);

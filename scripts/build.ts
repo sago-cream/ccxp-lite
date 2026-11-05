@@ -45,6 +45,8 @@ const generatedOauthModelPath = path.join(srcDir, "oauth", "decaptcha.model.ts")
 const srcTsconfigPath = path.join(projectRoot, "tsconfig.src.json");
 const baseManifestPath = path.join(srcDir, "manifest.base.json");
 const targetManifestOverridePath = path.join(srcDir, `manifest.${target}.json`);
+const ga4MeasurementId = process.env.CCXP_LITE_GA4_MEASUREMENT_ID?.trim() ?? "";
+const ga4ApiSecret = process.env.CCXP_LITE_GA4_API_SECRET?.trim() ?? "";
 
 function resolveCheckpointPath(relativeSegments: readonly string[]) {
   const repoCandidates = [
@@ -197,6 +199,10 @@ function writeManifest(outputPath: string) {
   >;
   const manifest = mergeManifestEntries(baseManifest, targetOverride);
   manifest.version = version;
+  if (ga4MeasurementId !== "" && ga4ApiSecret !== "") {
+    const hostPermissions = manifest.host_permissions as readonly string[];
+    manifest.host_permissions = [...hostPermissions, "https://www.google-analytics.com/*"];
+  }
   writeFileSync(outputPath, `${JSON.stringify(manifest, undefined, 2)}\n`);
 }
 
@@ -300,6 +306,15 @@ try {
   if (compileResult.status !== 0) {
     throw new Error("TypeScript extension build failed");
   }
+
+  const analyticsPath = path.join(compiledSrcDir, "background", "analytics.js");
+  const analyticsSource = readFileSync(analyticsPath, "utf8");
+  writeFileSync(
+    analyticsPath,
+    analyticsSource
+      .replace('"__CCXP_LITE_GA4_MEASUREMENT_ID__"', () => JSON.stringify(ga4MeasurementId))
+      .replace('"__CCXP_LITE_GA4_API_SECRET__"', () => JSON.stringify(ga4ApiSecret)),
+  );
 
   copyTree(srcDir, stagingDir, shouldCopySourcePath);
   copyTree(srcDir, unpackedDir, shouldCopySourcePath);

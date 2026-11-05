@@ -29,11 +29,12 @@
   }
 
   let hasShownConfigWarning = false;
+  let pendingEvents = Promise.resolve();
 
   function getGa4Config(): Ga4Config {
     return {
-      measurementId: "G-Z6QQ37YNZP",
-      apiSecret: "",
+      measurementId: "__CCXP_LITE_GA4_MEASUREMENT_ID__",
+      apiSecret: "__CCXP_LITE_GA4_API_SECRET__",
     };
   }
 
@@ -146,7 +147,12 @@
 
   async function postEvent(message: CcxpLiteAnalyticsMessage) {
     const { measurementId, apiSecret } = getGa4Config();
-    if (measurementId === "" || apiSecret === "") {
+    if (
+      measurementId === "" ||
+      apiSecret === "" ||
+      measurementId.startsWith("__CCXP_LITE_") ||
+      apiSecret.startsWith("__CCXP_LITE_")
+    ) {
       if (!hasShownConfigWarning) {
         hasShownConfigWarning = true;
         console.warn(
@@ -187,26 +193,46 @@
     url.searchParams.set("api_secret", apiSecret);
 
     try {
-      await fetch(url.toString(), {
+      const response = await fetch(url.toString(), {
         method: "POST",
         headers: {
           "content-type": "application/json",
         },
         body: JSON.stringify(payload),
       });
-    } catch (error) {
-      console.warn("[ccxp-lite] Failed to send GA4 analytics event.", error);
+      if (!response.ok) {
+        console.warn("[ccxp-lite] GA4 analytics request failed with status", response.status);
+      }
+    } catch {
+      console.warn("[ccxp-lite] Failed to send GA4 analytics event.");
     }
   }
 
-  chrome.runtime.onMessage.addListener((message) => {
+  function analyticsMessageListener(
+    message: unknown,
+    _sender: chrome.runtime.MessageSender,
+    sendResponse: () => void,
+  ): boolean | undefined {
     if (!isAnalyticsMessage(message)) {
-      return;
+      return undefined;
     }
-    postEvent(message).catch((error: unknown) => {
-      console.warn("[ccxp-lite] Failed to process GA4 analytics event.", error);
-    });
-  });
+    pendingEvents = pendingEvents
+      .then(async () => {
+        await postEvent(message);
+      })
+      .catch(() => {
+        console.warn("[ccxp-lite] Failed to process GA4 analytics event.");
+      })
+      .finally(() => {
+        sendResponse();
+      });
+    return true;
+  }
+  chrome.runtime.onMessage.addListener(
+    analyticsMessageListener as unknown as Parameters<
+      typeof chrome.runtime.onMessage.addListener
+    >[0],
+  );
 
   function favoriteMessageListener(
     message: unknown,

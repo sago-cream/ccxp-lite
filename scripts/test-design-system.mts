@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { mkdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { chromium } from "playwright";
+import { tokens } from "@ccxp-lite/tokens";
 
 const siteDirectory = path.resolve("storybook-static");
 const index = JSON.parse(readFileSync(path.join(siteDirectory, "index.json"), "utf8")) as {
@@ -50,7 +51,7 @@ try {
               .trim()
               .toLowerCase(),
           ),
-          "#9f5fa5",
+          tokens.colorPrimary.toLowerCase(),
         );
       }
     }

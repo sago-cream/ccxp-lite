@@ -3,6 +3,10 @@
 Use the actual legacy page structure and host assets for every affected visual surface. Two builds
 matching the same simplified mock does not prove fidelity to the live site.
 
+The login page was recaptured on 2026-11-04 from the initialized live DOM, with current
+announcements and footer assets. `login.provenance.json` records sanitization, restored form
+association, and the exact anonymous expired CAPTCHA image retained for offline visual fidelity.
+
 `coverage.json` is the page inventory: source route, owning extension modules, captured state,
 sanitization, and explicit gaps. These fixtures were inspected with ccxpLite disabled. Login,
 student navigation, header, main service announcements, assistant registration, and assistant
@@ -83,3 +87,27 @@ An intentional visual change may be acknowledged with `ALLOW_VISUAL_CHANGE=true`
 `accept-visual-change` PR label in CI. This only permits pixel/style differences; missing assets,
 elements, and interactions still fail. CI uploads artifacts on every run. For PR updates, retain
 the recording from the actual base commit and replace the head recording after visual changes.
+
+## UI design review captures
+
+The standard parity run also captures the expanded profile menu, populated homepage favorites,
+keyboard-focused homepage search results, and the shared remove-favorite dialog over the original
+frameset (the base dialog remains in its original main-frame mount). Favorite data is established through the extension's real star controls. Login uses
+synthetic account/password values and is captured at 1280, 1600, and 375px widths.
+
+Use `--ui-review-only` with explicit base/head extension paths for these scoped iteration captures.
+The scope also captures the genuine compact rail, menu/profile, search, favorites and dialog at
+375px. `--review-locale en` exercises English extension controls over the captured Chinese host
+source; it does not certify an English source-page fixture.
+The final PR validation still runs the complete CI parity suite without that option. Capture
+manifests include the scope, package/fixture digests, viewport and locale. Visual changes still
+require the repository's `accept-visual-change` label; this scope does not bypass pixel checks.
+
+The November 4 live audit observed an additional foreign-student survey in the current menu.
+The host rejected a complete fresh navigation source request. `coverage.json` keeps this
+current-content variant as a gap; six-result review images do not certify current entitlements.
+
+New unconfigured windows at600px or below start in Menu. `phone-menu-*` captures use this
+head default and select the same existing Menu mode through the base preference control for
+matching visual comparisons. Saved classic compact-rail captures remain explicit preference
+stress states, not the new narrow default. The harness asserts the head default before capture.

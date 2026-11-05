@@ -1,0 +1,39 @@
+{
+  "capturedAt": "2026-11-04",
+  "sourcePath": "/ccxp/INQUIRE/index.php",
+  "captureMethod": "Rendered live legacy DOM in an anonymous browser with no extension, after host initialization. Original styles, tables, notice tabs, form controls and image assets retained.",
+  "sourceLandmarks": {
+    "tables": 17,
+    "form": "form1",
+    "controls": ["account", "passwd", "passwd2", "Submit", "Submit2", "fnstr"],
+    "captchaNaturalSize": [113, 36]
+  },
+  "sanitization": [
+    "Credentials cleared; capture uses synthetic account 123456789 and masked example password.",
+    "Session URL parameters removed; CAPTCHA and audio query replaced with fixture.",
+    "Hidden fnstr replaced with fixture; explicit form association restores the live parser-associated control after DOM serialization.",
+    "Host scripts and event handlers removed; calendar iframe is inert about:blank.",
+    "Anonymous expired CAPTCHA image retained for offline visual fidelity; no live login requests or submissions are replayed."
+  ],
+  "hostAssets": [
+    {
+      "route": "/ccxp/INQUIRE/auth_img.php",
+      "file": "host-assets/login-captcha.png",
+      "sha256": "1b7929fad6e3d234be3f5980242ae3166ee4a67272645294428ceafc3276aa7d"
+    },
+    {
+      "route": "/ccxp/INQUIRE/images/logo_word.png",
+      "file": "host-assets/logo_word.png",
+      "sha256": "e94e38590f5d7530042aad2211e71867c8b7b811fecbfae23c5a63bd3181851d"
+    },
+    {
+      "route": "/ccxp/INQUIRE/images/bottom_bg.png",
+      "file": "host-assets/bottom_bg.png",
+      "sha256": "80f7d80ccf2b8f1cf9caa4c795bbc2e6d9a33c49741ae738b068bd8c54254f19"
+    }
+  ],
+  "limitations": [
+    "Frozen announcements reflect the capture date.",
+    "English and non-student source variants are not recaptured."
+  ]
+}
