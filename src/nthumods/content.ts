@@ -46,6 +46,6 @@
     reason.hidden = true;
   }
   actionGroup.append(button, reason);
-  resultTable.before(actionGroup);
+  resultTable.after(actionGroup);
   document.documentElement.dataset.ccxpLiteNthuModsReady = "true";
 })(globalThis);

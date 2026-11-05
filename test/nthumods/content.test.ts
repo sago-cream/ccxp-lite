@@ -8,7 +8,7 @@ import {
   sharedModulePaths,
 } from "../helpers/module-loader.js";
 
-test("mounts a scoped export action above the result table without reskinning the page", () => {
+test("mounts a scoped export action below the result table without reskinning the page", () => {
   const { window } = createTestWindow(
     readFileSync(path.resolve("test/browser-fixtures/course-result.html"), "utf8"),
     "https://www.ccxp.nthu.edu.tw/ccxp/COURSE/JH/7/7.2/7.2.1/JH721003.php",
@@ -29,7 +29,7 @@ test("mounts a scoped export action above the result table without reskinning th
   const actionRow = requireElement(document.querySelector(".ccxp-lite-nthumods-actions"));
   expect(button.textContent).toBe("\u532F\u51FA\u81F3 NTHUMods");
   expect(button.disabled).toBe(false);
-  expect(actionRow.nextElementSibling).toBe(resultTable);
+  expect(actionRow.previousElementSibling).toBe(resultTable);
   expect(document.querySelector(".header")?.textContent).toContain("\u9078\u8AB2\u7D50\u679C");
   expect(document.body.classList.contains("ccxp-lite-main-skin")).toBe(false);
   expect(document.querySelector("#ccxp-lite-nthumods-header")).toBeNull();
@@ -64,7 +64,7 @@ test("disables the action and explains an empty result", () => {
   expect(document.querySelector("#ccxp-lite-nthumods-reason")?.textContent).toBe(
     "\u6C92\u6709\u53EF\u532F\u51FA\u7684\u8AB2\u7A0B",
   );
-  expect(document.querySelector(".ccxp-lite-nthumods-actions")?.nextElementSibling).toBe(
+  expect(document.querySelector(".ccxp-lite-nthumods-actions")?.previousElementSibling).toBe(
     document.querySelectorAll("table")[1],
   );
   window.close();
