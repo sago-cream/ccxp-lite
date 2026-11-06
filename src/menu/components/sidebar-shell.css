@@ -242,6 +242,9 @@
   color: var(--ccxp-lite-text-muted);
   transform: rotate(-90deg);
 }
+.ccxp-lite-profile-trigger:has(.ccxp-lite-session-timer:not([hidden])) .ccxp-lite-profile-chevron {
+  margin-left: 0;
+}
 .ccxp-lite-profile-trigger[aria-expanded="true"] .ccxp-lite-profile-chevron {
   transform: rotate(90deg);
 }
