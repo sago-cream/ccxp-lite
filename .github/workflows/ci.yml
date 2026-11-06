@@ -113,6 +113,10 @@ jobs:
              grep -q 'function attachCaptchaRefresh' src/login/auth/captcha.ts; then
             expected_changes+=(--expect-captcha-refresh)
           fi
+          if ! grep -q 'assertMenuLayout' ../base/scripts/browser-parity.ts &&
+             grep -q 'assertMenuLayout' scripts/browser-parity.ts; then
+            expected_changes+=(--expect-menu-layout-change)
+          fi
           bun run test:browser-parity -- \
             --base-extension ../base/dist/crx/unpacked \
             --head-extension dist/crx/unpacked \
