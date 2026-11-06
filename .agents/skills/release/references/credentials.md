@@ -6,6 +6,10 @@ Use environment variables as the interface. Prefer injecting them from an existi
 
 Use the personal Google Cloud project `ccxplite-releases` (`ccxpLite Releases`) for Chrome release authentication. It has no parent organization and no linked billing account. Keep this setup independent of NTHUSA projects, credentials, organization resources, and billing.
 
+For local Chrome releases, use service-account impersonation: `CWS_SERVICE_ACCOUNT_EMAIL=ccxplite-release@ccxplite-releases.iam.gserviceaccount.com` and an explicitly configured personal `CWS_GCLOUD_ACCOUNT`. The personal account needs `roles/iam.serviceAccountTokenCreator` on that service account, and the service-account email must be linked to the personal Chrome publisher. Mint short-lived access tokens with `gcloud auth print-access-token --impersonate-service-account=... --scopes=https://www.googleapis.com/auth/chromewebstore --account=...`; capture the token in process memory, never print it. No Google private key file, Web-client secret, or refresh token is needed for this route. The repository setup verifier supports it.
+
+Chrome allows one linked service account per publisher and grants API access to items owned by that publisher. Inspect the current link before editing it; do not replace an unrelated automation identity. See the [official service-account guide](https://developer.chrome.com/docs/webstore/service-accounts).
+
 Collect one explicitly named value at a time through T3's private `request_secret` card with `delivery: "file"`. Open the relevant signed-in dashboard, identify the exact field, and do not capture credential values in browser snapshots, screenshots, tool output, or chat. Import the returned private file directly; never paste the value into command arguments.
 
 From the repository root:
@@ -20,7 +24,7 @@ bun run release:setup verify chrome
 
 Each `set` names the destination field explicitly and saves only that value. `clear KEY` removes a wrong value; `reset` discards all saved values and restores only the default public extension/add-on IDs. The ignored `.env.release.local` is written atomically with owner-only permissions. `status` prints field names and presence only; `verify` exchanges tokens in memory and makes read-only requests to the configured store targets. GitHub continues to use the existing `gh` authentication. Setup does not upload, sign, or submit packages.
 
-Chrome requires a Web application OAuth client and a refresh token authorized for `https://www.googleapis.com/auth/chromewebstore` by the account managing the item. If using OAuth Playground, configure that client's credentials and its authorized redirect URI `https://developers.google.com/oauthplayground`; the refresh token must belong to that client. An authorization code or short-lived access token is not a refresh token. Inspect the OAuth application's publishing status and token lifetime before relying on unattended releases.
+As an alternative to service-account impersonation, Chrome can use a Web application OAuth client and a refresh token authorized for `https://www.googleapis.com/auth/chromewebstore` by the account managing the item. If using OAuth Playground, configure that client's credentials and its authorized redirect URI `https://developers.google.com/oauthplayground`; the refresh token must belong to that client. An authorization code or short-lived access token is not a refresh token. External OAuth applications in Testing issue refresh tokens that expire after seven days for this scope. Production requires completed public branding, including links on an owned domain; do not claim a Testing token is a durable unattended setup. Keep unused OAuth variables empty when service-account authentication is selected.
 
 Mozilla's Manage API Keys page labels the two fields **JWT issuer** (`user:number:number`) and **JWT secret**. Keep them separate. Read-only verification checks both authentication and the add-on GUID against the Firefox manifest.
 
@@ -34,19 +38,20 @@ Add the curated-note flags described in [ccxp-lite.md](ccxp-lite.md) when releas
 
 Worktrees do not share ignored files. If releasing from a different checkout, inject the variables there or use an explicit absolute `--env-file` path to the existing private file. Do not copy credentials into tracked worktree files. For a non-Bun client, use the secret manager's environment injection or a dotenv loader; do not source an untrusted file as shell code.
 
-| Destination    | Variables                                                 | Source                                                                                                                       |
-| -------------- | --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| GitHub         | Optional `GITHUB_TOKEN`                                   | Prefer existing `gh auth login` / keychain locally; privately pass its token to release-it if needed.                        |
-| Chrome OAuth   | `CWS_CLIENT_ID`, `CWS_CLIENT_SECRET`, `CWS_REFRESH_TOKEN` | OAuth client and authorized refresh token for the Chrome Web Store scope. Exchange for a short-lived access token in memory. |
-| Chrome target  | `CWS_PUBLISHER_ID`, `CWS_EXTENSION_ID`                    | Developer dashboard; these IDs are public configuration.                                                                     |
-| Mozilla        | `AMO_JWT_ISSUER`, `AMO_JWT_SECRET`                        | AMO developer API credentials; mint a short-lived JWT in memory.                                                             |
-| Mozilla target | `AMO_ADDON_ID`                                            | Existing add-on slug/GUID; public configuration.                                                                             |
+| Destination                | Variables                                                 | Source                                                                                                                                         |
+| -------------------------- | --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| GitHub                     | Optional `GITHUB_TOKEN`                                   | Prefer existing `gh auth login` / keychain locally; privately pass its token to release-it if needed.                                          |
+| Chrome OAuth (alternative) | `CWS_CLIENT_ID`, `CWS_CLIENT_SECRET`, `CWS_REFRESH_TOKEN` | OAuth client and authorized refresh token for the Chrome Web Store scope. Exchange for a short-lived access token in memory.                   |
+| Chrome local auth          | `CWS_SERVICE_ACCOUNT_EMAIL`, `CWS_GCLOUD_ACCOUNT`         | Personal service account linked to the Chrome publisher; personal gcloud login permitted to impersonate it. Public configuration, not secrets. |
+| Chrome target              | `CWS_PUBLISHER_ID`, `CWS_EXTENSION_ID`                    | Developer dashboard; these IDs are public configuration.                                                                                       |
+| Mozilla                    | `AMO_JWT_ISSUER`, `AMO_JWT_SECRET`                        | AMO developer API credentials; mint a short-lived JWT in memory.                                                                               |
+| Mozilla target             | `AMO_ADDON_ID`                                            | Existing add-on slug/GUID; public configuration.                                                                                               |
 
-The `CWS_*` and `AMO_ADDON_ID` names are this skill's convention. Existing `scripts/sign_firefox.ts` already consumes the two `AMO_JWT_*` variables, but signing remains behind the store approval boundary. An existing service-account setup may replace the Chrome OAuth trio; use its configured secret provider rather than creating a second credential system.
+The `CWS_*` and `AMO_ADDON_ID` names are this skill's convention. Existing `scripts/sign_firefox.ts` already consumes the two `AMO_JWT_*` variables, but signing remains behind the store approval boundary. The personal gcloud login stays in its existing local credential store; do not copy it into the repository or a release packet.
 
 ## CI
 
-Use a protected GitHub Actions environment for release credentials. Store client secrets, refresh tokens, and AMO credentials as environment secrets; store public IDs as environment variables. Inject values only into the steps that need them. The GitHub release job needs an appropriately scoped token and `contents: write`; store credentials are separate.
+The local impersonation setup depends on an authenticated personal gcloud session. CI needs its own explicitly authorized identity capable of impersonating the service account; do not copy the local CLI credential store into CI. Use a protected GitHub Actions environment for release credentials. Store client secrets, refresh tokens, and AMO credentials as environment secrets; store public IDs as environment variables. Inject values only into the steps that need them. The GitHub release job needs an appropriately scoped token and `contents: write`; store credentials are separate.
 
 Any future workflow must keep upload/validation separate from submission. Do not let an ordinary push publish to stores. Review of the exact packet and explicit store-note approval remains required; merely having credentials or passing a generic deployment gate is not approval of unseen text.
 

@@ -10,6 +10,8 @@ const fields = [
   "AMO_JWT_ISSUER",
   "AMO_JWT_SECRET",
   "CWS_PUBLISHER_ID",
+  "CWS_SERVICE_ACCOUNT_EMAIL",
+  "CWS_GCLOUD_ACCOUNT",
   "CWS_CLIENT_ID",
   "CWS_CLIENT_SECRET",
   "CWS_REFRESH_TOKEN",
@@ -116,7 +118,27 @@ async function request(url: string, init?: RequestInit): Promise<Record<string, 
   return (await response.json()) as Record<string, unknown>;
 }
 
-async function verifyChrome(values: Credentials) {
+async function chromeAccessToken(values: Credentials) {
+  if ((values.CWS_SERVICE_ACCOUNT_EMAIL ?? "") !== "") {
+    const result = spawnSync(
+      "gcloud",
+      [
+        "auth",
+        "print-access-token",
+        `--impersonate-service-account=${requireValue(values, "CWS_SERVICE_ACCOUNT_EMAIL")}`,
+        "--scopes=https://www.googleapis.com/auth/chromewebstore",
+        `--account=${requireValue(values, "CWS_GCLOUD_ACCOUNT")}`,
+        "--quiet",
+      ],
+      { encoding: "utf8", timeout: 20_000 },
+    );
+    if (result.status !== 0 || result.stdout.trim() === "") {
+      throw new SetupError(
+        "Could not mint a service-account token. Check the personal gcloud login, IAM Credentials API, and Service Account Token Creator permission. No token or diagnostic output was printed.",
+      );
+    }
+    return result.stdout.trim();
+  }
   const token = await request("https://oauth2.googleapis.com/token", {
     method: "POST",
     body: new URLSearchParams({
@@ -129,12 +151,17 @@ async function verifyChrome(values: Credentials) {
   if (typeof token.access_token !== "string") {
     throw new SetupError("Chrome did not return an access token.");
   }
+  return token.access_token;
+}
+
+async function verifyChrome(values: Credentials) {
+  const accessToken = await chromeAccessToken(values);
   const publisher = encodeURIComponent(requireValue(values, "CWS_PUBLISHER_ID"));
   const extension = encodeURIComponent(requireValue(values, "CWS_EXTENSION_ID"));
   await request(
     `https://chromewebstore.googleapis.com/v2/publishers/${publisher}/items/${extension}:fetchStatus`,
     {
-      headers: { Authorization: `Bearer ${token.access_token}` },
+      headers: { Authorization: `Bearer ${accessToken}` },
     },
   );
   console.log(
@@ -203,8 +230,19 @@ async function main() {
   checkPath();
   const values = command === "reset" ? {} : load();
   if (command === "status" && args.length === 0) {
+    const serviceAccount = (values.CWS_SERVICE_ACCOUNT_EMAIL ?? "") !== "";
+    console.log(
+      `Chrome authentication: ${serviceAccount ? "service-account impersonation" : "OAuth refresh token"}`,
+    );
     for (const field of fields) {
-      console.log(`${field}: ${(values[field] ?? "") === "" ? "missing" : "configured"}`);
+      let status = (values[field] ?? "") === "" ? "missing" : "configured";
+      if (
+        serviceAccount &&
+        ["CWS_CLIENT_ID", "CWS_CLIENT_SECRET", "CWS_REFRESH_TOKEN"].includes(field)
+      ) {
+        status = "not used";
+      }
+      console.log(`${field}: ${status}`);
     }
   } else if (command === "reset" && args.length === 0) {
     save({ CWS_EXTENSION_ID: "glcnfmnbmknbphfgjgbokbbchahmiakk", AMO_ADDON_ID: "ccxplite" });
