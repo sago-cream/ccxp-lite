@@ -3,6 +3,27 @@ import path from "node:path";
 import type { Frame, Page } from "playwright";
 import { setProfileMenuMode, toggleProfileTimer } from "./profile-fixtures.js";
 
+async function assertProfileChevron(nav: Frame) {
+  const layout = await nav.locator(".ccxp-lite-profile-trigger").evaluate((element) => {
+    const chevron = element.querySelector(".ccxp-lite-profile-chevron");
+    const timer = element.querySelector(".ccxp-lite-session-timer");
+    const bounds = element.getBoundingClientRect();
+    const icon = chevron?.getBoundingClientRect();
+    const countdown = timer?.getBoundingClientRect();
+    return {
+      isLast: element.lastElementChild === chevron,
+      afterTimer:
+        timer?.hasAttribute("hidden") === true ||
+        (countdown !== undefined && icon !== undefined && countdown.right < icon.left),
+      rightInset: icon ? bounds.right - icon.right : undefined,
+      expectedInset: Number.parseFloat(getComputedStyle(element).paddingRight),
+    };
+  });
+  assert.equal(layout.isLast, true, "Profile chevron follows the timer in DOM order");
+  assert.equal(layout.afterTimer, true, "Visible countdown stays before the chevron");
+  assert.equal(layout.rightInset, layout.expectedInset, "Chevron stays at the trailing edge");
+}
+
 export async function assertInitialSessionTimer(
   page: Page,
   nav: Frame,
@@ -19,6 +40,7 @@ export async function assertInitialSessionTimer(
   if (verifyVisible) {
     await timer.waitFor({ state: "visible" });
     assert.match((await timer.textContent()) ?? "", /^\d{2}:[0-5]\d$/u);
+    await assertProfileChevron(nav);
     const widths = await timer.evaluate((element) => {
       const probe = element.cloneNode(false) as HTMLElement;
       probe.style.position = "absolute";
@@ -39,11 +61,27 @@ export async function assertInitialSessionTimer(
     );
   }
   await trigger.press("Escape");
+  const viewport = page.viewportSize();
+  assert.ok(viewport);
+  for (const width of [1280, 600, 375]) {
+    // eslint-disable-next-line no-await-in-loop -- Verify the settled profile at each viewport.
+    await page.setViewportSize({ width, height: viewport.height });
+    if (verifyVisible) {
+      // eslint-disable-next-line no-await-in-loop -- Geometry depends on the current viewport.
+      await assertProfileChevron(nav);
+    }
+    // eslint-disable-next-line no-await-in-loop -- Capture the same timer state at each viewport.
+    await capture(page, path.join(outputDir, `profile-timer-${width}.png`));
+  }
+  await page.setViewportSize(viewport);
   await capture(page, path.join(outputDir, "session-timer-initial.png"));
   await trigger.click();
   await toggleProfileTimer(toggle);
   assert.equal(await timer.isVisible(), false);
   await trigger.press("Escape");
+  if (verifyVisible) {
+    await assertProfileChevron(nav);
+  }
 }
 
 // Synthetic idle responses are served at the live legacy timer's original endpoint.

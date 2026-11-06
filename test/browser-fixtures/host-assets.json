@@ -594,5 +594,17 @@
   "/style/JH/JH.css": {
     "file": "host-assets/e650a56fc577-JH.css",
     "contentType": "text/css"
+  },
+  "/ccxp/INQUIRE/auth_img.php": {
+    "file": "host-assets/login-captcha.png",
+    "contentType": "image/png"
+  },
+  "/ccxp/INQUIRE/images/logo_word.png": {
+    "file": "host-assets/logo_word.png",
+    "contentType": "image/png"
+  },
+  "/ccxp/INQUIRE/images/bottom_bg.png": {
+    "file": "host-assets/bottom_bg.png",
+    "contentType": "image/png"
   }
 }

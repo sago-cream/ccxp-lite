@@ -22,6 +22,10 @@ bun run build
 
 Keep tests focused on the behavior you changed. Do not commit generated build output from `dist/`.
 
+After `bun run build`, run `bun run test:firefox-source` to check the Firefox source archive.
+This requires `unzip` and rebuilds the extracted sources with frozen dependencies in a temporary
+directory, then compares every packaged file with the original Firefox build.
+
 ### Manual Browser Testing
 
 Build and load the extension locally before submitting changes to browser behavior or CCXP pages:

@@ -1,9 +1,11 @@
 {
   "inspectedAt": "2026-09-12",
-  "captureMode": "Original DOM with ccxpLite disabled; initialized host widgets frozen; scripts removed except inert navigation declarations, explicit offline work-log shim, and live-inspected legacy header timer with offline idle responses",
+  "captureMode": "Original DOM with ccxpLite disabled; initialized host widgets frozen; scripts removed except inert navigation declarations, explicit offline work-log shim, and live-inspected legacy header timer with offline idle responses. course-result.html is a UTF-8 sanitized maintainer-saved logged-in capture from 2026-10-22, confirmed against the live response for semester 114-20 / phase 200P.",
   "sanitization": [
     "Credentials, account and identity values cleared",
     "Session URL parameters replaced or removed",
+    "course-result.html student name and number replaced with 測試同學 / 123456789; college, department, and minimum-credit cells replaced with 測試學院 / 測試系 / 3",
+    "course-result.html every ACIXSTORE value replaced with fixture; one failed-course row added and marked synthetic in this coverage entry",
     "All staff grid data cells replaced with synthetic records",
     "Staff dropdown options replaced with synthetic options",
     "No live form submissions or host polling; legacy header polling is routed to synthetic offline idle responses"
@@ -13,7 +15,7 @@
       "file": "login.html",
       "path": "/ccxp/INQUIRE/index.php",
       "owners": ["src/login/", "src/inquire/"],
-      "state": "Logged-out Chinese landing page, full notices and layout; synthetic CAPTCHA"
+      "state": "Logged-out Chinese landing page recaptured 2026-11-04 with current notices and host assets; anonymous expired CAPTCHA retained offline. Packaged captures cover ready-to-submit synthetic fields at 1280/1600/375px. See login.provenance.json."
     },
     {
       "file": "frameset.html",
@@ -25,7 +27,7 @@
       "file": "navigation.html",
       "path": "/ccxp/INQUIRE/IN_INQ_STU.php",
       "owners": ["src/menu/"],
-      "state": "Complete student navigation DOM and tree declarations. Packaged extension checks cover saved compact icon rail, hover/focus preview, pin expanded, reload, rapid reversal, reduced motion, handle-only pointer/keyboard resizing with minimum-width and collapse/reopen thresholds, saved widths, and profile access at 1280/600/375px using this same legacy host DOM; no live role/session values are added."
+      "state": "Complete student navigation DOM and tree declarations. Packaged extension checks cover saved compact icon rail, hover/focus preview, pin expanded, reload, rapid reversal, reduced motion, handle-only pointer/keyboard resizing with minimum-width and collapse/reopen thresholds, saved widths, and profile access at 1280/600/375px using this same legacy host DOM; no live role/session values are added. Expanded-profile comparison captures move the pointer off the trigger so the open-state appearance is independent of hover. Menu layout captures at 1280/602/601/600/375px verify the return-to-sidebar heading is mobile-only, the content keeps 16px inline insets, and the dashboard has no horizontal overflow. These reuse the same sanitized student DOM and packaged extension; category/destination checks retain the original embedding mode."
     },
     {
       "file": "top.html",
@@ -82,6 +84,12 @@
       "state": "Public course/teacher keyword query: native inputs and table layout in main frame"
     },
     {
+      "file": "course-result.html",
+      "path": "/ccxp/COURSE/JH/7/7.2/7.2.1/JH721003.php",
+      "owners": ["src/nthumods/"],
+      "state": "Sanitized UTF-8 capture from a maintainer-saved logged-in session on 2026-10-22, confirmed against the live response for semester 114-20 / phase 200P; preserves the three-table result DOM, hidden year/term fields, five captured registered courses, and one synthetic failed-course row"
+    },
+    {
       "file": "profile-header.big5",
       "path": "/ccxp/INQUIRE/JH/4/4.19/JH4j002.php",
       "owners": ["src/menu/ui/overlays.ts"],
@@ -115,12 +123,30 @@
     },
     {
       "owners": ["src/"],
-      "reason": "Desktop 1280x960 capture only; responsive breakpoints need separate evidence when changed"
+      "reason": "The full legacy-page suite uses desktop 1280x960. Login also has 1600/375px captures; reviewed student shell/profile/dialog/home states also have 375px captures. Other page-specific responsive and zoom states remain unverified."
     },
     {
       "owners": ["src/menu/ui/overlays.ts"],
       "reason": "Profile adapter covers the observed student identity header; non-student profile routes and transient login/server errors have no live capture."
+    },
+    {
+      "owners": ["src/menu/", "src/main/"],
+      "reason": "2026-11-04 live student search contains a seventh Teaching Feedback entry, 外籍生問卷填寫, absent from the six-entry legacy fixture. A fresh navigation source request returned Out of Sequence access is NOT allowed before the complete tree. This current-content variant is not certified by the published six-result screenshots; retained student navigation is representative, not an exact current entitlement inventory."
     }
   ],
-  "liveAudit": "2026-09-12: navigated registration with ccxpLite enabled, verified header, reminder contents and English switch; navigated public course directory, curriculum and keyword forms. Public query HTML retrieved from those same routes without session data."
+  "liveAudit": "2026-09-12: navigated registration with ccxpLite enabled, verified header, reminder contents and English switch; navigated public course directory, curriculum and keyword forms. Public query HTML retrieved from those same routes without session data.",
+  "designReviewAudit": {
+    "date": "2026-11-04",
+    "liveExtension": "Packaged v1.12.0 base and revised UI reloaded from Chrome Details Loaded from on 2026-11-04. Prefilled sign-in and extension-filled CAPTCHA used. Student navigation, expanded profile, homepage favorites/search, announcement disclosure and full-shell removal dialog inspected in original frames. Live Tab cycling, Escape cancellation and focus restoration checked without removing a favorite.",
+    "hostFidelity": "Public login recaptured as complete initialized legacy DOM with host assets. Student category hierarchy and home/frame landmarks match the retained legacy fixtures. The live menu now includes an additional foreign-student survey item; that exact current-content state is an explicit gap below. Private live identity/session values and screenshots are never published.",
+    "captures": [
+      "Login ready to submit at 1280/1600/375px",
+      "Classic sidebar with empty and populated favorites",
+      "Expanded profile and shared removal dialog at 1280 and 375px",
+      "Homepage favorites and keyboard-focused search at 1280 and 375px",
+      "Saved compact rail and menu mode at 375px",
+      "Unconfigured375px Menu default, full-width favorites, filtered category results and dialog; saved classic compact rail remains a separately captured preference"
+    ],
+    "provenance": "Capture manifests record package/fixture digests and actual viewport dimensions per screenshot. Favorites and recents are established through real controls/navigation. English extension controls are checked over Chinese legacy source; this does not certify an English host capture."
+  }
 }

@@ -26,6 +26,7 @@ export function createRemovePinnedDialog(
     {
       styleProperties: {
         display: "flex",
+        "flex-wrap": "wrap",
         "justify-content": "flex-end",
         gap: "var(--ccxp-lite-spacing-inset-sm)",
         "margin-top": "var(--ccxp-lite-spacing-inset-sm)",
@@ -45,6 +46,9 @@ export function createRemovePinnedDialog(
       },
       styleProperties: {
         width: "min(100%, var(--ccxp-lite-dialog-width))",
+        "box-sizing": "border-box",
+        "max-height": "calc(100dvh - 48px)",
+        "overflow-y": "auto",
         display: "flex",
         "flex-direction": "column",
         gap: "var(--ccxp-lite-spacing-lg)",
@@ -62,7 +66,8 @@ export function createRemovePinnedDialog(
         styleProperties: {
           margin: "0",
           color: "var(--ccxp-lite-text)",
-          font: "var(--ccxp-lite-type-body-strong)",
+          font: "var(--ccxp-lite-type-dialog-title)",
+          "text-wrap": "balance",
         },
       }),
       dom.element("p", {
@@ -71,7 +76,7 @@ export function createRemovePinnedDialog(
         styleProperties: {
           margin: "0",
           color: "var(--ccxp-lite-text-muted)",
-          font: "var(--ccxp-lite-type-body)",
+          font: "var(--ccxp-lite-type-home-control)",
         },
       }),
       actions,

@@ -157,6 +157,24 @@
       ],
       "run_at": "document_start",
       "css": ["staff-registration/startup.css", "staff-registration/content.css"]
+    },
+    {
+      "matches": [
+        "https://www.ccxp.nthu.edu.tw/ccxp/COURSE/JH/7/7.2/7.2.1/JH721003.php*",
+        "https://ccxp.nthu.edu.tw/ccxp/COURSE/JH/7/7.2/7.2.1/JH721003.php*"
+      ],
+      "run_at": "document_idle",
+      "js": [
+        "shared/design-tokens.js",
+        "shared/constants.js",
+        "shared/locale.js",
+        "shared/ui/library.js",
+        "nthumods/parser.js",
+        "nthumods/url.js",
+        "nthumods/content.js"
+      ],
+      "all_frames": true,
+      "css": ["nthumods/content.css"]
     }
   ]
 }

@@ -16,6 +16,7 @@
     "./fields": "./src/fields.ts",
     "./search-select": "./src/search-select.ts",
     "./dialog": "./src/dialog.ts",
-    "./types": "./types.d.ts"
+    "./types": "./types.d.ts",
+    "./interactive-page.css": "./styles/interactive-page.css"
   }
 }

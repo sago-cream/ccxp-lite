@@ -28,6 +28,7 @@
   const { createDashboardView, createCategoryDetailView } = namespace.sidebarViews;
   const { mountSidebarOrdering } = namespace.sidebarOrdering;
   const controllers = new WeakMap<Document, SidebarController>();
+  const trackedVariants = new WeakMap<Document, "classic" | "layered">();
 
   class SidebarController {
     private readonly hostDocument: Document;
@@ -107,6 +108,14 @@
         this.render();
       };
       mountSidebarVariantSwitch(this.hostDocument, state, this.strings, rerender);
+      if (trackedVariants.get(this.hostDocument) !== state.sidebarVariant) {
+        trackedVariants.set(this.hostDocument, state.sidebarVariant);
+        app.shared?.trackEvent?.(
+          this.hostDocument,
+          { feature: "navigation", action: "view_menu", sidebar_variant: state.sidebarVariant },
+          { eventName: "ccxp_lite_menu_view" },
+        );
+      }
 
       if (state.sidebarVariant === "classic") {
         content.append(
@@ -443,6 +452,14 @@
         const label = state.sidebarCollapsed
           ? this.strings.sidebarKeepExpanded
           : this.strings.sidebarCollapse;
+        const iconName = state.sidebarCollapsed ? "panel-left" : "panel-left-close";
+        if (this.collapseButton.dataset.ccxpLiteCollapseIcon !== iconName) {
+          const icon = app.uiIcons?.createCategoryIcon(this.hostDocument, iconName);
+          if (icon) {
+            this.collapseButton.replaceChildren(icon);
+            this.collapseButton.dataset.ccxpLiteCollapseIcon = iconName;
+          }
+        }
         this.collapseButton.hidden = !classic;
         this.collapseButton.setAttribute("aria-label", label);
         this.collapseButton.title = label;

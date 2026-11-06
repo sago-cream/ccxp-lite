@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>English payments menu behavior fixture</title>
+  </head>
+  <body>
+    <!-- Source: original NRT/RT_INQ_STU.php English branch, read 2026-11-02.
+         Preserves labels, paths, main-frame targets and hierarchy. Session token
+         replaced with fixture; tree script is inert for parser/behavior testing.
+         This is source-derived behavior coverage, not a live visual capture. -->
+    <script type="text/plain">
+      foldersTree = gFld("root", "");
+      aux0 = insFld(foldersTree, gFld("<font size=2 color=red>Tuition Payments</font>", ""));
+      insDoc(aux0, gLnk(aux0, "<font size=2>Tuition Bills Download</font>", "NRT/RTQ92003.php?ACIXSTORE=fixture"));
+      insDoc(aux0, gLnk(aux0, "<font size=2>Payment Confirmation Proof(PDF Format)</font>", "NRT/RTQ92330.php?ACIXSTORE=fixture"));
+      insDoc(aux0, gLnk(aux0, "<font size=2>Tuition Inquiry</font>", "NRT/RTQ91111.php?ACIXSTORE=fixture"));
+      insDoc(aux0, gLnk(aux0, "<font size=2>Credit Fee Inquiry</font>", "NRT/RTQ91211.php?ACIXSTORE=fixture"));
+      insDoc(aux0, gLnk(aux0, "<font size=2>Credit Fee Explanation</font>", "JH/4/4.16/JH416001.php?ACIXSTORE=fixture"));
+      insDoc(aux0, gLnk(aux0, "<font size=2>Payment Authorization Form</font>", "NRT/RTQ92511.php?ACIXSTORE=fixture"));
+      insDoc(aux0, gLnk(aux0, "<font size=2>Payment Authorization Status Inquiry</font>", "NRT/RTQ92651.php?ACIXSTORE=fixture"));
+      aux1 = insFld(foldersTree, gFld("<font size=2>Refund Inquiry</font>", ""));
+      insDoc(aux1, gLnk(aux1, "<font size=2>Refund Inquiry</font>", "NRT/RTQ91311.php?ACIXSTORE=fixture"));
+    </script>
+  </body>
+</html>

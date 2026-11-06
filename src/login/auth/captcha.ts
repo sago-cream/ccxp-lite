@@ -134,6 +134,7 @@
     if (!form || form.dataset.ccxpLiteCaptchaAutofillBound === "true" || !state) {
       return;
     }
+    attachCaptchaRefresh(targetDocument, state);
     const triggerAutofill = () => {
       syncCaptchaAutofillState(targetDocument, state, rootNode);
       autofillCaptchaInput(targetDocument, state.image, state.input, state);
@@ -171,6 +172,80 @@
     globalThis.requestAnimationFrame(triggerAutofill);
     globalThis.setTimeout(triggerAutofill, 0, undefined);
     form.dataset.ccxpLiteCaptchaAutofillBound = "true";
+  }
+
+  function attachCaptchaRefresh(targetDocument: Document, state: CcxpLiteCaptchaAutofillState) {
+    const { uiButtons, uiIcons } = namespace;
+    if (
+      state.kind !== "legacy" ||
+      !uiButtons ||
+      !uiIcons ||
+      state.mediaRow.querySelector(".ccxp-lite-captcha-refresh")
+    ) {
+      return;
+    }
+    const label =
+      loginLocale?.resolveLoginLocale(
+        targetDocument,
+        undefined,
+        undefined,
+        state.input.form ?? undefined,
+      ) === "en"
+        ? "Refresh verification image"
+        : "\u91CD\u65B0\u6574\u7406\u9A57\u8B49\u78BC";
+    const refresh = uiButtons.createButton(targetDocument, {
+      className: "ccxp-lite-audio-icon-button ccxp-lite-captcha-refresh",
+      ariaLabel: label,
+      title: label,
+      icon: uiIcons.createCategoryIcon(targetDocument, "refresh-cw"),
+    });
+    let stop: (() => void) | undefined;
+    let sequence = 0;
+    const onClick = () => {
+      if (refresh.disabled) {
+        return;
+      }
+      const requestSource = getCaptchaRequestSource(state.image, targetDocument);
+      if (requestSource === "") {
+        return;
+      }
+      let source: URL;
+      try {
+        source = validateCaptchaDownloadUrl(targetDocument, requestSource);
+      } catch {
+        return;
+      }
+      // Redraw the native challenge; its existing fnstr/password validation stays authoritative.
+      stop?.();
+      refresh.disabled = true;
+      refresh.setAttribute("aria-busy", "true");
+      const { image, input } = state;
+      const finish = () => {
+        globalThis.clearTimeout(timer);
+        image.removeEventListener("load", finish);
+        image.removeEventListener("error", finish);
+        refresh.disabled = false;
+        refresh.setAttribute("aria-busy", "false");
+        stop = undefined;
+      };
+      stop = finish;
+      image.addEventListener("load", finish, { once: true });
+      image.addEventListener("error", finish, { once: true });
+      const timer = globalThis.setTimeout(finish, CAPTCHA_AUTOFILL_TIMEOUT_MS, undefined);
+      sequence++;
+      source.searchParams.set("_ccxpRefresh", `${Date.now()}-${sequence}`);
+      input.value = "";
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+      input.dispatchEvent(new Event("change", { bubbles: true }));
+      image.src = source.href;
+    };
+    refresh.addEventListener("click", onClick);
+    state.mediaRow.append(refresh);
+    shared?.addCleanupTask(() => {
+      stop?.();
+      refresh.removeEventListener("click", onClick);
+      refresh.remove();
+    });
   }
 
   function getOrCreateCaptchaState(

@@ -45,6 +45,8 @@ const generatedOauthModelPath = path.join(srcDir, "oauth", "decaptcha.model.ts")
 const srcTsconfigPath = path.join(projectRoot, "tsconfig.src.json");
 const baseManifestPath = path.join(srcDir, "manifest.base.json");
 const targetManifestOverridePath = path.join(srcDir, `manifest.${target}.json`);
+const ga4MeasurementId = process.env.CCXP_LITE_GA4_MEASUREMENT_ID?.trim() ?? "";
+const ga4ApiSecret = process.env.CCXP_LITE_GA4_API_SECRET?.trim() ?? "";
 
 function resolveCheckpointPath(relativeSegments: readonly string[]) {
   const repoCandidates = [
@@ -126,7 +128,6 @@ function shouldCopySourcePath(sourcePath: string, isDirectory: boolean) {
 function shouldCopyFirefoxSourceArchivePath(sourcePath: string, isDirectory: boolean) {
   const relativePath = path.relative(projectRoot, sourcePath);
   const normalizedPath = relativePath.split(path.sep).join("/");
-  const ext = path.extname(sourcePath).toLowerCase();
   const allowedRootFiles = new Set([
     ".prettierrc.json",
     "bun.lock",
@@ -155,7 +156,7 @@ function shouldCopyFirefoxSourceArchivePath(sourcePath: string, isDirectory: boo
     return (
       normalizedPath === "" ||
       normalizedPath === "src" ||
-      (normalizedPath.startsWith("src/") && normalizedPath !== "src/assets") ||
+      normalizedPath.startsWith("src/") ||
       normalizedPath === "scripts" ||
       normalizedPath.startsWith("scripts/") ||
       normalizedPath === "packages" ||
@@ -173,10 +174,7 @@ function shouldCopyFirefoxSourceArchivePath(sourcePath: string, isDirectory: boo
   }
 
   if (normalizedPath.startsWith("src/")) {
-    if (normalizedPath === "src/manifest.crx.json" || normalizedPath.startsWith("src/assets/")) {
-      return false;
-    }
-    return ![".avif", ".gif", ".ico", ".jpeg", ".jpg", ".png", ".webp"].includes(ext);
+    return normalizedPath !== "src/manifest.crx.json";
   }
 
   if (normalizedPath.startsWith("scripts/")) {
@@ -197,6 +195,10 @@ function writeManifest(outputPath: string) {
   >;
   const manifest = mergeManifestEntries(baseManifest, targetOverride);
   manifest.version = version;
+  if (ga4MeasurementId !== "" && ga4ApiSecret !== "") {
+    const hostPermissions = manifest.host_permissions as readonly string[];
+    manifest.host_permissions = [...hostPermissions, "https://www.google-analytics.com/*"];
+  }
   writeFileSync(outputPath, `${JSON.stringify(manifest, undefined, 2)}\n`);
 }
 
@@ -301,9 +303,22 @@ try {
     throw new Error("TypeScript extension build failed");
   }
 
+  const analyticsPath = path.join(compiledSrcDir, "background", "analytics.js");
+  const analyticsSource = readFileSync(analyticsPath, "utf8");
+  writeFileSync(
+    analyticsPath,
+    analyticsSource
+      .replace('"__CCXP_LITE_GA4_MEASUREMENT_ID__"', () => JSON.stringify(ga4MeasurementId))
+      .replace('"__CCXP_LITE_GA4_API_SECRET__"', () => JSON.stringify(ga4ApiSecret)),
+  );
+
   copyTree(srcDir, stagingDir, shouldCopySourcePath);
   copyTree(srcDir, unpackedDir, shouldCopySourcePath);
   for (const directory of [stagingDir, unpackedDir]) {
+    copyFileSync(
+      path.join(projectRoot, "packages/ui/LUCIDE-LICENSE"),
+      path.join(directory, "LUCIDE-LICENSE"),
+    );
     const uiDirectory = path.join(directory, "shared/ui");
     mkdirSync(uiDirectory, { recursive: true });
     copyFileSync(

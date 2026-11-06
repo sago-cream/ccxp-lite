@@ -48,7 +48,9 @@
   }
 
   function resolveLoginFieldLabel(field: CcxpLiteLegacyLoginField, targetDocument: Document) {
-    const explicitLabel = field.labelText.trim();
+    const explicitLabel = field.labelText
+      .trim()
+      .replaceAll(/(?<=[\u3400-\u9FFF])\s+(?=[\u3400-\u9FFF])/gu, "");
     if (explicitLabel !== "") {
       return explicitLabel;
     }

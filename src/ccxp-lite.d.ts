@@ -206,6 +206,24 @@ declare global {
     resolveLocaleFromDocument: (targetDocument: Document) => string;
   }
 
+  interface CcxpLiteNthuModsCourseResult {
+    semester: string;
+    courseIds: string[];
+  }
+
+  interface CcxpLiteNthuModsParser {
+    findRegisteredCoursesTable: (targetDocument: Document) => HTMLTableElement | undefined;
+    parseCourseResult: (targetDocument: Document) => CcxpLiteNthuModsCourseResult;
+  }
+
+  interface CcxpLiteNthuModsUrl {
+    buildNthuModsUrl: (
+      locale: string,
+      semester: string,
+      courseIds: readonly string[],
+    ) => string | undefined;
+  }
+
   interface CcxpLiteSharedBrand {
     createSupportLinks: (targetDocument: Document) => readonly HTMLAnchorElement[];
     createBrandImage: (
@@ -665,6 +683,8 @@ declare global {
     sharedTheme?: CcxpLiteSharedTheme;
     sharedBrand?: CcxpLiteSharedBrand;
     sharedAnalytics?: CcxpLiteSharedAnalytics;
+    nthuModsParser?: CcxpLiteNthuModsParser;
+    nthuModsUrl?: CcxpLiteNthuModsUrl;
     login?: CcxpLiteLogin;
     loginLocale?: CcxpLiteLoginLocale;
     loginSupport?: CcxpLiteLoginSupport;

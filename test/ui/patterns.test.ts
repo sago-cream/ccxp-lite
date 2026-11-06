@@ -128,4 +128,41 @@ describe("UI behavior before extraction", () => {
       });
     }
   }
+
+  for (const locale of ["zh", "en"] as const) {
+    test(`localizes displayed sidebar labels without changing ${locale} link identity`, async () => {
+      const { window } = createTestWindow(createSidebarShellHtml());
+      (window.document as Document).documentElement.lang = locale;
+      window.sessionStorage.setItem("ccxp-lite-locale", locale);
+      loadModules(window, menuModulePaths);
+      const document = window.document as Document;
+      const state = requireValue(window.CCXP_LITE.sidebarState).getSidebarUiState(document);
+      state.sidebarVariant = "classic";
+      const model = createSidebarModel();
+      const category = model.categories[0];
+      const block = category.blocks[0];
+      const label = "\u8AB2\u7A0B\u9810\u6392 Tentative schedule";
+      const link = { ...block.links[0], label };
+      const localizedModel = {
+        ...model,
+        categories: [{ ...category, blocks: [{ ...block, links: [link] }] }],
+      };
+      state.classicExpandedItemIds = [category.id, block.id];
+      await new Promise<void>((resolve) => {
+        requireValue(window.CCXP_LITE.sidebarFavorites).initializeFavorites(resolve);
+      });
+      requireValue(window.CCXP_LITE.sidebarUi).renderSidebar(document, document, localizedModel);
+      const button = requireElement(
+        document.querySelector<HTMLElement>(
+          `[data-ccxp-lite-order-group="block:${block.id}"] [data-ccxp-lite-order-item="link:${link.id}"]`,
+        ),
+      );
+      expect(button.querySelector(".ccxp-lite-row-label")?.textContent).toBe(
+        locale === "zh" ? "\u8AB2\u7A0B\u9810\u6392" : label,
+      );
+      expect(button.getAttribute("title")).toBe(label);
+      expect(button.dataset.ccxpLiteOrderItem).toBe(`link:${link.id}`);
+      expect(link.label).toBe(label);
+    });
+  }
 });
