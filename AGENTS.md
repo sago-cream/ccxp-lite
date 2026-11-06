@@ -32,5 +32,10 @@
 
 ## Releases
 
+- Use the repository [release skill](.agents/skills/release/SKILL.md) for release
+  notes, artifact verification, and store preparation. Store submission requires
+  approval of the exact notes and targets after preparation.
+- Supply release credentials through the environment; see
+  [.env.release.example](.env.release.example) and the skill's credential reference.
 - When asked to release, run `bun run release <version> --ci --no-github.draft` from clean,
   updated `main`, then verify the published tag and all configured assets.

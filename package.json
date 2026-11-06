@@ -17,6 +17,7 @@
     "update:readme-assets": "bun run scripts/update_readme_assets.ts && bun run build:readme-comparisons",
     "build:readme-comparisons": "bun run scripts/build_readme_comparisons.ts",
     "release": "release-it --config config/release/release-it.config.cjs",
+    "release:setup": "bun run scripts/setup_release_credentials.mts",
     "release:crx": "release-it --config config/release/release-it.crx.config.cjs",
     "release:firefox": "release-it --config config/release/release-it.firefox.config.cjs",
     "test": "bun run design:build && bunx vitest run",
@@ -36,7 +37,9 @@
     "design:check": "bun run scripts/build-design-system.mts --check",
     "storybook": "bun run design:build && storybook dev -p 6006 --no-open --disable-telemetry",
     "storybook:build": "bun run design:build && storybook build --disable-telemetry",
-    "test:design": "bun run scripts/test-design-system.mts"
+    "test:design": "bun run scripts/test-design-system.mts",
+    "release:flow": "bun run scripts/release-flow.mts",
+    "test:release": "bunx vitest run test/release"
   },
   "lint-staged": {
     "*.{ts,tsx,js,mjs,json,md,css}": [
