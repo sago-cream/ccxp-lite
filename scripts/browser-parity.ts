@@ -806,7 +806,7 @@ async function captureRevision(
       const loginScreenshot = path.join(revisionOutputDir, "login.png");
       await capturePage(page, loginScreenshot, true);
       if (label === "head") {
-        styles["login-label-alignment"] = await assertLoginFieldAlignment(page);
+        await assertLoginFieldAlignment(page);
       }
       screenshots.login = loginScreenshot;
       styles.login = await collectStyles(page, loginProbes);
@@ -825,7 +825,7 @@ async function captureRevision(
         await capturePage(page, file, true);
         if (label === "head") {
           // eslint-disable-next-line no-await-in-loop -- Verify each captured viewport.
-          styles[`${name}-label-alignment`] = await assertLoginFieldAlignment(page);
+          await assertLoginFieldAlignment(page);
         }
         screenshots[name] = file;
       }
