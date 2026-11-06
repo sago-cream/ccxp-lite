@@ -12,7 +12,7 @@ import { homedir } from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { randomUUID } from "node:crypto";
-import { sha256, versionParts } from "./model.mjs";
+import { checkApproval, chromeLocales, packetDigest, sha256, versionParts } from "./model.mjs";
 import type { Artifact, Packet, State } from "./model.mjs";
 
 export function command(binary: string, args: readonly string[], cwd = process.cwd()): string {
@@ -46,6 +46,50 @@ export function loadState(version: string): State {
 }
 export function saveState(version: string, state: State): void {
   saveJson(path.join(packetDirectory(version), "state.json"), state);
+}
+export function writeChromeHandoff(
+  packet: Packet,
+  state: State,
+  directory = packetDirectory(packet.version),
+): { listing: string; instructions: string; descriptions: Record<string, string> } {
+  checkApproval(packet, state);
+  const plan = packet.plan?.chrome;
+  if (
+    !packet.updateNotes ||
+    plan === undefined ||
+    state.chrome.uploaded !== true ||
+    state.chrome.submitted === true ||
+    state.chrome.handoffDigest !== packetDigest(packet)
+  ) {
+    throw new Error("Chrome is not awaiting your description update and submission.");
+  }
+  mkdirSync(directory, { recursive: true });
+  const descriptions = Object.fromEntries(
+    chromeLocales.map((locale) => {
+      const file = path.join(directory, `chrome-description-${locale}.txt`);
+      writeFileSync(file, plan.after[locale], { mode: 0o600 });
+      return [locale, file];
+    }),
+  );
+  const listing = `https://chrome.google.com/webstore/devconsole/${packet.targets.publisherId}/${packet.targets.extensionId}/edit/listing`;
+  const instructions = path.join(directory, "chrome-handoff.md");
+  writeFileSync(
+    instructions,
+    [
+      `# Chrome ${packet.version}: descriptions and submission remain`,
+      "",
+      `The package is uploaded only. Open [the listing](${listing}) and confirm the draft package is ${packet.version}.`,
+      "1. Select English (en), paste the complete contents of chrome-description-en.txt, and save.",
+      "2. Select Chinese (Taiwan) (zh-TW), paste the complete contents of chrome-description-zh-TW.txt, and save.",
+      "3. Review any other saved dashboard changes, then click Submit for review with the normal publication settings.",
+      "",
+      "You own these dashboard steps; the agent will not edit or submit this Chrome release. Mozilla's result is reported separately.",
+      "After submitting, release:flow status can observe Chrome's review/publication status, but cannot verify its description text through the API.",
+      "",
+    ].join("\n"),
+    { mode: 0o600 },
+  );
+  return { listing, instructions, descriptions };
 }
 export function artifact(file: string): Artifact {
   const bytes = readFileSync(file);

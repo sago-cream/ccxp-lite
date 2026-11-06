@@ -10,6 +10,7 @@ import {
   readJson,
   saveJson,
   saveState,
+  writeChromeHandoff,
 } from "./release/files.mjs";
 import {
   baseline,
@@ -22,27 +23,15 @@ import {
   changesStoreNotes,
   compareVersions,
   descriptionVersion,
-  noteDescriptions,
-  checkApproval,
   chromeLocales,
   emptyState,
   makePlan,
-  normalizeText,
   packetDigest,
-  recordBrowserReceipt,
-  recordReadyCheck,
   validateSnapshot,
   versionParts,
 } from "./release/model.mjs";
-import type { DraftNotes, Packet, PackageSnapshot, Snapshot, State } from "./release/model.mjs";
+import type { DraftNotes, Packet, Snapshot, State } from "./release/model.mjs";
 import { createStores } from "./release/stores.mjs";
-
-const browserNextActions: Readonly<Partial<Record<string, string>>> = {
-  NEEDS_CHROME_LISTING:
-    "Agent: capture fresh Chrome descriptions, run chrome-check, apply and save the exact approved descriptions through the browser, record chrome-observed, then run again.",
-  NEEDS_CHROME_PACKAGE_READY:
-    "Agent: re-read the staged Chrome package/status pages, record chrome-ready with the approved draft version, then run again.",
-};
 
 function credentials() {
   const values = loadCredentials();
@@ -95,7 +84,10 @@ function review(packet: Packet, state: State) {
     `Chrome: ${packet.baselines.chrome.version} -> ${packet.version}; publisher ${packet.targets.publisherId}; item ${packet.targets.extensionId}.`,
     `Mozilla: ${packet.baselines.mozilla.version} -> ${packet.version}; listed add-on ${packet.targets.addonId}; GUID ${packet.targets.addonGuid}.`,
     "",
-    "Behavior: submit both for normal store review/publication; preserve Chrome rollout and listing visibility. Store review completion is independent.",
+    packet.updateNotes
+      ? "Behavior: submit Mozilla through the API; leave Chrome uploaded for you to paste both descriptions and click Submit for review. The agent does not edit or submit the Chrome listing."
+      : "Behavior: submit both packages through their APIs for normal store review/publication; leave public notes unchanged.",
+    "Chrome submission includes the saved item draft; check any other pending dashboard edits before submitting. Preserve rollout and listing visibility. Store review completion is independent.",
     "",
     `Chrome validation: ${state.chrome.uploaded === true ? "uploaded" : "not yet complete"}.`,
     `Mozilla validation: ${state.mozilla.uploaded === true ? "passed" : "not yet complete"}.`,
@@ -235,7 +227,6 @@ function optionsFrom(args: readonly string[]): ReadonlyMap<string, string> {
     "--chrome-listings",
     "--chrome-zh-note-ref",
     "--digest",
-    "--file",
     "--mozilla-baseline-ref",
     "--mozilla-note-ref",
     "--notes",
@@ -257,42 +248,6 @@ function required(options: ReadonlyMap<string, string>, name: string): string {
   return value;
 }
 
-function chromeCheck(packet: Packet, state: State, snapshot: Snapshot) {
-  checkApproval(packet, state);
-  verifyArtifacts(packet);
-  validateSnapshot(packet, snapshot);
-  if (
-    Date.now() - Date.parse(snapshot.observedAt) > 5 * 60 * 1000 ||
-    Date.parse(snapshot.observedAt) < Date.parse(state.approval?.approvedAt ?? "")
-  ) {
-    throw new Error("Read the current Chrome descriptions after approval before checking them.");
-  }
-  const plan = packet.plan?.chrome;
-  if (plan === undefined) {
-    throw new Error("Patch releases do not modify Chrome descriptions.");
-  }
-  const actions = chromeLocales.map((locale) => {
-    const current = normalizeText(snapshot.descriptions[locale]);
-    return {
-      locale,
-      action:
-        current === normalizeText(plan.after[locale])
-          ? "read-back-only"
-          : "replace-description-and-save-draft",
-      before: plan.before[locale],
-      after: plan.after[locale],
-    };
-  });
-  // eslint-disable-next-line no-param-reassign -- Record the fresh listing check in the journal.
-  state.chrome.browserCheck = { digest: packetDigest(packet), observedAt: snapshot.observedAt };
-  saveState(packet.version, state);
-  return {
-    url: snapshot.url,
-    digest: packetDigest(packet),
-    actions,
-    next: "Use the authenticated browser to apply only these actions, save each locale, re-read both saved descriptions, and record chrome-observed. No human action is required after the approved review.",
-  };
-}
 export async function main(args: readonly string[] = process.argv.slice(2)): Promise<void> {
   const [action = "help", version, ...rest] = args;
   if (action === "help" || action === "--help") {
@@ -307,15 +262,12 @@ export async function main(args: readonly string[] = process.argv.slice(2)): Pro
         "stage VERSION                            Upload/validate both packages without submitting or changing notes",
         "review VERSION                           Write the complete review and its approval digest",
         "approve VERSION --digest SHA256          Record explicit user approval of that exact review",
-        "run VERSION                              Resume both stores; request agent browser work when Chrome needs notes",
+        "run VERSION                              Submit Mozilla; hand off non-patch Chrome, or submit a patch through its API",
         "chrome-restage VERSION                   Re-upload the same approved package over an unsubmitted draft",
-        "chrome-ready VERSION --file PATH         Verify the staged Chrome package version after approval",
-        "chrome-check VERSION --file PATH         Check fresh Chrome observations; emit exact browser actions",
-        "chrome-observed VERSION --file PATH      Verify both saved descriptions against the approved packet",
         "status VERSION                           Read remote status and reconcile uncertain submissions without retries",
         "inspect                                  Read current store identity/baselines without writing to either store",
         "Packets: .build/releases/VERSION/. Load private credentials with Bun --env-file or the ignored local config.",
-        "The release skill drafts prose, obtains one approval, and performs Chrome's dashboard-only metadata step.",
+        "The release skill drafts prose and obtains one approval. For non-patch Chrome releases, you paste the prepared descriptions and submit in the dashboard.",
       ].join("\n"),
     );
     return;
@@ -356,10 +308,7 @@ export async function main(args: readonly string[] = process.argv.slice(2)): Pro
     "review",
     "approve",
     "run",
-    "chrome-check",
-    "chrome-ready",
     "chrome-restage",
-    "chrome-observed",
     "status",
   ];
   if (!supported.includes(action)) {
@@ -400,29 +349,19 @@ export async function main(args: readonly string[] = process.argv.slice(2)): Pro
         break;
       }
 
-      case "chrome-ready": {
-        verifyArtifacts(packet);
-        recordReadyCheck(packet, state, readJson<PackageSnapshot>(required(options, "--file")));
-        saveState(version, state);
-        console.log("Chrome staged version matches the approved package. Resume run promptly.");
-        break;
-      }
-
       case "withdraw": {
         if (
           state.chrome.submitted === true ||
           state.mozilla.submitted === true ||
+          state.chrome.handoffDigest !== undefined ||
           state.chrome.inFlight !== undefined ||
           state.mozilla.inFlight !== undefined
         ) {
           throw new Error(
-            "Do not change an accepted or uncertain submission. Resolve it before revising the release.",
+            "Do not change a submitted, uncertain, or handed-off release. Resolve it before revising.",
           );
         }
         Reflect.deleteProperty(state, "approval");
-        Reflect.deleteProperty(state.chrome, "readyCheck");
-        Reflect.deleteProperty(state.chrome, "browserCheck");
-        Reflect.deleteProperty(state.chrome, "browserReceipt");
         saveState(version, state);
         console.log("Approval withdrawn. Revise the plan, review it, and obtain fresh approval.");
         break;
@@ -439,12 +378,12 @@ export async function main(args: readonly string[] = process.argv.slice(2)): Pro
         validateSnapshot(packet, snapshot);
         packet.noteBaselines.chrome = {
           en: baseline(
-            descriptionVersion(noteDescriptions(snapshot).en),
+            descriptionVersion(snapshot.descriptions.en),
             "chrome",
             options.get("--chrome-en-note-ref"),
           ),
           "zh-TW": baseline(
-            descriptionVersion(noteDescriptions(snapshot)["zh-TW"]),
+            descriptionVersion(snapshot.descriptions["zh-TW"]),
             "chrome",
             options.get("--chrome-zh-note-ref"),
           ),
@@ -468,7 +407,7 @@ export async function main(args: readonly string[] = process.argv.slice(2)): Pro
           for (const locale of chromeLocales) {
             if (
               packet.noteBaselines?.chrome?.[locale].version !==
-              descriptionVersion(noteDescriptions(snapshot)[locale])
+              descriptionVersion(snapshot.descriptions[locale])
             ) {
               throw new Error(
                 "Run context with these Chrome descriptions before drafting and planning notes.",
@@ -512,26 +451,9 @@ export async function main(args: readonly string[] = process.argv.slice(2)): Pro
         await Promise.all([engine.chromeBaseline(), engine.mozillaBaseline()]);
         state.approval = { digest: packetDigest(packet), approvedAt: new Date().toISOString() };
         saveState(version, state);
-        console.log("Recorded approval. Run the flow to submit the exact approved packet.");
-
-        break;
-      }
-
-      case "chrome-check": {
         console.log(
-          JSON.stringify(
-            chromeCheck(packet, state, readJson<Snapshot>(required(options, "--file"))),
-            undefined,
-            2,
-          ),
+          "Recorded approval. Run the flow to complete its API work and any Chrome handoff.",
         );
-        break;
-      }
-
-      case "chrome-observed": {
-        recordBrowserReceipt(packet, state, readJson<Snapshot>(required(options, "--file")));
-        saveState(version, state);
-        console.log("Both saved Chrome descriptions match the approved packet. Resume run.");
 
         break;
       }
@@ -589,9 +511,15 @@ export async function main(args: readonly string[] = process.argv.slice(2)): Pro
             {
               chrome: state.chrome,
               mozilla: state.mozilla,
+              chromeHandoff:
+                state.chrome.remoteState === "AWAITING_USER_SUBMISSION" &&
+                state.chrome.error === undefined
+                  ? writeChromeHandoff(packet, state)
+                  : undefined,
               next:
-                browserNextActions[state.chrome.remoteState ?? ""] ??
-                "Resume run while validation is pending; submitted is distinct from public.",
+                state.chrome.remoteState === "AWAITING_USER_SUBMISSION"
+                  ? "Chrome remains uploaded only: paste the prepared English/Chinese descriptions, save them, and click Submit for review yourself. Mozilla progress is reported separately above."
+                  : "Resume run while validation is pending; submitted is distinct from public.",
             },
             undefined,
             2,

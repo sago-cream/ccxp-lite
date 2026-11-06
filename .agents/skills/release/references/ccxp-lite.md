@@ -18,7 +18,7 @@ Fetch current published baselines every run. If the GitHub version already exist
 
 Only non-patch releases update public store notes. Patch packages are uploaded/submitted normally, with Chrome descriptions and Mozilla notes left unchanged. GitHub still receives notes for every release.
 
-For a non-patch release, inspect both current Chrome locales, then replace only the first version-summary line and insert its previous contents at the top of the existing history. Preserve the invitation, GitHub URL, older history, and surrounding formatting exactly. Do not duplicate an existing entry on resume.
+For a non-patch release, read both published Chrome locales through HTTP/web tools, then replace only the first version-summary line and insert its previous contents at the top of the existing history. Preserve the invitation, GitHub URL, older history, and surrounding formatting exactly. Do not duplicate an existing entry on resume.
 
 Observed dashboard format (2026-11-06; description headline v1.13.0):
 
@@ -26,4 +26,4 @@ Observed dashboard format (2026-11-06; description headline v1.13.0):
 - Traditional Chinese (`zh-TW`): `v1.13.0：整體介面優化、NTHUMods 選課匯出支援`; GitHub invitation/link; `版本紀錄：`; older version lines.
 - Mozilla: one concise line in each configured locale, covering that store's unreleased user-facing changes. Read its current locale configuration before writing.
 
-Prepare all wording and targets for a single user review. After approval, automate the description changes, Chrome ZIP upload, listed Mozilla XPI and source ZIP upload, exact notes, submission, and status verification. Package APIs and authenticated Chrome dashboard automation may be combined; the Chrome API alone does not update localized listing descriptions.
+Prepare all wording and targets for a single user review. Stage the Chrome ZIP and listed Mozilla XPI through APIs before approval. After approval, complete Mozilla with its source ZIP and notes. For non-patch Chrome, give the user the exact complete English/Chinese descriptions and dashboard link; the user pastes, saves, and submits. Patch Chrome submits through the API without description changes. No computer use or browser automation is part of this workflow.

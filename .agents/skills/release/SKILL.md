@@ -1,6 +1,6 @@
 ---
 name: release
-description: Release ccxpLite using its release scripts, write concise grouped notes from each destination's previous release, and verify tags and assets. Stage Chrome Web Store and Mozilla Add-ons uploads with environment credentials, then require approval of the exact store notes before submission.
+description: Release ccxpLite using its release scripts, write concise grouped notes from each destination's previous release, and verify tags and assets. Stage Chrome Web Store and Mozilla Add-ons uploads, require exact-note approval, and hand non-patch Chrome descriptions and submission to the user.
 ---
 
 # Release
@@ -9,7 +9,7 @@ Run ccxpLite's release workflow and prepare distribution updates. Scope destinat
 
 ## Executable local flow
 
-Use the repository's `bun run release:flow` runner and follow [workflow.md](references/workflow.md) for the complete agent-driven workflow, packet schemas, commands, Chrome dashboard bridge, and recovery. The runner handles GitHub verification, packages, upload validation, approval hashes, and both store submissions. The agent drafts prose and performs dashboard-only Chrome observations/edits after approval; do not hand that routine browser work back to the user. Implementing or testing the runner does not authorize a live release.
+Use the repository's `bun run release:flow` runner and follow [workflow.md](references/workflow.md) for the local API workflow, public-listing observations, handoff files, and recovery. The runner handles GitHub verification, packages, upload validation, approval hashes, and Mozilla submission. For patches it also submits Chrome through the API. For non-patch releases it leaves Chrome uploaded and gives the user complete English/Chinese descriptions to paste and submit in the dashboard. Do not use computer use or browser automation for this workflow. Implementing or testing the runner does not authorize a live release.
 
 ## Establish baselines
 
@@ -41,7 +41,7 @@ When stores are in scope, read applicable references: [Chrome Web Store](referen
 
 - Build or reuse artifacts from the released source commit; verify provenance and store-specific manifests. Do not describe unsigned Firefox submission input as signed or publicly distributed.
 - Update public store notes only for non-patch releases (major/minor bumps). Patch releases still upload and submit packages, but leave both Chrome descriptions and Mozilla release notes unchanged; do not add a patch-version headline or move the previous headline. See [ccxp-lite.md](references/ccxp-lite.md) for the exact locale formats.
-- For non-patch releases, draft each store's notes against **that store's last published version**, matching its earlier language, length, and note location. Include changes across skipped releases; omit internal maintenance unless useful to that audience. Do not blindly copy the newest GitHub delta.
+- For non-patch releases, read Chrome's full published English/Chinese descriptions through HTTP/web tools and draft each store's notes against **that store's last published note version**, matching its earlier language, length, and note location. Include changes across skipped releases; omit internal maintenance unless useful to that audience. Do not blindly copy the newest GitHub delta.
 - Authenticate and complete supported non-publishing package uploads and validation. Record warnings and exact upload IDs. If a tool combines upload with submission/signing/publication, defer that combined action until approval; explain the boundary and finish other preparation first.
 - Keep unapproved text local unless there is a verified private draft field. Do not overwrite existing submissions or unrelated metadata. Prepare required source archives and reviewer information before requesting approval.
 
@@ -49,12 +49,12 @@ When stores are in scope, read applicable references: [Chrome Web Store](referen
 
 **Stop before sending store release notes or taking any action that submits, signs, queues review, or publishes a store version.** Upload-only staging is allowed only where it cannot trigger those actions. A generic request to release is not approval of unseen store text.
 
-Present one concrete review with each store's old → new version, exact complete notes for every locale, intended field/location, package identity, validation status, and submission/publication behavior. Link the saved packet and dashboards. For a patch release, state that public store notes will remain unchanged. Ask for confirmation of those exact notes and targets in one review; after approval, complete uploads, metadata updates, submission, and verification without another routine approval. Explain that this stop follows the user's required store-release approval boundary; cite this skill if needed.
+Present one concrete review with each store's old → new version, exact complete notes for every locale, intended field/location, package identity, validation status, and submission/publication behavior. Link the saved packet and dashboards. For a patch release, state that public store notes will remain unchanged. Ask for confirmation of those exact notes and targets in one review; after approval, complete Mozilla through the API and either submit patch Chrome through the API or hand non-patch Chrome to the user for pasting both descriptions and clicking Submit for review. Do not wait for another confirmation to perform that Chrome submission: the user owns it. Explain that this stop follows the user's required store-release approval boundary; cite this skill if needed.
 
 After explicit confirmation, recheck note/artifact hashes, published baselines, and remote state. If a baseline changed, recalculate its release interval and notes. Changed text, artifact, version, channel, or target requires a revised review and approval. Approval may cover one store only; proceed only for approved targets.
 
 ## Submit and report
 
-Submit the approved package and exact text through supported APIs or the authenticated dashboard. Preserve rollout, visibility, and locales unless otherwise authorized. Save partial results: do not resubmit a successful destination because another failed. After ambiguous responses, query status before retrying.
+Complete approved API operations. For non-patch Chrome, generate the handoff files, link the listing, and clearly report that descriptions and submission remain for the user. Do not edit or submit that Chrome release, even on a retry. Patch Chrome submission uses the API and leaves public notes unchanged. Preserve rollout, visibility, and locales unless otherwise authorized. The Chrome API submits the saved item draft; it does not provide a flag to exclude other saved dashboard edits. Save partial results: do not resubmit a successful destination because another failed. After ambiguous responses, query status before retrying.
 
-Verify target/version and stored notes. Distinguish uploaded, validated, submitted for review, approved/staged, and publicly published. Report links and actual status; an upload or successful submission does not prove public availability. Do not create monitoring automations unless requested.
+Verify target/version and Mozilla's stored notes. After a manual Chrome submission, status can verify review/publication but cannot verify description text; do not claim it did. Distinguish uploaded, validated, submitted for review, approved/staged, and publicly published. Report links and actual status; an upload or successful submission does not prove public availability. Do not create monitoring automations unless requested.

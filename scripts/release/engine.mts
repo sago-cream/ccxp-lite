@@ -130,6 +130,23 @@ export class ReleaseEngine {
 
   async reconcileChrome(): Promise<void> {
     const state = this.state.chrome;
+    if (
+      this.packet.updateNotes &&
+      state.handoffDigest === packetDigest(this.packet) &&
+      state.uploaded === true
+    ) {
+      const remote = await this.services.chrome.status();
+      if (
+        remote.published.includes(this.packet.version) ||
+        remote.submitted.includes(this.packet.version)
+      ) {
+        state.submitted = true;
+        state.remoteState = remote.published.includes(this.packet.version)
+          ? "PUBLISHED"
+          : remote.state;
+        this.save();
+      }
+    }
     if (state.inFlight === undefined) {
       return;
     }
@@ -194,6 +211,7 @@ export class ReleaseEngine {
 
   async restageChrome(): Promise<void> {
     verifyArtifacts(this.packet);
+    await this.reconcileChrome();
     if (
       this.state.chrome.submitted === true ||
       this.state.chrome.inFlight?.operation === "submit"
@@ -314,26 +332,13 @@ export class ReleaseEngine {
     if (state.uploaded !== true && state.submitted !== true) {
       return;
     }
-    if (
-      state.submitted !== true &&
-      this.packet.updateNotes &&
-      (state.browserReceipt?.digest !== packetDigest(this.packet) ||
-        Date.now() - Date.parse(state.browserReceipt.observedAt) > 5 * 60 * 1000)
-    ) {
-      state.remoteState = "NEEDS_CHROME_LISTING";
+    if (state.submitted !== true && this.packet.updateNotes) {
+      state.handoffDigest = packetDigest(this.packet);
+      state.remoteState = "AWAITING_USER_SUBMISSION";
       this.save();
       return;
     }
     if (state.submitted !== true) {
-      if (
-        state.readyCheck?.digest !== packetDigest(this.packet) ||
-        state.readyCheck.version !== this.packet.version ||
-        Date.now() - Date.parse(state.readyCheck.observedAt) > 5 * 60 * 1000
-      ) {
-        state.remoteState = "NEEDS_CHROME_PACKAGE_READY";
-        this.save();
-        return;
-      }
       await this.chromeBaseline();
       await this.mutation(
         "chrome",

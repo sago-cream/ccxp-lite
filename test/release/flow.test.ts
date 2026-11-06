@@ -6,15 +6,13 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { ReleaseEngine } from "../../scripts/release/engine.mjs";
-import { artifact } from "../../scripts/release/files.mjs";
+import { artifact, writeChromeHandoff } from "../../scripts/release/files.mjs";
 import {
   changesStoreNotes,
   emptyState,
   makePlan,
   descriptionVersion,
   packetDigest,
-  recordBrowserReceipt,
-  recordReadyCheck,
   rotateDescription,
 } from "../../scripts/release/model.mjs";
 import type {
@@ -80,12 +78,13 @@ function fixture(patch = false) {
     createdAt: new Date(Date.now() - 2000).toISOString(),
   };
   const snapshot: Snapshot = {
-    publisherId: "publisher",
     extensionId: "extension",
-    url: "https://chrome.google.com/webstore/devconsole/publisher/extension/edit/listing",
+    urls: {
+      en: "https://chromewebstore.google.com/detail/extension?hl=en",
+      "zh-TW": "https://chromewebstore.google.com/detail/extension?hl=zh-TW",
+    },
     observedAt: new Date().toISOString(),
     descriptions,
-    publishedDescriptions: descriptions,
   };
   packet.plan = patch
     ? {}
@@ -181,20 +180,24 @@ function fixture(patch = false) {
       },
       2,
     );
-  const approve = (ready = true) => {
+  const approve = () => {
     state.approval = {
       digest: packetDigest(packet),
       approvedAt: new Date(Date.now() - 500).toISOString(),
     };
-    if (ready) {
-      state.chrome.readyCheck = {
-        digest: packetDigest(packet),
-        version: packet.version,
-        observedAt: new Date().toISOString(),
-      };
-    }
   };
-  return { packet, state, backend, services, snapshot, journal, engine, approve, remoteVersion };
+  return {
+    root,
+    packet,
+    state,
+    backend,
+    services,
+    snapshot,
+    journal,
+    engine,
+    approve,
+    remoteVersion,
+  };
 }
 
 describe("localized note planning", () => {
@@ -242,28 +245,12 @@ describe("localized note planning", () => {
       /unchanged/u,
     );
   });
-  it("uses the published headline even when the unsubmitted draft already has different new wording", () => {
+  it("plans the complete descriptions from public listing text", () => {
     const f = fixture();
-    const observation = {
-      ...f.snapshot,
-      descriptions: {
-        ...descriptions,
-        en: descriptions.en.replace("v1.13.0: old summary", "v1.14.0: abandoned draft"),
-      },
-      publishedDescriptions: descriptions,
-    };
-    const plan = makePlan(
-      f.packet,
-      {
-        chrome: { en: "Approved new wording", "zh-TW": "新摘要" },
-        mozilla: { "en-US": "New", "zh-TW": "新" },
-      },
-      observation,
-    );
-    expect(descriptionVersion(observation.publishedDescriptions.en)).toBe("1.13.0");
-    expect(plan.chrome?.before.en).toContain("abandoned draft");
-    expect(plan.chrome?.after.en).toContain("v1.14.0: Approved new wording");
-    expect(plan.chrome?.after.en).toContain("release note:\nv1.13.0: old summary");
+    expect(descriptionVersion(f.snapshot.descriptions.en)).toBe("1.13.0");
+    expect(f.packet.plan?.chrome?.before).toEqual(descriptions);
+    expect(f.packet.plan?.chrome?.after.en).toContain("v1.14.0: new summary");
+    expect(f.packet.plan?.chrome?.after.en).toContain("release note:\nv1.13.0: old summary");
   });
   it("requires all Mozilla locales and the exact observed target", () => {
     const f = fixture();
@@ -278,21 +265,25 @@ describe("localized note planning", () => {
       makePlan(
         f.packet,
         { chrome: { en: "New", "zh-TW": "新" }, mozilla: { "en-US": "New", "zh-TW": "新" } },
-        { ...f.snapshot, publisherId: "other" },
+        { ...f.snapshot, extensionId: "other" },
       ),
     ).toThrow(/wrong target/u);
   });
-  it("requires the online descriptions rather than assuming the dashboard draft is published", () => {
+  it("requires public URLs for the exact locales instead of dashboard observations", () => {
     const f = fixture();
-    const observation = { ...f.snapshot };
-    Reflect.deleteProperty(observation, "publishedDescriptions");
     expect(() =>
       makePlan(
         f.packet,
         { chrome: { en: "New", "zh-TW": "新" }, mozilla: { "en-US": "New", "zh-TW": "新" } },
-        observation,
+        {
+          ...f.snapshot,
+          urls: {
+            ...f.snapshot.urls,
+            en: "https://chrome.google.com/webstore/devconsole/publisher/extension/edit/listing",
+          },
+        },
       ),
-    ).toThrow(/published Chrome descriptions/u);
+    ).toThrow(/incorrect listing URL/u);
   });
 });
 
@@ -318,19 +309,7 @@ describe("approval and both-store execution", () => {
   });
   it("submits patch packages to both stores without touching any public note", async () => {
     const f = fixture(true);
-    f.approve(false);
-    await f.engine().execute("run");
-    expect(f.state.chrome.remoteState).toBe("NEEDS_CHROME_PACKAGE_READY");
-    expect(f.services.chrome.submit).not.toHaveBeenCalled();
-    recordReadyCheck(f.packet, f.state, {
-      publisherId: "publisher",
-      extensionId: "extension",
-      url: "https://chrome.google.com/webstore/devconsole/publisher/extension/edit/package",
-      observedAt: new Date().toISOString(),
-      packageVersion: f.packet.version,
-      hasUnsubmittedChanges: true,
-      state: "DRAFT",
-    });
+    f.approve();
     await f.engine().execute("run");
     expect(f.state.chrome.submitted).toBe(true);
     expect(f.state.mozilla.submitted).toBe(true);
@@ -341,28 +320,50 @@ describe("approval and both-store execution", () => {
     expect(f.services.mozilla.submit).toHaveBeenCalledTimes(1);
     expect(f.services.chrome.submit).toHaveBeenCalledTimes(1);
   });
-  it("finishes Mozilla while Chrome waits for an approved browser observation", async () => {
+  it("finishes Mozilla and leaves non-patch Chrome descriptions and submission to the user", async () => {
     const f = fixture();
     f.approve();
     await f.engine().execute("run");
-    expect(f.state.chrome.remoteState).toBe("NEEDS_CHROME_LISTING");
+    expect(f.state.chrome.remoteState).toBe("AWAITING_USER_SUBMISSION");
+    expect(f.state.chrome.uploaded).toBe(true);
+    expect(f.state.chrome.submitted).not.toBe(true);
     expect(f.services.chrome.submit).not.toHaveBeenCalled();
     expect(f.state.mozilla.submitted).toBe(true);
     expect(f.backend.notes).toEqual(f.packet.plan?.mozilla);
-    f.state.chrome.browserCheck = {
-      digest: packetDigest(f.packet),
-      observedAt: new Date().toISOString(),
-    };
-    const after = {
-      ...f.snapshot,
-      observedAt: new Date().toISOString(),
-      descriptions: f.packet.plan?.chrome?.after ?? descriptions,
-    };
-    recordBrowserReceipt(f.packet, f.state, after);
+    const handoff = writeChromeHandoff(f.packet, f.state, f.root);
+    expect(handoff.listing).toContain("/publisher/extension/edit/listing");
+    expect(readFileSync(handoff.descriptions.en, "utf8")).toBe(f.packet.plan?.chrome?.after.en);
+    expect(readFileSync(handoff.descriptions["zh-TW"], "utf8")).toBe(
+      f.packet.plan?.chrome?.after["zh-TW"],
+    );
+    expect(readFileSync(handoff.instructions, "utf8")).toContain("click Submit for review");
     await f.engine().execute("run");
-    expect(f.state.chrome.submitted).toBe(true);
+    expect(f.services.chrome.upload).toHaveBeenCalledTimes(1);
+    expect(f.services.chrome.submit).not.toHaveBeenCalled();
     expect(f.services.mozilla.submit).toHaveBeenCalledTimes(1);
-    expect(f.services.mozilla.notes).toHaveBeenCalledTimes(1);
+  });
+  it("observes a manual Chrome submission without uploading or submitting again", async () => {
+    const f = fixture();
+    f.approve();
+    await f.engine().execute("run");
+    f.backend.chromeSubmitted = true;
+    await f.engine().reconcileChrome();
+    expect(f.state.chrome.submitted).toBe(true);
+    expect(f.state.chrome.remoteState).toBe("PENDING_REVIEW");
+    await expect(f.engine().restageChrome()).rejects.toThrow(/accepted or uncertain/u);
+    await f.engine().execute("run");
+    expect(f.services.chrome.upload).toHaveBeenCalledTimes(1);
+    expect(f.services.chrome.submit).not.toHaveBeenCalled();
+    f.backend.chromeBaseline = f.packet.version;
+    await f.engine().reconcileChrome();
+    expect(f.state.chrome.remoteState).toBe("PUBLISHED");
+  });
+  it("does not produce a handoff without current approval", async () => {
+    const f = fixture();
+    f.approve();
+    await f.engine().execute("run");
+    f.packet.plan = {};
+    expect(() => writeChromeHandoff(f.packet, f.state, f.root)).toThrow(/approve/u);
   });
   it("invalidates approval after a text or package edit", async () => {
     const f = fixture(true);
@@ -458,32 +459,23 @@ describe("approval and both-store execution", () => {
     expect(f.state.mozilla.notesVerified).toBe(true);
     expect(f.state.mozilla.error).toBeUndefined();
   });
-  it("does not repeat completed Chrome browser work while retrying Mozilla later", async () => {
+  it("preserves the manual Chrome handoff while retrying Mozilla later", async () => {
     const f = fixture();
-    await f.engine().execute("stage");
     f.approve();
-    f.state.chrome.browserCheck = {
-      digest: packetDigest(f.packet),
-      observedAt: new Date().toISOString(),
-    };
-    recordBrowserReceipt(f.packet, f.state, {
-      ...f.snapshot,
-      observedAt: new Date().toISOString(),
-      descriptions: f.packet.plan?.chrome?.after ?? descriptions,
-    });
     f.backend.sourceHash = "wrong";
     await f.engine().execute("run");
-    expect(f.state.chrome.submitted).toBe(true);
+    expect(f.state.chrome.remoteState).toBe("AWAITING_USER_SUBMISSION");
     f.backend.sourceHash = f.packet.artifacts.source.sha256;
     vi.spyOn(Date, "now").mockReturnValue(Date.now() + 60 * 60 * 1000);
     await f.engine().execute("run");
-    expect(f.state.chrome.remoteState).toBe("PENDING_REVIEW");
+    expect(f.state.chrome.remoteState).toBe("AWAITING_USER_SUBMISSION");
     expect(f.state.mozilla.sourceVerified).toBe(true);
-    expect(f.services.chrome.submit).toHaveBeenCalledTimes(1);
+    expect(f.services.chrome.submit).not.toHaveBeenCalled();
+    expect(f.services.chrome.upload).toHaveBeenCalledTimes(1);
   });
   it("restages an unsubmitted Chrome draft without resetting the other store or approval", async () => {
-    const f = fixture(true);
-    f.approve(false);
+    const f = fixture();
+    f.approve();
     await f.engine().execute("run");
     const { approval } = f.state;
     await f.engine().restageChrome();

@@ -31,12 +31,10 @@ export interface MozillaVersion {
   file: { status: string | number; hash?: string };
 }
 export interface Snapshot {
-  publisherId: string;
   extensionId: string;
-  url: string;
+  urls: Descriptions;
   observedAt: string;
   descriptions: Descriptions;
-  publishedDescriptions?: Descriptions;
 }
 export interface DraftNotes {
   chrome: Descriptions;
@@ -65,7 +63,7 @@ export interface InFlight {
   startedAt: string;
 }
 export interface StoreState {
-  readyCheck?: { digest: string; observedAt: string; version: string };
+  handoffDigest?: string;
   inFlight?: InFlight;
   uploaded?: boolean;
   uploadAccepted?: boolean;
@@ -75,8 +73,6 @@ export interface StoreState {
   submitted?: boolean;
   notesVerified?: boolean;
   sourceVerified?: boolean;
-  browserCheck?: { digest: string; observedAt: string };
-  browserReceipt?: { digest: string; observedAt: string; hashes: Descriptions; url: string };
   validation?: unknown;
   remoteState?: string;
   error?: string;
@@ -130,12 +126,6 @@ export function oneLine(value: string): string {
 }
 export const normalizeText = (text: string): string => text.replaceAll("\r\n", "\n");
 
-export function noteDescriptions(snapshot: Snapshot): Descriptions {
-  if (snapshot.publishedDescriptions === undefined) {
-    throw new Error("Read both published Chrome descriptions before resolving or planning notes.");
-  }
-  return snapshot.publishedDescriptions;
-}
 export function descriptionVersion(text: string): string {
   const match = /^v(\d+\.\d+\.\d+)(?:\uFF1A|:)\s*.+$/u.exec(normalizeText(text).split("\n")[0]);
   if (match === null) {
@@ -157,7 +147,7 @@ export function rotateDescription(
   const headline = `v${version}${locale === "en" ? ": " : "\uFF1A"}${summary}`;
   const first = /^v(\d+\.\d+\.\d+)(?:\uFF1A|:)\s*.+$/u.exec(lines[0]);
   if (first === null) {
-    throw new Error(`Unrecognized ${locale} description headline; inspect the live dashboard.`);
+    throw new Error(`Unrecognized ${locale} description headline; inspect the published listing.`);
   }
   const marker = locale === "en" ? "release note:" : "\u7248\u672C\u7D00\u9304\uFF1A";
   const history = lines.indexOf(marker);
@@ -227,19 +217,22 @@ export function checkApproval(packet: Packet, state: State): void {
   }
 }
 export function validateSnapshot(packet: Packet, snapshot: Snapshot): void {
-  const expected = `https://chrome.google.com/webstore/devconsole/${packet.targets.publisherId}/${packet.targets.extensionId}/edit`;
   if (
-    snapshot.publisherId !== packet.targets.publisherId ||
     snapshot.extensionId !== packet.targets.extensionId ||
-    ![`${expected}/listing`, expected].includes(snapshot.url) ||
     !Number.isFinite(Date.parse(snapshot.observedAt)) ||
     Date.parse(snapshot.observedAt) > Date.now() + 60_000
   ) {
-    throw new Error("Chrome observation has the wrong target, URL, or timestamp.");
+    throw new Error("Chrome observation has the wrong target or timestamp.");
   }
   for (const locale of chromeLocales) {
-    if (typeof snapshot.descriptions[locale] !== "string") {
-      throw new TypeError(`Missing ${locale} description.`);
+    const url = new URL(snapshot.urls[locale]);
+    if (
+      url.origin !== "https://chromewebstore.google.com" ||
+      url.pathname.split("/").at(-1) !== packet.targets.extensionId ||
+      url.searchParams.get("hl") !== locale ||
+      typeof snapshot.descriptions[locale] !== "string"
+    ) {
+      throw new TypeError(`Missing published ${locale} description or incorrect listing URL.`);
     }
   }
 }
@@ -272,7 +265,7 @@ export function makePlan(packet: Packet, notes?: DraftNotes, snapshot?: Snapshot
   const after = { ...snapshot.descriptions };
   for (const locale of chromeLocales) {
     after[locale] = rotateDescription(
-      noteDescriptions(snapshot)[locale],
+      snapshot.descriptions[locale],
       locale,
       packet.version,
       notes.chrome[locale],
@@ -282,78 +275,4 @@ export function makePlan(packet: Packet, notes?: DraftNotes, snapshot?: Snapshot
     oneLine(line);
   }
   return { chrome: { before: snapshot.descriptions, after }, mozilla: notes.mozilla };
-}
-export interface PackageSnapshot {
-  publisherId: string;
-  extensionId: string;
-  url: string;
-  observedAt: string;
-  packageVersion: string;
-  hasUnsubmittedChanges: boolean;
-  state: "PUBLISHED" | "DRAFT" | "PENDING_REVIEW";
-}
-export function recordReadyCheck(packet: Packet, state: State, observation: PackageSnapshot): void {
-  checkApproval(packet, state);
-  const expected = `https://chrome.google.com/webstore/devconsole/${packet.targets.publisherId}/${packet.targets.extensionId}/edit/package`;
-  const age = Date.now() - Date.parse(observation.observedAt);
-  if (
-    observation.publisherId !== packet.targets.publisherId ||
-    observation.extensionId !== packet.targets.extensionId ||
-    observation.url !== expected ||
-    !Number.isFinite(age) ||
-    age < -60_000 ||
-    age > 5 * 60 * 1000 ||
-    Date.parse(observation.observedAt) < Date.parse(state.approval?.approvedAt ?? "")
-  ) {
-    throw new Error("Re-read the exact Chrome package page after approval.");
-  }
-  if (
-    state.chrome.uploaded !== true ||
-    observation.packageVersion !== packet.version ||
-    !observation.hasUnsubmittedChanges ||
-    observation.state === "PENDING_REVIEW"
-  ) {
-    throw new Error(
-      "Chrome's draft package does not match the approved upload or is already under review.",
-    );
-  }
-  // eslint-disable-next-line no-param-reassign -- Bind the fresh staged-version observation to the approval.
-  state.chrome.readyCheck = {
-    digest: packetDigest(packet),
-    version: packet.version,
-    observedAt: observation.observedAt,
-  };
-}
-export function recordBrowserReceipt(packet: Packet, state: State, snapshot: Snapshot): void {
-  checkApproval(packet, state);
-  validateSnapshot(packet, snapshot);
-  const plan = packet.plan?.chrome;
-  if (plan === undefined) {
-    throw new Error("This release must not update Chrome descriptions.");
-  }
-  if (Date.parse(snapshot.observedAt) < Date.parse(state.approval?.approvedAt ?? "")) {
-    throw new Error("Re-read the saved descriptions after approval.");
-  }
-  if (
-    state.chrome.browserCheck?.digest !== packetDigest(packet) ||
-    Date.parse(snapshot.observedAt) < Date.parse(state.chrome.browserCheck.observedAt)
-  ) {
-    throw new Error(
-      "Check the current listing against the approved before/after text before editing it.",
-    );
-  }
-  const hashes = { en: "", "zh-TW": "" };
-  for (const locale of chromeLocales) {
-    if (normalizeText(snapshot.descriptions[locale]) !== normalizeText(plan.after[locale])) {
-      throw new Error(`Saved ${locale} description differs from approved wording.`);
-    }
-    hashes[locale] = sha256(normalizeText(snapshot.descriptions[locale]));
-  }
-  // eslint-disable-next-line no-param-reassign -- Persist the validated browser observation in the journal.
-  state.chrome.browserReceipt = {
-    digest: packetDigest(packet),
-    observedAt: snapshot.observedAt,
-    hashes,
-    url: snapshot.url,
-  };
 }
