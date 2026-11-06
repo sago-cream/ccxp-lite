@@ -35,7 +35,8 @@ A request to release authorizes the configured GitHub release. The additional st
 When stores are in scope, read applicable references: [Chrome Web Store](references/chrome-web-store.md) and [Mozilla Add-ons](references/mozilla-addons.md). Recheck official API documentation when executing.
 
 - Build or reuse artifacts from the released source commit; verify provenance and store-specific manifests. Do not describe unsigned Firefox submission input as signed or publicly distributed.
-- Draft each store's notes against **that store's last published version**, matching its earlier language, length, and note location. Include changes across skipped releases; omit internal maintenance unless useful to that audience. Do not blindly copy the newest GitHub delta.
+- Update public store notes only for non-patch releases (major/minor bumps). Patch releases still upload and submit packages, but leave both Chrome descriptions and Mozilla release notes unchanged; do not add a patch-version headline or move the previous headline. See [ccxp-lite.md](references/ccxp-lite.md) for the exact locale formats.
+- For non-patch releases, draft each store's notes against **that store's last published version**, matching its earlier language, length, and note location. Include changes across skipped releases; omit internal maintenance unless useful to that audience. Do not blindly copy the newest GitHub delta.
 - Authenticate and complete supported non-publishing package uploads and validation. Record warnings and exact upload IDs. If a tool combines upload with submission/signing/publication, defer that combined action until approval; explain the boundary and finish other preparation first.
 - Keep unapproved text local unless there is a verified private draft field. Do not overwrite existing submissions or unrelated metadata. Prepare required source archives and reviewer information before requesting approval.
 
@@ -43,7 +44,7 @@ When stores are in scope, read applicable references: [Chrome Web Store](referen
 
 **Stop before sending store release notes or taking any action that submits, signs, queues review, or publishes a store version.** Upload-only staging is allowed only where it cannot trigger those actions. A generic request to release is not approval of unseen store text.
 
-Present one concrete review with each store's old → new version, exact complete notes for every locale, intended field/location, package identity, validation status, and submission/publication behavior. Link the saved packet and dashboards. Ask for confirmation of those exact notes and targets. Explain that this stop follows the user's required store-release approval boundary; cite this skill if needed.
+Present one concrete review with each store's old → new version, exact complete notes for every locale, intended field/location, package identity, validation status, and submission/publication behavior. Link the saved packet and dashboards. For a patch release, state that public store notes will remain unchanged. Ask for confirmation of those exact notes and targets in one review; after approval, complete uploads, metadata updates, submission, and verification without another routine approval. Explain that this stop follows the user's required store-release approval boundary; cite this skill if needed.
 
 After explicit confirmation, recheck note/artifact hashes, published baselines, and remote state. If a baseline changed, recalculate its release interval and notes. Changed text, artifact, version, channel, or target requires a revised review and approval. Approval may cover one store only; proceed only for approved targets.
 
