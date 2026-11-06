@@ -4,6 +4,8 @@ Use environment variables as the interface. Prefer injecting them from an existi
 
 ## Local setup
 
+Use the personal Google Cloud project `ccxplite-releases` (`ccxpLite Releases`) for Chrome release authentication. It has no parent organization and no linked billing account. Keep this setup independent of NTHUSA projects, credentials, organization resources, and billing.
+
 Collect one explicitly named value at a time through T3's private `request_secret` card with `delivery: "file"`. Open the relevant signed-in dashboard, identify the exact field, and do not capture credential values in browser snapshots, screenshots, tool output, or chat. Import the returned private file directly; never paste the value into command arguments.
 
 From the repository root:
