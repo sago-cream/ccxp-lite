@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 
 const projectRoot = fileURLToPath(new URL("../", import.meta.url));
 const outputPath = path.join(projectRoot, ".env.release.local");
-const fields = [
+export const fields = [
   "AMO_JWT_ISSUER",
   "AMO_JWT_SECRET",
   "CWS_PUBLISHER_ID",
@@ -19,7 +19,7 @@ const fields = [
   "AMO_ADDON_ID",
 ] as const;
 type Field = (typeof fields)[number];
-type Credentials = Partial<Record<Field, string>>;
+export type Credentials = Partial<Record<Field, string>>;
 
 class SetupError extends Error {
   name = "SetupError";
@@ -35,7 +35,7 @@ function checkPath() {
   }
 }
 
-function load(): Credentials {
+export function loadCredentials(): Credentials {
   if (!existsSync(outputPath)) {
     return {};
   }
@@ -80,7 +80,7 @@ function save(values: Credentials) {
   chmodSync(outputPath, 0o600);
 }
 
-function requireValue(values: Credentials, field: Field) {
+export function requireValue(values: Credentials, field: Field): string {
   const value = values[field];
   if (value === undefined || value === "") {
     throw new SetupError(`Missing ${field}.`);
@@ -112,13 +112,13 @@ async function request(url: string, init?: RequestInit): Promise<Record<string, 
   const response = await fetch(url, { ...init, signal: AbortSignal.timeout(20_000) });
   if (!response.ok) {
     throw new SetupError(
-      `Authentication check failed with HTTP ${response.status}. No store changes were made.`,
+      `Authentication request failed with HTTP ${response.status}; response details were suppressed.`,
     );
   }
   return (await response.json()) as Record<string, unknown>;
 }
 
-async function chromeAccessToken(values: Credentials) {
+export async function chromeAccessToken(values: Credentials): Promise<string> {
   if ((values.CWS_SERVICE_ACCOUNT_EMAIL ?? "") !== "") {
     const result = spawnSync(
       "gcloud",
@@ -228,7 +228,7 @@ async function main() {
     return;
   }
   checkPath();
-  const values = command === "reset" ? {} : load();
+  const values = command === "reset" ? {} : loadCredentials();
   if (command === "status" && args.length === 0) {
     const serviceAccount = (values.CWS_SERVICE_ACCOUNT_EMAIL ?? "") !== "";
     console.log(
@@ -276,11 +276,13 @@ async function main() {
   }
 }
 
-await main().catch((error: unknown) => {
-  console.error(
-    error instanceof SetupError
-      ? error.message
-      : "Credential setup failed. Check private input, connectivity, and file permissions.",
-  );
-  process.exitCode = 1;
-});
+if (import.meta.main) {
+  await main().catch((error: unknown) => {
+    console.error(
+      error instanceof SetupError
+        ? error.message
+        : "Credential setup failed. Check private input, connectivity, and file permissions.",
+    );
+    process.exitCode = 1;
+  });
+}
