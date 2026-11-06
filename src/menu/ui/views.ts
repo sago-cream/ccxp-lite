@@ -44,7 +44,11 @@
       label: english ? "Use sidebar" : "\u4F7F\u7528\u5074\u908A\u6B04",
       icon: createBackIcon(targetDocument),
       onClick: () => {
-        targetDocument.querySelector<HTMLButtonElement>("#ccxp-lite-profile-mode")?.click();
+        const mode = targetDocument.querySelector<HTMLSelectElement>("#ccxp-lite-profile-mode");
+        if (mode) {
+          mode.value = "classic";
+          mode.dispatchEvent(new Event("change", { bubbles: true }));
+        }
         targetDocument.querySelector<HTMLButtonElement>(".ccxp-lite-profile-trigger")?.focus();
       },
     });

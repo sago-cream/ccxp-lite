@@ -113,6 +113,10 @@ jobs:
              grep -q 'function attachCaptchaRefresh' src/login/auth/captcha.ts; then
             expected_changes+=(--expect-captcha-refresh)
           fi
+          if ! grep -q 'ccxp-lite-profile-mode-select' ../base/src/menu/ui/overlays.ts &&
+             grep -q 'ccxp-lite-profile-mode-select' src/menu/ui/overlays.ts; then
+            expected_changes+=(--expect-mode-picker-change)
+          fi
           if ! grep -q 'ccxpLiteCollapseIcon' ../base/src/menu/ui/controller.ts &&
              grep -q 'ccxpLiteCollapseIcon' src/menu/ui/controller.ts; then
             expected_changes+=(--expect-login-icons-change)

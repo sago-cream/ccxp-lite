@@ -89,7 +89,8 @@ test("packaged headers omit ccxpLite and profile menus expose support links", as
       }
       const preferences = popup.getByRole("region", { name: "\u504F\u597D\u8A2D\u5B9A" });
       const support = popup.getByRole("region", { name: "\u652F\u63F4\u8207\u9023\u7D50" });
-      expect(await preferences.getByRole("button").count()).toBe(2);
+      expect(await preferences.getByRole("button").count()).toBe(1);
+      expect(await preferences.getByRole("combobox").count()).toBe(1);
       expect(await preferences.getByRole("switch").count()).toBe(1);
       expect(
         await preferences
@@ -99,11 +100,28 @@ test("packaged headers omit ccxpLite and profile menus expose support links", as
       expect(await preferences.getByRole("link").count()).toBe(0);
       expect(await support.getByRole("link").count()).toBe(2);
       const mode = preferences.locator("#ccxp-lite-profile-mode");
-      expect(await mode.getAttribute("title")).toBe(
-        variant === "classic"
-          ? "\u4F7F\u7528\u9078\u55AE\u6A21\u5F0F"
-          : "\u4F7F\u7528\u5074\u6B04\u6A21\u5F0F",
-      );
+      expect(await mode.inputValue()).toBe(variant);
+      expect(
+        await mode
+          .locator("option")
+          .evaluateAll((options: readonly HTMLOptionElement[]) =>
+            options.map((option) => option.value),
+          ),
+      ).toEqual(["classic", "layered"]);
+      await mode.click();
+      expect(await mode.inputValue()).toBe(variant);
+      await mode.press("Escape");
+      expect(await nav.locator("#ccxp-lite-profile-mode").inputValue()).toBe(variant);
+      expect(
+        await nav
+          .locator(".ccxp-lite-sidebar-shell")
+          .getAttribute("data-ccxp-lite-sidebar-variant"),
+      ).toBe(variant);
+      if (!(await popup.isVisible())) {
+        await trigger.click();
+      }
+      await mode.selectOption(variant);
+      expect(await popup.isVisible()).toBe(true);
       await mode.focus();
       await mode.press("Tab");
       const timerToggle = preferences.locator(".ccxp-lite-session-timer-toggle");
@@ -155,7 +173,9 @@ test("packaged headers omit ccxpLite and profile menus expose support links", as
       await popup.waitFor({ state: "hidden" });
       expect(await trigger.getAttribute("aria-expanded")).toBe("false");
       await trigger.click();
-      await nav.locator("#ccxp-lite-profile-mode").click();
+      await nav
+        .locator("#ccxp-lite-profile-mode")
+        .selectOption(variant === "classic" ? "layered" : "classic");
     }
     await page.setViewportSize({ width: 1280, height: 960 });
     await nav.locator(".ccxp-lite-profile-trigger").click();

@@ -43,9 +43,10 @@ describe("menu analytics", () => {
 
       const nextVariant = initialVariant === "classic" ? "layered" : "classic";
       const modeButton = requireElement(
-        document.querySelector<HTMLButtonElement>("#ccxp-lite-profile-mode"),
+        document.querySelector<HTMLSelectElement>("#ccxp-lite-profile-mode"),
       );
-      modeButton.click();
+      modeButton.value = nextVariant;
+      modeButton.dispatchEvent(new TestEvent("change", { bubbles: true }));
       render();
       expect(messages().map((message) => message.name)).toEqual([
         "ccxp_lite_menu_view",

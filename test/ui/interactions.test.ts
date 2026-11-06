@@ -86,7 +86,7 @@ describe("extracted UI interactions", () => {
     expect(document.activeElement).not.toBe(button);
   });
 
-  test("profile mode action rerenders once, persists mode, and resets navigation", async () => {
+  test("profile mode selection rerenders once, persists mode, and resets navigation", async () => {
     const { document, window, state, ui, strings } = await setupMenu();
     state.sidebarVariant = "classic";
     state.currentCategoryId = "category-courses";
@@ -96,11 +96,16 @@ describe("extracted UI interactions", () => {
     ui.mountSidebarVariantSwitch(document, state, strings, rerender);
     expect(document.querySelectorAll(".ccxp-lite-sidebar-profile")).toHaveLength(1);
     const mode = requireElement(
-      document.querySelector<HTMLButtonElement>("#ccxp-lite-profile-mode"),
+      document.querySelector<HTMLSelectElement>("#ccxp-lite-profile-mode"),
     );
-    expect(mode.querySelector(".ccxp-lite-profile-value")?.textContent).toBe("\u5074\u908A\u6B04");
-    expect(mode.title).toBe("\u4F7F\u7528\u9078\u55AE\u6A21\u5F0F");
+    expect(mode.value).toBe("classic");
     mode.click();
+    expect(state.sidebarVariant).toBe("classic");
+    mode.dispatchEvent(new TestEvent("change"));
+    expect(rerender).not.toHaveBeenCalled();
+    expect(state.currentCategoryId).toBe("category-courses");
+    mode.value = "layered";
+    mode.dispatchEvent(new TestEvent("change"));
     expect(state.sidebarVariant).toBe("layered");
     expect(state.currentCategoryId).toBe("");
     expect(state.activeLeaf).toBeUndefined();
@@ -108,10 +113,11 @@ describe("extracted UI interactions", () => {
     expect(rerender).toHaveBeenCalledTimes(1);
     ui.mountSidebarVariantSwitch(document, state, strings, rerender);
     const nextMode = requireElement(
-      document.querySelector<HTMLButtonElement>("#ccxp-lite-profile-mode"),
+      document.querySelector<HTMLSelectElement>("#ccxp-lite-profile-mode"),
     );
-    expect(nextMode.querySelector(".ccxp-lite-profile-value")?.textContent).toBe("\u9078\u55AE");
-    nextMode.click();
+    expect(nextMode.value).toBe("layered");
+    nextMode.value = "classic";
+    nextMode.dispatchEvent(new TestEvent("change"));
     expect(state.sidebarVariant).toBe("classic");
     expect(rerender).toHaveBeenCalledTimes(2);
   });
