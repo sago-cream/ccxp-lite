@@ -96,6 +96,9 @@ export class ReleaseEngine {
       }
       return remote;
     }
+    if (compareVersions(this.packet.version, this.packet.baselines.chrome.version) <= 0) {
+      throw new Error("The Chrome package version must increase from its published baseline.");
+    }
     if (
       remote.published.length !== 1 ||
       remote.published[0] !== this.packet.baselines.chrome.version

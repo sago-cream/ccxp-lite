@@ -1,6 +1,6 @@
 # Chrome Web Store
 
-Use the personal service-account impersonation configuration in [credentials.md](credentials.md), or an explicitly configured OAuth alternative. Keep short-lived access tokens in memory. Verify publisher/item IDs. The [official guide](https://developer.chrome.com/docs/webstore/using-api) covers OAuth (`chromewebstore` scope), authorized service accounts, and uploads. Keep tokens private.
+Use the personal service-account impersonation configuration in [credentials.md](credentials.md). Keep short-lived access tokens in memory. Verify publisher/item IDs. The [official guide](https://developer.chrome.com/docs/webstore/using-api) covers OAuth (`chromewebstore` scope), authorized service accounts, and uploads. Keep tokens private.
 
 Read the published baseline from `publishedItemRevisionStatus.distributionChannels[].crxVersion` via [fetchStatus](https://developer.chrome.com/docs/webstore/api/reference/rest/v2/publishers.items/fetchStatus); read previous notes from their actual listing/dashboard location. Submitted revisions are separate.
 

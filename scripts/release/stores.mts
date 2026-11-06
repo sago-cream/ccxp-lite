@@ -89,10 +89,10 @@ export function createStores(
   const cwsName = `publishers/${encodeURIComponent(target.publisherId)}/items/${encodeURIComponent(target.extensionId)}`;
   const amoRoot = `https://addons.mozilla.org/api/v5/addons/addon/${encodeURIComponent(target.addonId)}/`;
   let cachedToken: { value: string; expires: number } | undefined;
-  const googleAuth = async () => {
+  const googleAuth = () => {
     if (cachedToken === undefined || cachedToken.expires < Date.now()) {
       cachedToken = {
-        value: await chromeAccessToken(credentials),
+        value: chromeAccessToken(credentials),
         expires: Date.now() + 45 * 60 * 1000,
       };
     }
@@ -118,7 +118,7 @@ export function createStores(
     async status() {
       const result = await json<ChromeResponse>(
         `https://chromewebstore.googleapis.com/v2/${cwsName}:fetchStatus`,
-        await googleAuth(),
+        googleAuth(),
         "Chrome status",
       );
       if (result.itemId !== target.extensionId || result.takenDown === true) {
@@ -143,7 +143,7 @@ export function createStores(
     async upload(artifact) {
       const result = await json<ChromeUpload>(
         `https://chromewebstore.googleapis.com/upload/v2/${cwsName}:upload`,
-        await googleAuth(),
+        googleAuth(),
         "Chrome upload",
         {
           method: "POST",
@@ -159,7 +159,7 @@ export function createStores(
     async submit() {
       return await json<{ state: string }>(
         `https://chromewebstore.googleapis.com/v2/${cwsName}:publish`,
-        await googleAuth(),
+        googleAuth(),
         "Chrome submission",
         {
           method: "POST",

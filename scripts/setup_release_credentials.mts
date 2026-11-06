@@ -12,9 +12,6 @@ export const fields = [
   "CWS_PUBLISHER_ID",
   "CWS_SERVICE_ACCOUNT_EMAIL",
   "CWS_GCLOUD_ACCOUNT",
-  "CWS_CLIENT_ID",
-  "CWS_CLIENT_SECRET",
-  "CWS_REFRESH_TOKEN",
   "CWS_EXTENSION_ID",
   "AMO_ADDON_ID",
 ] as const;
@@ -95,16 +92,8 @@ function validate(field: Field, value: string) {
   if (field === "AMO_JWT_ISSUER" && !/^user:\d+:\d+$/u.test(value)) {
     throw new SetupError("AMO_JWT_ISSUER must be the JWT issuer, in user:number:number format.");
   }
-  if (field === "CWS_CLIENT_ID" && !/^[\w-]+\.apps\.googleusercontent\.com$/u.test(value)) {
-    throw new SetupError(
-      "CWS_CLIENT_ID must be the Google OAuth client ID ending in .apps.googleusercontent.com.",
-    );
-  }
   if (field === "CWS_EXTENSION_ID" && !/^[a-p]{32}$/u.test(value)) {
     throw new SetupError("CWS_EXTENSION_ID must be the 32-letter Chrome extension ID.");
-  }
-  if (field === "CWS_REFRESH_TOKEN" && value.startsWith("ya29.")) {
-    throw new SetupError("This is an access token. Copy the refresh token instead.");
   }
 }
 
@@ -118,44 +107,29 @@ async function request(url: string, init?: RequestInit): Promise<Record<string, 
   return (await response.json()) as Record<string, unknown>;
 }
 
-export async function chromeAccessToken(values: Credentials): Promise<string> {
-  if ((values.CWS_SERVICE_ACCOUNT_EMAIL ?? "") !== "") {
-    const result = spawnSync(
-      "gcloud",
-      [
-        "auth",
-        "print-access-token",
-        `--impersonate-service-account=${requireValue(values, "CWS_SERVICE_ACCOUNT_EMAIL")}`,
-        "--scopes=https://www.googleapis.com/auth/chromewebstore",
-        `--account=${requireValue(values, "CWS_GCLOUD_ACCOUNT")}`,
-        "--quiet",
-      ],
-      { encoding: "utf8", timeout: 20_000 },
+export function chromeAccessToken(values: Credentials): string {
+  const result = spawnSync(
+    "gcloud",
+    [
+      "auth",
+      "print-access-token",
+      `--impersonate-service-account=${requireValue(values, "CWS_SERVICE_ACCOUNT_EMAIL")}`,
+      "--scopes=https://www.googleapis.com/auth/chromewebstore",
+      `--account=${requireValue(values, "CWS_GCLOUD_ACCOUNT")}`,
+      "--quiet",
+    ],
+    { encoding: "utf8", timeout: 20_000 },
+  );
+  if (result.status !== 0 || result.stdout.trim() === "") {
+    throw new SetupError(
+      "Could not mint a service-account token. Check the personal gcloud login, IAM Credentials API, and Service Account Token Creator permission. No token or diagnostic output was printed.",
     );
-    if (result.status !== 0 || result.stdout.trim() === "") {
-      throw new SetupError(
-        "Could not mint a service-account token. Check the personal gcloud login, IAM Credentials API, and Service Account Token Creator permission. No token or diagnostic output was printed.",
-      );
-    }
-    return result.stdout.trim();
   }
-  const token = await request("https://oauth2.googleapis.com/token", {
-    method: "POST",
-    body: new URLSearchParams({
-      client_id: requireValue(values, "CWS_CLIENT_ID"),
-      client_secret: requireValue(values, "CWS_CLIENT_SECRET"),
-      refresh_token: requireValue(values, "CWS_REFRESH_TOKEN"),
-      grant_type: "refresh_token",
-    }),
-  });
-  if (typeof token.access_token !== "string") {
-    throw new SetupError("Chrome did not return an access token.");
-  }
-  return token.access_token;
+  return result.stdout.trim();
 }
 
 async function verifyChrome(values: Credentials) {
-  const accessToken = await chromeAccessToken(values);
+  const accessToken = chromeAccessToken(values);
   const publisher = encodeURIComponent(requireValue(values, "CWS_PUBLISHER_ID"));
   const extension = encodeURIComponent(requireValue(values, "CWS_EXTENSION_ID"));
   await request(
@@ -230,18 +204,9 @@ async function main() {
   checkPath();
   const values = command === "reset" ? {} : loadCredentials();
   if (command === "status" && args.length === 0) {
-    const serviceAccount = (values.CWS_SERVICE_ACCOUNT_EMAIL ?? "") !== "";
-    console.log(
-      `Chrome authentication: ${serviceAccount ? "service-account impersonation" : "OAuth refresh token"}`,
-    );
+    console.log("Chrome authentication: service-account impersonation");
     for (const field of fields) {
-      let status = (values[field] ?? "") === "" ? "missing" : "configured";
-      if (
-        serviceAccount &&
-        ["CWS_CLIENT_ID", "CWS_CLIENT_SECRET", "CWS_REFRESH_TOKEN"].includes(field)
-      ) {
-        status = "not used";
-      }
+      const status = (values[field] ?? "") === "" ? "missing" : "configured";
       console.log(`${field}: ${status}`);
     }
   } else if (command === "reset" && args.length === 0) {

@@ -28,6 +28,11 @@ import type {
 import type { Services } from "../../scripts/release/engine.mjs";
 import { createStores, StoreHttpError } from "../../scripts/release/stores.mjs";
 
+vi.mock(import("../../scripts/setup_release_credentials.mjs"), async (importOriginal) => ({
+  ...(await importOriginal()),
+  chromeAccessToken: vi.fn(() => "dummy-access-token"),
+}));
+
 const descriptions: Descriptions = {
   en: "v1.13.0: old summary\n\nStar it on GitHub if you like it ⭐: \nhttps://github.com/Hsiii/ccxpLite\n\nrelease note:\nv1.12.0: older summary\n",
   "zh-TW":
@@ -378,6 +383,29 @@ describe("approval and both-store execution", () => {
     expect(f.services.chrome.upload).not.toHaveBeenCalled();
     expect(f.state.mozilla.submitted).toBe(true);
   });
+  it("leaves another Chrome version under review untouched", async () => {
+    const f = fixture(true);
+    f.approve();
+    vi.mocked(f.services.chrome.status).mockResolvedValue({
+      published: ["1.13.0"],
+      submitted: ["1.13.1"],
+      state: "PENDING_REVIEW",
+      uploadState: "SUCCEEDED",
+    });
+    await f.engine().execute("run");
+    expect(f.state.chrome.error).toMatch(/existing submission/u);
+    expect(f.services.chrome.upload).not.toHaveBeenCalled();
+    expect(f.services.chrome.submit).not.toHaveBeenCalled();
+  });
+  it("rejects Chrome downgrades before uploading", async () => {
+    const f = fixture(true);
+    f.backend.chromeBaseline = "1.14.0";
+    f.packet.baselines.chrome = { ...f.packet.baselines.chrome, version: "1.14.0" };
+    f.approve();
+    await f.engine().execute("run");
+    expect(f.state.chrome.error).toMatch(/must increase/u);
+    expect(f.services.chrome.upload).not.toHaveBeenCalled();
+  });
   it("retries a reversible draft upload with the same artifact after a lost response", async () => {
     const f = fixture(true);
     f.approve();
@@ -523,9 +551,6 @@ describe("store HTTP contracts", () => {
     const fakeFetch = vi.fn(async (input: string | URL | Request, init: RequestInit = {}) => {
       const url = input instanceof Request ? input.url : String(input);
       calls.push({ url, init });
-      if (url.includes("oauth2.googleapis.com")) {
-        return Response.json({ access_token: "dummy-access-token" });
-      }
       if (url.endsWith(":upload")) {
         return Response.json({
           itemId: "extension",
@@ -535,29 +560,27 @@ describe("store HTTP contracts", () => {
       }
       return Response.json({ state: "PENDING_REVIEW" });
     });
-    vi.stubGlobal("fetch", fakeFetch);
     const api = createStores(
       f.packet.targets,
       {
-        CWS_CLIENT_ID: "dummy-client",
-        CWS_CLIENT_SECRET: "dummy-secret",
-        CWS_REFRESH_TOKEN: "dummy-refresh",
+        CWS_SERVICE_ACCOUNT_EMAIL: "release@example.iam.gserviceaccount.com",
+        CWS_GCLOUD_ACCOUNT: "owner@example.com",
       },
       fakeFetch,
     );
     await api.chrome.upload(f.packet.artifacts.chrome);
     await api.chrome.submit();
-    expect(calls[1].url).toBe(
+    expect(calls[0].url).toBe(
       "https://chromewebstore.googleapis.com/upload/v2/publishers/publisher/items/extension:upload",
     );
-    expect(calls[1].init.body).toBeInstanceOf(Blob);
-    expect(new Headers(calls[1].init.headers).get("Content-Type")).toBe("application/zip");
-    expect(JSON.parse(calls[2].init.body as string)).toEqual({
+    expect(calls[0].init.body).toBeInstanceOf(Blob);
+    expect(new Headers(calls[0].init.headers).get("Content-Type")).toBe("application/zip");
+    expect(JSON.parse(calls[1].init.body as string)).toEqual({
       publishType: "DEFAULT_PUBLISH",
       skipReview: false,
       blockOnWarnings: true,
     });
-    expect(calls[2].url).toBe(
+    expect(calls[1].url).toBe(
       "https://chromewebstore.googleapis.com/v2/publishers/publisher/items/extension:publish",
     );
   });

@@ -5,7 +5,6 @@ import {
   closeSync,
   readFileSync,
   renameSync,
-  statSync,
   unlinkSync,
   writeFileSync,
 } from "node:fs";
@@ -117,9 +116,4 @@ export async function lock<T>(targets: Packet["targets"], work: () => Promise<T>
   return await work().finally(() => {
     unlinkSync(file);
   });
-}
-export function verifyStoredArtifact(file: Artifact): void {
-  if (statSync(file.path).size !== file.size || sha256(readFileSync(file.path)) !== file.sha256) {
-    throw new Error("Stored artifact changed.");
-  }
 }
