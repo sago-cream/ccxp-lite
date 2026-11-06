@@ -6,16 +6,14 @@ export async function setProfileMenuMode(
   mode: Locator,
   variant: "classic" | "layered",
 ): Promise<void> {
-  if (await mode.evaluate((element) => element.tagName === "SELECT")) {
-    await mode.selectOption(variant);
-    return;
-  }
   const current = async () =>
     await mode.evaluate(
       (element) =>
         element.closest<HTMLElement>(".ccxp-lite-sidebar-shell")?.dataset.ccxpLiteSidebarVariant,
     );
-  if ((await current()) !== variant) {
+  if (await mode.evaluate((element) => element.tagName === "SELECT")) {
+    await mode.selectOption(variant);
+  } else if ((await current()) !== variant) {
     await mode.click();
   }
   assert.equal(await current(), variant);

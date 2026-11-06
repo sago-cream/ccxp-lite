@@ -48,6 +48,9 @@ interface CaptureResult {
   readonly screenshots: Readonly<Record<string, string>>;
   readonly styles: Readonly<Record<string, unknown>>;
   readonly searchFormBottom: number;
+  readonly modePickerRegions: Readonly<
+    Record<string, ReadonlyArray<{ x: number; y: number; width: number; height: number }>>
+  >;
   readonly iconRegions: Readonly<
     Record<string, ReadonlyArray<{ x: number; y: number; width: number; height: number }>>
   >;
@@ -336,6 +339,11 @@ async function capturePackagedPage(page: Page, outputPath: string, topOfPage = f
       const brand = document.querySelector(".ccxp-lite-landing-brand img");
       return window.scrollY === 0 && brand !== null && brand.getBoundingClientRect().top >= 0;
     });
+    await page.locator(".ccxp-lite-landing-brand img").evaluate(async (image) => {
+      await (image as HTMLImageElement).decode();
+    });
+    // Let Chromium finish its post-resize image rasterization before comparing pixels.
+    await page.waitForTimeout(500);
   }
   await page.screenshot({
     path: outputPath,
@@ -394,6 +402,7 @@ async function captureRevision(
   expectSidebarCollapseChange: boolean,
   expectSidebarResizeChange: boolean,
   expectCaptchaRefresh: boolean,
+  expectModePickerChange: boolean,
   expectLoginIconsChange: boolean,
   expectMenuLayoutChange: boolean,
   uiReviewOnly: boolean,
@@ -419,14 +428,23 @@ async function captureRevision(
     ],
   });
   let captchaRegion: CaptureResult["captchaRegion"];
+  const modePickerRegions: Record<
+    string,
+    ReadonlyArray<{ x: number; y: number; width: number; height: number }>
+  > = {};
   const iconRegions: Record<
     string,
     ReadonlyArray<{ x: number; y: number; width: number; height: number }>
   > = {};
-  const capturePage = async (captureTarget: Page, file: string, topOfPage = false) => {
-    await capturePackagedPage(captureTarget, file, topOfPage);
+  const capturePage = async (target: Page, file: string, topOfPage = false) => {
+    await capturePackagedPage(target, file, topOfPage);
+    if (expectModePickerChange) {
+      const nav = target.frames().find((frame) => frame.url().includes("IN_INQ_STU.php"));
+      const bounds = await nav?.locator(".ccxp-lite-profile-mode").boundingBox();
+      modePickerRegions[path.basename(file, ".png")] = bounds ? [bounds] : [];
+    }
     if (expectLoginIconsChange) {
-      iconRegions[path.basename(file, ".png")] = await collectAffectedIconRegions(captureTarget);
+      iconRegions[path.basename(file, ".png")] = await collectAffectedIconRegions(target);
     }
   };
   const screenshots: Record<string, string> = {};
@@ -1023,6 +1041,7 @@ async function captureRevision(
             }),
           ),
           timezone: "Asia/Taipei",
+          modePickerRegions,
           iconRegions,
           extensionDigest: directoryDigest(extensionDir),
           fixtureDigest: directoryDigest(fixtureRoot),
@@ -1046,7 +1065,7 @@ async function captureRevision(
     if (missingAssets.size > 0) {
       throw new Error(`Missing host visual assets: ${[...missingAssets].join(", ")}`);
     }
-    return { screenshots, styles, searchFormBottom, captchaRegion, iconRegions };
+    return { screenshots, styles, searchFormBottom, captchaRegion, modePickerRegions, iconRegions };
   } finally {
     process.stdout.write(`[${label}] closing browser\n`);
     await Promise.all(
@@ -1144,6 +1163,7 @@ function compareCaptures(
   expectSidebarCollapseChange: boolean,
   expectSidebarResizeChange: boolean,
   expectCaptchaRefresh: boolean,
+  expectModePickerChange: boolean,
   expectLoginIconsChange: boolean,
   expectMenuLayoutChange: boolean,
 ): readonly string[] {
@@ -1199,6 +1219,15 @@ function compareCaptures(
       (expectSidebarCollapseChange &&
         (name === "sidebar-classic" || name === "embedded-destination" || framedViews.has(name)));
     const headerWidth = headerChanges ? 324 : 0;
+    const modeRegions = expectModePickerChange
+      ? [...(base.modePickerRegions[name] ?? []), ...(head.modePickerRegions[name] ?? [])]
+      : [];
+    if (
+      expectModePickerChange &&
+      JSON.stringify(base.modePickerRegions[name]) !== JSON.stringify(head.modePickerRegions[name])
+    ) {
+      failures.push(`${name}: navigation mode row bounds changed`);
+    }
     const iconRegions = expectLoginIconsChange
       ? [...(base.iconRegions[name] ?? []), ...(head.iconRegions[name] ?? [])]
       : [];
@@ -1224,7 +1253,7 @@ function compareCaptures(
       expectSidebarResizeChange && (name === "sidebar-classic" || framedViews.has(name)),
       expectCaptchaRefresh && name === "login" && base.captchaRegion && head.captchaRegion
         ? [base.captchaRegion, head.captchaRegion]
-        : iconRegions,
+        : [...modeRegions, ...iconRegions],
     );
     if (difference.ratio > maximumPixelDifferenceRatio) {
       failures.push(
@@ -1290,6 +1319,7 @@ async function main() {
       "expect-sidebar-collapse-change": { type: "boolean", default: false },
       "expect-sidebar-resize-change": { type: "boolean", default: false },
       "expect-captcha-refresh": { type: "boolean", default: false },
+      "expect-mode-picker-change": { type: "boolean", default: false },
       "expect-login-icons-change": { type: "boolean", default: false },
       "expect-menu-layout-change": { type: "boolean", default: false },
     },
@@ -1315,6 +1345,7 @@ async function main() {
     values["expect-sidebar-collapse-change"],
     values["expect-sidebar-resize-change"],
     values["expect-captcha-refresh"],
+    values["expect-mode-picker-change"],
     values["expect-login-icons-change"],
     values["expect-menu-layout-change"],
     values["ui-review-only"],
@@ -1331,6 +1362,7 @@ async function main() {
     values["expect-sidebar-collapse-change"],
     values["expect-sidebar-resize-change"],
     values["expect-captcha-refresh"],
+    values["expect-mode-picker-change"],
     values["expect-login-icons-change"],
     values["expect-menu-layout-change"],
     values["ui-review-only"],
@@ -1350,6 +1382,7 @@ async function main() {
     values["expect-sidebar-collapse-change"],
     values["expect-sidebar-resize-change"],
     values["expect-captcha-refresh"],
+    values["expect-mode-picker-change"],
     values["expect-login-icons-change"],
     values["expect-menu-layout-change"],
   );

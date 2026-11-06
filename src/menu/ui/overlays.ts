@@ -190,42 +190,49 @@
       className: "ccxp-lite-profile-popover",
       attributes: { id: "ccxp-lite-profile-popover", hidden: "" },
     });
-    const modeLabels = english
-      ? { classic: "Use menu mode", layered: "Use sidebar mode" }
-      : {
-          classic: "\u4F7F\u7528\u9078\u55AE\u6A21\u5F0F",
-          layered: "\u4F7F\u7528\u5074\u6B04\u6A21\u5F0F",
-        };
     const modeValues = english
       ? { classic: "Sidebar", layered: "Menu" }
       : { classic: "\u5074\u908A\u6B04", layered: "\u9078\u55AE" };
     const mode = dom.element(
-      "button",
+      "select",
       {
-        className: "ccxp-lite-profile-row ccxp-lite-profile-control ccxp-lite-profile-mode",
+        className: "ccxp-lite-profile-mode-select",
         attributes: {
           id: "ccxp-lite-profile-mode",
-          type: "button",
-          title: modeLabels[state.sidebarVariant],
+          "aria-labelledby": "ccxp-lite-profile-mode-label",
         },
       },
       [
-        createCategoryIcon(targetDocument, "panels-top-left"),
-        dom.element("span", { text: english ? "Navigation" : "\u5C0E\u89BD\u6A21\u5F0F" }),
-        dom.element("span", {
-          className: "ccxp-lite-profile-value",
-          text: modeValues[state.sidebarVariant],
-        }),
+        dom.element("option", { text: modeValues.classic, attributes: { value: "classic" } }),
+        dom.element("option", { text: modeValues.layered, attributes: { value: "layered" } }),
       ],
     );
-    const modeAction = createClassicChevronIcon(targetDocument, false);
-    modeAction.classList.remove("ccxp-lite-chevron");
-    modeAction.classList.add("ccxp-lite-profile-mode-action");
-    mode.append(modeAction);
-    mode.addEventListener("click", () => {
+    mode.value = state.sidebarVariant;
+    const modeRow = dom.element(
+      "label",
+      {
+        className: "ccxp-lite-profile-row ccxp-lite-profile-control ccxp-lite-profile-mode",
+        attributes: { for: "ccxp-lite-profile-mode" },
+      },
+      [
+        createCategoryIcon(targetDocument, "panels-top-left"),
+        dom.element("span", {
+          text: english ? "Navigation" : "\u5C0E\u89BD\u6A21\u5F0F",
+          attributes: { id: "ccxp-lite-profile-mode-label" },
+        }),
+        mode,
+      ],
+    );
+    mode.addEventListener("change", () => {
+      const nextVariant = mode.value;
+      if (
+        (nextVariant !== "classic" && nextVariant !== "layered") ||
+        nextVariant === state.sidebarVariant
+      ) {
+        return;
+      }
       const nextState = state;
       const previousVariant = state.sidebarVariant;
-      const nextVariant = previousVariant === "classic" ? "layered" : "classic";
       nextState.sidebarVariant = setPersistedSidebarVariant(nextVariant);
       app.shared?.trackEvent?.(
         targetDocument,
@@ -259,7 +266,7 @@
         }),
       ],
     );
-    const controls = dom.element("div", { className: "ccxp-lite-profile-settings" }, [mode]);
+    const controls = dom.element("div", { className: "ccxp-lite-profile-settings" }, [modeRow]);
     preferences.append(controls);
     const resources = dom.element(
       "section",

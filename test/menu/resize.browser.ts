@@ -191,7 +191,7 @@ test("packaged sidebar resizes only through its handle with stable snap threshol
     await expectWidth(294);
     // The dedicated control disappears in the full-width menu mode.
     await frame.locator(".ccxp-lite-profile-trigger").click();
-    await frame.locator("#ccxp-lite-profile-mode").click();
+    await frame.locator("#ccxp-lite-profile-mode").selectOption("layered");
     expect(await handle.isVisible()).toBe(false);
     expect(await width()).toBe("*,0");
   } finally {

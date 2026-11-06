@@ -531,15 +531,21 @@
   outline-offset: -2px;
 }
 
-.ccxp-lite-profile-mode .ccxp-lite-profile-value {
-  padding: 0;
+.ccxp-lite-profile-mode-select {
+  margin-left: auto;
+  min-width: 0;
+  max-width: 55%;
+  height: 32px;
+  padding: 0 var(--ccxp-lite-spacing-2xs);
+  border: 0;
+  border-radius: var(--ccxp-lite-radius-input);
   background: transparent;
-  font: var(--ccxp-lite-type-body-muted);
-}
-.ccxp-lite-profile-mode-action {
-  width: 14px;
-  height: 14px;
   color: var(--ccxp-lite-text-muted);
+  font: var(--ccxp-lite-type-body);
+  cursor: pointer;
+}
+.ccxp-lite-profile-mode-select:focus-visible {
+  outline: 2px solid var(--ccxp-lite-primary-focus-border);
 }
 .ccxp-lite-session-timer-toggle .ccxp-lite-profile-value {
   padding: 0;
