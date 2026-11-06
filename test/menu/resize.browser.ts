@@ -63,6 +63,10 @@ test("packaged sidebar resizes only through its handle with stable snap threshol
       expect(await frame.locator(".ccxp-lite-sidebar-resize").getAttribute("aria-valuenow")).toBe(
         String(value),
       );
+      const collapsed = (await shell.getAttribute("data-ccxp-lite-sidebar-collapsed")) === "true";
+      const icon = frame.locator(".ccxp-lite-sidebar-collapse svg");
+      expect(await icon.locator("rect").count()).toBe(1);
+      expect(await icon.locator("path").count()).toBe(collapsed ? 1 : 2);
     };
     const begin = async () => {
       const bounds = await handle.boundingBox();
