@@ -31,6 +31,7 @@
     "check": "bun run design:check && bun run typecheck && bun run lint && bun run format:check && bun run test",
     "prepare": "husky",
     "test:browser": "bun run build:crx && bunx vitest run --config vitest.browser.config.mts",
+    "test:firefox-source": "bun run scripts/test-firefox-source.ts",
     "design:build": "bun run scripts/build-design-system.mts",
     "design:check": "bun run scripts/build-design-system.mts --check",
     "storybook": "bun run design:build && storybook dev -p 6006 --no-open --disable-telemetry",

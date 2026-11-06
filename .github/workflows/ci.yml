@@ -35,6 +35,9 @@ jobs:
       - name: Build extensions
         run: bun run build
 
+      - name: Verify Firefox source archive rebuild
+        run: bun run test:firefox-source
+
       - name: Build component catalog
         run: bun run storybook:build
 

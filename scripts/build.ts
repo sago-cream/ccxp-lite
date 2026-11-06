@@ -128,7 +128,6 @@ function shouldCopySourcePath(sourcePath: string, isDirectory: boolean) {
 function shouldCopyFirefoxSourceArchivePath(sourcePath: string, isDirectory: boolean) {
   const relativePath = path.relative(projectRoot, sourcePath);
   const normalizedPath = relativePath.split(path.sep).join("/");
-  const ext = path.extname(sourcePath).toLowerCase();
   const allowedRootFiles = new Set([
     ".prettierrc.json",
     "bun.lock",
@@ -157,7 +156,7 @@ function shouldCopyFirefoxSourceArchivePath(sourcePath: string, isDirectory: boo
     return (
       normalizedPath === "" ||
       normalizedPath === "src" ||
-      (normalizedPath.startsWith("src/") && normalizedPath !== "src/assets") ||
+      normalizedPath.startsWith("src/") ||
       normalizedPath === "scripts" ||
       normalizedPath.startsWith("scripts/") ||
       normalizedPath === "packages" ||
@@ -175,10 +174,7 @@ function shouldCopyFirefoxSourceArchivePath(sourcePath: string, isDirectory: boo
   }
 
   if (normalizedPath.startsWith("src/")) {
-    if (normalizedPath === "src/manifest.crx.json" || normalizedPath.startsWith("src/assets/")) {
-      return false;
-    }
-    return ![".avif", ".gif", ".ico", ".jpeg", ".jpg", ".png", ".webp"].includes(ext);
+    return normalizedPath !== "src/manifest.crx.json";
   }
 
   if (normalizedPath.startsWith("scripts/")) {
