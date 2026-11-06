@@ -47,6 +47,9 @@ interface CaptureResult {
   readonly screenshots: Readonly<Record<string, string>>;
   readonly styles: Readonly<Record<string, unknown>>;
   readonly searchFormBottom: number;
+  readonly iconRegions: Readonly<
+    Record<string, ReadonlyArray<{ x: number; y: number; width: number; height: number }>>
+  >;
   readonly captchaRegion?: { x: number; y: number; width: number; height: number };
 }
 
@@ -271,6 +274,22 @@ async function stabilize(page: Page) {
   await page.waitForTimeout(100);
 }
 
+async function collectAffectedIconRegions(
+  page: Page,
+): Promise<ReadonlyArray<{ x: number; y: number; width: number; height: number }>> {
+  const regions = await Promise.all(
+    page.frames().map(async (frame) => {
+      const icons = await frame
+        .locator(
+          ".ccxp-lite-category-icon, .ccxp-lite-sidebar-collapse svg, .ccxp-lite-captcha-media-row svg",
+        )
+        .all();
+      return await Promise.all(icons.map(async (icon) => await icon.boundingBox()));
+    }),
+  );
+  return regions.flat().filter((region) => region !== null);
+}
+
 async function collectStyles(scope: Page | Frame, probes: readonly Probe[]) {
   return await scope.evaluate(
     (entries) =>
@@ -305,7 +324,7 @@ async function collectStyles(scope: Page | Frame, probes: readonly Probe[]) {
   );
 }
 
-async function capturePage(page: Page, outputPath: string, topOfPage = false) {
+async function capturePackagedPage(page: Page, outputPath: string, topOfPage = false) {
   await stabilize(page);
   if (topOfPage) {
     await page.evaluate(() => {
@@ -374,6 +393,7 @@ async function captureRevision(
   expectSidebarCollapseChange: boolean,
   expectSidebarResizeChange: boolean,
   expectCaptchaRefresh: boolean,
+  expectLoginIconsChange: boolean,
   uiReviewOnly: boolean,
   reviewLocale: string,
 ): Promise<CaptureResult> {
@@ -397,6 +417,16 @@ async function captureRevision(
     ],
   });
   let captchaRegion: CaptureResult["captchaRegion"];
+  const iconRegions: Record<
+    string,
+    ReadonlyArray<{ x: number; y: number; width: number; height: number }>
+  > = {};
+  const capturePage = async (captureTarget: Page, file: string, topOfPage = false) => {
+    await capturePackagedPage(captureTarget, file, topOfPage);
+    if (expectLoginIconsChange) {
+      iconRegions[path.basename(file, ".png")] = await collectAffectedIconRegions(captureTarget);
+    }
+  };
   const screenshots: Record<string, string> = {};
   const styles: Record<string, unknown> = {};
   const recordingSteps: Array<{ name: string; time: number }> = [];
@@ -639,7 +669,10 @@ async function captureRevision(
       if (expectSidebarResizeChange && label === "head") {
         assert.equal(await navFrame.locator(".ccxp-lite-sidebar-resize").count(), 1);
       }
-      if ((expectSidebarCollapseChange || expectSidebarResizeChange) && label === "head") {
+      if (
+        ((expectSidebarCollapseChange || expectSidebarResizeChange) && label === "head") ||
+        expectLoginIconsChange
+      ) {
         markRecordingStep("sidebar-collapse-start");
         navFrame = await assertSidebarCollapse(
           page,
@@ -976,6 +1009,7 @@ async function captureRevision(
             }),
           ),
           timezone: "Asia/Taipei",
+          iconRegions,
           extensionDigest: directoryDigest(extensionDir),
           fixtureDigest: directoryDigest(fixtureRoot),
           source: "test/browser-fixtures/coverage.json",
@@ -998,7 +1032,7 @@ async function captureRevision(
     if (missingAssets.size > 0) {
       throw new Error(`Missing host visual assets: ${[...missingAssets].join(", ")}`);
     }
-    return { screenshots, styles, searchFormBottom, captchaRegion };
+    return { screenshots, styles, searchFormBottom, captchaRegion, iconRegions };
   } finally {
     process.stdout.write(`[${label}] closing browser\n`);
     await Promise.all(
@@ -1096,6 +1130,7 @@ function compareCaptures(
   expectSidebarCollapseChange: boolean,
   expectSidebarResizeChange: boolean,
   expectCaptchaRefresh: boolean,
+  expectLoginIconsChange: boolean,
 ): readonly string[] {
   const failures: string[] = [];
   if (base.searchFormBottom !== head.searchFormBottom) {
@@ -1135,6 +1170,15 @@ function compareCaptures(
       (expectSidebarCollapseChange &&
         (name === "sidebar-classic" || name === "embedded-destination" || framedViews.has(name)));
     const headerWidth = headerChanges ? 324 : 0;
+    const iconRegions = expectLoginIconsChange
+      ? [...(base.iconRegions[name] ?? []), ...(head.iconRegions[name] ?? [])]
+      : [];
+    if (
+      expectLoginIconsChange &&
+      JSON.stringify(base.iconRegions[name]) !== JSON.stringify(head.iconRegions[name])
+    ) {
+      failures.push(`${name}: icon bounds changed`);
+    }
     const difference = compareScreenshot(
       basePath,
       headPath,
@@ -1147,7 +1191,7 @@ function compareCaptures(
       expectSidebarResizeChange && (name === "sidebar-classic" || framedViews.has(name)),
       expectCaptchaRefresh && name === "login" && base.captchaRegion && head.captchaRegion
         ? [base.captchaRegion, head.captchaRegion]
-        : [],
+        : iconRegions,
     );
     if (difference.ratio > maximumPixelDifferenceRatio) {
       failures.push(
@@ -1200,6 +1244,7 @@ async function main() {
       "expect-sidebar-collapse-change": { type: "boolean", default: false },
       "expect-sidebar-resize-change": { type: "boolean", default: false },
       "expect-captcha-refresh": { type: "boolean", default: false },
+      "expect-login-icons-change": { type: "boolean", default: false },
     },
     strict: true,
   });
@@ -1223,6 +1268,7 @@ async function main() {
     values["expect-sidebar-collapse-change"],
     values["expect-sidebar-resize-change"],
     values["expect-captcha-refresh"],
+    values["expect-login-icons-change"],
     values["ui-review-only"],
     values["review-locale"],
   );
@@ -1237,6 +1283,7 @@ async function main() {
     values["expect-sidebar-collapse-change"],
     values["expect-sidebar-resize-change"],
     values["expect-captcha-refresh"],
+    values["expect-login-icons-change"],
     values["ui-review-only"],
     values["review-locale"],
   );
@@ -1254,6 +1301,7 @@ async function main() {
     values["expect-sidebar-collapse-change"],
     values["expect-sidebar-resize-change"],
     values["expect-captcha-refresh"],
+    values["expect-login-icons-change"],
   );
   writeFileSync(
     path.join(outputDir, "report.json"),

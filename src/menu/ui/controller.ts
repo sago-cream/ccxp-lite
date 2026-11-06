@@ -452,6 +452,14 @@
         const label = state.sidebarCollapsed
           ? this.strings.sidebarKeepExpanded
           : this.strings.sidebarCollapse;
+        const iconName = state.sidebarCollapsed ? "panel-left" : "panel-left-close";
+        if (this.collapseButton.dataset.ccxpLiteCollapseIcon !== iconName) {
+          const icon = app.uiIcons?.createCategoryIcon(this.hostDocument, iconName);
+          if (icon) {
+            this.collapseButton.replaceChildren(icon);
+            this.collapseButton.dataset.ccxpLiteCollapseIcon = iconName;
+          }
+        }
         this.collapseButton.hidden = !classic;
         this.collapseButton.setAttribute("aria-label", label);
         this.collapseButton.title = label;

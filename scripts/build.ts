@@ -315,6 +315,10 @@ try {
   copyTree(srcDir, stagingDir, shouldCopySourcePath);
   copyTree(srcDir, unpackedDir, shouldCopySourcePath);
   for (const directory of [stagingDir, unpackedDir]) {
+    copyFileSync(
+      path.join(projectRoot, "packages/ui/LUCIDE-LICENSE"),
+      path.join(directory, "LUCIDE-LICENSE"),
+    );
     const uiDirectory = path.join(directory, "shared/ui");
     mkdirSync(uiDirectory, { recursive: true });
     copyFileSync(

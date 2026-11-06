@@ -113,6 +113,10 @@ jobs:
              grep -q 'function attachCaptchaRefresh' src/login/auth/captcha.ts; then
             expected_changes+=(--expect-captcha-refresh)
           fi
+          if ! grep -q 'ccxpLiteCollapseIcon' ../base/src/menu/ui/controller.ts &&
+             grep -q 'ccxpLiteCollapseIcon' src/menu/ui/controller.ts; then
+            expected_changes+=(--expect-login-icons-change)
+          fi
           bun run test:browser-parity -- \
             --base-extension ../base/dist/crx/unpacked \
             --head-extension dist/crx/unpacked \

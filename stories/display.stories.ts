@@ -1,10 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/html-vite";
 import {
+  createAudioIcon,
   createBreadcrumbHeading,
   createButton,
   createCategoryIcon,
   createEmptyState,
   createLabIcon,
+  createPasswordVisibilityIcon,
   createRenderer,
   createSidebarSearch,
   createStatusSwitch,
@@ -14,6 +16,27 @@ import { localized, surface } from "./helpers.js";
 const meta = { title: "Components/Navigation", args: {} } satisfies Meta;
 export default meta;
 type Story = StoryObj;
+export const LucideIcons: Story = {
+  render: (_args, context) => {
+    const dom = createRenderer(document);
+    return surface(
+      dom.element("div", { className: "ds-row" }, [
+        dom.element("span", {}, [
+          createCategoryIcon(document, "panel-left-close"),
+          localized(context.globals.locale, "已展開", "Expanded"),
+        ]),
+        dom.element("span", {}, [
+          createCategoryIcon(document, "panel-left"),
+          localized(context.globals.locale, "已收合", "Collapsed"),
+        ]),
+        createCategoryIcon(document, "refresh-cw"),
+        createAudioIcon(document),
+        createPasswordVisibilityIcon(document, false),
+        createPasswordVisibilityIcon(document, true),
+      ]),
+    );
+  },
+};
 export const Search: Story = {
   render: (_args, context) =>
     surface(

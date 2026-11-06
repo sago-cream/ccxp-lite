@@ -1,3 +1,5 @@
+import { lucideIconShapes } from "./lucide.js";
+
 export function createClassicChevronIcon(
   targetDocument: Document,
   isExpanded: boolean,
@@ -157,7 +159,7 @@ export function createForwardIcon(targetDocument: Document): SVGSVGElement {
   return icon;
 }
 
-export function createCategoryIcon(targetDocument: Document, iconName: string): SVGElement {
+export function createCategoryIcon(targetDocument: Document, iconName: string): SVGSVGElement {
   const icon = targetDocument.createElementNS("http://www.w3.org/2000/svg", "svg");
   icon.setAttribute("class", "ccxp-lite-category-icon");
   icon.setAttribute("viewBox", "0 0 24 24");
@@ -188,6 +190,9 @@ function getCategoryIconShapes(iconName: string): ReadonlyArray<
       attributes: Record<string, string>;
     }
 > {
+  if (Object.hasOwn(lucideIconShapes, iconName)) {
+    return lucideIconShapes[iconName];
+  }
   const iconShapeMap: Record<
     string,
     Array<
@@ -206,11 +211,6 @@ function getCategoryIconShapes(iconName: string): ReadonlyArray<
     clock: [{ tag: "circle", attributes: { cx: "12", cy: "12", r: "10" } }, "M12 6v6l4 2"],
     "code-xml": ["m8 8-4 4 4 4", "m16 8 4 4-4 4", "m14 4-4 16"],
     x: ["M18 6 6 18", "m6 6 12 12"],
-    "panel-left-close": [
-      "M9 3v18",
-      "m16 9-3 3 3 3",
-      "M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z",
-    ],
     "log-out": ["m16 17 5-5-5-5", "M21 12H9", "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"],
     "circle-user-round": [
       "M17.925 20.056a6 6 0 0 0-11.851.001",
@@ -240,12 +240,6 @@ function getCategoryIconShapes(iconName: string): ReadonlyArray<
       "M8 10h.01",
       "M12 10h.01",
       "M16 10h.01",
-    ],
-    "refresh-cw": [
-      "M21 2v6h-6",
-      "M3 22v-6h6",
-      "M20.49 9A9 9 0 0 0 5.64 5.64L3 8",
-      "M3.51 15A9 9 0 0 0 18.36 18.36L21 16",
     ],
     "graduation-cap": ["m22 10-10-5L2 10l10 5z", "M6 12v5c3 2 9 2 12 0v-5", "M19 13v6"],
     "dollar-sign": ["M12 2v20", "M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"],
@@ -281,146 +275,43 @@ function getCategoryIconShapes(iconName: string): ReadonlyArray<
   return iconShapeMap[iconName] ?? iconShapeMap.folders;
 }
 
-export function createAudioIcon(targetDocument: Document): SVGSVGElement {
-  const icon = targetDocument.createElementNS("http://www.w3.org/2000/svg", "svg");
-  icon.setAttribute("viewBox", "0 0 24 24");
-  icon.setAttribute("width", "16");
-  icon.setAttribute("height", "16");
-  icon.setAttribute("fill", "none");
-  icon.setAttribute("stroke", "currentColor");
-  icon.setAttribute("stroke-width", "2");
-  icon.setAttribute("stroke-linecap", "round");
-  icon.setAttribute("stroke-linejoin", "round");
-  icon.setAttribute("aria-hidden", "true");
-  for (const pathData of [
-    "M11 5 6 9H2v6h4l5 4z",
-    "M15.5 8.5a5 5 0 0 1 0 7",
-    "M18.5 5.5a9 9 0 0 1 0 13",
-  ]) {
-    const path = targetDocument.createElementNS("http://www.w3.org/2000/svg", "path");
-    path.setAttribute("d", pathData);
-    icon.append(path);
+function createLoginIcon(targetDocument: Document, name: string, size: string, className?: string) {
+  const icon = createCategoryIcon(targetDocument, name);
+  icon.removeAttribute("class");
+  if (className !== undefined) {
+    icon.setAttribute("class", className);
   }
+  icon.setAttribute("width", size);
+  icon.setAttribute("height", size);
   return icon;
+}
+
+export function createAudioIcon(targetDocument: Document): SVGSVGElement {
+  return createLoginIcon(targetDocument, "volume-2", "16");
 }
 
 export function createPasswordVisibilityIcon(
   targetDocument: Document,
   visible: boolean,
 ): SVGSVGElement {
-  const icon = targetDocument.createElementNS("http://www.w3.org/2000/svg", "svg");
-  icon.setAttribute("viewBox", "0 0 24 24");
-  icon.setAttribute("width", "14");
-  icon.setAttribute("height", "14");
-  icon.setAttribute("fill", "none");
-  icon.setAttribute("stroke", "currentColor");
-  icon.setAttribute("stroke-width", "2");
-  icon.setAttribute("stroke-linecap", "round");
-  icon.setAttribute("stroke-linejoin", "round");
-  icon.setAttribute("aria-hidden", "true");
-  if (visible) {
-    for (const pathData of [
-      "M10.733 5.076A10.744 10.744 0 0 1 12 5c4.596 0 8.51 2.934 9.938 7a10.454 10.454 0 0 1-1.077 2.167",
-      "M14.084 14.158a3 3 0 0 1-4.242-4.242",
-      "M17.479 17.499A10.75 10.75 0 0 1 12 19c-4.596 0-8.51-2.934-9.938-7a10.525 10.525 0 0 1 4.423-5.29",
-      "M2 2l20 20",
-    ]) {
-      const path = targetDocument.createElementNS("http://www.w3.org/2000/svg", "path");
-      path.setAttribute("d", pathData);
-      icon.append(path);
-    }
-  } else {
-    const path = targetDocument.createElementNS("http://www.w3.org/2000/svg", "path");
-    path.setAttribute(
-      "d",
-      "M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0",
-    );
-    icon.append(path);
-    const circle = targetDocument.createElementNS("http://www.w3.org/2000/svg", "circle");
-    circle.setAttribute("cx", "12");
-    circle.setAttribute("cy", "12");
-    circle.setAttribute("r", "3");
-    icon.append(circle);
-  }
-  return icon;
+  return createLoginIcon(targetDocument, visible ? "eye-off" : "eye", "14");
 }
 
 export function createLandingExternalLinkIcon(targetDocument: Document): SVGSVGElement {
-  const icon = targetDocument.createElementNS("http://www.w3.org/2000/svg", "svg");
-  icon.setAttribute("class", "ccxp-lite-landing-link-icon");
-  icon.setAttribute("viewBox", "0 0 24 24");
-  icon.setAttribute("width", "1em");
-  icon.setAttribute("height", "1em");
-  icon.setAttribute("fill", "none");
-  icon.setAttribute("stroke", "currentColor");
-  icon.setAttribute("stroke-width", "2");
-  icon.setAttribute("stroke-linecap", "round");
-  icon.setAttribute("stroke-linejoin", "round");
-  icon.setAttribute("aria-hidden", "true");
-  for (const pathData of [
-    "M15 3h6v6",
-    "M10 14 21 3",
-    "M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6",
-  ]) {
-    const path = targetDocument.createElementNS("http://www.w3.org/2000/svg", "path");
-    path.setAttribute("d", pathData);
-    icon.append(path);
-  }
-  return icon;
+  return createLoginIcon(targetDocument, "external-link", "1em", "ccxp-lite-landing-link-icon");
 }
 
 export function createAnnouncementMegaphoneIcon(targetDocument: Document): SVGSVGElement {
-  const icon = targetDocument.createElementNS("http://www.w3.org/2000/svg", "svg");
-  icon.setAttribute("class", "ccxp-lite-announcement-title-icon");
-  icon.setAttribute("viewBox", "0 0 24 24");
-  icon.setAttribute("width", "1em");
-  icon.setAttribute("height", "1em");
-  icon.setAttribute("fill", "none");
-  icon.setAttribute("stroke", "currentColor");
-  icon.setAttribute("stroke-width", "2");
-  icon.setAttribute("stroke-linecap", "round");
-  icon.setAttribute("stroke-linejoin", "round");
-  icon.setAttribute("aria-hidden", "true");
-  for (const pathData of [
-    "M11 6a13 13 0 0 0 8.4-2.8A1 1 0 0 1 21 4v12a1 1 0 0 1-1.6.8A13 13 0 0 0 11 14H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z",
-    "M6 14a12 12 0 0 0 2.4 7.2 2 2 0 0 0 3.2-2.4A8 8 0 0 1 10 14",
-    "M8 6v8",
-  ]) {
-    const path = targetDocument.createElementNS("http://www.w3.org/2000/svg", "path");
-    path.setAttribute("d", pathData);
-    icon.append(path);
-  }
-  return icon;
+  return createLoginIcon(targetDocument, "megaphone", "1em", "ccxp-lite-announcement-title-icon");
 }
 
 export function createInfoMarker(targetDocument: Document): SVGSVGElement {
-  const svgNamespace = "http://www.w3.org/2000/svg";
-  const marker = targetDocument.createElementNS(svgNamespace, "svg");
-  marker.classList.add("ccxp-lite-account-guide-info-marker");
-  marker.setAttribute("aria-hidden", "true");
-  marker.setAttribute("xmlns", svgNamespace);
-  marker.setAttribute("viewBox", "0 0 24 24");
-  marker.setAttribute("width", "1em");
-  marker.setAttribute("height", "1em");
-  marker.setAttribute("fill", "none");
-  marker.setAttribute("stroke", "currentColor");
-  marker.setAttribute("stroke-width", "2");
-  marker.setAttribute("stroke-linecap", "round");
-  marker.setAttribute("stroke-linejoin", "round");
-
-  const circle = targetDocument.createElementNS(svgNamespace, "circle");
-  circle.setAttribute("cx", "12");
-  circle.setAttribute("cy", "12");
-  circle.setAttribute("r", "10");
-  marker.append(circle);
-
-  const questionStem = targetDocument.createElementNS(svgNamespace, "path");
-  questionStem.setAttribute("d", "M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3");
-  marker.append(questionStem);
-
-  const questionDot = targetDocument.createElementNS(svgNamespace, "path");
-  questionDot.setAttribute("d", "M12 17h.01");
-  marker.append(questionDot);
-
-  return marker;
+  const icon = createLoginIcon(
+    targetDocument,
+    "circle-question-mark",
+    "1em",
+    "ccxp-lite-account-guide-info-marker",
+  );
+  icon.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+  return icon;
 }
