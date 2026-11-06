@@ -27,7 +27,7 @@
       "file": "navigation.html",
       "path": "/ccxp/INQUIRE/IN_INQ_STU.php",
       "owners": ["src/menu/"],
-      "state": "Complete student navigation DOM and tree declarations. Packaged extension checks cover saved compact icon rail, hover/focus preview, pin expanded, reload, rapid reversal, reduced motion, handle-only pointer/keyboard resizing with minimum-width and collapse/reopen thresholds, saved widths, and profile access at 1280/600/375px using this same legacy host DOM; no live role/session values are added. Expanded-profile comparison captures move the pointer off the trigger so the open-state appearance is independent of hover."
+      "state": "Complete student navigation DOM and tree declarations. Packaged extension checks cover saved compact icon rail, hover/focus preview, pin expanded, reload, rapid reversal, reduced motion, handle-only pointer/keyboard resizing with minimum-width and collapse/reopen thresholds, saved widths, and profile access at 1280/600/375px using this same legacy host DOM; no live role/session values are added. Expanded-profile comparison captures move the pointer off the trigger so the open-state appearance is independent of hover. Menu layout captures at 1280/602/601/600/375px verify the return-to-sidebar heading is mobile-only, the content keeps 16px inline insets, and the dashboard has no horizontal overflow. These reuse the same sanitized student DOM and packaged extension; category/destination checks retain the original embedding mode."
     },
     {
       "file": "top.html",

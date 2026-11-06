@@ -117,6 +117,10 @@ jobs:
              grep -q 'ccxpLiteCollapseIcon' src/menu/ui/controller.ts; then
             expected_changes+=(--expect-login-icons-change)
           fi
+          if ! grep -q 'assertMenuLayout' ../base/scripts/browser-parity.ts &&
+             grep -q 'assertMenuLayout' scripts/browser-parity.ts; then
+            expected_changes+=(--expect-menu-layout-change)
+          fi
           bun run test:browser-parity -- \
             --base-extension ../base/dist/crx/unpacked \
             --head-extension dist/crx/unpacked \

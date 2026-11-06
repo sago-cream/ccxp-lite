@@ -21,6 +21,7 @@ import {
   captureNarrowHome,
   captureNarrowDefaultMenu,
 } from "./home-fixtures.js";
+import { assertMenuLayout } from "./menu-layout-fixtures.js";
 import { assertSidebarCollapse } from "./sidebar-collapse-fixtures.js";
 import { assertInitialSessionTimer, assertSessionTimer } from "./session-timer-fixtures.js";
 import { recordProfileActions, setProfileMenuMode } from "./profile-fixtures.js";
@@ -394,6 +395,7 @@ async function captureRevision(
   expectSidebarResizeChange: boolean,
   expectCaptchaRefresh: boolean,
   expectLoginIconsChange: boolean,
+  expectMenuLayoutChange: boolean,
   uiReviewOnly: boolean,
   reviewLocale: string,
 ): Promise<CaptureResult> {
@@ -707,6 +709,18 @@ async function captureRevision(
       await page.waitForFunction(
         () => document.querySelector("frameset[cols]")?.getAttribute("cols") === "*,0",
       );
+      if (expectMenuLayoutChange) {
+        await assertMenuLayout(
+          page,
+          navFrame,
+          revisionOutputDir,
+          async (menuPage, file) => {
+            await capturePage(menuPage, file);
+            screenshots[path.basename(file, ".png")] = file;
+          },
+          label === "head",
+        );
+      }
       await navFrame
         .locator(".ccxp-lite-sidebar-search-input")
         .fill("\u586B\u5BEB\u6559\u5B78\u610F\u898B\u8ABF\u67E5");
@@ -1131,6 +1145,7 @@ function compareCaptures(
   expectSidebarResizeChange: boolean,
   expectCaptchaRefresh: boolean,
   expectLoginIconsChange: boolean,
+  expectMenuLayoutChange: boolean,
 ): readonly string[] {
   const failures: string[] = [];
   if (base.searchFormBottom !== head.searchFormBottom) {
@@ -1159,6 +1174,20 @@ function compareCaptures(
     "work-log-multiday",
     "work-log-submit",
   ]);
+  const menuContentViews = new Set([
+    "embedded-destination",
+    "menu-layout-1280",
+    "menu-layout-375",
+    "menu-layout-600",
+    "menu-layout-601",
+    "menu-layout-602",
+    "phone-menu-dialog",
+    "phone-menu-favorites",
+    "phone-menu-search",
+    "profile-expanded-narrow",
+    "sidebar-layered-search",
+    "sidebar-menu-narrow",
+  ]);
   for (const [name, basePath] of Object.entries(base.screenshots)) {
     if (!Object.hasOwn(head.screenshots, name) || (expectHomeChange && redesignedViews.has(name))) {
       continue;
@@ -1179,13 +1208,17 @@ function compareCaptures(
     ) {
       failures.push(`${name}: icon bounds changed`);
     }
+    let preserveAbove: number | undefined;
+    if (expectSearchResultsChange && expectedResultsViews.has(name)) {
+      preserveAbove = base.searchFormBottom;
+    } else if (expectMenuLayoutChange && menuContentViews.has(name)) {
+      preserveAbove = 68;
+    }
     const difference = compareScreenshot(
       basePath,
       headPath,
       path.join(outputDir, "diff", `${name}.png`),
-      expectSearchResultsChange && expectedResultsViews.has(name)
-        ? base.searchFormBottom
-        : undefined,
+      preserveAbove,
       expectHomeChange && framedViews.has(name),
       name === "sidebar-layered-search" && headerChanges ? 520 : headerWidth,
       expectSidebarResizeChange && (name === "sidebar-classic" || framedViews.has(name)),
@@ -1201,6 +1234,19 @@ function compareCaptures(
   }
   const normalizedStyles = (styles: CaptureResult["styles"]) =>
     JSON.stringify(styles, (key, value: unknown) => {
+      if (
+        expectMenuLayoutChange &&
+        (key === "sidebar-layered-search" || key === "embedded-destination")
+      ) {
+        const probes = structuredClone(value) as Record<
+          string,
+          { properties: Record<string, string> }
+        >;
+        // Restored 16px insets reduce content width; all other properties stay strict.
+        const probe = key === "sidebar-layered-search" ? probes["first-row"] : probes.frame;
+        delete probe.properties.width;
+        return probes;
+      }
       if (!expectHomeChange) {
         return value;
       }
@@ -1245,6 +1291,7 @@ async function main() {
       "expect-sidebar-resize-change": { type: "boolean", default: false },
       "expect-captcha-refresh": { type: "boolean", default: false },
       "expect-login-icons-change": { type: "boolean", default: false },
+      "expect-menu-layout-change": { type: "boolean", default: false },
     },
     strict: true,
   });
@@ -1269,6 +1316,7 @@ async function main() {
     values["expect-sidebar-resize-change"],
     values["expect-captcha-refresh"],
     values["expect-login-icons-change"],
+    values["expect-menu-layout-change"],
     values["ui-review-only"],
     values["review-locale"],
   );
@@ -1284,6 +1332,7 @@ async function main() {
     values["expect-sidebar-resize-change"],
     values["expect-captcha-refresh"],
     values["expect-login-icons-change"],
+    values["expect-menu-layout-change"],
     values["ui-review-only"],
     values["review-locale"],
   );
@@ -1302,10 +1351,11 @@ async function main() {
     values["expect-sidebar-resize-change"],
     values["expect-captcha-refresh"],
     values["expect-login-icons-change"],
+    values["expect-menu-layout-change"],
   );
   writeFileSync(
     path.join(outputDir, "report.json"),
-    `${JSON.stringify({ baseExtensionDir, headExtensionDir, expectSidebarResizeChange: values["expect-sidebar-resize-change"], expectHomeChange: values["expect-home-change"], expectSupportLinksChange: values["expect-support-links-change"], expectSearchResultsChange: values["expect-search-results-change"], searchFormBottom: base.searchFormBottom, failures }, undefined, 2)}\n`,
+    `${JSON.stringify({ baseExtensionDir, headExtensionDir, expectMenuLayoutChange: values["expect-menu-layout-change"], expectSidebarResizeChange: values["expect-sidebar-resize-change"], expectHomeChange: values["expect-home-change"], expectSupportLinksChange: values["expect-support-links-change"], expectSearchResultsChange: values["expect-search-results-change"], searchFormBottom: base.searchFormBottom, failures }, undefined, 2)}\n`,
   );
   if (failures.length > 0) {
     if (process.env.ALLOW_VISUAL_CHANGE === "true") {

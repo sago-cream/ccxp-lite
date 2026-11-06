@@ -186,7 +186,6 @@
     const disclosure = createClassicChevronIcon(targetDocument, false);
     disclosure.classList.remove("ccxp-lite-chevron");
     disclosure.classList.add("ccxp-lite-profile-chevron");
-    settings.append(disclosure);
     const popup = dom.element("div", {
       className: "ccxp-lite-profile-popover",
       attributes: { id: "ccxp-lite-profile-popover", hidden: "" },
@@ -322,6 +321,7 @@
       popup,
       english,
     );
+    settings.append(disclosure);
     const controller = app.uiController?.createController(targetDocument);
     const setOpen = (open: boolean) => {
       popup.hidden = !open;
