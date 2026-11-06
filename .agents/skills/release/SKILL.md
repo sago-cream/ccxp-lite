@@ -7,11 +7,16 @@ description: Release ccxpLite using its release scripts, write concise grouped n
 
 Run ccxpLite's release workflow and prepare distribution updates. Scope destinations to the user's request and configured channels. Creating or editing this skill does not authorize a live release.
 
+## Executable local flow
+
+Use the repository's `bun run release:flow` runner and follow [workflow.md](references/workflow.md) for the complete agent-driven workflow, packet schemas, commands, Chrome dashboard bridge, and recovery. The runner handles GitHub verification, packages, upload validation, approval hashes, and both store submissions. The agent drafts prose and performs dashboard-only Chrome observations/edits after approval; do not hand that routine browser work back to the user. Implementing or testing the runner does not authorize a live release.
+
 ## Establish baselines
 
 - Read repository instructions and release scripts, including hooks. Use the required clean, updated release branch; locate its checkout with `git worktree list --porcelain` instead of resetting another checkout. Follow project checks and reuse applicable successful CI evidence.
 - Identify the repository, intended version, artifacts, and configured destinations. Suggest a bump from actual changes if unspecified; follow existing version rules.
 - Read several previous release bodies to find the intended editorial style. Prefer concise grouped notes over a generated PR-title list. Read [notes.md](references/notes.md).
+- Track public-note source baselines separately from package baselines: on a non-patch release, include changes since each locale's last Chrome headline and Mozilla's last public listed version with notes, including intervening patches. The runner's `context` command resolves these before prose is drafted.
 - Establish **separate** last-published baselines for GitHub and each store: version, channel/locale, previous notes, and source tag/commit. Drafts, review queues, and unlisted builds are not published listed releases. If a store skipped versions, cover its entire unreleased interval. If a baseline cannot be mapped confidently, continue independent preparation and ask for that mapping before making release claims.
 - Check version eligibility against each destination's published and pending versions before uploading. Reuse an existing matching release/upload; do not downgrade, replace unrelated pending work, or silently bump the approved version to bypass a store conflict.
 - Read [ccxp-lite.md](references/ccxp-lite.md) for this repository's commands, artifacts, store IDs, and note examples.
@@ -20,7 +25,7 @@ Run ccxpLite's release workflow and prepare distribution updates. Scope destinat
 
 Read [credentials.md](references/credentials.md). Environment variables are the credential interface: inject them from a secret manager, use an explicitly loaded ignored local file, or supply CI secrets. Inspect presence/names without printing values. Keep secrets out of command arguments, logs, notes, Git, and saved state. If absent, name the required credential and secure configuration location; do not request secrets in chat.
 
-Keep a release packet in `.build/releases/<version>/` or an external directory: version/source commit; each published baseline and evidence URL; exact note files/locales; target IDs/channels; artifact paths and SHA-256 hashes; validation/upload IDs; submission results. No credentials. Inspect remote state before repeating mutations, especially after timeouts. If acceptance cannot be resolved, including when an upload ID was lost, stop dependent submission and report the uncertainty instead of retrying automatically.
+Keep a release packet in `.build/releases/<version>/` or an external directory: version/source commit; each published baseline and evidence URL; exact note files/locales; target IDs/channels; artifact paths and SHA-256 hashes; validation/upload IDs; submission results. No credentials. Inspect remote state before repeating mutations, especially after timeouts. Reversible, non-publishing draft uploads may be retried with the same verified artifact after a lost response; wait for any upload already processing before replacing it. Do not overwrite active review or published submissions. If submission acceptance cannot be resolved, stop dependent submission and report the uncertainty instead of submitting again.
 
 ## GitHub release
 
