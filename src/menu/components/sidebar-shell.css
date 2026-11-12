@@ -113,6 +113,7 @@
   overflow: visible;
   white-space: normal;
   text-overflow: clip;
+  text-wrap: pretty;
 }
 
 .ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-variant="layered"]
