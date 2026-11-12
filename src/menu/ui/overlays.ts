@@ -7,6 +7,7 @@
     !namespace.uiIcons ||
     !namespace.uiRenderer ||
     !namespace.uiButtons ||
+    !namespace.uiDisplay ||
     !namespace.sidebarDialogController
   ) {
     return;
@@ -15,6 +16,7 @@
   const app = namespace;
   const { setPersistedSidebarVariant, persistSidebarScroll } = namespace.sidebarState;
   const { createRenderer } = namespace.uiRenderer;
+  const { createProfileAvatar } = namespace.uiDisplay;
   const { createCategoryIcon, createExternalLinkIcon, createClassicChevronIcon } =
     namespace.uiIcons;
   const { showRemovePinnedDialog, showRestoreOrderDialog } = namespace.sidebarDialogController;
@@ -165,11 +167,7 @@
     const name = dom.element("strong", {
       text: english ? "University account" : "\u6821\u52D9\u7CFB\u7D71\u5E33\u865F",
     });
-    const avatar = dom.element("span", {
-      className: "ccxp-lite-profile-avatar",
-      text: "?",
-      attributes: { "aria-hidden": "true" },
-    });
+    const avatar = createProfileAvatar(targetDocument);
     const settings = dom.element(
       "button",
       {

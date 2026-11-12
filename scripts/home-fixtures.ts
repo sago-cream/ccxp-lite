@@ -192,7 +192,11 @@ export async function assertHomeFavorites(
   );
 }
 
-export async function assertMenuProfile(page: Page, nav: Frame): Promise<void> {
+export async function assertMenuProfile(
+  page: Page,
+  nav: Frame,
+  separatedSearch = false,
+): Promise<void> {
   const original = page.viewportSize();
   assert.ok(original);
 
@@ -204,7 +208,16 @@ export async function assertMenuProfile(page: Page, nav: Frame): Promise<void> {
       const profile = header.querySelector(".ccxp-lite-sidebar-profile");
       const rect = profile?.getBoundingClientRect();
       const bar = header.getBoundingClientRect();
+      const search = header.querySelector(".ccxp-lite-sidebar-search")?.getBoundingClientRect();
+      const brand = header.querySelector(".ccxp-lite-sidebar-brand-group")?.getBoundingClientRect();
       return {
+        narrow: window.innerWidth <= 760,
+        searchBelow:
+          search !== undefined &&
+          rect !== undefined &&
+          brand !== undefined &&
+          search.top >= Math.max(rect.bottom, brand.bottom) &&
+          search.right <= window.innerWidth,
         height: bar.height,
         expected: Number.parseFloat(
           getComputedStyle(header).getPropertyValue("--ccxp-lite-size-landing-header-height"),
@@ -216,7 +229,27 @@ export async function assertMenuProfile(page: Page, nav: Frame): Promise<void> {
           rect.bottom <= bar.bottom,
       };
     });
-    assert.equal(bounds.height, bounds.expected);
+    if (separatedSearch && bounds.narrow) {
+      assert.ok(bounds.height > bounds.expected);
+      assert.equal(
+        bounds.searchBelow,
+        true,
+        "Narrow search has its own row below brand and profile",
+      );
+      // eslint-disable-next-line no-await-in-loop -- Check summaries at the current responsive width.
+      const summariesFit = await nav
+        .locator(".ccxp-lite-category-card-summary")
+        .evaluateAll((elements: readonly Element[]) =>
+          elements.every(
+            (element) =>
+              element.scrollHeight <= element.clientHeight &&
+              element.scrollWidth <= element.clientWidth,
+          ),
+        );
+      assert.equal(summariesFit, true, "Category summaries remain fully readable");
+    } else {
+      assert.equal(bounds.height, bounds.expected);
+    }
     assert.equal(bounds.fits, true);
   }
   await page.setViewportSize(original);
@@ -394,6 +427,12 @@ export async function captureNarrowDefaultMenu(
     await nav.locator(".ccxp-lite-sidebar-search-input").fill("\u6559\u5B78");
     await nav.locator(".ccxp-lite-category-card").first().click();
     await nav.locator(".ccxp-lite-pane-detail").waitFor();
+    if (assertHead) {
+      const detail = nav.locator(".ccxp-lite-pane-detail");
+      assert.equal(await detail.locator("iframe").count(), 0);
+      assert.ok((await detail.locator(".ccxp-lite-detail-link-card").count()) > 0);
+      assert.equal(await detail.evaluate((node) => node.scrollWidth <= node.clientWidth), true);
+    }
     await capture(page, "phone-menu-search");
     if (assertHead) {
       await nav.locator(".ccxp-lite-profile-trigger").click();

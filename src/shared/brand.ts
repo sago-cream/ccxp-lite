@@ -60,15 +60,7 @@
     const titleNode = targetDocument.createElement("div");
     titleNode.className = titleClassName;
 
-    if (titleClassName === "ccxp-lite-sidebar-brand-title" && title.includes(" ")) {
-      for (const word of title.split(" ")) {
-        const wordNode = targetDocument.createElement("span");
-        wordNode.textContent = word;
-        titleNode.append(wordNode);
-      }
-    } else {
-      titleNode.textContent = title;
-    }
+    titleNode.textContent = title;
 
     copy.append(titleNode);
     return copy;

@@ -188,6 +188,7 @@ declare global {
     fallbackLabel?: string;
     icon: string;
     summaryLabels?: readonly string[];
+    summaryLabelsEnglish?: readonly string[];
     itemLabels: readonly string[];
   }
 
@@ -320,6 +321,7 @@ declare global {
       fallbackLabel?: string;
       icon: string;
       summaryLabels?: readonly string[];
+      summaryLabelsEnglish?: readonly string[];
       itemLabels: readonly string[];
     }>;
     ASSETS: Record<string, string>;

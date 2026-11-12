@@ -127,7 +127,10 @@
       id: categoryId,
       label: categoryLabel,
       icon: category.icon,
-      summary: (category.summaryLabels ?? []).join(" \u00B7 "),
+      summary: (resolveSidebarLocale(strings) === "en"
+        ? (category.summaryLabelsEnglish ?? [])
+        : (category.summaryLabels ?? [])
+      ).join(" \u00B7 "),
       blocks: decoratedBlocks,
       emptyMessage: strings.emptyGroup,
       kind: "category",

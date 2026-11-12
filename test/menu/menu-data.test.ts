@@ -27,6 +27,24 @@ function createSidebarTreeDocument() {
 }
 
 describe("sidebar data", () => {
+  test("localizes category summaries with the menu locale", () => {
+    const { window } = createTestWindow(createSidebarTreeDocument());
+    loadModules(window, menuModulePaths);
+    const data = requireValue(window.CCXP_LITE.sidebarData);
+    const constants = requireValue(window.CCXP_LITE.sharedConstants);
+    const english = requireValue(
+      data.buildSidebarModel(window.document, constants.LOCALIZED_STRINGS.en),
+    );
+    const chinese = requireValue(
+      data.buildSidebarModel(window.document, constants.LOCALIZED_STRINGS.zh),
+    );
+    expect(
+      english.categories.find((category) => category.id === "category-courses-and-grades")?.summary,
+    ).toBe("Courses \u00B7 Grades \u00B7 Credits \u00B7 Credit transfer");
+    expect(
+      chinese.categories.find((category) => category.id === "category-courses-and-grades")?.summary,
+    ).toBe("\u8AB2\u7A0B \u00B7 \u6210\u7E3E \u00B7 \u5B78\u5206 \u00B7 \u62B5\u514D");
+  });
   test("parses the legacy tree script and categorizes links", () => {
     const { window } = createTestWindow(createSidebarTreeDocument());
     loadModules(window, menuModulePaths);

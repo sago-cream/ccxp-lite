@@ -1,0 +1,7 @@
+@media (max-width: 360px) {
+  .ccxp-lite-dialog-actions > button {
+    flex-basis: 100%;
+    width: 100%;
+    min-height: var(--ccxp-lite-size-control-height-md);
+  }
+}

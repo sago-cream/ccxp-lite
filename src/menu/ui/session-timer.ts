@@ -24,9 +24,11 @@
 
   function readClock(topDocument: Document) {
     try {
-      const frame = topDocument.querySelector<HTMLIFrameElement>('frame[src*="top.php"]');
+      const frame = topDocument.querySelector<HTMLIFrameElement>(
+        'frame[src*="top.php"], frame[src*="top_eng.php"], frame[name="top"]',
+      );
       const header = frame?.contentDocument;
-      if (!header || new URL(header.URL).pathname !== "/ccxp/INQUIRE/top.php") {
+      if (!header || !/^\/ccxp\/INQUIRE\/top(?:_eng)?\.php$/u.test(new URL(header.URL).pathname)) {
         return undefined;
       }
       const runtime = app?.sharedDom?.getRuntimeSafely();
@@ -117,24 +119,45 @@
       [
         dom.element("span", {
           text: english
-            ? "Logout in 5 min due to inactivity"
-            : "5\u5206\u9418\u5F8C\u5C07\u56E0\u9592\u7F6E\u767B\u51FA",
+            ? "You will be logged out soon. Save your work."
+            : "\u5373\u5C07\u56E0\u9592\u7F6E\u767B\u51FA\uFF0C\u8ACB\u5148\u5132\u5B58\u3002",
           attributes: { role: "status" },
         }),
         dismiss,
       ],
     );
-    const overlays = dom.element("div", { className: "ccxp-lite-profile-overlays" }, [
-      warning,
-      popup,
-    ]);
+    const overlays = dom.element("div", { className: "ccxp-lite-profile-overlays" }, [popup]);
+    targetDocument.body.append(warning);
     card.append(overlays);
+    const positionWarning = () => {
+      const shell = card.closest<HTMLElement>(".ccxp-lite-sidebar-shell");
+      if (shell?.dataset.ccxpLiteSidebarVariant === "layered") {
+        warning.style.removeProperty("bottom");
+        return;
+      }
+      const height = targetDocument.defaultView?.innerHeight ?? 0;
+      const top = Math.min(
+        card.getBoundingClientRect().top,
+        popup.hidden ? height : popup.getBoundingClientRect().top,
+      );
+      warning.style.bottom = `calc(${Math.max(0, height - top)}px + var(--ccxp-lite-spacing-md))`;
+    };
+    const popupObserver = new MutationObserver(positionWarning);
+    popupObserver.observe(popup, { attributes: true, attributeFilter: ["hidden"] });
+    const layoutObserver =
+      typeof ResizeObserver === "undefined" ? undefined : new ResizeObserver(positionWarning);
+    layoutObserver?.observe(card);
+    layoutObserver?.observe(popup);
+    if (targetDocument.defaultView) {
+      controller.listen(targetDocument.defaultView, "resize", positionWarning);
+    }
     const showLabel = english ? "Show session timer" : "\u986F\u793A\u767B\u51FA\u5012\u6578";
     const hideLabel = english ? "Hide session timer" : "\u96B1\u85CF\u767B\u51FA\u5012\u6578";
     const stateLabels = english
       ? { on: "On", off: "Off" }
       : { on: "\u958B\u555F", off: "\u95DC\u9589" };
     const update = () => {
+      positionWarning();
       toggle.title = getVisible() ? hideLabel : showLabel;
       toggle.setAttribute("aria-checked", String(getVisible()));
       toggleValue.textContent = getVisible() ? stateLabels.on : stateLabels.off;
@@ -181,6 +204,9 @@
     return () => {
       globalScope.clearInterval(interval);
       controller.destroy();
+      warning.remove();
+      popupObserver.disconnect();
+      layoutObserver?.disconnect();
     };
   }
 

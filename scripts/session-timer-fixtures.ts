@@ -90,6 +90,7 @@ export async function assertSessionTimer(
   nav: Frame,
   outputDir: string,
   capture: (page: Page, screenshotPath: string) => Promise<void>,
+  fixedReminder = false,
 ): Promise<void> {
   const header = page.frames().find((frame) => new URL(frame.url()).pathname.endsWith("/top.php"));
   assert.ok(header);
@@ -98,7 +99,7 @@ export async function assertSessionTimer(
   assert.ok(originalViewport);
   const profile = nav.locator(".ccxp-lite-sidebar-profile");
   const timer = profile.locator(".ccxp-lite-session-timer");
-  const warning = profile.locator(".ccxp-lite-session-warning");
+  const warning = nav.locator(".ccxp-lite-session-warning");
   const toggle = profile.locator(".ccxp-lite-session-timer-toggle");
   const trigger = profile.locator(".ccxp-lite-profile-trigger");
   const mode = profile.locator("#ccxp-lite-profile-mode");
@@ -111,6 +112,18 @@ export async function assertSessionTimer(
   await header.goto(idleUrl(1498));
   await warning.waitFor({ state: "visible" });
   assert.equal(await timer.isVisible(), false, "Hidden timer must still warn at five minutes");
+  if (fixedReminder) {
+    const css = await warning.evaluate((node) => {
+      const style = getComputedStyle(node);
+      return {
+        position: style.position,
+        left: style.borderLeftWidth,
+        right: style.borderRightWidth,
+      };
+    });
+    assert.equal(css.position, "fixed");
+    assert.equal(css.left, css.right, "Reminder has no separate accent border");
+  }
   await trigger.click();
   await toggleProfileTimer(toggle);
   await trigger.press("Escape");
@@ -152,7 +165,9 @@ export async function assertSessionTimer(
     // eslint-disable-next-line no-await-in-loop -- Layout is specific to the current viewport.
     const fits = await profile.evaluate((element) => {
       const rect = element.getBoundingClientRect();
-      const reminder = element.querySelector(".ccxp-lite-session-warning")?.getBoundingClientRect();
+      const reminder = element.ownerDocument
+        .querySelector(".ccxp-lite-session-warning")
+        ?.getBoundingClientRect();
       return (
         rect.right <= window.innerWidth &&
         reminder !== undefined &&
@@ -198,16 +213,20 @@ export async function assertSessionTimer(
     );
     await englishHeader.goto(idleUrl(1501));
     const englishProfile = englishNav.locator(".ccxp-lite-sidebar-profile");
-    await englishProfile
+    await englishNav
       .getByRole("status")
-      .getByText("Logout in 5 min due to inactivity")
+      .getByText(
+        fixedReminder
+          ? "You will be logged out soon. Save your work."
+          : "Logout in 5 min due to inactivity",
+      )
       .waitFor();
     await englishProfile.getByRole("button", { name: "Settings", exact: true }).click();
     await toggleProfileTimer(englishProfile.locator(".ccxp-lite-session-timer-toggle"));
     await capture(englishPage, path.join(outputDir, "session-timer-english.png"));
     await setProfileMenuMode(englishProfile.locator("#ccxp-lite-profile-mode"), "layered");
     await englishPage.setViewportSize({ width: 375, height: originalViewport.height });
-    const englishDismissBounds = await englishProfile
+    const englishDismissBounds = await englishNav
       .getByRole("button", { name: "Dismiss reminder" })
       .boundingBox();
     assert.ok(englishDismissBounds);
@@ -216,8 +235,8 @@ export async function assertSessionTimer(
       "English reminder keeps its dismiss button in the viewport",
     );
     await capture(englishPage, path.join(outputDir, "session-timer-english-layered-375.png"));
-    await englishProfile.getByRole("button", { name: "Dismiss reminder" }).click();
-    assert.equal(await englishProfile.locator(".ccxp-lite-session-warning").isVisible(), false);
+    await englishNav.getByRole("button", { name: "Dismiss reminder" }).click();
+    assert.equal(await englishNav.locator(".ccxp-lite-session-warning").isVisible(), false);
     await englishProfile.getByRole("button", { name: "Settings", exact: true }).click();
     const englishPopupBounds = await englishProfile
       .locator(".ccxp-lite-profile-popover")

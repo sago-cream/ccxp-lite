@@ -415,8 +415,9 @@
     search.setAttribute("role", "search");
     const input = targetDocument.createElement("input");
     input.type = "search";
-    input.placeholder = english ? "Search functions" : "\u641C\u5C0B\u7CFB\u7D71\u529F\u80FD";
-    input.setAttribute("aria-label", input.placeholder);
+    const strings = sharedLib.getLocalizedStrings(english ? "en" : "zh");
+    input.placeholder = strings.homeSearchPlaceholder;
+    input.setAttribute("aria-label", strings.homeSearchLabel);
     input.setAttribute("aria-controls", "ccxp-home-search-results");
     const clear = uiButtons.createButton(targetDocument, {
       className: "ccxp-home-search-clear",
@@ -555,7 +556,6 @@
     searchSlot.className = "ccxp-home-search-slot";
     searchSlot.append(search);
     content.append(wordmark, searchSlot, section, recentSection);
-    const strings = sharedLib.getLocalizedStrings(english ? "en" : "zh");
     const render = () => {
       const navDocument = findFrames().nav?.contentDocument;
       const model = navDocument ? sidebarData.buildSidebarModel(navDocument, strings) : undefined;

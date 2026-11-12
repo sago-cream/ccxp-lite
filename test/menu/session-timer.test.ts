@@ -102,13 +102,17 @@ describe("legacy session countdown", () => {
     expect(ui.timer().hidden).toBe(true);
     expect(ui.warning().hidden).toBe(false);
     expect(ui.warning().textContent).toContain(
-      "5\u5206\u9418\u5F8C\u5C07\u56E0\u9592\u7F6E\u767B\u51FA",
+      "\u5373\u5C07\u56E0\u9592\u7F6E\u767B\u51FA\uFF0C\u8ACB\u5148\u5132\u5B58\u3002",
     );
+    expect(ui.warning().parentElement).toBe(ui.document.body);
+    const oldWarning = ui.warning();
     requireElement(
       ui.document.querySelector<HTMLButtonElement>(".ccxp-lite-session-warning-dismiss"),
     ).click();
     expect(ui.warning().hidden).toBe(true);
     ui.mount();
+    expect(oldWarning.isConnected).toBe(false);
+    expect(ui.document.querySelectorAll(".ccxp-lite-session-warning")).toHaveLength(1);
     expect(ui.warning().hidden).toBe(true);
     ui.clock(1800);
     ui.tick();
@@ -133,7 +137,7 @@ describe("legacy session countdown", () => {
     expect(ui.warning().hidden).toBe(true);
     ui.clock(240);
     ui.tick();
-    expect(ui.warning().textContent).toContain("Logout in 5 min due to inactivity");
+    expect(ui.warning().textContent).toContain("You will be logged out soon. Save your work.");
     ui.clock(240, Date.now() - 16_000);
     ui.tick();
     expect(ui.warning().hidden).toBe(true);

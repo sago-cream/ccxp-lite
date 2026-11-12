@@ -60,6 +60,7 @@ export async function assertWorkLogReady(scope: Page | Frame): Promise<Record<st
   await scope.locator("body.ccxp-lite-main-skin").waitFor();
   await scope.locator("#ccxp-lite-work-log-nav #divTitle").waitFor();
   await scope.locator("#insTask #ccxp-lite-batch").waitFor();
+  await scope.waitForFunction(() => document.readyState === "complete");
   await scope
     .locator("#insTask .ccxp-lite-work-log-actions .ccxp-lite-action-control-primary")
     .waitFor();

@@ -1,5 +1,6 @@
 @import url("./styles/page-header.css");
 @import url("./styles/popover.css");
+@import url("./styles/dialog.css");
 @import url("../../src/login/components/login-form.css");
 @import url("../../src/menu/components/sidebar-shell.css");
 @import url("../../src/menu/components/dashboard.css");

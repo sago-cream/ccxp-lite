@@ -363,6 +363,16 @@ body.ccxp-lite-main-skin:has(.ccxp-home-header) {
 .ccxp-home-info li + li {
   margin-top: var(--ccxp-lite-spacing-inset-sm);
 }
+@media (max-width: 720px) {
+  .ccxp-home-header {
+    row-gap: var(--ccxp-lite-spacing-inline-sm);
+    column-gap: var(--ccxp-lite-spacing-md);
+  }
+  .ccxp-home-header > .ccxp-home-contact,
+  .ccxp-home-header .ccxp-home-info > button {
+    min-height: 44px;
+  }
+}
 .ccxp-home-content p {
   font: var(--ccxp-lite-type-body-muted);
   color: var(--ccxp-lite-type-body-muted-color);

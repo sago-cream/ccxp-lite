@@ -42,6 +42,7 @@ export const Search: Story = {
     surface(
       createSidebarSearch(document, {
         sidebarSearchPlaceholder: localized(context.globals.locale, "搜尋選單", "Search menu"),
+        sidebarSearchClear: localized(context.globals.locale, "清除搜尋", "Clear search"),
       }),
     ),
 };
