@@ -41,7 +41,8 @@
   max-width: var(--ccxp-lite-size-sidebar-search-width);
   margin-left: 0;
   padding: 0 var(--ccxp-lite-spacing-inset-sm);
-  min-height: var(--ccxp-lite-size-control-height-sm);
+  box-sizing: border-box;
+  min-height: calc(var(--ccxp-lite-size-control-height-md) + 2px);
   border: 1px solid var(--ccxp-lite-sidebar-search-border);
   border-radius: var(--ccxp-lite-radius-input);
   background: var(--ccxp-lite-sidebar-search-surface);

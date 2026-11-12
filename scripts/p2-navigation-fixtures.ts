@@ -55,8 +55,16 @@ export async function assertP2Navigation(
   try {
     for (const width of [1280, 390, 320]) {
       await page.setViewportSize({ width, height: viewport.height });
+      await input.fill("");
+      const emptySearch = await nav.locator(".ccxp-lite-sidebar-search").boundingBox();
       await input.fill("no-p2-navigation-match");
       if (isHead) {
+        const filledSearch = await nav.locator(".ccxp-lite-sidebar-search").boundingBox();
+        assert.ok(emptySearch && filledSearch);
+        assert.ok(
+          Math.abs(emptySearch.height - filledSearch.height) < 1,
+          "Search height stays stable when clear appears",
+        );
         const clear = nav.locator(".ccxp-lite-sidebar-search-clear");
         assert.equal(await clear.count(), 1);
         const emptyHintsFit = await nav
