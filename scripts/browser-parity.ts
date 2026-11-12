@@ -505,7 +505,10 @@ async function captureRevision(
     async function captureWorkLogPages() {
       process.stdout.write(`[${label}] work-log (standalone and main frame)\n`);
       await page.goto(`${ccxpOrigin}${workLogPath}`, { waitUntil: "domcontentloaded" });
-      styles["work-log-standalone-ready"] = await assertWorkLogReady(page);
+      styles["work-log-standalone-ready"] = await assertWorkLogReady(
+        page,
+        label === "base" ? 0 : undefined,
+      );
       const standaloneWorkLog = path.join(revisionOutputDir, "work-log-standalone.png");
       await capturePage(page, standaloneWorkLog);
       screenshots["work-log-standalone"] = standaloneWorkLog;
@@ -617,7 +620,10 @@ async function captureRevision(
       if (!mainFrame) {
         throw new Error("Missing work-log main frame");
       }
-      styles["work-log-framed-ready"] = await assertWorkLogReady(mainFrame);
+      styles["work-log-framed-ready"] = await assertWorkLogReady(
+        mainFrame,
+        label === "base" ? 0 : undefined,
+      );
       await page.waitForFunction(
         () => document.querySelector("frameset[cols]")?.getAttribute("cols") === "324,*",
       );

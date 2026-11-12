@@ -1041,6 +1041,9 @@
   }
 
   function render() {
+    if (document.readyState === "loading") {
+      return;
+    }
     observer.disconnect();
     if (!document.querySelector("#divTitle, #listForm table")) {
       observe();

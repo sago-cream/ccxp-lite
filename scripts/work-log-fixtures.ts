@@ -56,7 +56,10 @@ export async function routeWorkLogFixture(route: Route): Promise<boolean> {
   return true;
 }
 
-export async function assertWorkLogReady(scope: Page | Frame): Promise<Record<string, unknown>> {
+export async function assertWorkLogReady(
+  scope: Page | Frame,
+  baselineAttempt?: number,
+): Promise<Record<string, unknown>> {
   await scope.locator("body.ccxp-lite-main-skin").waitFor();
   await scope.locator("#ccxp-lite-work-log-nav #divTitle").waitFor();
   await scope.locator("#insTask #ccxp-lite-batch").waitFor();
@@ -64,6 +67,20 @@ export async function assertWorkLogReady(scope: Page | Frame): Promise<Record<st
   await scope
     .locator("#insTask .ccxp-lite-work-log-actions .ccxp-lite-action-control-primary")
     .waitFor();
+  const nativeControlsIntact = await scope.evaluate(() =>
+    ["insForm", "queForm"].every(
+      (id) => document.querySelectorAll(`#${id} input[type="reset"]`).length === 1,
+    ),
+  );
+  if (!nativeControlsIntact) {
+    // The immutable baseline may move an unfinished action row. Only recapture that baseline; the
+    // head must retain both native reset controls immediately.
+    if (baselineAttempt !== undefined && baselineAttempt < 2) {
+      await scope.goto(scope.url(), { waitUntil: "load" });
+      return await assertWorkLogReady(scope, baselineAttempt + 1);
+    }
+    throw new Error("Native work-log reset controls were lost during initialization");
+  }
   const evidence = await scope.evaluate(() => {
     const note = document.querySelector<HTMLInputElement>('[name="I_TASK_NOTE"]');
     const panel = document.querySelector("#insTask");

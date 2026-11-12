@@ -2,6 +2,37 @@ import { TestEvent } from "../helpers/dom-event.js";
 import { expect, test } from "vitest";
 import { createTestWindow, loadModules, requireValue } from "../helpers/module-loader.js";
 
+test("waits for native parsing before moving form controls", async () => {
+  const { window } = createTestWindow(`
+    <div id="divTitle">Title</div><div id="insTask"><form id="insForm">
+      <table><tbody><tr><td><input type="submit" name="S_SUBMIT" onclick="return send('ins')"></td></tr></tbody></table>
+    </form></div>
+  `);
+  const doc = window.document as unknown as Document;
+  let readyState: DocumentReadyState = "loading";
+  Object.defineProperty(doc, "readyState", { get: () => readyState });
+  const cell = requireValue(doc.querySelector("td") ?? undefined);
+  const primary = requireValue(
+    doc.querySelector<HTMLInputElement>('[name="S_SUBMIT"]') ?? undefined,
+  );
+  loadModules(window, [".build/design/ui.js", "src/work-log/locale.ts"]);
+  doc.body.append(doc.createElement("span"));
+  await window.happyDOM.waitUntilComplete();
+  expect(cell.isConnected).toBe(true);
+  expect(doc.querySelector(".ccxp-lite-work-log-actions")).toBeNull();
+
+  const reset = doc.createElement("input");
+  reset.type = "reset";
+  cell.append(reset);
+  readyState = "complete";
+  doc.dispatchEvent(new TestEvent("DOMContentLoaded"));
+  expect(doc.querySelector('.ccxp-lite-work-log-actions input[type="reset"]')).toBe(reset);
+  expect(doc.querySelector('.ccxp-lite-work-log-actions input[type="submit"]')).toBe(primary);
+  expect(reset.form?.id).toBe("insForm");
+  expect(primary.form?.id).toBe("insForm");
+  await window.happyDOM.close();
+});
+
 test("switches labels without changing form values and reapplies after a body replacement", async () => {
   const { window } = createTestWindow(
     '<div id="noticeDiv"><div id="noticeDiv1">Old trigger</div><div id="noticeDiv2" style="display:none">Update details</div></div><div id="divTitle"><span>\u6A19\u984C</span><span>National Tsing Hua University</span></div><form><label>\u65E5\u671F<br><span class="engContent">Working date</span></label><select name="department"><option value="EJ03">EJ03 - \u4E2D\u6587 / Department</option></select><input name="note" value="\u4E2D\u6587\u8CC7\u6599"><input type="submit" value="\u65B0\u589E(Add)"></form>',
