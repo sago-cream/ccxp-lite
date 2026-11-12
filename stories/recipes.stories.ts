@@ -108,12 +108,13 @@ export const Confirmation: Story = {
   parameters: {
     i18n: {
       description: {
-        story: "按「取消」、Escape 或點擊背景可關閉。",
+        story: "按「取消」、Escape 或點擊背景可關閉。窄版按鈕換行時會撐滿各自一列。",
       },
     },
     docs: {
       description: {
-        story: "Cancel, Escape, or a backdrop click closes the dialog.",
+        story:
+          "Cancel, Escape, or a backdrop click closes the dialog. Wrapped actions fill their rows on narrow screens.",
       },
     },
   },

@@ -114,6 +114,11 @@ test("packaged sidebar supports native dragging and persists order across a fram
     });
     await dialog.waitFor();
     const cancel = dialog.getByRole("button", { name: "\u53D6\u6D88", exact: true });
+    await page.setViewportSize({ width: 390, height: 960 });
+    await expect
+      .poll(async () => await cancel.evaluate((button) => button.getBoundingClientRect().height))
+      .toBeGreaterThanOrEqual(44);
+    await page.setViewportSize({ width: 1280, height: 960 });
     await expect
       .poll(async () => await cancel.evaluate((button) => button === document.activeElement))
       .toBe(true);

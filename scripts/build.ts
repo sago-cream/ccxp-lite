@@ -337,6 +337,10 @@ try {
       path.join(projectRoot, "packages/ui/styles/popover.css"),
       path.join(uiDirectory, "popover.css"),
     );
+    copyFileSync(
+      path.join(projectRoot, "packages/ui/styles/dialog.css"),
+      path.join(uiDirectory, "dialog.css"),
+    );
   }
   copyTree(
     compiledSrcDir,

@@ -14,7 +14,7 @@ export async function collectNavigationRegions(page: Page): Promise<readonly Reg
   const result: Region[] = [];
   for (const frame of page.frames()) {
     const components = frame.locator(
-      ".ccxp-lite-sidebar-header, .ccxp-lite-sidebar-list, .ccxp-lite-dashboard-shell, .ccxp-lite-pane-detail, .ccxp-lite-menu-heading, .ccxp-lite-profile-popover, .ccxp-lite-profile-avatar, .ccxp-home-header, .ccxp-home-content, .ccxp-lite-sidebar-brand-title, [data-ccxp-lite-remove-pinned-dialog] [role='dialog']",
+      ".ccxp-lite-sidebar-header, .ccxp-lite-sidebar-list, .ccxp-lite-dashboard-shell, .ccxp-lite-pane-detail, .ccxp-lite-menu-heading, .ccxp-lite-profile-popover, .ccxp-lite-profile-avatar, .ccxp-home-header, .ccxp-home-content, .ccxp-lite-sidebar-brand-title, [data-ccxp-lite-remove-pinned-dialog] > div",
     );
     for (const element of await components.all()) {
       const rect = await element.boundingBox();
