@@ -5,7 +5,7 @@
   if (!shared || !sidebarFavorites) {
     return;
   }
-  const { STRINGS, SIDEBAR_CATEGORIES } = shared;
+  const { STRINGS, SIDEBAR_CATEGORIES, isDocumentComplete } = shared;
   const {
     buildFavoriteCategory,
     buildFavoritePathSegments,
@@ -32,6 +32,9 @@
     navDocument: Document,
     strings: Readonly<Record<string, string>>,
   ): CcxpLiteSidebarModel | undefined {
+    if (!isDocumentComplete(navDocument)) {
+      return undefined;
+    }
     const root = sidebarTreeByDocument.get(navDocument) ?? parseSidebarTree(navDocument);
     if (!root) {
       return undefined;

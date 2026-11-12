@@ -27,6 +27,30 @@ function createSidebarTreeDocument() {
 }
 
 describe("sidebar data", () => {
+  test("waits for the complete navigation document before caching its tree", () => {
+    const { window } = createTestWindow(createSidebarTreeDocument());
+    const navDocument = window.document as unknown as Document;
+    let readyState: DocumentReadyState = "loading";
+    Object.defineProperty(navDocument, "readyState", { get: () => readyState });
+    loadModules(window, menuModulePaths);
+    const data = requireValue(window.CCXP_LITE.sidebarData);
+    const shared = requireValue(window.CCXP_LITE.shared);
+
+    expect(data.buildSidebarModel(navDocument, shared.STRINGS)).toBeUndefined();
+    const remainingTree = navDocument.createElement("script");
+    remainingTree.textContent =
+      'insDoc(foldersTree, gLnk(0, "Later function", "/later-function"));';
+    navDocument.body.append(remainingTree);
+    readyState = "complete";
+    const model = requireValue(data.buildSidebarModel(navDocument, shared.STRINGS));
+    expect(
+      model.categories.flatMap((category) => category.blocks.flatMap((block) => block.links)),
+    ).toEqual(expect.arrayContaining([expect.objectContaining({ label: "Later function" })]));
+
+    remainingTree.remove();
+    expect(data.buildSidebarModel(navDocument, shared.STRINGS)).toEqual(model);
+  });
+
   test("localizes category summaries with the menu locale", () => {
     const { window } = createTestWindow(createSidebarTreeDocument());
     loadModules(window, menuModulePaths);
