@@ -161,6 +161,10 @@
   text-wrap: pretty;
 }
 
+.ccxp-lite-sidebar-shell .ccxp-lite-empty-body {
+  font-weight: var(--ccxp-lite-font-weight-regular);
+}
+
 .ccxp-lite-sidebar-content {
   flex: 1 1 0;
   min-height: 0;

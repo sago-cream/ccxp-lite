@@ -60,6 +60,24 @@ export const Empty: Story = {
       ),
     ),
 };
+export const SidebarNoResults: Story = {
+  render: (_args, context) => {
+    const dom = createRenderer(document);
+    return surface(
+      dom.element("section", { className: "ccxp-lite-sidebar-shell" }, [
+        createEmptyState(
+          document,
+          localized(context.globals.locale, "找不到符合的功能", "No matching functions"),
+          localized(
+            context.globals.locale,
+            "試試其他關鍵字，或清除搜尋以顯示所有功能。",
+            "Try another keyword, or clear search to show all functions.",
+          ),
+        ),
+      ]),
+    );
+  },
+};
 export const Breadcrumb: Story = {
   render: (_args, context) =>
     surface(
