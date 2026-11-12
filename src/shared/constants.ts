@@ -33,7 +33,7 @@
       sidebarSearchPlaceholder: "Search menu",
       sidebarSearchNoResults: "No matching items",
       sidebarCategoryFavorites: "Favorites",
-      sidebarFavoritesEmpty: "Open a category, then star a function.",
+      sidebarFavoritesEmpty: "Press star at any function to save it here",
       sidebarAddFavorite: "Add to favorites",
       sidebarRemoveFavorite: "Remove from favorites",
       sidebarReorderHint: "Drag to reorder; Alt+Shift+arrow keys to move",
@@ -94,7 +94,7 @@
       sidebarRemovePinnedDialogCancel: "Keep it",
       sidebarRemovePinnedDialogConfirm: "Remove",
       sidebarSearchEmptyTitle: "No matching items",
-      sidebarSearchEmptyBody: "Try another keyword or clear the search.",
+      sidebarSearchEmptyBody: "Try another keyword or go back to browse categories.",
       sidebarSectionEmptyTitle: "Nothing to show here",
       sidebarSectionEmptyBody: "This section currently has no available items.",
       sidebarDestinationLoading: "Loading page",
@@ -131,7 +131,7 @@
       sidebarSearchNoResults: "\u627E\u4E0D\u5230\u7B26\u5408\u9805\u76EE",
       sidebarCategoryFavorites: "\u5E38\u7528\u529F\u80FD",
       sidebarFavoritesEmpty:
-        "\u958B\u555F\u5206\u985E\uFF0C\u518D\u6309\u661F\u865F\u52A0\u5165\u5E38\u7528\u3002",
+        "\u6309\u4E0B\u4EFB\u610F\u529F\u80FD\u65C1\u7684\u661F\u865F\u4EE5\u5132\u5B58",
       sidebarAddFavorite: "\u52A0\u5165\u5E38\u7528\u529F\u80FD",
       sidebarRemoveFavorite: "\u79FB\u9664\u5E38\u7528\u529F\u80FD",
       sidebarReorderHint:
@@ -199,7 +199,7 @@
       sidebarRemovePinnedDialogConfirm: "\u79FB\u9664",
       sidebarSearchEmptyTitle: "\u627E\u4E0D\u5230\u7B26\u5408\u9805\u76EE",
       sidebarSearchEmptyBody:
-        "\u8A66\u8A66\u5176\u4ED6\u95DC\u9375\u5B57\uFF0C\u6216\u6E05\u9664\u641C\u5C0B\u3002",
+        "\u8A66\u8A66\u5176\u4ED6\u95DC\u9375\u5B57\uFF0C\u6216\u8FD4\u56DE\u4E0A\u4E00\u5C64\u700F\u89BD\u5206\u985E\u3002",
       sidebarSectionEmptyTitle: "\u76EE\u524D\u6C92\u6709\u53EF\u986F\u793A\u5167\u5BB9",
       sidebarSectionEmptyBody:
         "\u9019\u500B\u5340\u584A\u76EE\u524D\u6C92\u6709\u53EF\u7528\u9805\u76EE\u3002",

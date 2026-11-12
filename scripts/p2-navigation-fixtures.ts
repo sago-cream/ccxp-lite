@@ -82,6 +82,18 @@ export async function assertP2Navigation(
           Math.abs(icons[0].y + icons[0].height / 2 - icons[1].y - icons[1].height / 2) < 1,
           "Search and clear icons share a vertical center",
         );
+        if (
+          (await nav
+            .locator(".ccxp-lite-sidebar-shell")
+            .getAttribute("data-ccxp-lite-sidebar-variant")) === "classic"
+        ) {
+          const collapse = await nav.locator(".ccxp-lite-sidebar-collapse svg").boundingBox();
+          assert.ok(collapse);
+          assert.ok(
+            Math.abs(icons[1].x + icons[1].width / 2 - collapse.x - collapse.width / 2) <= 2,
+            "Clear and sidebar controls share the trailing icon column",
+          );
+        }
         await clear.click();
         assert.equal(await input.inputValue(), "");
         assert.equal(await input.evaluate((node) => node === document.activeElement), true);

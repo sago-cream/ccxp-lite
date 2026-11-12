@@ -46,6 +46,20 @@ export const Search: Story = {
       }),
     ),
 };
+export const SearchWithQuery: Story = {
+  render: (_args, context) => {
+    const search = createSidebarSearch(document, {
+      sidebarSearchPlaceholder: localized(context.globals.locale, "搜尋選單", "Search menu"),
+      sidebarSearchClear: localized(context.globals.locale, "清除搜尋", "Clear search"),
+    });
+    const input = search.querySelector("input");
+    if (input) {
+      input.value = localized(context.globals.locale, "課程", "Courses");
+      input.dispatchEvent(new Event("input"));
+    }
+    return surface(search);
+  },
+};
 export const Empty: Story = {
   render: (_args, context) =>
     surface(
@@ -70,8 +84,8 @@ export const SidebarNoResults: Story = {
           localized(context.globals.locale, "找不到符合的功能", "No matching functions"),
           localized(
             context.globals.locale,
-            "試試其他關鍵字，或清除搜尋以顯示所有功能。",
-            "Try another keyword, or clear search to show all functions.",
+            "試試其他關鍵字，或返回上一層瀏覽分類。",
+            "Try another keyword or go back to browse categories.",
           ),
         ),
       ]),
