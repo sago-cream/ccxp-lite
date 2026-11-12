@@ -157,6 +157,7 @@
 .ccxp-lite-sidebar-shell .ccxp-lite-empty-body {
   white-space: normal;
   overflow-wrap: anywhere;
+  text-wrap: pretty;
 }
 
 .ccxp-lite-sidebar-content {
