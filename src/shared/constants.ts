@@ -33,7 +33,7 @@
       sidebarSearchPlaceholder: "Search menu",
       sidebarSearchNoResults: "No matching items",
       sidebarCategoryFavorites: "Favorites",
-      sidebarFavoritesEmpty: "Press star at any function to save it here",
+      sidebarFavoritesEmpty: "Open a category, then star a function to save it here.",
       sidebarAddFavorite: "Add to favorites",
       sidebarRemoveFavorite: "Remove from favorites",
       sidebarReorderHint: "Drag to reorder; Alt+Shift+arrow keys to move",
@@ -131,7 +131,7 @@
       sidebarSearchNoResults: "\u627E\u4E0D\u5230\u7B26\u5408\u9805\u76EE",
       sidebarCategoryFavorites: "\u5E38\u7528\u529F\u80FD",
       sidebarFavoritesEmpty:
-        "\u6309\u4E0B\u4EFB\u610F\u529F\u80FD\u65C1\u7684\u661F\u865F\u4EE5\u5132\u5B58",
+        "\u958B\u555F\u5206\u985E\uFF0C\u6309\u529F\u80FD\u65C1\u7684\u661F\u865F\u52A0\u5165\u5E38\u7528\u3002",
       sidebarAddFavorite: "\u52A0\u5165\u5E38\u7528\u529F\u80FD",
       sidebarRemoveFavorite: "\u79FB\u9664\u5E38\u7528\u529F\u80FD",
       sidebarReorderHint:

@@ -122,6 +122,8 @@
   overflow: visible;
   text-overflow: clip;
   -webkit-line-clamp: unset;
+  word-break: keep-all;
+  text-wrap: pretty;
   color: var(--ccxp-lite-type-caption-color);
 }
 
@@ -151,6 +153,7 @@
   border-color: var(--ccxp-lite-primary-focus-border);
 }
 
+.ccxp-lite-sidebar-shell .ccxp-lite-empty-title,
 .ccxp-lite-sidebar-shell .ccxp-lite-empty-body {
   white-space: normal;
   overflow-wrap: anywhere;

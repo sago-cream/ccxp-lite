@@ -68,7 +68,7 @@ export async function assertP2Navigation(
         const clear = nav.locator(".ccxp-lite-sidebar-search-clear");
         assert.equal(await clear.count(), 1);
         const emptyHintsFit = await nav
-          .locator(".ccxp-lite-empty-body")
+          .locator(".ccxp-lite-empty-title, .ccxp-lite-empty-body")
           .evaluateAll((elements: readonly Element[]) =>
             elements.every((element) => element.scrollWidth <= element.clientWidth),
           );
