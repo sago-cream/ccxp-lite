@@ -739,3 +739,10 @@ declare global {
     code?: string;
   }
 }
+
+// State-preserving DOM moves are feature-detected before rewriting Turnstile forms.
+declare global {
+  interface Element {
+    moveBefore: (node: Node, child: Node | null) => void;
+  }
+}
