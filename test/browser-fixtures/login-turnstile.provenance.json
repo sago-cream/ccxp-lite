@@ -20,8 +20,141 @@
   },
   "limitations": [
     "No visual screenshots from the simulated widget.",
-    "Existing legacy CAPTCHA parity remains separate coverage; live Turnstile success/expiry/error/retry and English host variants require further live inspection.",
+    "Existing legacy CAPTCHA parity remains separate coverage; live expiry/error/retry and English host variants require further inspection.",
     "Host images/styles are not served by the behavioral test; its network router aborts non-widget host assets."
   ],
-  "liveVerification": "2026-11-13: unpacked beta inspected in Chrome with real Turnstile visible; user completed verification and confirmed successful sign-in. No private live screenshots are published."
+  "liveVerification": "2026-11-13: unpacked beta inspected in Chrome with real Turnstile visible; user completed verification and confirmed successful sign-in. No private live screenshots are published.",
+  "hostAssets": [
+    {
+      "route": "/ccxp/INQUIRE/css/style.css",
+      "file": "host-assets/turnstile-login/style.css",
+      "sha256": "455c3ea7cbaacee150468112941adab9eb1ad6baf109993b5e5eb05aa12e5baa"
+    },
+    {
+      "route": "/ccxp/INQUIRE/images/ccxp_r1_c1.png",
+      "file": "host-assets/turnstile-login/ccxp_r1_c1.png",
+      "sha256": "6bc8bf94ce123bcd29bf10f17dfea96be05b62c895fffea3620e33ff39a8a374"
+    },
+    {
+      "route": "/ccxp/INQUIRE/images/ccxp_r1_c2.png",
+      "file": "host-assets/turnstile-login/ccxp_r1_c2.png",
+      "sha256": "eb6e9c35e37d7983a015c25f25fdf592adbc8fdaa2513a73bfb08fe6bf3b14f2"
+    },
+    {
+      "route": "/ccxp/INQUIRE/images/ccxp_r1_c3.png",
+      "file": "host-assets/turnstile-login/ccxp_r1_c3.png",
+      "sha256": "24569483de4c30f5bfcdea915ac06016235275a8ee4693f19fbc2abe5c235343"
+    },
+    {
+      "route": "/ccxp/INQUIRE/images/ndPortal.png",
+      "file": "host-assets/turnstile-login/ndPortal.png",
+      "sha256": "fc7a479ae4de6061ae6959470ece4b062449198f33ca6370d5f72aa1a23f34fb"
+    },
+    {
+      "route": "/ccxp/INQUIRE/images/login_top.png",
+      "file": "host-assets/turnstile-login/login_top.png",
+      "sha256": "06706ef508c4fd6eb628cca73f8364ca5fa0ef4268bbe0acfe1de6d5d513be62"
+    },
+    {
+      "route": "/ccxp/INQUIRE/images/arrow.gif",
+      "file": "host-assets/turnstile-login/arrow.gif",
+      "sha256": "540cab28a894c70cf57666ebef103078a1f7247951eb707e651d30bfa4e1385b"
+    },
+    {
+      "route": "/ccxp/INQUIRE/images/twca_i.gif",
+      "file": "host-assets/turnstile-login/twca_i.gif",
+      "sha256": "b26b763cebc824f96d37c2ae9f7abc54f1b6955e0254947c4551029e241e6e0e"
+    },
+    {
+      "route": "/ccxp/INQUIRE/images/punch.png",
+      "file": "host-assets/turnstile-login/punch.png",
+      "sha256": "3131990ceed455d652da15c44c78c26b089b5e32748b02c100652630918e2c5f"
+    },
+    {
+      "route": "/ccxp/INQUIRE/images/logo_word.png",
+      "file": "host-assets/turnstile-login/logo_word.png",
+      "sha256": "e94e38590f5d7530042aad2211e71867c8b7b811fecbfae23c5a63bd3181851d"
+    },
+    {
+      "route": "/ccxp/INQUIRE/images/ccxp_r1_c4.png",
+      "file": "host-assets/turnstile-login/ccxp_r1_c4.png",
+      "sha256": "639a12bf32b20c0294f970cc40f844baf7e1531dad5a69b6a0171c813901c9ac"
+    },
+    {
+      "route": "/ccxp/INQUIRE/images/login_mid.png",
+      "file": "host-assets/turnstile-login/login_mid.png",
+      "sha256": "38dbbbc50afff1d206ee24b76f373b2b0a28477a5acdc29dcbb4aa7fa5073a2f"
+    },
+    {
+      "route": "/ccxp/INQUIRE/images/ccxp_r2.png",
+      "file": "host-assets/turnstile-login/ccxp_r2.png",
+      "sha256": "5f95fbd4e94a61c6e63191bb672e334bca6ac6fd988ee18f431681f20a2d654b"
+    },
+    {
+      "route": "/ccxp/INQUIRE/images/bottom_bg.png",
+      "file": "host-assets/turnstile-login/bottom_bg.png",
+      "sha256": "80f7d80ccf2b8f1cf9caa4c795bbc2e6d9a33c49741ae738b068bd8c54254f19"
+    }
+  ],
+  "liveVisualEvidence": {
+    "date": "2026-11-13",
+    "mode": "Real public login page in Chrome with complete unpacked extension packages; no injected extension modules, offline Turnstile shim, theme stub or layout override.",
+    "sourceFixture": "login-turnstile.html retains the anonymous legacy host response and original Turnstile API/callback; host assets additionally bundled from the observed real page. Interactive challenge frames remain live-only and are not represented by the offline behavioral shim.",
+    "sanitization": "Account and password cleared through original form controls before captures. No authentication or form submission. Mobile screenshot trims only blank canvas outside measured document bounds; no page content is retouched.",
+    "comparison": {
+      "base": "d7775d78ec7f88661d20c0eb31f1cd2ecbfdb330",
+      "head": "c11381ceb57f461ec9d1a9ab662e17b642c35f59"
+    },
+    "limitations": [
+      "Live challenge states are time dependent; screenshot comparison is visual evidence, not a reproducible Cloudflare test.",
+      "Existing legacy-fixture browser parity was run separately with explicit base/head packages and CI-default options.",
+      "Desktop before and the retained maintainer after attachment have different screenshot dimensions; this pair is a layout comparison, not pixel parity. Mobile captures share the same 375x812 CSS viewport."
+    ],
+    "screenshots": {
+      "desktopBefore": {
+        "url": "https://github.com/user-attachments/assets/7cca10e9-5580-4f41-9775-d586d85fce21",
+        "viewport": {
+          "width": 1837,
+          "height": 974
+        },
+        "image": {
+          "width": 1838,
+          "height": 974
+        },
+        "state": "Main base; compact widget below secondary actions, showing a blank dark challenge surface at capture time."
+      },
+      "desktopAfter": {
+        "url": "https://github.com/user-attachments/assets/d529d511-84e9-4b8c-90e0-0d43181b03e4",
+        "image": {
+          "width": 1470,
+          "height": 681
+        },
+        "state": "Existing maintainer-provided PR attachment retained; viewport/capture provenance was not collected by this capture session."
+      },
+      "mobileBefore": {
+        "url": "https://github.com/user-attachments/assets/5c0df0d8-111d-4646-a2fe-b9de66681412",
+        "viewport": {
+          "width": 375,
+          "height": 812
+        },
+        "image": {
+          "width": 375,
+          "height": 1207
+        },
+        "state": "Main base; full document, blank compact challenge below secondary actions."
+      },
+      "mobileAfter": {
+        "url": "https://github.com/user-attachments/assets/ef2f9213-0ab5-4fb3-a4e8-c6a5dbce58bb",
+        "viewport": {
+          "width": 375,
+          "height": 812
+        },
+        "image": {
+          "width": 375,
+          "height": 1144
+        },
+        "state": "Head package; full document, real flexible/light Turnstile Success above Login."
+      }
+    }
+  }
 }
