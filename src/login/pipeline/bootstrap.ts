@@ -22,6 +22,46 @@
   const { isSupportedInquirePath, isLoginPage } = loginLocale;
   const { restoreValidationGuards } = loginValidation;
   const { enableCaptchaAutofill, getOrCreateCaptchaState } = loginCaptcha;
+  // Configure implicit rendering before the host API initializes its closed-shadow widget.
+  if (
+    isSupportedInquirePath(document) &&
+    typeof document.documentElement.moveBefore === "function"
+  ) {
+    const prepareTurnstile = () => {
+      const widget = document.querySelector<HTMLElement>(".cf-turnstile[data-sitekey]");
+      if (!widget) {
+        return false;
+      }
+      if (widget.childElementCount === 0) {
+        // The narrow login layout reserves 16px per side. Flexible needs at least 300px, so use the
+        // native 150px compact widget below a 332px viewport.
+        widget.dataset.size = globalScope.matchMedia("(max-width: 331px)").matches
+          ? "compact"
+          : "flexible";
+        widget.dataset.theme = "light";
+      }
+      return true;
+    };
+    if (!prepareTurnstile() && document.readyState === "loading") {
+      const observer = new MutationObserver(() => {
+        if (prepareTurnstile()) {
+          observer.disconnect();
+        }
+      });
+      observer.observe(document.documentElement, { childList: true, subtree: true });
+      document.addEventListener(
+        "DOMContentLoaded",
+        () => {
+          observer.disconnect();
+        },
+        { once: true },
+      );
+      shared.addCleanupTask(() => {
+        observer.disconnect();
+      });
+    }
+  }
+
   function preloadCaptcha(targetDocument: Document) {
     if (!isLoginPage(targetDocument)) {
       return;
@@ -56,6 +96,16 @@
     const identifiedSurface = identifyLib.identifyLoginSurface(targetDocument);
     if (!identifiedSurface) {
       retryFn();
+      return;
+    }
+
+    // Older browsers cannot reparent an initialized widget without unloading its iframe. Leave
+    // their native login surface intact so verification can still finish.
+    if (
+      identifiedSurface.loginForm?.querySelector(".cf-turnstile") &&
+      typeof targetBody.moveBefore !== "function"
+    ) {
+      onReady();
       return;
     }
 

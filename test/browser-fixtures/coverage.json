@@ -18,6 +18,12 @@
       "state": "Logged-out Chinese landing page recaptured 2026-11-04 with current notices and host assets; anonymous expired CAPTCHA retained offline. Packaged captures cover ready-to-submit synthetic fields at 1280/1600/375px. See login.provenance.json."
     },
     {
+      "file": "login-turnstile.html",
+      "path": "/ccxp/INQUIRE/",
+      "owners": ["src/login/"],
+      "state": "Anonymous Chinese landing response captured 2026-11-13, decoded from Big5 to UTF-8. Original host structure, compact Turnstile container, API script and success callback retained; other scripts removed and fnstr replaced with fixture. Packaged behavioral tests substitute an explicitly synthetic offline iframe/API to assert browsing-context preservation and token payload continuity; this is not visual evidence or proof of live Cloudflare verification. Behavior tests cover flexible/light configuration before implicit initialization, preserved iframe state, DOM order above Login and aligned form widths at 1280/375px. Behavior tests do not serve host assets. Public host assets were bundled from the live page and listed in login-turnstile.provenance.json. PR #86 adds real packaged-main desktop/mobile-before captures and packaged-head mobile-after capture (375x812 CSS viewport, full document), retaining the maintainer desktop-after attachment. No screenshots from the offline API shim are published. User confirmed successful beta sign-in on 2026-11-13."
+    },
+    {
       "file": "frameset.html",
       "path": "/ccxp/INQUIRE/select_entry.php",
       "owners": ["src/menu/"],
@@ -132,6 +138,10 @@
     {
       "owners": ["src/menu/", "src/main/"],
       "reason": "2026-11-04 live student search contains a seventh Teaching Feedback entry, 外籍生問卷填寫, absent from the six-entry legacy fixture. A fresh navigation source request returned Out of Sequence access is NOT allowed before the complete tree. This current-content variant is not certified by the published six-result screenshots; retained student navigation is representative, not an exact current entitlement inventory."
+    },
+    {
+      "owners": ["src/login/"],
+      "reason": "User confirmed successful beta sign-in on 2026-11-13. Live expiry/error/retry and English host variants remain unverified; offline widget tests do not certify these states."
     }
   ],
   "liveAudit": "2026-09-12: navigated registration with ccxpLite enabled, verified header, reminder contents and English switch; navigated public course directory, curriculum and keyword forms. Public query HTML retrieved from those same routes without session data.",

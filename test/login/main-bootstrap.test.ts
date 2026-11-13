@@ -152,3 +152,32 @@ describe("main bootstrap login path", () => {
     expect(main?.style.getPropertyPriority("display")).toBe("important");
   });
 });
+
+test("keeps native Turnstile login intact when state-preserving moves are unavailable", () => {
+  const { window } = createTestWindow(
+    createLoginHtml()
+      .replace(
+        "<form action=",
+        '<script src="https://challenges.cloudflare.com/turnstile/v0/api.js"></script><form action=',
+      )
+      .replace(
+        '<button type="submit">',
+        '<div class="cf-turnstile"><iframe></iframe></div><button type="submit">',
+      ),
+  );
+  const document = window.document as Document;
+  const form = document.querySelector("form");
+  const iframe = document.querySelector("iframe");
+  loadModules(window, [...loginModulePaths, "src/login/pipeline/bootstrap.ts"]);
+  let ready = false;
+  window.CCXP_LITE.login?.simplifyLoginPage(document, {
+    onReady: () => {
+      ready = true;
+    },
+  });
+  expect(ready).toBe(true);
+  expect(document.querySelector("form")).toBe(form);
+  expect(document.querySelector("iframe")).toBe(iframe);
+  expect(document.querySelector("script[src*='turnstile']")).not.toBeNull();
+  expect(document.querySelector(".ccxp-lite-landing-shell")).toBeNull();
+});

@@ -99,8 +99,21 @@
     loginHeaderLabel.textContent = strings.loginTitle;
     loginSection.append(loginHeaderLabel);
 
+    const hasTurnstile = Boolean(loginForm?.querySelector(".cf-turnstile"));
+    if (hasTurnstile) {
+      // Keep the widget's browsing context connected throughout the rewrite.
+      shell.append(topSection);
+      topSection.append(bodySection);
+      bodySection.append(loginSection);
+      targetDocument.body.append(shell);
+    }
     if (loginForm) {
-      loginSection.append(loginForm);
+      if (hasTurnstile) {
+        // eslint-disable-next-line unicorn/no-null -- The DOM API requires null to append.
+        loginSection.moveBefore(loginForm, null);
+      } else {
+        loginSection.append(loginForm);
+      }
     } else {
       moveChildNodes(loginSourceCell, loginSection);
     }
@@ -114,6 +127,12 @@
     forceCaptchaLabelDisplay(loginSection);
     replaceLoginFormImageButtons(targetDocument, loginSection);
     wrapPrimaryLoginButtons(targetDocument, loginSection);
+    const turnstile = loginForm?.querySelector<HTMLElement>(".cf-turnstile");
+    const actionGroup = loginForm?.querySelector(".ccxp-lite-login-action-group");
+    if (loginForm && turnstile && actionGroup?.parentNode === loginForm) {
+      turnstile.classList.add("ccxp-lite-login-turnstile");
+      loginForm.moveBefore(turnstile, actionGroup);
+    }
     removeLoginSpacingArtifacts(targetDocument, loginSection);
     alignCaptchaMediaRow(targetDocument, loginSection);
     enhancePasswordVisibilityToggle(targetDocument, loginSection);
@@ -152,13 +171,21 @@
     }
 
     cleanLegacySupport(identifiedSurface);
-    topSection.append(headerSection);
+    topSection.prepend(headerSection);
 
     if (announcementTable && !announcementTable.hidden) {
-      bodySection.append(loginSection);
+      if (loginSection.parentNode !== bodySection) {
+        bodySection.append(loginSection);
+      }
       noticesSection.append(announcementTable);
       bodySection.append(noticesSection);
-      topSection.append(bodySection);
+      if (bodySection.parentNode !== topSection) {
+        topSection.append(bodySection);
+      }
+    } else if (hasTurnstile) {
+      // eslint-disable-next-line unicorn/no-null -- The DOM API requires null to append.
+      topSection.moveBefore(loginSection, null);
+      bodySection.remove();
     } else {
       topSection.append(loginSection);
     }
@@ -170,7 +197,10 @@
       }
       footer.append(link);
     }
-    shell.append(topSection, footer);
+    if (topSection.parentNode !== shell) {
+      shell.append(topSection);
+    }
+    shell.append(footer);
 
     return {
       shell,
