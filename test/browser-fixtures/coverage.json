@@ -18,6 +18,12 @@
       "state": "Logged-out Chinese landing page recaptured 2026-11-04 with current notices and host assets; anonymous expired CAPTCHA retained offline. Packaged captures cover ready-to-submit synthetic fields at 1280/1600/375px. See login.provenance.json."
     },
     {
+      "file": "login-turnstile.html",
+      "path": "/ccxp/INQUIRE/",
+      "owners": ["src/login/"],
+      "state": "Anonymous Chinese landing response captured 2026-11-13, decoded from Big5 to UTF-8. Original host structure, compact Turnstile container, API script and success callback retained; other scripts removed and fnstr replaced with fixture. Packaged behavioral tests substitute an explicitly synthetic offline iframe/API to assert browsing-context preservation and token payload continuity; this is not visual evidence or proof of live Cloudflare verification. Host assets reuse existing captures; no new visual captures published."
+    },
+    {
       "file": "frameset.html",
       "path": "/ccxp/INQUIRE/select_entry.php",
       "owners": ["src/menu/"],
@@ -132,6 +138,10 @@
     {
       "owners": ["src/menu/", "src/main/"],
       "reason": "2026-11-04 live student search contains a seventh Teaching Feedback entry, 外籍生問卷填寫, absent from the six-entry legacy fixture. A fresh navigation source request returned Out of Sequence access is NOT allowed before the complete tree. This current-content variant is not certified by the published six-result screenshots; retained student navigation is representative, not an exact current entitlement inventory."
+    },
+    {
+      "owners": ["src/login/"],
+      "reason": "Live Turnstile success, expiry/error/retry and English host variants are not certified by the offline shim. Installed Chrome Web Store version cannot be replaced through the browser tool; beta live verification requires manual unpacked loading."
     }
   ],
   "liveAudit": "2026-09-12: navigated registration with ccxpLite enabled, verified header, reminder contents and English switch; navigated public course directory, curriculum and keyword forms. Public query HTML retrieved from those same routes without session data.",

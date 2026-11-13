@@ -1,0 +1,26 @@
+{
+  "capturedAt": "2026-11-13",
+  "sourceUrl": "https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/",
+  "captureMethod": "Anonymous HTTP response decoded from Big5, corroborated with the extension-styled live form in Chrome. This is a source/behavior fixture, not an initialized visual capture.",
+  "sanitization": [
+    "Hidden fnstr replaced with fixture. No credentials, sessions or challenge responses captured.",
+    "Only the host Turnstile API script and original onTurnstileSuccess callback retained; other host scripts removed.",
+    "Packaged tests route all requests offline and replace the API/widget with a synthetic closed-shadow iframe and synthetic-token.",
+    "Tests remove async/defer from the API script to control initialization timing; late-api initialization waits for the extension landing marker. No Cloudflare verification or login is attempted."
+  ],
+  "retainedContract": {
+    "form": "form1",
+    "action": "pre_select_entry.php",
+    "widget": {
+      "id": "cf-turnstile",
+      "size": "compact",
+      "callback": "onTurnstileSuccess"
+    },
+    "fields": ["account", "passwd", "Submit", "code", "cf-turnstile-response"]
+  },
+  "limitations": [
+    "No visual screenshots from the simulated widget.",
+    "Existing legacy CAPTCHA parity remains separate coverage; live Turnstile success/expiry/error/retry and English host variants require further live inspection.",
+    "Host images/styles are not served by the behavioral test; its network router aborts non-widget host assets."
+  ]
+}
