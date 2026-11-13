@@ -24,9 +24,11 @@
 
   function readClock(topDocument: Document) {
     try {
-      const frame = topDocument.querySelector<HTMLIFrameElement>('frame[src*="top.php"]');
+      const frame = topDocument.querySelector<HTMLIFrameElement>(
+        'frame[src*="top.php"], frame[src*="top_eng.php"], frame[name="top"]',
+      );
       const header = frame?.contentDocument;
-      if (!header || new URL(header.URL).pathname !== "/ccxp/INQUIRE/top.php") {
+      if (!header || !/^\/ccxp\/INQUIRE\/top(?:_eng)?\.php$/u.test(new URL(header.URL).pathname)) {
         return undefined;
       }
       const runtime = app?.sharedDom?.getRuntimeSafely();

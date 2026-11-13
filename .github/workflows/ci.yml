@@ -125,6 +125,10 @@ jobs:
              grep -q 'assertMenuLayout' scripts/browser-parity.ts; then
             expected_changes+=(--expect-menu-layout-change)
           fi
+          if ! grep -q 'ccxp-lite-sidebar-search-clear' ../base/packages/ui/src/display.ts &&
+             grep -q 'ccxp-lite-sidebar-search-clear' packages/ui/src/display.ts; then
+            expected_changes+=(--expect-p2-navigation-change)
+          fi
           bun run test:browser-parity -- \
             --base-extension ../base/dist/crx/unpacked \
             --head-extension dist/crx/unpacked \

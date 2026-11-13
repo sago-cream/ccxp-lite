@@ -192,7 +192,11 @@ export async function assertHomeFavorites(
   );
 }
 
-export async function assertMenuProfile(page: Page, nav: Frame): Promise<void> {
+export async function assertMenuProfile(
+  page: Page,
+  nav: Frame,
+  separatedSearch = false,
+): Promise<void> {
   const original = page.viewportSize();
   assert.ok(original);
 
@@ -204,7 +208,16 @@ export async function assertMenuProfile(page: Page, nav: Frame): Promise<void> {
       const profile = header.querySelector(".ccxp-lite-sidebar-profile");
       const rect = profile?.getBoundingClientRect();
       const bar = header.getBoundingClientRect();
+      const search = header.querySelector(".ccxp-lite-sidebar-search")?.getBoundingClientRect();
+      const brand = header.querySelector(".ccxp-lite-sidebar-brand-group")?.getBoundingClientRect();
       return {
+        narrow: window.innerWidth <= 760,
+        searchBelow:
+          search !== undefined &&
+          rect !== undefined &&
+          brand !== undefined &&
+          search.top >= Math.max(rect.bottom, brand.bottom) &&
+          search.right <= window.innerWidth,
         height: bar.height,
         expected: Number.parseFloat(
           getComputedStyle(header).getPropertyValue("--ccxp-lite-size-landing-header-height"),
@@ -216,7 +229,27 @@ export async function assertMenuProfile(page: Page, nav: Frame): Promise<void> {
           rect.bottom <= bar.bottom,
       };
     });
-    assert.equal(bounds.height, bounds.expected);
+    if (separatedSearch && bounds.narrow) {
+      assert.ok(bounds.height > bounds.expected);
+      assert.equal(
+        bounds.searchBelow,
+        true,
+        "Narrow search has its own row below brand and profile",
+      );
+      // eslint-disable-next-line no-await-in-loop -- Check summaries at the current responsive width.
+      const summariesFit = await nav
+        .locator(".ccxp-lite-category-card-summary")
+        .evaluateAll((elements: readonly Element[]) =>
+          elements.every(
+            (element) =>
+              element.scrollHeight <= element.clientHeight &&
+              element.scrollWidth <= element.clientWidth,
+          ),
+        );
+      assert.equal(summariesFit, true, "Category summaries remain fully readable");
+    } else {
+      assert.equal(bounds.height, bounds.expected);
+    }
     assert.equal(bounds.fits, true);
   }
   await page.setViewportSize(original);
@@ -239,6 +272,14 @@ export async function captureNarrowHome(
     const main = page.frames().find((frame) => frame.name() === "main");
     assert.ok(nav && main);
     await main.locator(".ccxp-home-wordmark").waitFor();
+    if (!assertHead && (await main.locator(".ccxp-home-card").count()) === 0) {
+      // The immutable baseline can cache the nav tree before parsing finishes. Preserve that
+      // first-load evidence, then reload the native frames as a user would before matching data.
+      await capture(page, "baseline-home-first-load-incomplete");
+      await nav.goto(nav.url(), { waitUntil: "load" });
+      await main.goto(main.url(), { waitUntil: "load" });
+      await main.locator(".ccxp-home-wordmark").waitFor();
+    }
     await main.locator(".ccxp-home-card").first().waitFor();
     await page.mouse.move(350, 100);
     await page.waitForFunction(
@@ -258,6 +299,22 @@ export async function captureNarrowHome(
       await page.waitForFunction(
         () => document.querySelector("frameset[cols]")?.getAttribute("cols") === "64,*",
       );
+    }
+    if (assertHead) {
+      const utilityHeights = await main
+        .locator(".ccxp-home-header > .ccxp-home-contact, .ccxp-home-info > button")
+        .evaluateAll((elements: readonly Element[]) =>
+          elements.map((element) => element.getBoundingClientRect().height),
+        );
+      assert.ok(utilityHeights.length >= 2);
+      assert.ok(
+        utilityHeights.every((height) => height >= 44),
+        "Mobile home utilities retain touch-sized controls",
+      );
+      const topSpace = await main
+        .locator(".ccxp-home-content")
+        .evaluate((element) => Number.parseFloat(getComputedStyle(element).marginTop));
+      assert.ok(topSpace <= 32, "Mobile home search is not separated by desktop hero spacing");
     }
     await capture(page, "home-favorites-narrow");
     await assertSingleLineFavoriteNames(main);
@@ -382,6 +439,34 @@ export async function captureNarrowDefaultMenu(
     );
     await nav.locator(".ccxp-lite-pinned-card").first().waitFor();
     await nav.locator(".ccxp-lite-sidebar-content").click({ position: { x: 3, y: 3 } });
+    await page.setViewportSize({ width: 320, height: 960 });
+    if (assertHead) {
+      const wordFragments = await nav
+        .locator(".ccxp-lite-category-card-summary")
+        .evaluateAll((elements: readonly Element[]) =>
+          elements
+            .filter((element) => element.textContent.includes("\u62B5\u514D"))
+            .map((element) => {
+              const text = element.firstChild;
+              if (!text) {
+                return 0;
+              }
+              const offset = text.textContent?.indexOf("\u62B5\u514D") ?? -1;
+              const range = element.ownerDocument.createRange();
+              range.setStart(text, offset);
+              range.setEnd(text, offset + 2);
+              return range.getClientRects().length;
+            }),
+        );
+      assert.ok(
+        wordFragments.every((count) => count === 1),
+        "Chinese category terms remain together at 320px",
+      );
+    }
+    await nav.locator(".ccxp-lite-category-card").first().scrollIntoViewIfNeeded();
+    await capture(page, "phone-menu-category-summary-320");
+    await page.setViewportSize({ width: 375, height: 960 });
+    await nav.locator(".ccxp-lite-pinned-card").first().scrollIntoViewIfNeeded();
     await capture(page, "phone-menu-favorites");
     await nav.locator(".ccxp-lite-pinned-list .ccxp-lite-favorite-toggle").first().click();
     const dialog =
@@ -394,6 +479,12 @@ export async function captureNarrowDefaultMenu(
     await nav.locator(".ccxp-lite-sidebar-search-input").fill("\u6559\u5B78");
     await nav.locator(".ccxp-lite-category-card").first().click();
     await nav.locator(".ccxp-lite-pane-detail").waitFor();
+    if (assertHead) {
+      const detail = nav.locator(".ccxp-lite-pane-detail");
+      assert.equal(await detail.locator("iframe").count(), 0);
+      assert.ok((await detail.locator(".ccxp-lite-detail-link-card").count()) > 0);
+      assert.equal(await detail.evaluate((node) => node.scrollWidth <= node.clientWidth), true);
+    }
     await capture(page, "phone-menu-search");
     if (assertHead) {
       await nav.locator(".ccxp-lite-profile-trigger").click();

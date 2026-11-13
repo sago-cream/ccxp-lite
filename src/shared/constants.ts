@@ -28,6 +28,9 @@
       loginClockInOut: "Clock in / out",
       externalLinksLabel: "External links",
       portalSectionsLabel: "Portal sections",
+      homeSearchPlaceholder: "Search functions",
+      homeSearchLabel: "Search system functions",
+      sidebarSearchClear: "Clear search",
       sidebarSearchPlaceholder: "Search menu",
       sidebarSearchNoResults: "No matching items",
       sidebarCategoryFavorites: "Favorites",
@@ -123,6 +126,9 @@
       loginClockInOut: "\u7C3D\u5230\u9000",
       externalLinksLabel: "\u5916\u90E8\u9023\u7D50",
       portalSectionsLabel: "\u5165\u53E3\u5206\u5340",
+      homeSearchPlaceholder: "\u641C\u5C0B\u7CFB\u7D71\u529F\u80FD",
+      homeSearchLabel: "\u641C\u5C0B\u7CFB\u7D71\u529F\u80FD",
+      sidebarSearchClear: "\u6E05\u9664\u641C\u5C0B",
       sidebarSearchPlaceholder: "\u641C\u5C0B\u529F\u80FD",
       sidebarSearchNoResults: "\u627E\u4E0D\u5230\u7B26\u5408\u9805\u76EE",
       sidebarCategoryFavorites: "\u5E38\u7528\u529F\u80FD",
@@ -132,9 +138,8 @@
       sidebarRemoveFavorite: "\u79FB\u9664\u5E38\u7528\u529F\u80FD",
       sidebarReorderHint:
         "\u62D6\u66F3\u4EE5\u8ABF\u6574\u9806\u5E8F\uFF1BAlt+Shift+\u65B9\u5411\u9375\u79FB\u52D5",
-      sidebarRestoreOrder: "\u9084\u539F\u9762\u677F\u6392\u5E8F",
-      sidebarRestoreOrderDialogTitle:
-        "\u9084\u539F\u9078\u55AE\u7684\u539F\u59CB\u9806\u5E8F\uFF1F",
+      sidebarRestoreOrder: "\u9084\u539F\u539F\u59CB\u9806\u5E8F",
+      sidebarRestoreOrderDialogTitle: "\u9084\u539F\u539F\u59CB\u9806\u5E8F\uFF1F",
       sidebarRestoreOrderDialogDescription:
         "\u6240\u6709\u5206\u985E\u3001\u7FA4\u7D44\u3001\u9023\u7D50\u53CA\u5E38\u7528\u529F\u80FD\u5C07\u9084\u539F\u70BA\u539F\u59CB\u9806\u5E8F\u3002\u5DF2\u52A0\u5165\u7684\u5E38\u7528\u529F\u80FD\u6703\u4FDD\u7559\u3002",
       sidebarRestoreOrderDialogCancel: "\u53D6\u6D88",
@@ -231,6 +236,7 @@
         "\u539F\u4F4F\u6C11\u8CC7\u6599\u7CFB\u7D71",
       ],
       summaryLabels: ["\u5E33\u865F", "\u500B\u8CC7", "\u5C0E\u5E2B", "\u539F\u4F4F\u6C11"],
+      summaryLabelsEnglish: ["Account", "Personal details", "Advising", "Indigenous services"],
     },
     {
       id: "planning-and-enrollment",
@@ -246,6 +252,7 @@
         "\u505C\u4FEE\u7533\u8ACBCourse withdrawal application",
       ],
       summaryLabels: ["\u9810\u6392", "\u9078\u8AB2", "\u8DE8\u7CFB", "\u6691\u4FEE"],
+      summaryLabelsEnglish: ["Planning", "Enrollment", "Cross-department", "Summer courses"],
     },
     {
       id: "courses-and-grades",
@@ -257,6 +264,7 @@
         "\u5B78\u5206&\u62B5\u514D\u5B78\u5206",
       ],
       summaryLabels: ["\u8AB2\u7A0B", "\u6210\u7E3E", "\u5B78\u5206", "\u62B5\u514D"],
+      summaryLabelsEnglish: ["Courses", "Grades", "Credits", "Credit transfer"],
     },
     {
       id: "teaching-feedback",
@@ -273,6 +281,7 @@
         "\u6559\u5B78\u610F\u898B\u4FE1\u7BB1Course Feedback Box",
       ],
       summaryLabels: ["\u8AB2\u8A55", "\u7968\u9078", "\u52A9\u6559", "\u554F\u5377"],
+      summaryLabelsEnglish: ["Course evaluation", "Voting", "Teaching assistants", "Surveys"],
     },
     {
       id: "status-changes",
@@ -286,6 +295,7 @@
         "\u5175\u5F79\u696D\u52D9",
       ],
       summaryLabels: ["\u5FA9\u5B78", "\u4FDD\u7559", "\u8F49\u7CFB", "\u5175\u5F79"],
+      summaryLabelsEnglish: ["Readmission", "Deferral", "Transfers", "Military service"],
     },
     {
       id: "graduation-and-defense",
@@ -300,6 +310,7 @@
         "\u888D\u670D\u501F\u7528\u7533\u8ACB",
       ],
       summaryLabels: ["\u5BE9\u67E5", "\u53E3\u8A66", "\u96E2\u6821", "\u5B78\u4F4D\u8B49"],
+      summaryLabelsEnglish: ["Review", "Defense", "Graduation", "Diploma"],
     },
     {
       id: "payments-and-aid",
@@ -314,6 +325,7 @@
         "\u570B\u5916\u5DEE\u65C5\u8CBB",
       ],
       summaryLabels: ["\u7E73\u8CBB", "\u9000\u8CBB", "\u6240\u5F97", "\u50B3\u7968"],
+      summaryLabelsEnglish: ["Payments", "Refunds", "Income", "Vouchers"],
     },
     {
       id: "financial-aid",
@@ -326,6 +338,7 @@
         "\u5B78\u96DC\u8CBB\u6E1B\u514D\u4F5C\u696D",
       ],
       summaryLabels: ["\u8CB8\u6B3E", "\u5F31\u52E2\u52A9\u5B78", "\u5B78\u96DC\u8CBB\u6E1B\u514D"],
+      summaryLabelsEnglish: ["Loans", "Financial aid", "Tuition relief"],
     },
     {
       id: "housing-and-life",
@@ -339,6 +352,7 @@
         "\u8077\u6DAF\u8AEE\u8A62\u8207\u8A55\u6E2C",
       ],
       summaryLabels: ["\u5916\u5BBF", "\u5BBF\u820D", "\u5065\u5EB7", "\u8077\u6DAF"],
+      summaryLabelsEnglish: ["Off-campus housing", "Dormitories", "Health", "Careers"],
     },
     {
       id: "forms",
@@ -353,6 +367,7 @@
         "\u6821\u5916\u5BE6\u7FD2\u767B\u9304\u5E73\u53F0",
       ],
       summaryLabels: ["\u8ACB\u5047", "\u8868\u55AE", "\u5DEE\u52E4", "\u51FA\u570B"],
+      summaryLabelsEnglish: ["Leave", "Forms", "Attendance", "Overseas travel"],
     },
     {
       id: "campus-systems",
@@ -368,6 +383,7 @@
         "\u6821\u5712\u7DB2\u8DEF\u8207\u6388\u6B0A\u8EDF\u9AD4\u670D\u52D9\u54C1\u8CEA\u554F\u5377\u8ABF\u67E5",
       ],
       summaryLabels: ["\u5B78\u7FD2", "\u8A08\u901A", "\u7814\u767C", "\u6821\u5167"],
+      summaryLabelsEnglish: ["Learning", "Computing", "Research", "Campus"],
     },
     {
       id: "announcements-and-voting",
@@ -382,6 +398,7 @@
         "\u6821\u5712\u901A\u5831\u7DB2",
       ],
       summaryLabels: ["\u6703\u8B70", "\u516C\u544A", "\u6295\u7968", "\u901A\u5831"],
+      summaryLabelsEnglish: ["Meetings", "Notices", "Voting", "Reports"],
     },
   ] as const;
 

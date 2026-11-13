@@ -19,7 +19,7 @@
   --ccxp-lite-sidebar-search-surface: rgba(255, 255, 255, 0.9);
   --ccxp-lite-sidebar-search-gradient-start: rgba(255, 255, 255, 0.98);
   --ccxp-lite-sidebar-search-border: rgba(31, 41, 51, 0.1);
-  --ccxp-lite-primary-focus-border: rgba(159, 95, 165, 0.28);
+  --ccxp-lite-primary-focus-border: #8e4e94;
   --ccxp-lite-primary-focus-ring: rgba(159, 95, 165, 0.08);
   --ccxp-lite-primary-hover-surface: rgba(159, 95, 165, 0.06);
   --ccxp-lite-primary-hover-solid: #793d80;

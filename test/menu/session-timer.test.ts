@@ -104,11 +104,15 @@ describe("legacy session countdown", () => {
     expect(ui.warning().textContent).toContain(
       "5\u5206\u9418\u5F8C\u5C07\u56E0\u9592\u7F6E\u767B\u51FA",
     );
+    expect(ui.warning().parentElement?.className).toBe("ccxp-lite-profile-overlays");
+    const oldWarning = ui.warning();
     requireElement(
       ui.document.querySelector<HTMLButtonElement>(".ccxp-lite-session-warning-dismiss"),
     ).click();
     expect(ui.warning().hidden).toBe(true);
     ui.mount();
+    expect(oldWarning.isConnected).toBe(false);
+    expect(ui.document.querySelectorAll(".ccxp-lite-session-warning")).toHaveLength(1);
     expect(ui.warning().hidden).toBe(true);
     ui.clock(1800);
     ui.tick();

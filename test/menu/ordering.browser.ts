@@ -100,7 +100,7 @@ test("packaged sidebar supports native dragging and persists order across a fram
     ).toEqual(reordered);
     const settings = reloadedFrame.locator(".ccxp-lite-profile-trigger");
     const restore = reloadedFrame.getByRole("button", {
-      name: "\u9084\u539F\u9762\u677F\u6392\u5E8F",
+      name: "\u9084\u539F\u539F\u59CB\u9806\u5E8F",
       exact: true,
     });
     await settings.click();
@@ -110,16 +110,21 @@ test("packaged sidebar supports native dragging and persists order across a fram
       throw new Error("Missing main fixture frame");
     }
     const dialog = page.getByRole("dialog", {
-      name: "\u9084\u539F\u9078\u55AE\u7684\u539F\u59CB\u9806\u5E8F\uFF1F",
+      name: "\u9084\u539F\u539F\u59CB\u9806\u5E8F\uFF1F",
     });
     await dialog.waitFor();
     const cancel = dialog.getByRole("button", { name: "\u53D6\u6D88", exact: true });
+    await page.setViewportSize({ width: 390, height: 960 });
+    await expect
+      .poll(async () => await cancel.evaluate((button) => button.getBoundingClientRect().height))
+      .toBeGreaterThanOrEqual(44);
+    await page.setViewportSize({ width: 1280, height: 960 });
     await expect
       .poll(async () => await cancel.evaluate((button) => button === document.activeElement))
       .toBe(true);
     await cancel.press("Shift+Tab");
     const confirm = dialog.getByRole("button", {
-      name: "\u9084\u539F\u9762\u677F\u6392\u5E8F",
+      name: "\u9084\u539F\u539F\u59CB\u9806\u5E8F",
       exact: true,
     });
     expect(await confirm.evaluate((button) => button === document.activeElement)).toBe(true);
@@ -199,7 +204,7 @@ async function assertRestoreDialogLayouts(page: Page, nav: Frame, locale: "en" |
     throw new Error("Missing main fixture frame");
   }
   const settings = nav.locator(".ccxp-lite-profile-trigger");
-  const label = locale === "en" ? "Restore original order" : "\u9084\u539F\u9762\u677F\u6392\u5E8F";
+  const label = locale === "en" ? "Restore original order" : "\u9084\u539F\u539F\u59CB\u9806\u5E8F";
   /* eslint-disable no-await-in-loop -- Each menu mode and viewport must settle before opening its dialog. */
   for (const mode of ["classic", "layered"] as const) {
     await settings.click();

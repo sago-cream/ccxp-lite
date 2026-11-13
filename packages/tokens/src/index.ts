@@ -16,7 +16,7 @@ export const tokens = {
   colorSidebarSearchSurface: "rgba(255, 255, 255, 0.9)",
   colorSidebarSearchGradientStart: "rgba(255, 255, 255, 0.98)",
   colorSidebarSearchBorder: "rgba(31, 41, 51, 0.1)",
-  colorPrimaryFocusBorder: "rgba(159, 95, 165, 0.28)",
+  colorPrimaryFocusBorder: "#8E4E94",
   colorPrimaryFocusRing: "rgba(159, 95, 165, 0.08)",
   colorPrimaryHoverSurface: "rgba(159, 95, 165, 0.06)",
   colorPrimaryHoverSolid: "#793D80",

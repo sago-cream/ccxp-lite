@@ -239,6 +239,7 @@ declare global {
       ) => HTMLSpanElement;
     };
     uiDisplay?: {
+      createProfileAvatar: (targetDocument: Document) => HTMLElement;
       createPageHeader: (targetDocument: Document) => HTMLElement;
       createSidebarSearch: (
         targetDocument: Document,

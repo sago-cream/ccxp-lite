@@ -22,6 +22,9 @@ async function setupMenu() {
     favorites.initializeFavorites(resolve);
   });
   const strings = requireValue(window.CCXP_LITE.sharedConstants).LOCALIZED_STRINGS.en;
+  document
+    .querySelector(".ccxp-lite-sidebar-search")
+    ?.replaceWith(requireValue(window.CCXP_LITE.uiDisplay).createSidebarSearch(document, strings));
   const model = createSidebarModel();
   for (const category of model.categories) {
     for (const block of category.blocks) {
@@ -144,12 +147,23 @@ describe("extracted UI interactions", () => {
     const input = requireElement(
       document.querySelector<HTMLInputElement>(".ccxp-lite-sidebar-search-input"),
     );
+    const clear = requireElement(
+      document.querySelector<HTMLButtonElement>(".ccxp-lite-sidebar-search-clear"),
+    );
+    expect(clear.hidden).toBe(true);
+    input.blur();
+    requireElement(input.parentElement).click();
+    expect(document.activeElement).toBe(input);
     input.value = "nothing-matches";
     input.dispatchEvent(new TestEvent("input", { bubbles: true }));
     expect(state.searchQuery).toBe("nothing-matches");
     expect(document.querySelector(".ccxp-lite-empty")).not.toBeNull();
-    input.value = "";
-    input.dispatchEvent(new TestEvent("input", { bubbles: true }));
+    expect(clear.hidden).toBe(false);
+    clear.click();
+    expect(input.value).toBe("");
+    expect(state.searchQuery).toBe("");
+    expect(clear.hidden).toBe(true);
+    expect(document.activeElement).toBe(input);
     expect(document.querySelector('button[title="Courses & Grades"]')).not.toBeNull();
     expect(input.dataset.ccxpLiteSearchBound).toBe("true");
   });

@@ -24,6 +24,7 @@ export function createRemovePinnedDialog(
   const actions = dom.element(
     "div",
     {
+      className: "ccxp-lite-dialog-actions",
       styleProperties: {
         display: "flex",
         "flex-wrap": "wrap",

@@ -59,6 +59,7 @@
   max-width: none;
   margin: 0 0 var(--ccxp-lite-spacing-inset-md);
   padding: var(--ccxp-lite-sidebar-row-padding-y) var(--ccxp-lite-sidebar-row-padding-x);
+  padding-right: 0;
   border: 0;
   border-radius: 0;
   background: transparent;

@@ -21,6 +21,7 @@ import {
   captureNarrowHome,
   captureNarrowDefaultMenu,
 } from "./home-fixtures.js";
+import { collectNavigationRegions, assertP2Navigation } from "./p2-navigation-fixtures.js";
 import { assertMenuLayout } from "./menu-layout-fixtures.js";
 import { captureLoginLocales } from "./login-locale-fixtures.js";
 import { assertSidebarCollapse } from "./sidebar-collapse-fixtures.js";
@@ -53,6 +54,9 @@ interface CaptureResult {
     Record<string, ReadonlyArray<{ x: number; y: number; width: number; height: number }>>
   >;
   readonly iconRegions: Readonly<
+    Record<string, ReadonlyArray<{ x: number; y: number; width: number; height: number }>>
+  >;
+  readonly navigationRegions: Readonly<
     Record<string, ReadonlyArray<{ x: number; y: number; width: number; height: number }>>
   >;
   readonly captchaRegion?: { x: number; y: number; width: number; height: number };
@@ -346,10 +350,27 @@ async function capturePackagedPage(page: Page, outputPath: string, topOfPage = f
     // Let Chromium finish its post-resize image rasterization before comparing pixels.
     await page.waitForTimeout(500);
   }
+  let clip: { x: number; y: number; width: number; height: number } | undefined;
+  if (["work-log-multiday.png", "work-log-submit.png"].includes(path.basename(outputPath))) {
+    const frame = page.frames().find((item) => new URL(item.url()).pathname === workLogPath);
+    const form = await frame?.locator("#insForm").boundingBox();
+    const size = page.viewportSize();
+    assert.ok(
+      form && size && form.height > 500,
+      "Capture the complete native form and its surrounding header",
+    );
+    clip = {
+      x: 0,
+      y: 0,
+      width: size.width,
+      height: Math.min(size.height, Math.ceil(form.y + form.height + 24)),
+    };
+  }
   await page.screenshot({
     path: outputPath,
     animations: "disabled",
     caret: "hide",
+    ...(clip ? { clip } : {}),
   });
 }
 
@@ -408,6 +429,7 @@ async function captureRevision(
   expectMenuLayoutChange: boolean,
   uiReviewOnly: boolean,
   reviewLocale: string,
+  expectP2NavigationChange: boolean,
 ): Promise<CaptureResult> {
   const profileDir = path.join(tmpdir(), `ccxp-lite-parity-${label}-${process.pid}-${Date.now()}`);
   const revisionOutputDir = path.join(outputDir, label);
@@ -437,8 +459,15 @@ async function captureRevision(
     string,
     ReadonlyArray<{ x: number; y: number; width: number; height: number }>
   > = {};
+  const navigationRegions: Record<
+    string,
+    ReadonlyArray<{ x: number; y: number; width: number; height: number }>
+  > = {};
   const capturePage = async (target: Page, file: string, topOfPage = false) => {
     await capturePackagedPage(target, file, topOfPage);
+    if (expectP2NavigationChange) {
+      navigationRegions[path.basename(file, ".png")] = await collectNavigationRegions(target);
+    }
     if (expectModePickerChange) {
       const nav = target.frames().find((frame) => frame.url().includes("IN_INQ_STU.php"));
       const bounds = await nav?.locator(".ccxp-lite-profile-mode").boundingBox();
@@ -477,7 +506,10 @@ async function captureRevision(
     async function captureWorkLogPages() {
       process.stdout.write(`[${label}] work-log (standalone and main frame)\n`);
       await page.goto(`${ccxpOrigin}${workLogPath}`, { waitUntil: "domcontentloaded" });
-      styles["work-log-standalone-ready"] = await assertWorkLogReady(page);
+      styles["work-log-standalone-ready"] = await assertWorkLogReady(
+        page,
+        label === "base" ? 0 : undefined,
+      );
       const standaloneWorkLog = path.join(revisionOutputDir, "work-log-standalone.png");
       await capturePage(page, standaloneWorkLog);
       screenshots["work-log-standalone"] = standaloneWorkLog;
@@ -589,7 +621,10 @@ async function captureRevision(
       if (!mainFrame) {
         throw new Error("Missing work-log main frame");
       }
-      styles["work-log-framed-ready"] = await assertWorkLogReady(mainFrame);
+      styles["work-log-framed-ready"] = await assertWorkLogReady(
+        mainFrame,
+        label === "base" ? 0 : undefined,
+      );
       await page.waitForFunction(
         () => document.querySelector("frameset[cols]")?.getAttribute("cols") === "324,*",
       );
@@ -665,6 +700,9 @@ async function captureRevision(
       await capturePage(page, classicScreenshot);
       screenshots["sidebar-classic"] = classicScreenshot;
       styles["sidebar-classic"] = await collectStyles(navFrame, sidebarProbes);
+      if (expectP2NavigationChange) {
+        await assertP2Navigation(page, navFrame, revisionOutputDir, capturePage, label === "head");
+      }
       if (uiReviewOnly) {
         return;
       }
@@ -754,7 +792,7 @@ async function captureRevision(
       }
       markRecordingStep("homepage-end");
       if (hasHome) {
-        await assertMenuProfile(page, navFrame);
+        await assertMenuProfile(page, navFrame, expectP2NavigationChange && label === "head");
       }
       if (expectSupportLinksChange) {
         await navFrame.locator(".ccxp-lite-profile-trigger").click();
@@ -1044,7 +1082,13 @@ async function captureRevision(
               return [name, { width, height }];
             }),
           ),
+          captureScopes: {
+            "work-log-multiday":
+              "Complete native #insForm plus header and 24px surrounding space; section capture",
+            "work-log-submit": "Complete native #insForm and confirmation dialog; section capture",
+          },
           timezone: "Asia/Taipei",
+          navigationRegions,
           modePickerRegions,
           iconRegions,
           extensionDigest: directoryDigest(extensionDir),
@@ -1069,7 +1113,15 @@ async function captureRevision(
     if (missingAssets.size > 0) {
       throw new Error(`Missing host visual assets: ${[...missingAssets].join(", ")}`);
     }
-    return { screenshots, styles, searchFormBottom, captchaRegion, modePickerRegions, iconRegions };
+    return {
+      screenshots,
+      styles,
+      searchFormBottom,
+      captchaRegion,
+      modePickerRegions,
+      iconRegions,
+      navigationRegions,
+    };
   } finally {
     process.stdout.write(`[${label}] closing browser\n`);
     await Promise.all(
@@ -1170,6 +1222,7 @@ function compareCaptures(
   expectModePickerChange: boolean,
   expectLoginIconsChange: boolean,
   expectMenuLayoutChange: boolean,
+  expectP2NavigationChange: boolean,
 ): readonly string[] {
   const failures: string[] = [];
   if (base.searchFormBottom !== head.searchFormBottom) {
@@ -1257,7 +1310,12 @@ function compareCaptures(
       expectSidebarResizeChange && (name === "sidebar-classic" || framedViews.has(name)),
       expectCaptchaRefresh && name === "login" && base.captchaRegion && head.captchaRegion
         ? [base.captchaRegion, head.captchaRegion]
-        : [...modeRegions, ...iconRegions],
+        : [
+            ...modeRegions,
+            ...iconRegions,
+            ...(base.navigationRegions[name] ?? []),
+            ...(head.navigationRegions[name] ?? []),
+          ],
     );
     if (difference.ratio > maximumPixelDifferenceRatio) {
       failures.push(
@@ -1267,6 +1325,22 @@ function compareCaptures(
   }
   const normalizedStyles = (styles: CaptureResult["styles"]) =>
     JSON.stringify(styles, (key, value: unknown) => {
+      if (
+        expectP2NavigationChange &&
+        (key === "sidebar-classic" || key === "sidebar-layered-search")
+      ) {
+        const probes = structuredClone(value) as Record<
+          string,
+          { properties: Record<string, string> }
+        >;
+        if (Object.hasOwn(probes, "search")) {
+          delete probes.search.properties.width;
+        }
+        if (Object.hasOwn(probes, "first-row")) {
+          delete probes["first-row"].properties.height;
+        }
+        return probes;
+      }
       if (
         expectMenuLayoutChange &&
         (key === "sidebar-layered-search" || key === "embedded-destination")
@@ -1326,6 +1400,7 @@ async function main() {
       "expect-mode-picker-change": { type: "boolean", default: false },
       "expect-login-icons-change": { type: "boolean", default: false },
       "expect-menu-layout-change": { type: "boolean", default: false },
+      "expect-p2-navigation-change": { type: "boolean", default: false },
     },
     strict: true,
   });
@@ -1354,6 +1429,7 @@ async function main() {
     values["expect-menu-layout-change"],
     values["ui-review-only"],
     values["review-locale"],
+    values["expect-p2-navigation-change"],
   );
   const head = await captureRevision(
     "head",
@@ -1371,6 +1447,7 @@ async function main() {
     values["expect-menu-layout-change"],
     values["ui-review-only"],
     values["review-locale"],
+    values["expect-p2-navigation-change"],
   );
   if (values["expect-support-links-change"]) {
     // Captures above validate the profile links; the browser test covers keyboard/dismissal.
@@ -1389,6 +1466,7 @@ async function main() {
     values["expect-mode-picker-change"],
     values["expect-login-icons-change"],
     values["expect-menu-layout-change"],
+    values["expect-p2-navigation-change"],
   );
   writeFileSync(
     path.join(outputDir, "report.json"),

@@ -1,5 +1,11 @@
 import { createRenderer } from "./renderer.js";
-import { createSearchIcon, createExternalLinkIcon, createBreadcrumbChevronIcon } from "./icons.js";
+import { createButton } from "./buttons.js";
+import {
+  createSearchIcon,
+  createExternalLinkIcon,
+  createBreadcrumbChevronIcon,
+  createCategoryIcon,
+} from "./icons.js";
 
 export function createSection(targetDocument: Document, className: string): HTMLElement {
   return createRenderer(targetDocument).element("section", {
@@ -81,23 +87,61 @@ export function createSidebarSearch(
   strings: Readonly<Record<string, string>>,
 ): HTMLElement {
   const dom = createRenderer(targetDocument);
-  return dom.element("label", { className: "ccxp-lite-sidebar-search" }, [
+  const input = dom.element("input", {
+    className: "ccxp-lite-sidebar-search-input",
+    attributes: {
+      type: "search",
+      autocomplete: "off",
+      spellcheck: "false",
+      placeholder: strings.sidebarSearchPlaceholder,
+      "aria-label": strings.sidebarSearchPlaceholder,
+    },
+  });
+  const clear = createButton(targetDocument, {
+    className: "ccxp-lite-sidebar-search-clear",
+    ariaLabel: Object.hasOwn(strings, "sidebarSearchClear")
+      ? strings.sidebarSearchClear
+      : "Clear search",
+    icon: createCategoryIcon(targetDocument, "x"),
+    onClick: () => {
+      input.value = "";
+      const InputEvent = targetDocument.defaultView?.Event ?? Event;
+      input.dispatchEvent(new InputEvent("input", { bubbles: true }));
+      input.focus();
+      syncClear();
+    },
+  });
+  const syncClear = () => {
+    clear.hidden = input.value === "";
+  };
+  input.addEventListener("input", syncClear);
+  syncClear();
+  const search = dom.element("div", { className: "ccxp-lite-sidebar-search" }, [
     createSearchIcon(targetDocument),
-    dom.element("input", {
-      className: "ccxp-lite-sidebar-search-input",
-      attributes: {
-        type: "search",
-        autocomplete: "off",
-        spellcheck: "false",
-        placeholder: strings.sidebarSearchPlaceholder,
-        "aria-label": strings.sidebarSearchPlaceholder,
-      },
-    }),
+    input,
+    clear,
   ]);
+  search.addEventListener("click", (event) => {
+    if (!event.composedPath().includes(clear)) {
+      input.focus();
+    }
+  });
+  return search;
 }
 
 export function createPageHeader(targetDocument: Document): HTMLElement {
   const header = targetDocument.createElement("header");
   header.className = "ccxp-lite-page-header";
   return header;
+}
+
+export function createProfileAvatar(targetDocument: Document): HTMLElement {
+  return createRenderer(targetDocument).element(
+    "span",
+    {
+      className: "ccxp-lite-profile-avatar",
+      attributes: { "aria-hidden": "true" },
+    },
+    [createCategoryIcon(targetDocument, "circle-user-round")],
+  );
 }

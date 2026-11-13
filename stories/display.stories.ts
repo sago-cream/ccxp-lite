@@ -42,8 +42,23 @@ export const Search: Story = {
     surface(
       createSidebarSearch(document, {
         sidebarSearchPlaceholder: localized(context.globals.locale, "搜尋選單", "Search menu"),
+        sidebarSearchClear: localized(context.globals.locale, "清除搜尋", "Clear search"),
       }),
     ),
+};
+export const SearchWithQuery: Story = {
+  render: (_args, context) => {
+    const search = createSidebarSearch(document, {
+      sidebarSearchPlaceholder: localized(context.globals.locale, "搜尋選單", "Search menu"),
+      sidebarSearchClear: localized(context.globals.locale, "清除搜尋", "Clear search"),
+    });
+    const input = search.querySelector("input");
+    if (input) {
+      input.value = localized(context.globals.locale, "課程", "Courses");
+      input.dispatchEvent(new Event("input"));
+    }
+    return surface(search);
+  },
 };
 export const Empty: Story = {
   render: (_args, context) =>
@@ -58,6 +73,24 @@ export const Empty: Story = {
         ),
       ),
     ),
+};
+export const SidebarNoResults: Story = {
+  render: (_args, context) => {
+    const dom = createRenderer(document);
+    return surface(
+      dom.element("section", { className: "ccxp-lite-sidebar-shell" }, [
+        createEmptyState(
+          document,
+          localized(context.globals.locale, "找不到符合的功能", "No matching functions"),
+          localized(
+            context.globals.locale,
+            "試試其他關鍵字，或返回上一層瀏覽分類。",
+            "Try another keyword or go back to browse categories.",
+          ),
+        ),
+      ]),
+    );
+  },
 };
 export const Breadcrumb: Story = {
   render: (_args, context) =>
