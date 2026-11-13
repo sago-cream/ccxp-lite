@@ -21,7 +21,7 @@
       "file": "login-turnstile.html",
       "path": "/ccxp/INQUIRE/",
       "owners": ["src/login/"],
-      "state": "Anonymous Chinese landing response captured 2026-11-13, decoded from Big5 to UTF-8. Original host structure, compact Turnstile container, API script and success callback retained; other scripts removed and fnstr replaced with fixture. Packaged behavioral tests substitute an explicitly synthetic offline iframe/API to assert browsing-context preservation and token payload continuity; this is not visual evidence or proof of live Cloudflare verification. Host assets reuse existing captures; no new visual captures published."
+      "state": "Anonymous Chinese landing response captured 2026-11-13, decoded from Big5 to UTF-8. Original host structure, compact Turnstile container, API script and success callback retained; other scripts removed and fnstr replaced with fixture. Packaged behavioral tests substitute an explicitly synthetic offline iframe/API to assert browsing-context preservation and token payload continuity; this is not visual evidence or proof of live Cloudflare verification. Behavior tests cover flexible/light configuration before implicit initialization, preserved iframe state, DOM order above Login and aligned form widths at 1280/375px. Host assets are not served by the behavior test; no new visual captures published. User confirmed successful beta sign-in on 2026-11-13."
     },
     {
       "file": "frameset.html",
@@ -141,7 +141,7 @@
     },
     {
       "owners": ["src/login/"],
-      "reason": "Live Turnstile success, expiry/error/retry and English host variants are not certified by the offline shim. Installed Chrome Web Store version cannot be replaced through the browser tool; beta live verification requires manual unpacked loading."
+      "reason": "User confirmed successful beta sign-in on 2026-11-13. Live expiry/error/retry and English host variants remain unverified; offline widget tests do not certify these states."
     }
   ],
   "liveAudit": "2026-09-12: navigated registration with ccxpLite enabled, verified header, reminder contents and English switch; navigated public course directory, curriculum and keyword forms. Public query HTML retrieved from those same routes without session data.",

@@ -22,6 +22,42 @@
   const { isSupportedInquirePath, isLoginPage } = loginLocale;
   const { restoreValidationGuards } = loginValidation;
   const { enableCaptchaAutofill, getOrCreateCaptchaState } = loginCaptcha;
+  // Configure implicit rendering before the host API initializes its closed-shadow widget.
+  if (
+    isSupportedInquirePath(document) &&
+    typeof document.documentElement.moveBefore === "function"
+  ) {
+    const prepareTurnstile = () => {
+      const widget = document.querySelector<HTMLElement>(".cf-turnstile[data-sitekey]");
+      if (!widget) {
+        return false;
+      }
+      if (widget.childElementCount === 0) {
+        widget.dataset.size = "flexible";
+        widget.dataset.theme = "light";
+      }
+      return true;
+    };
+    if (!prepareTurnstile() && document.readyState === "loading") {
+      const observer = new MutationObserver(() => {
+        if (prepareTurnstile()) {
+          observer.disconnect();
+        }
+      });
+      observer.observe(document.documentElement, { childList: true, subtree: true });
+      document.addEventListener(
+        "DOMContentLoaded",
+        () => {
+          observer.disconnect();
+        },
+        { once: true },
+      );
+      shared.addCleanupTask(() => {
+        observer.disconnect();
+      });
+    }
+  }
+
   function preloadCaptcha(targetDocument: Document) {
     if (!isLoginPage(targetDocument)) {
       return;

@@ -438,6 +438,12 @@ html[data-ccxp-lite-scope="landing"] .ccxp-lite-action-control:focus-visible * {
   text-decoration: none !important;
 }
 
+.ccxp-lite-landing-login .ccxp-lite-login-turnstile {
+  width: min(100%, var(--ccxp-lite-size-form-control-width));
+  max-width: 100%;
+  margin-top: var(--ccxp-lite-spacing-inset-sm);
+}
+
 .ccxp-lite-landing-login .ccxp-lite-login-action-group {
   width: min(100%, var(--ccxp-lite-size-form-control-width));
   max-width: 100%;
@@ -593,6 +599,7 @@ html[data-ccxp-lite-scope="landing"] .ccxp-lite-action-control:focus-visible * {
   .ccxp-lite-landing-login form,
   .ccxp-lite-landing-login .inputtext,
   .ccxp-lite-password-field,
+  .ccxp-lite-landing-login .ccxp-lite-login-turnstile,
   .ccxp-lite-landing-login .ccxp-lite-login-action-group {
     width: 100% !important;
   }

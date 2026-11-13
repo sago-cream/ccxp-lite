@@ -127,6 +127,12 @@
     forceCaptchaLabelDisplay(loginSection);
     replaceLoginFormImageButtons(targetDocument, loginSection);
     wrapPrimaryLoginButtons(targetDocument, loginSection);
+    const turnstile = loginForm?.querySelector<HTMLElement>(".cf-turnstile");
+    const actionGroup = loginForm?.querySelector(".ccxp-lite-login-action-group");
+    if (loginForm && turnstile && actionGroup?.parentNode === loginForm) {
+      turnstile.classList.add("ccxp-lite-login-turnstile");
+      loginForm.moveBefore(turnstile, actionGroup);
+    }
     removeLoginSpacingArtifacts(targetDocument, loginSection);
     alignCaptchaMediaRow(targetDocument, loginSection);
     enhancePasswordVisibilityToggle(targetDocument, loginSection);

@@ -22,5 +22,6 @@
     "No visual screenshots from the simulated widget.",
     "Existing legacy CAPTCHA parity remains separate coverage; live Turnstile success/expiry/error/retry and English host variants require further live inspection.",
     "Host images/styles are not served by the behavioral test; its network router aborts non-widget host assets."
-  ]
+  ],
+  "liveVerification": "2026-11-13: unpacked beta inspected in Chrome with real Turnstile visible; user completed verification and confirmed successful sign-in. No private live screenshots are published."
 }
