@@ -272,6 +272,14 @@ export async function captureNarrowHome(
     const main = page.frames().find((frame) => frame.name() === "main");
     assert.ok(nav && main);
     await main.locator(".ccxp-home-wordmark").waitFor();
+    if (!assertHead && (await main.locator(".ccxp-home-card").count()) === 0) {
+      // The immutable baseline can cache the nav tree before parsing finishes. Preserve that
+      // first-load evidence, then reload the native frames as a user would before matching data.
+      await capture(page, "baseline-home-first-load-incomplete");
+      await nav.goto(nav.url(), { waitUntil: "load" });
+      await main.goto(main.url(), { waitUntil: "load" });
+      await main.locator(".ccxp-home-wordmark").waitFor();
+    }
     await main.locator(".ccxp-home-card").first().waitFor();
     await page.mouse.move(350, 100);
     await page.waitForFunction(
