@@ -487,12 +487,6 @@
   font-variant-numeric: var(--ccxp-lite-font-variant-numeric-tabular);
 }
 .ccxp-lite-session-warning {
-  position: fixed;
-  z-index: 2147483646;
-  bottom: var(--ccxp-lite-spacing-md);
-  right: var(--ccxp-lite-spacing-md);
-  width: min(420px, calc(100vw - 32px));
-  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -517,17 +511,6 @@
   color: var(--ccxp-lite-text-muted);
   cursor: pointer;
 }
-.ccxp-lite-session-warning[hidden] {
-  display: none;
-}
-.ccxp-lite-session-warning > [role="status"] {
-  flex: 1 1 auto;
-  min-width: 0;
-  white-space: normal;
-}
-.ccxp-lite-sidebar-search > svg {
-  display: block;
-}
 .ccxp-lite-session-warning > [role="status"] {
   min-width: 0;
   white-space: normal;
@@ -545,6 +528,9 @@
 .ccxp-lite-session-timer[hidden],
 .ccxp-lite-session-warning[hidden] {
   display: none;
+}
+.ccxp-lite-sidebar-search > svg {
+  display: block;
 }
 .ccxp-lite-profile-trigger .ccxp-lite-profile-avatar {
   font:

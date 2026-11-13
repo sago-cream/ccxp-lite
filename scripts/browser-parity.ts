@@ -749,13 +749,7 @@ async function captureRevision(
           capturePage,
           label === "head",
         );
-        await assertSessionTimer(
-          page,
-          navFrame,
-          revisionOutputDir,
-          capturePage,
-          expectP2NavigationChange && label === "head",
-        );
+        await assertSessionTimer(page, navFrame, revisionOutputDir, capturePage);
       }
 
       process.stdout.write(`[${label}] sidebar layered search\n`);
