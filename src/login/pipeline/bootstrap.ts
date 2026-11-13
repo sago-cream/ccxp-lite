@@ -59,6 +59,16 @@
       return;
     }
 
+    // Older browsers cannot reparent an initialized widget without unloading its iframe. Leave
+    // their native login surface intact so verification can still finish.
+    if (
+      identifiedSurface.loginForm?.querySelector(".cf-turnstile") &&
+      typeof targetBody.moveBefore !== "function"
+    ) {
+      onReady();
+      return;
+    }
+
     const rewriteResult = rewriteLib.rewriteLoginSurface(targetDocument, identifiedSurface);
     styleLib.applyLoginTheme(targetDocument, rewriteResult);
     enableCaptchaAutofill(
