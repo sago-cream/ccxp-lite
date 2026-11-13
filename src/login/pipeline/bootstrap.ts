@@ -33,7 +33,11 @@
         return false;
       }
       if (widget.childElementCount === 0) {
-        widget.dataset.size = "flexible";
+        // The narrow login layout reserves 16px per side. Flexible needs at least 300px, so use the
+        // native 150px compact widget below a 332px viewport.
+        widget.dataset.size = globalScope.matchMedia("(max-width: 331px)").matches
+          ? "compact"
+          : "flexible";
         widget.dataset.theme = "light";
       }
       return true;

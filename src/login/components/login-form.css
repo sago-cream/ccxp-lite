@@ -444,6 +444,11 @@ html[data-ccxp-lite-scope="landing"] .ccxp-lite-action-control:focus-visible * {
   margin-top: var(--ccxp-lite-spacing-inset-sm);
 }
 
+.ccxp-lite-landing-login .ccxp-lite-login-turnstile[data-size="compact"] {
+  display: flex;
+  justify-content: center;
+}
+
 .ccxp-lite-landing-login .ccxp-lite-login-action-group {
   width: min(100%, var(--ccxp-lite-size-form-control-width));
   max-width: 100%;

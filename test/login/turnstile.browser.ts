@@ -4,14 +4,18 @@ import path from "node:path";
 import { chromium } from "playwright";
 import { expect, test } from "vitest";
 
-// Behavioral shim only: no screenshots and no live CAPTCHA solving or authentication.
+// Behavioral shim models documented widget dimensions; no screenshots or live CAPTCHA solving.
 const apiShim = `
 function initialize() {
   const host = document.querySelector('.cf-turnstile');
   const frame = document.createElement('iframe');
   frame.title = 'Offline verification fixture';
   frame.src = 'https://challenges.cloudflare.com/fixture-widget';
-  host.attachShadow({mode: 'closed'}).append(frame);
+  const compact = host.dataset.size === 'compact';
+  frame.style.cssText = compact
+    ? 'width:150px;min-width:150px;height:140px;border:0'
+    : 'width:100%;min-width:300px;height:65px;border:0';
+  host.attachShadow({mode: 'open'}).append(frame);
   const response = document.createElement('input');
   response.type = 'hidden';
   response.name = 'cf-turnstile-response';
@@ -25,7 +29,7 @@ function initialize() {
 `;
 
 for (const timing of ["initialized", "late-api"] as const) {
-  for (const width of [1280, 375]) {
+  for (const width of [1280, 375, 332, 331, 320]) {
     test(`packaged login preserves Turnstile with ${timing} widget at ${width}px`, async () => {
       const extension = path.resolve(process.env.CCXP_TEST_EXTENSION ?? "dist/crx/unpacked");
       const profile = mkdtempSync(path.join(tmpdir(), "ccxp-turnstile-"));
@@ -96,7 +100,7 @@ for (const timing of ["initialized", "late-api"] as const) {
         const host = page.locator(".cf-turnstile");
         await expect.poll(async () => await host.getAttribute("data-fixture-loads")).toBe("1");
         expect(frameRequests).toBe(1);
-        expect(await host.getAttribute("data-size")).toBe("flexible");
+        expect(await host.getAttribute("data-size")).toBe(width < 332 ? "compact" : "flexible");
         expect(await host.getAttribute("data-theme")).toBe("light");
         expect(
           await host.evaluate((el) =>
@@ -110,7 +114,21 @@ for (const timing of ["initialized", "late-api"] as const) {
         expect(buttonBox).not.toBeNull();
         expect(widgetBox?.x).toBe(buttonBox?.x);
         expect(widgetBox?.width).toBe(buttonBox?.width);
-        expect((widgetBox?.y ?? 0) + (widgetBox?.height ?? 0)).toBeLessThan(buttonBox?.y ?? 0);
+        const frameBox = await host.locator("iframe").boundingBox();
+        expect(frameBox).not.toBeNull();
+        if (!frameBox || !widgetBox) {
+          throw new Error("Missing verification frame or container geometry");
+        }
+        if (width === 320) {
+          expect(widgetBox.width).toBe(288);
+        }
+        expect(frameBox.x).toBeGreaterThanOrEqual(widgetBox.x);
+        expect(frameBox.x + frameBox.width).toBeLessThanOrEqual(widgetBox.x + widgetBox.width + 1);
+        if (width < 332) {
+          expect(frameBox.width).toBe(150);
+          expect(frameBox.x - widgetBox.x).toBeCloseTo((widgetBox.width - 150) / 2);
+        }
+        expect(widgetBox.y + widgetBox.height).toBeLessThan(buttonBox?.y ?? 0);
         expect(page.frames().some((frame) => frame.url().endsWith("/fixture-widget"))).toBe(true);
         expect(await page.locator("head script[src*='turnstile/v0/api.js']").count()).toBe(1);
         expect(await page.locator("input[name='passwd2']").count()).toBe(0);
