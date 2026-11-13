@@ -43,7 +43,7 @@
       if (langValue.includes("en")) {
         return "en";
       }
-      if (/(zh|cht|chs|tw|cn)/.test(langValue)) {
+      if (/(chinese|zh|cht|chs|tw|cn)/.test(langValue)) {
         return "zh";
       }
     }
@@ -92,6 +92,7 @@
     ]
       .filter(Boolean)
       .join(" ")
+      .replaceAll(/(?<=[\u3400-\u9FFF])\s+(?=[\u3400-\u9FFF])/gu, "")
       .toLowerCase();
     const localePairs = [
       {

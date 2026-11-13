@@ -1,0 +1,107 @@
+{
+  "capturedAt": "2026-11-13",
+  "sourceUrls": [
+    "https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/index.php?lang=chinese",
+    "https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/index.php?lang=english"
+  ],
+  "captureMethod": "Anonymous rendered legacy DOM captured in the T3 preview browser without ccxpLite. Both source pages omit html lang. Chinese scripts retain their original text as inert application/x-ccxp-fixture blocks, including togglePassword; English scripts are removed. Original host landmarks, classes, styles and top-level embedding retained.",
+  "sanitization": [
+    "Account, password and verification fields cleared; hidden fnstr replaced with fixture.",
+    "All iframes and Turnstile child nodes removed. API loader removed; no fake widget is inserted.",
+    "Comments removed. Content-Type metadata converted to UTF-8.",
+    "Current anonymous announcements retained; no private account or session data."
+  ],
+  "fixtures": [
+    {
+      "file": "login-locale-zh.html",
+      "sha256": "7a79cfd0eb1be13bc3b15798f34a73f660952086ff8a39d2b2c6c609175d6665"
+    },
+    {
+      "file": "login-locale-en.html",
+      "sha256": "2e3daecda7a1d193c8a457aa7ca8bb4e2241762ca2ddfab4a166081f8ea17002"
+    }
+  ],
+  "hostAssets": [
+    {
+      "route": "/ccxp/INQUIRE/css/style.css",
+      "file": "host-assets/turnstile-login/style.css",
+      "sha256": "455c3ea7cbaacee150468112941adab9eb1ad6baf109993b5e5eb05aa12e5baa"
+    },
+    {
+      "route": "/ccxp/INQUIRE/images/ccxp_r1_c1.png",
+      "file": "host-assets/turnstile-login/ccxp_r1_c1.png",
+      "sha256": "6bc8bf94ce123bcd29bf10f17dfea96be05b62c895fffea3620e33ff39a8a374"
+    },
+    {
+      "route": "/ccxp/INQUIRE/images/ccxp_r1_c2.png",
+      "file": "host-assets/turnstile-login/ccxp_r1_c2.png",
+      "sha256": "eb6e9c35e37d7983a015c25f25fdf592adbc8fdaa2513a73bfb08fe6bf3b14f2"
+    },
+    {
+      "route": "/ccxp/INQUIRE/images/ccxp_r1_c3.png",
+      "file": "host-assets/turnstile-login/ccxp_r1_c3.png",
+      "sha256": "24569483de4c30f5bfcdea915ac06016235275a8ee4693f19fbc2abe5c235343"
+    },
+    {
+      "route": "/ccxp/INQUIRE/images/ndPortal.png",
+      "file": "host-assets/turnstile-login/ndPortal.png",
+      "sha256": "fc7a479ae4de6061ae6959470ece4b062449198f33ca6370d5f72aa1a23f34fb"
+    },
+    {
+      "route": "/ccxp/INQUIRE/images/login_top.png",
+      "file": "host-assets/turnstile-login/login_top.png",
+      "sha256": "06706ef508c4fd6eb628cca73f8364ca5fa0ef4268bbe0acfe1de6d5d513be62"
+    },
+    {
+      "route": "/ccxp/INQUIRE/images/arrow.gif",
+      "file": "host-assets/turnstile-login/arrow.gif",
+      "sha256": "540cab28a894c70cf57666ebef103078a1f7247951eb707e651d30bfa4e1385b"
+    },
+    {
+      "route": "/ccxp/INQUIRE/images/twca_i.gif",
+      "file": "host-assets/turnstile-login/twca_i.gif",
+      "sha256": "b26b763cebc824f96d37c2ae9f7abc54f1b6955e0254947c4551029e241e6e0e"
+    },
+    {
+      "route": "/ccxp/INQUIRE/images/punch.png",
+      "file": "host-assets/turnstile-login/punch.png",
+      "sha256": "3131990ceed455d652da15c44c78c26b089b5e32748b02c100652630918e2c5f"
+    },
+    {
+      "route": "/ccxp/INQUIRE/images/logo_word.png",
+      "file": "host-assets/turnstile-login/logo_word.png",
+      "sha256": "e94e38590f5d7530042aad2211e71867c8b7b811fecbfae23c5a63bd3181851d"
+    },
+    {
+      "route": "/ccxp/INQUIRE/images/ccxp_r1_c4.png",
+      "file": "host-assets/turnstile-login/ccxp_r1_c4.png",
+      "sha256": "639a12bf32b20c0294f970cc40f844baf7e1531dad5a69b6a0171c813901c9ac"
+    },
+    {
+      "route": "/ccxp/INQUIRE/images/login_mid.png",
+      "file": "host-assets/turnstile-login/login_mid.png",
+      "sha256": "38dbbbc50afff1d206ee24b76f373b2b0a28477a5acdc29dcbb4aa7fa5073a2f"
+    },
+    {
+      "route": "/ccxp/INQUIRE/images/ccxp_r2.png",
+      "file": "host-assets/turnstile-login/ccxp_r2.png",
+      "sha256": "5f95fbd4e94a61c6e63191bb672e334bca6ac6fd988ee18f431681f20a2d654b"
+    },
+    {
+      "route": "/ccxp/INQUIRE/images/bottom_bg.png",
+      "file": "host-assets/turnstile-login/bottom_bg.png",
+      "sha256": "80f7d80ccf2b8f1cf9caa4c795bbc2e6d9a33c49741ae738b068bd8c54254f19"
+    },
+    {
+      "route": "/ccxp/INQUIRE/images/ndPortalEn.png",
+      "file": "host-assets/turnstile-login/ndPortalEn.png",
+      "sha256": "9db98964fa09359fe45c3e1294a49a6e4f41df3741258069f12b97f7fae20808"
+    }
+  ],
+  "coverage": "Packaged base/head desktop 1280x960 and mobile 375x960 captures. Head asserts localized heading, document language and password-help, account, recovery and clock-in labels. Chinese captures intentionally show the corrected copy; legacy suite retains strict screenshot/style parity. Native Chrome separately verifies both live languages with only the patched unpacked extension enabled.",
+  "limitations": [
+    "No Cloudflare API or verification widget in offline captures; these certify locale labels only.",
+    "Live verification expiry, error and retry states remain uncovered.",
+    "English source retains the original Chinese Punch image alt; the packaged adapter localizes its text label. Cloudflare chooses its language from the browser independently."
+  ]
+}
