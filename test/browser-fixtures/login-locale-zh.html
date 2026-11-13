@@ -1,0 +1,695 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+      <title>國立清華大學 -- 校務資訊系統 - </title>
+      <link href="css/style.css" rel="stylesheet" type="text/css">
+      <link rel="preconnect" href="https://challenges.cloudflare.com">
+   </head>
+
+   <body bgcolor="#ffffff" topmargin="0" leftmargin="0" scroll="auto">
+   
+      <table width="100%" border="0" cellpadding="0" cellspacing="0" background="images/ccxp_r1_c4.png">
+         <tbody><tr height="90">
+            <td width="100%"><img src="images/ccxp_r1_c1.png" border="0"><img src="images/ccxp_r1_c2.png" border="0"><img src="images/ccxp_r1_c3.png" border="0"></td>
+         </tr>
+      </tbody></table>
+      <table width="100%" border="0" cellpadding="0" cellspacing="0">
+         <tbody><tr>
+            <td width="200" valign="top">
+               
+               <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                  <tbody><tr>
+                     <td width="100%" height="40">
+
+<style>
+.inputtext {
+	font-size: 1.2em;
+	border:0px;
+	border-bottom:#555555 1px solid;
+	margin: 5px;
+}
+
+.button {
+	background-color: #7F1084;
+	font-size: 1.2em;
+	border: none;
+	color: white;
+	padding: 10px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 16px;
+	margin: 4px 2px;
+	cursor: pointer;
+	border-radius: 8px;
+
+}
+.button:hover {
+        font-size: inherit;
+        text-decoration: inherit;
+        color:red;
+}
+
+</style>
+<script type="application/x-ccxp-fixture">
+function togglePassword() {
+  var x = document.getElementById("password");
+  if (x.type === "password") {
+    x.type = "text";
+    document.getElementById("hidePassword").style.display="inline";
+    document.getElementById("showPassword").style.display="none";
+  } else {
+    x.type = "password";
+    document.getElementById("hidePassword").style.display="none";
+    document.getElementById("showPassword").style.display="inline";
+  }
+}
+</script>
+
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+	<tbody><tr><td width="100%" height="80"><img src="images/login_top.png"></td></tr>
+</tbody></table>
+
+<div style="margin-left: 0em; background-image: url('images/login_mid.png');">
+<div style="margin-left:1em;">
+<b style="color:red"></b>
+<form name="form1" method="post" action="pre_select_entry.php">
+<span style="font-size:1.2em;">帳 號</span><br>
+<input required="" type="text" name="account" maxlength="26" style="width:8em;" class="inputtext" value=""><script type="application/x-ccxp-fixture">document.form1.account.focus();</script><br>
+<span style="font-size:1.2em;">密 碼</span>
+<svg xmlns="http://www.w3.org/2000/svg" onclick="togglePassword();" id="showPassword" style="display:inline;" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+  <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"></path>
+  <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"></path>
+</svg>
+<svg xmlns="http://www.w3.org/2000/svg" onclick="togglePassword();" id="hidePassword" style="display:none;" width="16" height="16" fill="currentColor" class="bi bi-eye-slash" viewBox="0 0 16 16">
+  <path d="M13.359 11.238C15.06 9.72 16 8 16 8s-3-5.5-8-5.5a7 7 0 0 0-2.79.588l.77.771A6 6 0 0 1 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755q-.247.248-.517.486z"></path>
+  <path d="M11.297 9.176a3.5 3.5 0 0 0-4.474-4.474l.823.823a2.5 2.5 0 0 1 2.829 2.829zm-2.943 1.299.822.822a3.5 3.5 0 0 1-4.474-4.474l.823.823a2.5 2.5 0 0 0 2.829 2.829"></path>
+  <path d="M3.35 5.47q-.27.24-.518.487A13 13 0 0 0 1.172 8l.195.288c.335.48.83 1.12 1.465 1.755C4.121 11.332 5.881 12.5 8 12.5c.716 0 1.39-.133 2.02-.36l.77.772A7 7 0 0 1 8 13.5C3 13.5 0 8 0 8s.939-1.721 2.641-3.238l.708.709zm10.296 8.884-12-12 .708-.708 12 12z"></path>
+</svg>
+<br>
+<input type="password" id="password" name="passwd" size="18" maxlength="18" style="width:8em;" class="inputtext" value="">
+<br>
+<input type="submit" name="Submit" value="登入" class="button">&nbsp;&nbsp;&nbsp;
+<a class="button" href="forget.php?lang=C" target="_blank">無法登入?</a>
+<input type="hidden" name="code" id="code" value="">
+
+<br>
+<div id="cf-turnstile" class="cf-turnstile" data-sitekey="0x4AAAAAADgYtgN1iR6QSvJv" data-size="compact" data-size-x="invisible" data-callback="onTurnstileSuccess"></div>
+
+<script type="application/x-ccxp-fixture">
+let turnstileToken = '';
+function onTurnstileSuccess(token) {
+    turnstileToken = token;
+    document.getElementsByName("code")[0].value=token;
+}
+</script>
+
+
+<br>
+<a href="https://punch.ccxp.nthu.edu.tw/"><img width="150px" src="images/punch.png" alt="簽到退"></a><br>
+<a href="https://sso.nd.nthu.edu.tw/index.do" target="_blank"><img src="images/ndPortal.png" alt="南大校區系統 Portal"></a>
+</form></div>
+<div style="margin:2px;">
+	<table width="93%" border="1" bordercolor="red">
+	<tbody><tr><td width="93%" align="center"><font color="red">
+	入侵他人帳號<br>重者會觸犯<b>刑法</b><br><b>妨害電腦使用罪</b>
+	</font></td></tr>
+	</tbody></table>
+</div>
+</div>
+<input type="hidden" name="fnstr" value="fixture">
+
+
+                        <table width="90%" align="center" border="0" cellpadding="0" cellspacing="0">
+                           <tbody><tr>
+                              <td width="100%" height="20" align="center" valign="middle"></td>
+                           </tr>
+                           <tr>
+                              <td width="100%" height="20" valign="middle" class="board_item">
+			         &nbsp;<img src="images/arrow.gif" align="absmiddle">&nbsp;月曆
+			      </td>
+                           </tr>
+                           <tr>
+                              <td width="100%" height="4" bgcolor="#333333"></td>
+                           </tr>
+                           <tr>
+                              <td width="100%" height="1" bgcolor="#FFFFFF"></td>
+                           </tr>
+                           <tr>
+                              <td width="100%" height="1" bgcolor="#666666"></td>
+                           </tr>
+                           <tr>
+                              <td width="100%" height="200" align="center" valign="middle">
+                                 <table width="100%" height="200" border="0" cellpadding="0" cellspacing="0">
+                                    <tbody><tr><td align="center" valign="top">
+                                       
+                                    </td></tr>
+                                 </tbody></table>
+                              </td>
+                           </tr>
+                           <tr>
+                              <td width="100%" height="1" bgcolor="#333333"></td>
+                           </tr>
+                           <tr>
+                              <td width="100%" height="1" bgcolor="#FFFFFF"></td>
+                           </tr>
+                           <tr>
+                              <td width="100%" height="10" bgcolor="#333333"></td>
+                           </tr>
+                        </tbody></table>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+  <tbody><tr>
+  <td height="30">&nbsp;</td></tr>
+  <tr>
+  <td>
+    <div align="center" id="twcaseal" class="MINI">
+    <img src="images/twca_i.gif">
+        </div>
+  </td>
+  </tr>
+</tbody></table>                     </td>
+                  </tr>
+               </tbody></table>
+            </td>
+            <td width="100%" valign="top">
+               <table width="100%" bgcolor="#ffffff" border="0" cellpadding="0" cellspacing="0">
+                  
+                  <tbody><tr>
+                     <td width="100%" valign="top" colspan="3">
+                        <table width="100%" height="40" border="0" cellpadding="0" cellspacing="0" background="images/ccxp_r2.png">
+                           <tbody><tr>
+                              <td width="10">&nbsp;</td>
+                              <td align="right" valign="middle" style="font-size:16px;">
+                                 <a href="http://www.nthu.edu.tw/" target="_blank">清華大學</a>&nbsp;|&nbsp;
+                                 <a href="https://ccc.site.nthu.edu.tw/?Lang=zh-tw" target="_blank">計通中心</a>&nbsp;|&nbsp;
+                                 <a href="https://aisccc.site.nthu.edu.tw/" target="_blank">校務資訊組</a>
+                              </td>
+                              <td width="21" align="center">&nbsp;</td>
+                           </tr>
+                        </tbody></table>
+                     </td>
+                  </tr>
+                  
+                  <tr>
+                     
+                     <td width="60%" style="min-width: 30em;" valign="top" align="center">
+		
+		  <div align="left">
+<a style="color: red" href="https://aisccc.site.nthu.edu.tw/p/404-1318-318275.php?Lang=zh-tw" target="_blank">2026-11-12 本系統資安事件處理說明</a><br>
+<a href="https://ccc.site.nthu.edu.tw/p/404-1285-316858.php?Lang=zh-tw" target="_blank">WebMail 、Mail Reporter 已恢復連線服務。</a><br>
+<a href="https://staff-mail.nthu.edu.tw" target="_blank">教職員 <font color="blue">https://staff-mail.nthu.edu.tw</font></a><br>
+<a href="https://stu-mail.nthu.edu.tw" target="_blank">學生 <font color="blue">https://stu-mail.nthu.edu.tw</font></a><br>
+<a href="https://oz-mail.nthu.edu.tw/" target="_blank">校友 <font color="blue">https://oz-mail.nthu.edu.tw</font></a><br>
+<br></div>
+
+
+<style>
+
+/* Style the tab */
+.tab {
+  overflow: hidden;
+  border: 1px solid #ccc;
+  border: none;
+}
+
+/* Style the buttons inside the tab */
+.tab button {
+	background-color: #f1f1f1;
+	float: left;
+	outline: none;
+	cursor: pointer;
+	padding: 7px 8px;
+	transition: 0.3s;
+	font-size: 17px;
+	border-top-left-radius: 8px;
+	border-top-right-radius: 8px;
+	border-left: 1px;
+	border-right: 1px;
+	border-top: none;
+	border-bottom: none;
+	border-color: #f0f0f0;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+  background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+	background-color: #ccc;
+}
+
+.tablinks {
+}
+
+/* Style the tab content */
+.tabcontent {
+  
+  display: none;
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  text-align: left;
+}
+
+h3,ul {
+	margin-block-start: 0.1em;
+	margin-block-end: 0.1em;
+}
+</style>
+
+
+
+
+<div style="min-width: 30em;" class="tab">
+  <button class="tablinks" onclick="openTab(event, '學　生')">學　生</button>
+  <button class="tablinks" onclick="openTab(event, '校　友')">校　友</button>
+  <button class="tablinks" onclick="openTab(event, '教職員')">教職員</button>
+  <button class="tablinks" onclick="openTab(event, '受款人(廠商)')">受款人(廠商)</button>
+  <button class="tablinks" onclick="openTab(event, '其　他')">其　他</button>
+  <button class="tablinks active" onclick="openTab(event, '提醒事項')" id="defaultOpen">提醒事項</button>
+</div>
+<div id="學　生" class="tabcontent" style="display: none;">
+	<h3>學　生</h3>
+		<ul>
+			<li>學生(含交換生)之帳號為學號(<b>例:110061190、X1106099</b>)，首次登入請點選"<b>無法登入﹖</b>"、依說明啟用帳號。</li>
+			<li>學生密碼若遺忘，請點選"<b>無法登入</b>"、依說明自行設定密碼。</li>
+			<li>南大校區105年之前(含)入學學生帳號為學號(<b>例:210561190、209961190</b>)，密碼為<b>南大校區校園入口網</b>之密碼。</li>
+			<li>南大校區105年之前(含)入學學生若遺忘密碼，請直接洽<b>南大校區計算機中心</b>。</li> 
+	</ul>
+</div>
+<div id="教職員" class="tabcontent" style="display: none;">
+	<h3>教職員</h3>
+	<ul>
+		<li>教職員工之帳號請輸入個人員工編號(<b>例:W09090</b>)，首次登入請點選"<b>無法登入﹖</b>"依說明啟用帳號。</li>
+		<li>教職員工密碼若遺忘，請點選"<b>無法登入</b>"、依說明自行設定密碼。</li>
+	</ul>
+</div>
+
+<div id="受款人(廠商)" class="tabcontent" style="display: none;">
+	<h3>受款人(廠商)</h3>
+	<ul>
+	<li>廠商之帳號為公司統一編號，首次登入請點選"<b>無法登入﹖</b>"、依說明啟用帳號。</li>
+		<li>個人受款人之帳號為身分證字號，首次登入請點選"<b>無法登入﹖</b>"、依說明啟用帳號。</li>
+		<li>廠商與個人受款人密碼若遺忘，請點選"<b>無法登入</b>"、依說明自行設定密碼。</li>
+	</ul>
+</div>
+
+<div id="校　友" class="tabcontent" style="display: none;">
+	<h3>校　友</h3>
+	<ul>
+	<li>校友之帳號為學號(<b>例:102061190</b>)，首次登入請點選"<b>無法登入﹖</b>"依說明啟用帳號。</li>
+	<li>校友若無法登入，請點選"<b>無法登入</b>"、依說明自行設定密碼。</li>
+		<li>南大校區105年之前(含)入學之畢業校友帳號為學號(<b>例:210561190、209961190</b>)，密碼為<b>南大校區校園入口網</b>之密碼。</li>
+			<li>南大校區105年之前(含)入學之畢業校友若遺忘密碼，請直接洽<b>南大校區計算機中心</b>。</li>
+		</ul>
+</div>
+
+<div id="其　他" class="tabcontent" style="display: none;">
+	<h3>其　他</h3>
+	<ul>
+	<li>社會人士選課請使用 guest 登入。</li>
+		<li>華語中心學員帳號是學號(如C1100088)，首次登入請點選"<b>無法登入</b>"、依說明啟用帳號。</li> 
+		<li>委託授權帳號格式如A11111-01，A11111是委託人員工編號，此類帳號由委託人設定後產生。</li>
+	</ul>
+</div>
+
+<div id="提醒事項" class="tabcontent" style="display: block;">
+	<h3>提醒事項</h3>
+	<ul>
+	<li>為維護帳號安全，本系統將依資安規範，定期要求修改密碼(<font color="#900000">密碼避免使用個人有關之資料，如生日、身分證字號、單位簡稱或電話號碼等</font>)，登入後可點選"<b>帳號相關設定</b>"進行密碼修改或關鍵欄位維護，並請妥慎保管。</li>
+	<li>若登入時發生任何問題，請參閱 "<b>無法登入</b>"之說明。</li> 
+	</ul>
+</div>
+
+
+
+<script type="application/x-ccxp-fixture">
+function openTab(evt, tabName) {
+  var i, tabcontent, tablinks;
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+  document.getElementById(tabName).style.display = "block";
+  evt.currentTarget.className += " active";
+}
+</script>
+
+<script type="application/x-ccxp-fixture">
+document.getElementById("defaultOpen").click();
+</script>
+
+
+<div align="right"><a href="inquire_cpr.html" target="_blank"><font color="red">&gt;&gt; <u>服務電話</u> &lt;&lt;</font></a></div>
+<br>
+
+
+
+
+
+                     </td>
+                     
+                     <td width="3%" align="center" valign="valign">&nbsp;</td>
+                     
+                     <td width="35%" valign="valign">
+                        <table border="0" cellpadding="0" cellspacing="0">
+                           <tbody><tr>
+                              <td width="100%" height="20" valign="top">
+			         <table width="95%" border="0" cellpadding="0" cellspacing="0">
+                                    <tbody><tr>
+                                       <td width="100%" height="100%" align="right" valign="middle">
+				          <ul class="links"><li><a href="/ccxp/INQUIRE/index.php?lang=english" title="English">English</a></li></ul>
+				       </td>
+                                    </tr>
+				 </tbody></table>
+                              </td>
+                           </tr>
+                           
+                           <tr>
+                              <td width="100%" height="200" valign="top">
+
+
+<span class="board_1">
+<p style="color:#D4950A">&nbsp;</p>
+</span>
+<table width="500" border="0" cellpadding="3" cellspacing="0">
+ <tbody><tr>
+     <td height="0" align="center" valign="middle" colspan="2"></td>
+  </tr>
+  <tr>
+     <td height="20" valign="middle" colspan="2" class="board_item">
+       &nbsp;<img src="images/arrow.gif" align="absmiddle">&nbsp;系統公告
+     </td>
+  </tr>
+  <tr>
+     <td height="4" bgcolor="#333333" colspan="2"></td>
+  </tr>
+  <tr>
+     <td height="1" bgcolor="#FFFFFF" colspan="2"></td>
+  </tr>
+  <tr>
+     <td height="1" bgcolor="#666666" colspan="2"></td>
+  </tr>
+  <tr>
+     <td width="100" align="center" nowrap="" class="board_subject" style="border-right:#FFFFFF 1px solid;">
+     日期
+     </td>
+     <td width="388" align="center" nowrap="" class="board_subject">新 聞 主 題  </td>
+  </tr>
+
+
+
+
+
+  <tr>
+     <td align="center" nowrap="" class="board_0" style="border-right:#333333 1px dotted;">2022/12/13</td>
+     <td class="board_0">
+       <b style="color:#DD0000;padding:3px;border-bottom:#333333 1px dotted;">【系統公告】</b>
+       <p style="color:#DD0000;">
+     
+        <span style="color:#DD0000"><b>
+校務資訊系統新版密碼規範將於2023/01/01上線，<br>請點<a href="https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/PC/pwd_notice.php" target="_blank"><font color="#0000DD">這裡</font></a>了解詳細內容。
+        </b></span>  </p>
+     </td>
+  </tr>
+
+
+
+       <tr>
+     <td align="center" nowrap="" class="board_0" style="border-right:#333333 1px dotted;">2026/10/16</td>
+     <td class="board_0">
+       <b style="color:#DD0000;padding:3px;border-bottom:#333333 1px dotted;">【註冊組公告】</b>
+       <p style="color:#DD0000;">
+     
+10/19~11/6「學士班期中成績預警系統」第一階段開放登錄作業，請點選課程、成績項下之「學士班成績預警」。
+  </p>
+     </td>	
+	</tr>		
+
+<tr>
+     <td align="center" nowrap="" class="board_1" style="border-right:#333333 1px dotted;">2026/09/30</td>
+     <td class="board_1">
+       <b style="color:#DD0000;padding:3px;border-bottom:#333333 1px dotted;">【出納組公告】</b>
+       <p style="color:#DD0000;">
+
+115(上)學分費繳費單列印及繳費時間：115/10/12~115/10/22
+<br>
+請點選　&gt;&gt;繳費單相關作業/繳費單列印　自行下載列印繳費。 </p>
+     </td>
+  </tr>		
+
+
+
+       <tr>
+     <td align="center" nowrap="" class="board_0" style="border-right:#333333 1px dotted;">2026/08/03</td>
+     <td class="board_0">
+       <b style="color:#DD0000;padding:3px;border-bottom:#333333 1px dotted;">【出納組公告】</b>
+       <p style="color:#DD0000;">
+     
+115(上)學雜費繳費單列印及繳費時間：115/08/18~115/09/07
+<br>
+※大學部一年級新生：115/08/28~115/09/07
+<br>
+請點選 &gt;&gt;繳費單相關作業/繳費單列印 自行下載列印。
+  </p>
+     </td>	
+	</tr>		
+	
+
+<tr>
+     <td align="center" nowrap="" class="board_1" style="border-right:#333333 1px dotted;">2026/05/11</td>
+     <td class="board_1">
+       <b style="color:#DD0000;padding:3px;border-bottom:#333333 1px dotted;">【註冊組公告】</b>
+       <p style="color:#DD0000;">
+
+「學士班期中成績預警系統」持續開放登錄作業至5月22日止，若老師對部份同學學習狀況仍有疑慮，歡迎老師隨時上網更新預警資料。請點選課程、成績項下之「學士班成績預警」。
+ </p>
+     </td>
+  </tr>		
+	
+	
+	
+	
+       <tr>
+     <td align="center" nowrap="" class="board_0" style="border-right:#333333 1px dotted;">2026/03/11</td>
+     <td class="board_0">
+       <b style="color:#DD0000;padding:3px;border-bottom:#333333 1px dotted;">【出納組公告】</b>
+       <p style="color:#DD0000;">
+     
+114(下)學分費繳費單列印及繳費時間：115/03/25~115/04/08
+<br>
+<br>
+請點選　&gt;&gt;繳費單相關作業/繳費單列印　自行下載列印繳費。
+  </p>
+     </td>	
+	</tr>	
+	
+
+<tr>
+     <td align="center" nowrap="" class="board_1" style="border-right:#333333 1px dotted;">2026/01/02</td>
+     <td class="board_1">
+       <b style="color:#DD0000;padding:3px;border-bottom:#333333 1px dotted;">【出納組公告】</b>
+       <p style="color:#DD0000;">
+
+114(下)學雜費繳費單列印及繳費時間：115/01/21~115/02/23
+<br>
+※寒轉新生：115/01/27~115/02/23
+<br><br>
+請點選　&gt;&gt;繳費單相關作業/繳費單列印　自行下載列印繳費。
+ </p>
+     </td>
+  </tr>		
+	
+
+	
+	
+
+<tr>
+     <td align="center" nowrap="" class="board_1" style="border-right:#333333 1px dotted;">2025/09/17</td>
+     <td class="board_1">
+       <b style="color:#DD0000;padding:3px;border-bottom:#333333 1px dotted;">【出納組公告】</b>
+       <p style="color:#DD0000;">
+
+114(上)學分費繳費單列印及繳費時間：
+<br>
+114/10/02~114/10/15
+<br><br>
+請點選　&gt;&gt;繳費單相關作業/繳費單列印　自行下載列印。
+ </p>
+     </td>
+  </tr>	
+ 
+       <tr>
+     <td align="center" nowrap="" class="board_0" style="border-right:#333333 1px dotted;">2025/07/31</td>
+     <td class="board_0">
+       <b style="color:#DD0000;padding:3px;border-bottom:#333333 1px dotted;">【出納組公告】</b>
+       <p style="color:#DD0000;">
+     
+114(上)學雜費繳費單列印及繳費時間：114/08/12~114/09/01<br>
+※大學部一年級新生：114/08/21~114/09/01<br>
+請點選　&gt;&gt;繳費單相關作業/繳費單列印　自行下載列印。
+  </p>
+     </td>
+  </tr>
+ 
+ 
+ 
+       <tr>
+     <td align="center" nowrap="" class="board_0" style="border-right:#333333 1px dotted;">2025/03/06</td>
+     <td class="board_0">
+       <b style="color:#DD0000;padding:3px;border-bottom:#333333 1px dotted;">【出納組公告】</b>
+       <p style="color:#DD0000;">
+     
+113(下)學分費繳費單列印及繳費時間：<br>
+114/03/18~114/03/28<br>
+<br>
+請點選　&gt;&gt;繳費單相關作業/繳費單列印　自行下載列印。
+  </p>
+     </td>
+  </tr> 
+ 
+ 
+        <tr>
+     <td align="center" nowrap="" class="board_1" style="border-right:#333333 1px dotted;">2025/01/02</td>
+     <td class="board_1">
+       <b style="color:#DD0000;padding:3px;border-bottom:#333333 1px dotted;">【出納組公告】</b>
+       <p style="color:#DD0000;">
+     
+113(下)學雜費繳費單列印及繳費時間：114/01/22~114/02/17
+<br>
+※寒轉新生：114/01/27~114/02/17
+<br>
+請點選　&gt;&gt;繳費單相關作業/繳費單列印　自行下載列印。
+ </p>
+     </td>
+  </tr>
+ 
+ 
+     <tr>
+     <td align="center" nowrap="" class="board_0" style="border-right:#333333 1px dotted;">2024/08/08</td>
+     <td class="board_0">
+       <b style="color:#DD0000;padding:3px;border-bottom:#333333 1px dotted;">【出納組公告】</b>
+       <p style="color:#DD0000;">
+     
+      <span style="color:#DD0000"><b>
+       113(上)學雜費繳費單列印及繳費時間：113/08/12~113/09/02<br>
+大學部一年級新生：113/08/23~113/09/02<br>
+請點選　&gt;&gt;繳費單相關作業　自行下載列印。
+</b></span>
+  </p>
+     </td>
+  </tr> 
+ 
+ 
+
+ 
+ 
+ 
+     <tr>
+     <td align="center" nowrap="" class="board_0" style="border-right:#333333 1px dotted;">2024/03/06</td>
+     <td class="board_0">
+       <b style="color:#DD0000;padding:3px;border-bottom:#333333 1px dotted;">【出納組公告】</b>
+       <p style="color:#DD0000;">
+     
+        <span style="color:#DD0000"><b>
+112(下)學分費繳費單列印及繳費時間：<br>
+113/3/20 ~ 113/3/29<br>
+請點選　&gt;&gt;繳費單相關作業　自行下載列印。
+        </b></span>  </p>
+     </td>
+  </tr>
+ 
+ 
+ 
+     <tr>
+     <td align="center" nowrap="" class="board_1" style="border-right:#333333 1px dotted;">2024/01/03</td>
+     <td class="board_1">
+       <b style="color:#DD0000;padding:3px;border-bottom:#333333 1px dotted;">【出納組公告】</b>
+       <p style="color:#DD0000;">
+     
+112(下)學雜費繳費單列印及繳費時間：<br>
+113/01/29~113/02/19<br><br>
+請點選　&gt;&gt;繳費單相關作業　自行下載列印。
+ </p>
+     </td>
+  </tr>
+
+
+
+
+
+
+
+  
+  
+  
+  
+
+  
+  
+</tbody></table>
+                              </td>
+                           </tr>
+                        </tbody></table>
+                     </td>
+                  </tr>
+               </tbody></table>
+            </td>
+         </tr>
+      </tbody></table>
+      <table width="100%" border="0" cellpadding="0" cellspacing="0">
+         <tbody><tr>
+            <td width="100%" height="143" align="right" valign="bottom">
+	       <img src="images/logo_word.png">
+	    </td>
+         </tr>
+      </tbody></table>
+      <table width="100%" border="0" cellpadding="0" cellspacing="0" background="images/bottom_bg.png">
+         <tbody><tr height="44">
+                        <td colspan="3" align="center">
+	      版權所有&nbsp;©&nbsp;2010&nbsp;國立清華大學
+            </td>
+         </tr>
+      </tbody></table>
+      <table width="100%" border="0" cellpadding="0" cellspacing="0">
+         <tbody><tr>
+            <td width="100%" height="1" bgcolor="#555555"></td>
+         </tr>
+      </tbody></table>
+	<table width="100%"><tbody><tr><td align="center"><a href="Information_Security_Policy.pdf" target="_blank">資訊安全政策</a>&nbsp;<a href="Personal_Information_Protection_Policy.pdf" target="_blank">個資保護政策</a></td></tr></tbody></table>
+   
+
+<script type="application/x-ccxp-fixture">
+var page_start=Date.now();
+function checkpwdstr()
+{
+	if(Date.now()-page_start>1800000){
+		location.reload();	
+	}
+}
+
+document.getElementsByName('account')[0].addEventListener('click',checkpwdstr);
+
+document.getElementsByName('account')[0].addEventListener('change',checkpwdstr);
+
+document.getElementsByName('account')[0].addEventListener('keydown',checkpwdstr);
+
+document.getElementsByName('passwd')[0].addEventListener('click',checkpwdstr);
+
+document.getElementsByName('passwd')[0].addEventListener('change',checkpwdstr);
+
+document.getElementsByName('passwd')[0].addEventListener('keydown',checkpwdstr);
+
+//document.getElementsByName('passwd2')[0].addEventListener('click',checkpwdstr);
+
+//document.getElementsByName('passwd2')[0].addEventListener('change',checkpwdstr);
+
+//document.getElementsByName('passwd2')[0].addEventListener('keydown',checkpwdstr);
+</script>
+
+
+</body></html>

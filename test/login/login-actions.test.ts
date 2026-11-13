@@ -63,3 +63,24 @@ test("login image submissions remain native while other image actions retain the
   expect(button.hasAttribute("formnovalidate")).toBe(true);
   expect(document.querySelector("#clear")).toBeNull();
 });
+
+test.each([
+  ["en", "Clock in / out"],
+  ["zh", "\u7C3D\u5230\u9000"],
+])("localizes the host's Chinese clock-in image caption for %s", (locale, expected) => {
+  const { window } = createTestWindow(`
+    <html lang="${locale}"><body><form>
+      <a href="https://punch.ccxp.nthu.edu.tw/" target="_blank" onclick="return true">
+        <img src="images/punch.png" alt="\u7C3D\u5230\u9000">
+      </a>
+    </form></body></html>
+  `);
+  loadModules(window, loginModulePaths);
+  const document = window.document as Document;
+  requireValue(window.CCXP_LITE.loginActions).replaceLoginFormImageButtons(document, document);
+  const link = requireElement(document.querySelector("a"));
+  expect(link.textContent).toBe(expected);
+  expect(link.getAttribute("href")).toBe("https://punch.ccxp.nthu.edu.tw/");
+  expect(link.target).toBe("_blank");
+  expect(link.getAttribute("onclick")).toBe("return true");
+});

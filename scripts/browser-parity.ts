@@ -22,6 +22,7 @@ import {
   captureNarrowDefaultMenu,
 } from "./home-fixtures.js";
 import { assertMenuLayout } from "./menu-layout-fixtures.js";
+import { captureLoginLocales } from "./login-locale-fixtures.js";
 import { assertSidebarCollapse } from "./sidebar-collapse-fixtures.js";
 import { assertInitialSessionTimer, assertSessionTimer } from "./session-timer-fixtures.js";
 import { recordProfileActions, setProfileMenuMode } from "./profile-fixtures.js";
@@ -895,6 +896,9 @@ async function captureRevision(
         screenshots[name] = file;
       }
       await page.setViewportSize(viewport);
+      // Supplemental locale captures use current host DOM. Their expected copy changes are checked
+      // by scoped language assertions; the legacy screenshots retain strict parity.
+      await captureLoginLocales(context, page, revisionOutputDir, extensionDir, label === "head");
       if (uiReviewOnly) {
         await captureSidebarPages();
         return;

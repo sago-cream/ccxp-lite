@@ -100,6 +100,18 @@
       "path": "/ccxp/INQUIRE/JH/4/4.19/JH4j002.php",
       "owners": ["src/menu/ui/overlays.ts"],
       "state": "Read-only profile response: identity header row and Big5 meta declaration observed live on 2026-09-14; only these cells retained, values replaced with synthetic student 123456789 / 測試同學 / STUDENT, TEST. This response is parsed, never shown as a page or used as a visual fixture."
+    },
+    {
+      "file": "login-locale-zh.html",
+      "path": "/ccxp/INQUIRE/index.php",
+      "owners": ["src/login/locale.ts"],
+      "state": "Anonymous Chinese Turnstile-era login DOM captured 2026-11-13; see login-locales.provenance.json. Packaged desktop/mobile locale captures with host assets; no verification widget. Live Chrome language switch inspected."
+    },
+    {
+      "file": "login-locale-en.html",
+      "path": "/ccxp/INQUIRE/index.php",
+      "owners": ["src/login/locale.ts"],
+      "state": "Anonymous English Turnstile-era login DOM captured 2026-11-13; see login-locales.provenance.json. Packaged desktop/mobile locale captures with host assets; no verification widget. Live Chrome language switch inspected."
     }
   ],
   "gaps": [
@@ -113,7 +125,7 @@
     },
     {
       "owners": ["src/menu/", "src/login/"],
-      "reason": "Only student role and Chinese legacy source captured; other role-specific navigation/landing states remain unverified"
+      "reason": "Only student role navigation captured; other role-specific states remain unverified. Chinese and English anonymous login locales are covered separately."
     },
     {
       "owners": ["src/staff-history/", "src/staff-registration/"],
@@ -141,7 +153,7 @@
     },
     {
       "owners": ["src/login/"],
-      "reason": "User confirmed successful beta sign-in on 2026-11-13. Live expiry/error/retry and English host variants remain unverified; offline widget tests do not certify these states."
+      "reason": "User confirmed successful beta sign-in on 2026-11-13. Chinese and English live login labels inspected separately; live Turnstile expiry/error/retry states remain unverified. Offline locale captures omit the widget."
     }
   ],
   "liveAudit": "2026-09-12: navigated registration with ccxpLite enabled, verified header, reminder contents and English switch; navigated public course directory, curriculum and keyword forms. Public query HTML retrieved from those same routes without session data.",

@@ -114,7 +114,10 @@
       removeNode(anchor);
       return;
     }
-    const label = resolveLegacyImageButtonLabel(imageNode);
+    const label =
+      anchor.hostname === "punch.ccxp.nthu.edu.tw"
+        ? getLandingStrings(targetDocument).loginClockInOut
+        : resolveLegacyImageButtonLabel(imageNode);
     if (label === "") {
       return;
     }
