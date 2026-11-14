@@ -99,6 +99,10 @@
     loginHeaderLabel.textContent = strings.loginTitle;
     loginSection.append(loginHeaderLabel);
 
+    // Snapshot native form owners before moving nodes can reset parser-associated controls.
+    const externalControls = loginForm
+      ? [...loginForm.elements].filter((control) => !loginForm.contains(control))
+      : [];
     const hasTurnstile = Boolean(loginForm?.querySelector(".cf-turnstile"));
     if (hasTurnstile) {
       // Keep the widget's browsing context connected throughout the rewrite.
@@ -116,9 +120,6 @@
       }
       // The host can associate hidden session/challenge controls from outside the form. Keep those
       // native nodes before the old layout is removed by the theme stage.
-      const externalControls = [...loginForm.elements].filter(
-        (control) => !loginForm.contains(control),
-      );
       for (const control of externalControls) {
         if (hasTurnstile) {
           // eslint-disable-next-line unicorn/no-null -- Preserve connected native controls.

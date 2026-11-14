@@ -12,6 +12,8 @@ const extension = path.resolve("dist/crx/unpacked");
 // closed shadow root matches the observed embedding.
 const host = `<script>
 window.fixtureReady = false;
+window.fixtureNativeChallenge = document.querySelector('[name=fnstr]');
+window.fixtureNativeChallenge.value = 'fixture-native-challenge';
 window.onTurnstileSuccess = function(token) {
   document.getElementsByName('code')[0].value = token;
 };
@@ -91,9 +93,16 @@ test.each(
         loads: window.fixtureLoads,
         identity: window.fixtureFrame.contentWindow.fixtureIdentity,
         connected: window.fixtureFrame.isConnected,
-        associated: document.querySelector('[name=code]').form === document.forms.form1
+        associated: document.querySelector('[name=code]').form === document.forms.form1,
+        nativeChallengeConnected: window.fixtureNativeChallenge.isConnected && window.fixtureNativeChallenge.form === document.forms.form1
       })`),
-      ).toEqual({ loads: 1, identity: "original-context", connected: true, associated: true });
+      ).toEqual({
+        loads: 1,
+        identity: "original-context",
+        connected: true,
+        associated: true,
+        nativeChallengeConnected: true,
+      });
       await page.evaluate(`{
         for (const token of ['fixture-first', '', 'fixture-renewed']) {
           window.fixtureResponse.value = token;
@@ -110,7 +119,7 @@ test.each(
       const submitted = await request;
       const fields = new URLSearchParams(submitted.postData() ?? "");
       expect(new URL(submitted.url()).pathname).toBe("/ccxp/INQUIRE/pre_select_entry.php");
-      expect(fields.has("fnstr")).toBe(true);
+      expect(fields.get("fnstr")).toBe("fixture-native-challenge");
       expect(fields.get("code")).toBe("fixture-renewed");
       expect(fields.get("cf-turnstile-response")).toBe("fixture-renewed");
       expect(fields.get("Submit")).toBe(locale === "en" ? "Login" : "\u767B\u5165");
