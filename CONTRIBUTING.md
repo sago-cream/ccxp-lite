@@ -55,6 +55,31 @@ images from capture outputs and rebuilds the SVG.
 
 AI-assisted contributions are welcome, but write the pull request description in your own words, and review, understand, test, and take responsibility for every submitted line. Remove generated placeholders, irrelevant commentary, and unrelated changes before opening the pull request. Be prepared to explain your changes and respond to review feedback.
 
+### Visual Changes and Browser Parity
+
+The `browser-parity` CI job builds the pull request's base and head extensions, then compares their screenshots and computed styles. An intentional visual change can fail this comparison even when the behavioral assertions pass.
+
+Use a sanitized, live-derived fixture for each affected page and state, preserving host styles and embedding mode. Record its provenance in `test/browser-fixtures/coverage.json` and add scoped behavioral assertions. Follow [the capture requirements](AGENTS.md#pr-visual-evidence); comparing head against itself does not verify a change.
+
+In both revision checkouts, run `bun install --frozen-lockfile --ignore-scripts` and `bun run build:crx`. In the head checkout, install Chromium with `./node_modules/.bin/playwright install --with-deps chromium`, then compare the builds:
+
+```sh
+bun run test:browser-parity -- \
+  --base-extension /absolute/path/to/base/dist/crx/unpacked \
+  --head-extension dist/crx/unpacked \
+  --output /tmp/ccxp-browser-parity-review
+```
+
+Choose a fresh output directory for every run. Match the `--expect-*` options selected for these revisions by [the CI workflow](.github/workflows/ci.yml); they scope expected differences. Keep behavioral assertions for the changed behavior. Do not add broad masks or weaken assertions to make a comparison pass.
+
+Include matching before/after screenshots and explain the intended differences. Inspect the Actions run's `browser-parity` artifact: completed captures include base/head screenshots, capture manifests and computed styles; a completed comparison adds `report.json` and difference images where generated. An earlier build or assertion failure can leave these outputs incomplete; inspect the job log too.
+
+After reviewing every reported difference and confirming the behavioral assertions pass, a maintainer can apply `accept-visual-change`. The label sets `ALLOW_VISUAL_CHANGE=true`, accepting the final comparison's failures across the whole PR, including screenshot, bounds and computed-style differences. It does not bypass capture-time assertions, builds or the separate `check` job. Adding or removing the label reruns CI. Review the artifacts again after subsequent commits, and remove the label if the differences are no longer accepted.
+
+### Checks Awaiting Approval
+
+Depending on repository policy, workflows from public forks may require approval before running. If Actions reports **Approval required**, a maintainer with write access reviews the proposed code and workflow, then chooses **Approve and run**. See [GitHub's approval guidance](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/approve-runs-from-forks). This is separate from accepting visual differences; the visual-change label does not approve a pending workflow run. Inspect the checks after they run.
+
 By contributing, you agree that your contribution will be licensed under the [MIT License](LICENSE) and that you will follow our [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Shared design work
