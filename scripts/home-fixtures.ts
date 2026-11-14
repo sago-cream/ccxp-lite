@@ -192,11 +192,8 @@ export async function assertHomeFavorites(
   );
 }
 
-export async function assertMenuProfile(
-  page: Page,
-  nav: Frame,
-  separatedSearch = false,
-): Promise<void> {
+export async function assertMenuProfile(page: Page, nav: Frame): Promise<void> {
+  const separatedSearch = (await nav.locator(".ccxp-lite-sidebar-search-clear").count()) > 0;
   const original = page.viewportSize();
   assert.ok(original);
 
