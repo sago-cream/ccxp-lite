@@ -114,6 +114,19 @@
       } else {
         loginSection.append(loginForm);
       }
+      // The host can associate hidden session/challenge controls from outside the form. Keep those
+      // native nodes before the old layout is removed by the theme stage.
+      const externalControls = [...loginForm.elements].filter(
+        (control) => !loginForm.contains(control),
+      );
+      for (const control of externalControls) {
+        if (hasTurnstile) {
+          // eslint-disable-next-line unicorn/no-null -- Preserve connected native controls.
+          loginForm.moveBefore(control, null);
+        } else {
+          loginForm.append(control);
+        }
+      }
     } else {
       moveChildNodes(loginSourceCell, loginSection);
     }

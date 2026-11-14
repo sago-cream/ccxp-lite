@@ -112,6 +112,18 @@
       "path": "/ccxp/INQUIRE/index.php",
       "owners": ["src/login/locale.ts"],
       "state": "Anonymous English Turnstile-era login DOM captured 2026-11-13; see login-locales.provenance.json. Packaged desktop/mobile locale captures with host assets; no verification widget. Live Chrome language switch inspected."
+    },
+    {
+      "file": "login-turnstile-host.html",
+      "path": "/ccxp/INQUIRE/index.php",
+      "owners": ["src/login/"],
+      "state": "Sanitized complete public CF login captured 2026-11-13. Packaged behavior tests retain initialized/late closed-shadow iframe identity and native mouse/Enter POSTs in both languages at 320/1280px. The optional network suite uses the official always-pass testing key and intercepts all CCXP requests locally. No production sign-in or Siteverify is exercised. See login-turnstile-host.provenance.json."
+    },
+    {
+      "file": "login-turnstile-host-en.html",
+      "path": "/ccxp/INQUIRE/index.php?lang=english",
+      "owners": ["src/login/"],
+      "state": "Sanitized complete public CF login captured 2026-11-13. Packaged behavior tests retain initialized/late closed-shadow iframe identity and native mouse/Enter POSTs in both languages at 320/1280px. The optional network suite uses the official always-pass testing key and intercepts all CCXP requests locally. No production sign-in or Siteverify is exercised. See login-turnstile-host.provenance.json."
     }
   ],
   "gaps": [
