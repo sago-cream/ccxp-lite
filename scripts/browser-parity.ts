@@ -792,7 +792,7 @@ async function captureRevision(
       }
       markRecordingStep("homepage-end");
       if (hasHome) {
-        await assertMenuProfile(page, navFrame, expectP2NavigationChange && label === "head");
+        await assertMenuProfile(page, navFrame);
       }
       if (expectSupportLinksChange) {
         await navFrame.locator(".ccxp-lite-profile-trigger").click();
