@@ -1,0 +1,31 @@
+{
+  "capturedAt": "2026-11-13",
+  "sourcePath": "/ccxp/INQUIRE/index.php",
+  "captureMethod": "Complete initialized public legacy DOM captured in an anonymous browser with ccxpLite absent. Original tables, classes, inline styles, notices, form action, compact Turnstile container and service links retained.",
+  "sourceLandmarks": {
+    "tables": 17,
+    "form": "form1",
+    "action": "pre_select_entry.php",
+    "controls": ["account", "passwd", "Submit", "code", "fnstr"],
+    "turnstile": {
+      "id": "cf-turnstile",
+      "size": "compact",
+      "callback": "onTurnstileSuccess"
+    }
+  },
+  "sanitization": [
+    "Account, password, code, and legacy fnstr values cleared. Submit retains its public label.",
+    "Explicit form1 id/form attributes restore the parser-associated external fnstr field after DOM serialization.",
+    "Host scripts and event handlers removed; calendar iframe set to about:blank.",
+    "Cloudflare-generated closed-shadow widget contents and response removed; public production sitekey and callback attribute retained as host landmarks. No tokens or challenges are replayed.",
+    "Existing host assets reused; css/style.css verified against the live stylesheet on capture date, identical after newline normalization.",
+    "The opt-in network browser test restores the observed host callback and official Cloudflare script, substitutes Cloudflare's documented always-pass test sitekey, and intercepts all CCXP page requests and submissions locally. Only Cloudflare widget requests use the network. Test keys are never used by the extension runtime."
+  ],
+  "limitations": [
+    "Offline packaged captures show the host form before the external widget renders; closed-shadow challenge internals cannot be serialized.",
+    "The opt-in network test verifies the real test widget, desktop/mobile layout, callback and intercepted POST. Production challenge acceptance and authenticated CCXP server processing require a live user sign-in.",
+    "Other role-specific source variants are not recaptured."
+  ],
+  "sourcePaths": ["/ccxp/INQUIRE/index.php", "/ccxp/INQUIRE/index.php?lang=english"],
+  "files": ["login-turnstile-host.html", "login-turnstile-host-en.html"]
+}
