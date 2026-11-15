@@ -22,6 +22,9 @@
 - Consult `test/browser-fixtures/coverage.json` for the exact affected page and state. A listed
   module is not blanket coverage: add a sanitized legacy capture and its host assets for uncovered
   states. Keep unavailable role/period/widget states explicitly listed as gaps.
+- Follow [the visual-change review workflow](CONTRIBUTING.md#visual-changes-and-browser-parity).
+  A maintainer reviews all final comparison differences before applying `accept-visual-change`;
+  capture-time assertions and the other CI checks must still pass. Recheck artifacts after new commits.
 
 ## Design system
 
