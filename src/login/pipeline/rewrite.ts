@@ -46,33 +46,56 @@
     enhancePasswordVisibilityToggle,
   } = loginUi;
 
-  function rewriteLoginSurface(
+  const TURNSTILE_API_SCRIPT_PREFIX = "https://challenges.cloudflare.com/turnstile/v0/api.js";
+  const INPLACE_LEGACY_ATTRIBUTES = [
+    "width",
+    "height",
+    "align",
+    "valign",
+    "border",
+    "cellpadding",
+    "cellspacing",
+    "colspan",
+    "rowspan",
+    "bgcolor",
+    "background",
+    "style",
+  ] as const;
+
+  function isTurnstileApiScript(node: ChildNode) {
+    return node instanceof HTMLScriptElement && node.src.startsWith(TURNSTILE_API_SCRIPT_PREFIX);
+  }
+
+  function cleanInplaceHostElement(element: HTMLElement) {
+    for (const attributeName of INPLACE_LEGACY_ATTRIBUTES) {
+      element.removeAttribute(attributeName);
+    }
+  }
+
+  function getBodyAncestorChain(
+    targetDocument: Document,
+    targetElement: HTMLElement,
+  ): readonly HTMLElement[] {
+    const ancestors: HTMLElement[] = [];
+    let current = targetElement.parentElement;
+    while (current && current !== targetDocument.body) {
+      ancestors.unshift(current);
+      current = current.parentElement;
+    }
+    return ancestors;
+  }
+
+  function buildLandingHeader(
     targetDocument: Document,
     identifiedSurface: CcxpLiteLoginIdentifyResult,
   ) {
-    const {
-      loginForm,
-      loginSourceCell,
-      languageLinks,
-      announcementTable,
-      utilityLinks,
-      cannotLoginLink,
-      serviceLink,
-      strings,
-    } = identifiedSurface;
-    const loginValidationState = captureValidationState(targetDocument);
-    const shell = targetDocument.createElement("main");
-    shell.className = TOKENS.landingClass;
-    const topSection = createSection(targetDocument, "ccxp-lite-landing-top");
+    const { languageLinks, utilityLinks, cannotLoginLink, serviceLink, strings } =
+      identifiedSurface;
     const headerSection = createSection(targetDocument, "ccxp-lite-landing-header");
-    const bodySection = createSection(targetDocument, "ccxp-lite-landing-body");
     const brandSection = createSection(
       targetDocument,
       "ccxp-lite-landing-brand ccxp-lite-sidebar-brand-group",
     );
-    const loginSection = createSection(targetDocument, "ccxp-lite-landing-login");
-    const noticesSection = createSection(targetDocument, "ccxp-lite-landing-notices");
-
     const brandLockup = targetDocument.createElement("div");
     brandLockup.className = "ccxp-lite-landing-brand-lockup ccxp-lite-sidebar-brand";
     brandLockup.append(
@@ -91,80 +114,9 @@
       ),
     );
     brandSection.append(brandLockup);
+    headerSection.append(brandSection);
 
     const langSection = createLanguageSelector(targetDocument, languageLinks);
-
-    const loginHeaderLabel = targetDocument.createElement("h1");
-    loginHeaderLabel.className = "ccxp-lite-landing-login-label";
-    loginHeaderLabel.textContent = strings.loginTitle;
-    loginSection.append(loginHeaderLabel);
-
-    // Snapshot native form owners before moving nodes can reset parser-associated controls.
-    const externalControls = loginForm
-      ? [...loginForm.elements].filter((control) => !loginForm.contains(control))
-      : [];
-    const hasTurnstile = Boolean(loginForm?.querySelector(".cf-turnstile"));
-    if (hasTurnstile) {
-      // Keep the widget's browsing context connected throughout the rewrite.
-      shell.append(topSection);
-      topSection.append(bodySection);
-      bodySection.append(loginSection);
-      targetDocument.body.append(shell);
-    }
-    if (loginForm) {
-      if (hasTurnstile) {
-        // eslint-disable-next-line unicorn/no-null -- The DOM API requires null to append.
-        loginSection.moveBefore(loginForm, null);
-      } else {
-        loginSection.append(loginForm);
-      }
-      // The host can associate hidden session/challenge controls from outside the form. Keep those
-      // native nodes before the old layout is removed by the theme stage.
-      for (const control of externalControls) {
-        if (hasTurnstile) {
-          // eslint-disable-next-line unicorn/no-null -- Preserve connected native controls.
-          loginForm.moveBefore(control, null);
-        } else {
-          loginForm.append(control);
-        }
-      }
-    } else {
-      moveChildNodes(loginSourceCell, loginSection);
-    }
-
-    prepareAnnouncementTable(announcementTable, strings);
-    const loginHelperLink = buildLoginHelperLink(targetDocument, cannotLoginLink, strings);
-
-    normalizeLoginFormLayout(loginSection);
-    attachAccountFormatInfo(targetDocument, loginSection);
-    removeLoginResetControls(loginSection);
-    forceCaptchaLabelDisplay(loginSection);
-    replaceLoginFormImageButtons(targetDocument, loginSection);
-    wrapPrimaryLoginButtons(targetDocument, loginSection);
-    const turnstile = loginForm?.querySelector<HTMLElement>(".cf-turnstile");
-    const actionGroup = loginForm?.querySelector(".ccxp-lite-login-action-group");
-    if (loginForm && turnstile && actionGroup?.parentNode === loginForm) {
-      turnstile.classList.add("ccxp-lite-login-turnstile");
-      loginForm.moveBefore(turnstile, actionGroup);
-    }
-    removeLoginSpacingArtifacts(targetDocument, loginSection);
-    alignCaptchaMediaRow(targetDocument, loginSection);
-    enhancePasswordVisibilityToggle(targetDocument, loginSection);
-    attachPasswordInfoPopover(targetDocument, loginSection);
-    if (loginHelperLink) {
-      loginSection.append(loginHelperLink);
-    }
-
-    const captchaAutofillState = getOrCreateCaptchaState(
-      targetDocument,
-      loginSection as ParentNode,
-    );
-
-    removeNode(findCalendarTable(loginSection));
-    removeNode(loginSection.querySelector("#twcaseal")?.closest("table") ?? undefined);
-    collapseLegacyThreeColumnRows(targetDocument.body);
-
-    headerSection.append(brandSection);
     if (languageLinks) {
       headerSection.append(langSection);
     }
@@ -184,6 +136,236 @@
       }
     }
 
+    return headerSection;
+  }
+
+  function buildLandingFooter(targetDocument: Document) {
+    const footer = targetDocument.createElement("footer");
+    footer.className = "ccxp-lite-landing-footer";
+    for (const link of createSupportLinks(targetDocument)) {
+      if (link.textContent !== "ccxpLite") {
+        link.textContent = `ccxpLite ${link.textContent}`;
+      }
+      footer.append(link);
+    }
+    return footer;
+  }
+
+  function buildLoginHeaderLabel(targetDocument: Document, loginTitle: string) {
+    const loginHeaderLabel = targetDocument.createElement("h1");
+    loginHeaderLabel.className = "ccxp-lite-landing-login-label";
+    loginHeaderLabel.textContent = loginTitle;
+    return loginHeaderLabel;
+  }
+
+  function applyLoginFormTransforms(
+    targetDocument: Document,
+    layoutRoot: ParentNode,
+    transformScope: ParentNode & Node,
+    loginForm: HTMLFormElement | undefined,
+  ) {
+    normalizeLoginFormLayout(layoutRoot);
+    attachAccountFormatInfo(targetDocument, transformScope);
+    removeLoginResetControls(transformScope);
+    forceCaptchaLabelDisplay(transformScope);
+    replaceLoginFormImageButtons(targetDocument, transformScope);
+    wrapPrimaryLoginButtons(targetDocument, transformScope);
+    const turnstile = loginForm?.querySelector<HTMLElement>(".cf-turnstile");
+    const actionGroup = loginForm?.querySelector(".ccxp-lite-login-action-group");
+    if (loginForm && turnstile && actionGroup) {
+      turnstile.classList.add("ccxp-lite-login-turnstile");
+      let turnstileSlot: HTMLElement = turnstile;
+      while (turnstileSlot.parentElement && turnstileSlot.parentElement !== loginForm) {
+        turnstileSlot = turnstileSlot.parentElement;
+      }
+      if (turnstileSlot.parentNode === loginForm && actionGroup.parentNode === loginForm) {
+        // Move only the button container after Turnstile; Gecko resets Shadow-DOM iframes when
+        // their host or ancestor is relocated via moveBefore().
+        turnstileSlot.after(actionGroup);
+      }
+    }
+    removeLoginSpacingArtifacts(targetDocument, transformScope);
+    alignCaptchaMediaRow(targetDocument, transformScope);
+    enhancePasswordVisibilityToggle(targetDocument, transformScope);
+    attachPasswordInfoPopover(targetDocument, transformScope);
+  }
+
+  function rewriteTurnstileLoginInPlace(
+    targetDocument: Document,
+    identifiedSurface: CcxpLiteLoginIdentifyResult,
+    loginForm: HTMLFormElement,
+    loginValidationState: CcxpLiteLoginValidationState,
+  ): CcxpLiteLoginRewriteResult {
+    const { announcementTable, cannotLoginLink, strings } = identifiedSurface;
+    // Snapshot native form owners before pruning legacy wrappers can remove external controls.
+    const externalControls = [...loginForm.elements].filter(
+      (control) => !loginForm.contains(control) && !control.contains(loginForm),
+    );
+
+    const headerSection = buildLandingHeader(targetDocument, identifiedSurface);
+    const separateAnnouncementTable =
+      announcementTable && !announcementTable.contains(loginForm) ? announcementTable : undefined;
+    prepareAnnouncementTable(separateAnnouncementTable, strings);
+    const loginHelperLink = buildLoginHelperLink(targetDocument, cannotLoginLink, strings);
+    const hasNotices = Boolean(separateAnnouncementTable && !separateAnnouncementTable.hidden);
+    const noticesSection = createSection(targetDocument, "ccxp-lite-landing-notices");
+    if (hasNotices && separateAnnouncementTable) {
+      noticesSection.append(separateAnnouncementTable);
+    }
+    const footer = buildLandingFooter(targetDocument);
+    const loginHeaderLabel = buildLoginHeaderLabel(targetDocument, strings.loginTitle);
+
+    for (const control of externalControls) {
+      loginForm.append(control);
+    }
+
+    const ancestors = getBodyAncestorChain(targetDocument, loginForm);
+    for (const [index, ancestor] of ancestors.entries()) {
+      const retainedChild = index + 1 < ancestors.length ? ancestors[index + 1] : loginForm;
+      // eslint-disable-next-line unicorn/no-useless-spread -- Snapshot live childNodes before removal.
+      for (const child of [...ancestor.childNodes]) {
+        if (child !== retainedChild && !isTurnstileApiScript(child)) {
+          child.remove();
+        }
+      }
+      cleanInplaceHostElement(ancestor);
+    }
+
+    const topHost = ancestors[0] ?? loginForm;
+    // eslint-disable-next-line unicorn/no-useless-spread -- Snapshot live childNodes before removal.
+    for (const child of [...targetDocument.body.childNodes]) {
+      if (child !== topHost && !isTurnstileApiScript(child)) {
+        child.remove();
+      }
+    }
+
+    targetDocument.body.classList.add(TOKENS.landingClass, "ccxp-lite-landing-inplace-shell");
+
+    let loginSection: HTMLElement;
+    const lastAncestor = ancestors.at(-1);
+    if (ancestors.length >= 2 && lastAncestor) {
+      loginSection = lastAncestor;
+      for (const intermediate of ancestors.slice(1, -1)) {
+        intermediate.className = "ccxp-lite-landing-inplace-pass";
+      }
+      loginSection.className =
+        "ccxp-lite-landing-section ccxp-lite-landing-login ccxp-lite-landing-inplace-login";
+      topHost.className = hasNotices
+        ? "ccxp-lite-landing-section ccxp-lite-landing-body ccxp-lite-landing-inplace-body"
+        : "ccxp-lite-landing-section ccxp-lite-landing-inplace-solo";
+      topHost.before(headerSection);
+      loginForm.before(loginHeaderLabel);
+      if (hasNotices) {
+        topHost.append(noticesSection);
+      }
+      topHost.after(footer);
+    } else if (ancestors.length === 1) {
+      loginSection = ancestors[0];
+      loginSection.className =
+        "ccxp-lite-landing-section ccxp-lite-landing-login ccxp-lite-landing-inplace-login ccxp-lite-landing-inplace-solo-login";
+      loginSection.before(headerSection);
+      loginForm.before(loginHeaderLabel);
+      if (hasNotices) {
+        loginSection.after(noticesSection);
+        noticesSection.after(footer);
+      } else {
+        loginSection.after(footer);
+      }
+    } else {
+      loginSection = targetDocument.body;
+      targetDocument.body.classList.add("ccxp-lite-landing-inplace-direct");
+      loginForm.before(headerSection, loginHeaderLabel);
+      if (hasNotices) {
+        loginForm.after(noticesSection);
+        noticesSection.after(footer);
+      } else {
+        loginForm.after(footer);
+      }
+    }
+
+    collapseLegacyCannotLoginLink(cannotLoginLink);
+    const layoutRoot: ParentNode = ancestors.length > 0 ? loginSection : targetDocument.body;
+    const transformScope: ParentNode & Node = ancestors.length > 0 ? loginSection : loginForm;
+    applyLoginFormTransforms(targetDocument, layoutRoot, transformScope, loginForm);
+    if (loginHelperLink) {
+      loginForm.after(loginHelperLink);
+    }
+
+    const captchaAutofillState = getOrCreateCaptchaState(
+      targetDocument,
+      loginSection as ParentNode,
+    );
+
+    return {
+      shell: targetDocument.body,
+      loginSection,
+      loginValidationState,
+      captchaAutofillState,
+      inPlace: true,
+    };
+  }
+
+  function rewriteLoginSurface(
+    targetDocument: Document,
+    identifiedSurface: CcxpLiteLoginIdentifyResult,
+  ): CcxpLiteLoginRewriteResult {
+    const { loginForm, loginSourceCell, announcementTable, cannotLoginLink, strings } =
+      identifiedSurface;
+    const loginValidationState = captureValidationState(targetDocument);
+    const hasTurnstile = Boolean(loginForm?.querySelector(".cf-turnstile"));
+    if (hasTurnstile && loginForm && targetDocument.body.contains(loginForm)) {
+      return rewriteTurnstileLoginInPlace(
+        targetDocument,
+        identifiedSurface,
+        loginForm,
+        loginValidationState,
+      );
+    }
+
+    const shell = targetDocument.createElement("main");
+    shell.className = TOKENS.landingClass;
+    const topSection = createSection(targetDocument, "ccxp-lite-landing-top");
+    const bodySection = createSection(targetDocument, "ccxp-lite-landing-body");
+    const loginSection = createSection(targetDocument, "ccxp-lite-landing-login");
+    const noticesSection = createSection(targetDocument, "ccxp-lite-landing-notices");
+
+    const loginHeaderLabel = buildLoginHeaderLabel(targetDocument, strings.loginTitle);
+    loginSection.append(loginHeaderLabel);
+
+    // Snapshot native form owners before moving nodes can reset parser-associated controls.
+    const externalControls = loginForm
+      ? [...loginForm.elements].filter((control) => !loginForm.contains(control))
+      : [];
+    if (loginForm) {
+      loginSection.append(loginForm);
+      // The host can associate hidden session/challenge controls from outside the form. Keep those
+      // native nodes before the old layout is removed by the theme stage.
+      for (const control of externalControls) {
+        loginForm.append(control);
+      }
+    } else {
+      moveChildNodes(loginSourceCell, loginSection);
+    }
+
+    prepareAnnouncementTable(announcementTable, strings);
+    const loginHelperLink = buildLoginHelperLink(targetDocument, cannotLoginLink, strings);
+
+    applyLoginFormTransforms(targetDocument, loginSection, loginSection, loginForm);
+    if (loginHelperLink) {
+      loginSection.append(loginHelperLink);
+    }
+
+    const captchaAutofillState = getOrCreateCaptchaState(
+      targetDocument,
+      loginSection as ParentNode,
+    );
+
+    removeNode(findCalendarTable(loginSection));
+    removeNode(loginSection.querySelector("#twcaseal")?.closest("table") ?? undefined);
+    collapseLegacyThreeColumnRows(targetDocument.body);
+
+    const headerSection = buildLandingHeader(targetDocument, identifiedSurface);
+
     cleanLegacySupport(identifiedSurface);
     topSection.prepend(headerSection);
 
@@ -196,21 +378,10 @@
       if (bodySection.parentNode !== topSection) {
         topSection.append(bodySection);
       }
-    } else if (hasTurnstile) {
-      // eslint-disable-next-line unicorn/no-null -- The DOM API requires null to append.
-      topSection.moveBefore(loginSection, null);
-      bodySection.remove();
     } else {
       topSection.append(loginSection);
     }
-    const footer = targetDocument.createElement("footer");
-    footer.className = "ccxp-lite-landing-footer";
-    for (const link of createSupportLinks(targetDocument)) {
-      if (link.textContent !== "ccxpLite") {
-        link.textContent = `ccxpLite ${link.textContent}`;
-      }
-      footer.append(link);
-    }
+    const footer = buildLandingFooter(targetDocument);
     if (topSection.parentNode !== shell) {
       shell.append(topSection);
     }

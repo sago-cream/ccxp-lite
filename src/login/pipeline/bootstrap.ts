@@ -23,10 +23,7 @@
   const { restoreValidationGuards } = loginValidation;
   const { enableCaptchaAutofill, getOrCreateCaptchaState } = loginCaptcha;
   // Configure implicit rendering before the host API initializes its closed-shadow widget.
-  if (
-    isSupportedInquirePath(document) &&
-    typeof document.documentElement.moveBefore === "function"
-  ) {
+  if (isSupportedInquirePath(document)) {
     const prepareTurnstile = () => {
       const widget = document.querySelector<HTMLElement>(".cf-turnstile[data-sitekey]");
       if (!widget) {
@@ -34,8 +31,11 @@
       }
       if (widget.childElementCount === 0) {
         // The narrow login layout reserves 16px per side. Flexible needs at least 300px, so use the
-        // native 150px compact widget below a 332px viewport.
-        widget.dataset.size = globalScope.matchMedia("(max-width: 331px)").matches
+        // native 150px compact widget below a 332px viewport. Ignore a 0px pre-layout viewport
+        // (such as a newly opened window or background tab) so desktop windows do not lock into
+        // compact mode.
+        widget.dataset.size = globalScope.matchMedia("(min-width: 1px) and (max-width: 331px)")
+          .matches
           ? "compact"
           : "flexible";
         widget.dataset.theme = "light";
@@ -52,6 +52,7 @@
       document.addEventListener(
         "DOMContentLoaded",
         () => {
+          prepareTurnstile();
           observer.disconnect();
         },
         { once: true },
@@ -96,16 +97,6 @@
     const identifiedSurface = identifyLib.identifyLoginSurface(targetDocument);
     if (!identifiedSurface) {
       retryFn();
-      return;
-    }
-
-    // Older browsers cannot reparent an initialized widget without unloading its iframe. Leave
-    // their native login surface intact so verification can still finish.
-    if (
-      identifiedSurface.loginForm?.querySelector(".cf-turnstile") &&
-      typeof targetBody.moveBefore !== "function"
-    ) {
-      onReady();
       return;
     }
 

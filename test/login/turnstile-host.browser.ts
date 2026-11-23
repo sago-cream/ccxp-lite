@@ -12,6 +12,33 @@ const extension = path.resolve("dist/crx/unpacked");
 // closed shadow root matches the observed embedding.
 const host = `<script>
 window.fixtureReady = false;
+window.turnstileOrAncestorMoved = 0;
+window.turnstileOrFormDetached = 0;
+const origMoveBefore = Element.prototype.moveBefore;
+if (typeof origMoveBefore === 'function') {
+  Element.prototype.moveBefore = function(node, child) {
+    const widget = document.querySelector('.cf-turnstile');
+    if (widget && (node === widget || (node instanceof Node && node.contains(widget)))) {
+      window.turnstileOrAncestorMoved++;
+    }
+    return origMoveBefore.call(this, node, child);
+  };
+}
+new MutationObserver(function(records) {
+  const form = document.forms.form1;
+  const widget = document.querySelector('.cf-turnstile');
+  for (const record of records) {
+    for (const node of record.removedNodes) {
+      if (
+        node === form ||
+        node === widget ||
+        (node instanceof Node && ((form && node.contains(form)) || (widget && node.contains(widget))))
+      ) {
+        window.turnstileOrFormDetached++;
+      }
+    }
+  }
+}).observe(document.body, { childList: true, subtree: true });
 window.fixtureNativeChallenge = document.querySelector('[name=fnstr]');
 window.fixtureNativeChallenge.value = 'fixture-native-challenge';
 window.onTurnstileSuccess = function(token) {
@@ -91,6 +118,8 @@ test.each(
       expect(
         await page.evaluate(`({
         loads: window.fixtureLoads,
+        turnstileOrAncestorMoved: window.turnstileOrAncestorMoved,
+        turnstileOrFormDetached: window.turnstileOrFormDetached,
         identity: window.fixtureFrame.contentWindow.fixtureIdentity,
         connected: window.fixtureFrame.isConnected,
         associated: document.querySelector('[name=code]').form === document.forms.form1,
@@ -98,6 +127,8 @@ test.each(
       })`),
       ).toEqual({
         loads: 1,
+        turnstileOrAncestorMoved: 0,
+        turnstileOrFormDetached: 0,
         identity: "original-context",
         connected: true,
         associated: true,

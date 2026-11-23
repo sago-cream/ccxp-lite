@@ -1,8 +1,11 @@
 import { mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import type { BrowserContext } from "playwright";
 import { chromium } from "playwright";
 import { expect, test } from "vitest";
+
+const extension = path.resolve(process.env.CCXP_TEST_EXTENSION ?? "dist/crx/unpacked");
 
 // Behavioral shim models documented widget dimensions; no screenshots or live CAPTCHA solving.
 const apiShim = `
@@ -28,10 +31,64 @@ function initialize() {
 }
 `;
 
+async function routeTurnstileFixture(
+  context: BrowserContext,
+  timing: "initialized" | "late-api",
+  onFrameRequest: () => void,
+) {
+  await context.route("**/*", async (route) => {
+    const url = new URL(route.request().url());
+    if (url.protocol === "chrome-extension:") {
+      await route.continue();
+      return;
+    }
+    switch (url.href) {
+      case "https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/": {
+        await route.fulfill({
+          contentType: "text/html; charset=utf-8",
+          // Simulate synchronous loading so the initialized case runs before the rewrite.
+          body: readFileSync("test/browser-fixtures/login-turnstile.html", "utf8").replace(
+            "async defer",
+            "",
+          ),
+        });
+        break;
+      }
+
+      case "https://challenges.cloudflare.com/turnstile/v0/api.js": {
+        await route.fulfill({
+          contentType: "application/javascript",
+          body:
+            apiShim +
+            (timing === "initialized"
+              ? "if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initialize); else initialize();"
+              : `const observer = new MutationObserver(() => {
+                  if (document.body.dataset.ccxpLiteLandingApplied !== 'true') return;
+                  observer.disconnect(); initialize();
+                });
+                if (document.body.dataset.ccxpLiteLandingApplied === 'true') initialize();
+                else observer.observe(document.body, {attributes: true});`),
+        });
+        break;
+      }
+
+      case "https://challenges.cloudflare.com/fixture-widget": {
+        onFrameRequest();
+        await route.fulfill({ contentType: "text/html", body: "<p>Offline widget</p>" });
+        break;
+      }
+
+      default: {
+        await route.abort();
+        break;
+      }
+    }
+  });
+}
+
 for (const timing of ["initialized", "late-api"] as const) {
   for (const width of [1280, 375, 332, 331, 320]) {
     test(`packaged login preserves Turnstile with ${timing} widget at ${width}px`, async () => {
-      const extension = path.resolve(process.env.CCXP_TEST_EXTENSION ?? "dist/crx/unpacked");
       const profile = mkdtempSync(path.join(tmpdir(), "ccxp-turnstile-"));
       const context = await chromium.launchPersistentContext(profile, {
         channel: "chromium",
@@ -42,57 +99,8 @@ for (const timing of ["initialized", "late-api"] as const) {
       context.setDefaultTimeout(5000);
       let frameRequests = 0;
       try {
-        await context.route("**/*", async (route) => {
-          const url = new URL(route.request().url());
-          if (url.protocol === "chrome-extension:") {
-            await route.continue();
-          } else {
-            switch (url.href) {
-              case "https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/": {
-                await route.fulfill({
-                  contentType: "text/html; charset=utf-8",
-                  // Synchronous loading forces initialization before the rewrite; the late case
-                  // waits for the extension marker instead. These are timing simulations.
-                  body: readFileSync("test/browser-fixtures/login-turnstile.html", "utf8").replace(
-                    "async defer",
-                    "",
-                  ),
-                });
-
-                break;
-              }
-
-              case "https://challenges.cloudflare.com/turnstile/v0/api.js": {
-                await route.fulfill({
-                  contentType: "application/javascript",
-                  body:
-                    apiShim +
-                    (timing === "initialized"
-                      ? "if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initialize); else initialize();"
-                      : `const observer = new MutationObserver(() => {
-                  if (document.body.dataset.ccxpLiteLandingApplied !== 'true') return;
-                  observer.disconnect(); initialize();
-                });
-                if (document.body.dataset.ccxpLiteLandingApplied === 'true') initialize();
-                else observer.observe(document.body, {attributes: true});`),
-                });
-
-                break;
-              }
-
-              case "https://challenges.cloudflare.com/fixture-widget": {
-                frameRequests++;
-                await route.fulfill({ contentType: "text/html", body: "<p>Offline widget</p>" });
-
-                break;
-              }
-
-              default: {
-                await route.abort();
-                break;
-              }
-            }
-          }
+        await routeTurnstileFixture(context, timing, () => {
+          frameRequests++;
         });
         const page = context.pages()[0] ?? (await context.newPage());
         await page.goto("https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/");
@@ -158,3 +166,68 @@ for (const timing of ["initialized", "late-api"] as const) {
     }, 20_000);
   }
 }
+
+test("packaged login keeps flexible Turnstile and avoids clipping at 1050x680", async () => {
+  const profile = mkdtempSync(path.join(tmpdir(), "ccxp-turnstile-1050-"));
+  const context = await chromium.launchPersistentContext(profile, {
+    channel: "chromium",
+    headless: true,
+    viewport: { width: 1050, height: 680 },
+    args: [`--disable-extensions-except=${extension}`, `--load-extension=${extension}`],
+  });
+  context.setDefaultTimeout(5000);
+  let frameRequests = 0;
+  try {
+    await routeTurnstileFixture(context, "initialized", () => {
+      frameRequests++;
+    });
+    const page = context.pages()[0] ?? (await context.newPage());
+    await page.goto("https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/");
+    await page.waitForFunction(() => document.body.dataset.ccxpLiteLandingApplied === "true");
+    await page.waitForFunction(() =>
+      [...document.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]')].every(
+        (link) => link.sheet !== null,
+      ),
+    );
+    const host = page.locator(".cf-turnstile");
+    await expect.poll(async () => await host.getAttribute("data-fixture-loads")).toBe("1");
+    expect(frameRequests).toBe(1);
+    expect(await host.getAttribute("data-size")).toBe("flexible");
+
+    const metrics = await page.evaluate(() => {
+      const form = document.querySelector("form");
+      const notices = document.querySelector(".ccxp-lite-landing-notices");
+      const helper = document.querySelector(".ccxp-lite-login-helper-link");
+      const footer = document.querySelector(".ccxp-lite-landing-footer");
+      if (!form || !notices || !helper || !footer) {
+        return undefined;
+      }
+      const bodyStyle = getComputedStyle(document.body);
+      return {
+        overflowX: bodyStyle.overflowX,
+        overflowY: bodyStyle.overflowY,
+        formRight: form.getBoundingClientRect().right,
+        noticesRight: notices.getBoundingClientRect().right,
+        footerRight: footer.getBoundingClientRect().right,
+        helperBottom: helper.getBoundingClientRect().bottom,
+        footerTop: footer.getBoundingClientRect().top,
+        scrollWidth: document.documentElement.scrollWidth,
+        innerWidth: window.innerWidth,
+      };
+    });
+    expect(metrics).toBeDefined();
+    if (!metrics) {
+      throw new Error("Missing landing layout metrics");
+    }
+    expect(metrics.overflowX).toBe("clip");
+    expect(metrics.overflowY).toBe("visible");
+    expect(metrics.formRight).toBeLessThanOrEqual(1050);
+    expect(metrics.noticesRight).toBeLessThanOrEqual(1050);
+    expect(metrics.footerRight).toBeLessThanOrEqual(1050);
+    expect(metrics.helperBottom).toBeLessThanOrEqual(metrics.footerTop);
+    expect(metrics.scrollWidth).toBeLessThanOrEqual(metrics.innerWidth);
+  } finally {
+    await context.close();
+    rmSync(profile, { recursive: true, force: true });
+  }
+}, 20_000);
