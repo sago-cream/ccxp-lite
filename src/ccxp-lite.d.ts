@@ -521,6 +521,7 @@ declare global {
     loginSection: HTMLElement;
     loginValidationState: CcxpLiteLoginValidationState;
     captchaAutofillState: CcxpLiteCaptchaAutofillState | undefined;
+    inPlace?: boolean;
   }
 
   interface CcxpLiteLoginRewrite {

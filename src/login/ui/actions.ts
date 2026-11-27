@@ -131,7 +131,10 @@
   }
 
   function wrapPrimaryLoginButtons(targetDocument: Document, rootNode: ParentNode) {
-    const forms = [...rootNode.querySelectorAll<HTMLFormElement>("form")];
+    const forms =
+      rootNode instanceof HTMLFormElement
+        ? [rootNode]
+        : [...rootNode.querySelectorAll<HTMLFormElement>("form")];
     for (const formNode of forms) {
       normalizeNativeLoginSubmitControls(targetDocument, formNode);
       const allActionButtons = [

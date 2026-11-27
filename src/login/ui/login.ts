@@ -18,7 +18,11 @@
 
   function removeLoginResetControls(rootNode: ParentNode) {
     const resetControls = [
-      ...rootNode.querySelectorAll("form input[type='reset'], form button[type='reset']"),
+      ...rootNode.querySelectorAll(
+        rootNode instanceof HTMLFormElement
+          ? "input[type='reset'], button[type='reset']"
+          : "form input[type='reset'], form button[type='reset']",
+      ),
     ];
     for (const controlNode of resetControls) {
       removeNode(controlNode);
@@ -39,6 +43,9 @@
 
   function removeLoginSpacingArtifacts(targetDocument: Document, rootNode: ParentNode & Node) {
     for (const node of rootNode.querySelectorAll("br")) {
+      if (node.closest(".cf-turnstile") !== null) {
+        continue;
+      }
       removeNode(node);
     }
     const textNodes: Node[] = [];
@@ -49,6 +56,9 @@
       currentNode = walker.nextNode();
     }
     for (const textNode of textNodes) {
+      if (textNode.parentElement?.closest(".cf-turnstile") !== null) {
+        continue;
+      }
       const normalized = (textNode.textContent ?? "").replaceAll(/\u00A0|&nbsp;|&npsp;/gi, " ");
       if (normalized.trim() !== "") {
         textNode.textContent = normalized;

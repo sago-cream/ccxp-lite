@@ -46,6 +46,7 @@
 }
 
 .ccxp-lite-landing-body > .ccxp-lite-landing-login,
+.ccxp-lite-landing-body .ccxp-lite-landing-inplace-login,
 .ccxp-lite-landing-body > .ccxp-lite-landing-tabs,
 .ccxp-lite-landing-body > .ccxp-lite-landing-notices {
   width: 100%;
@@ -54,7 +55,8 @@
   align-self: stretch;
 }
 
-.ccxp-lite-landing-body > .ccxp-lite-landing-login {
+.ccxp-lite-landing-body > .ccxp-lite-landing-login,
+.ccxp-lite-landing-body .ccxp-lite-landing-inplace-login {
   grid-column: 2;
   justify-self: center;
   align-self: flex-start;
@@ -203,10 +205,65 @@ html[data-ccxp-lite-scope="landing"] .ccxp-lite-landing-utility-separator {
   width: 100% !important;
 }
 
+html[data-ccxp-lite-scope="landing"] body.ccxp-lite-landing-inplace-shell {
+  width: 100%;
+  max-width: 100%;
+  min-height: 100vh;
+  height: auto;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+  overflow-x: clip;
+}
+
+html[data-ccxp-lite-scope="landing"] .ccxp-lite-landing-inplace-pass {
+  display: contents !important;
+}
+
+.ccxp-lite-landing-inplace-body {
+  grid-template-columns: minmax(0, 360px) minmax(320px, 1fr) 360px;
+  border-spacing: 0;
+  border-collapse: separate;
+  margin-top: var(--ccxp-lite-spacing-md);
+}
+
+.ccxp-lite-landing-inplace-solo {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  max-width: 100%;
+  margin-top: var(--ccxp-lite-spacing-md);
+  border-spacing: 0;
+}
+
+.ccxp-lite-landing-inplace-login {
+  margin: 0;
+}
+
+.ccxp-lite-landing-inplace-solo-login {
+  flex: 1 1 auto;
+  margin-top: var(--ccxp-lite-spacing-md);
+}
+
+body.ccxp-lite-landing-inplace-direct > form {
+  width: min(100%, var(--ccxp-lite-size-form-control-width));
+  margin-inline: auto;
+}
+
+body.ccxp-lite-landing-inplace-direct > .ccxp-lite-landing-login-label,
+body.ccxp-lite-landing-inplace-direct > .ccxp-lite-login-helper-link {
+  align-self: center;
+}
+
 @media (max-width: 960px) {
-  .ccxp-lite-landing-shell {
+  .ccxp-lite-landing-shell,
+  html[data-ccxp-lite-scope="landing"] body.ccxp-lite-landing-inplace-shell {
     height: auto;
     overflow: visible;
+    overflow-x: clip;
   }
 
   .ccxp-lite-landing-header {
@@ -240,7 +297,8 @@ html[data-ccxp-lite-scope="landing"] .ccxp-lite-landing-utility-separator {
     padding-bottom: var(--ccxp-lite-spacing-md);
   }
 
-  .ccxp-lite-landing-body > .ccxp-lite-landing-login {
+  .ccxp-lite-landing-body > .ccxp-lite-landing-login,
+  .ccxp-lite-landing-body .ccxp-lite-landing-inplace-login {
     grid-area: login;
   }
 
@@ -277,6 +335,7 @@ html[data-ccxp-lite-scope="landing"] .ccxp-lite-landing-utility-separator {
   }
 
   .ccxp-lite-landing-body > .ccxp-lite-landing-login,
+  .ccxp-lite-landing-body .ccxp-lite-landing-inplace-login,
   .ccxp-lite-landing-body > .ccxp-lite-landing-tabs,
   .ccxp-lite-landing-body > .ccxp-lite-landing-notices {
     align-self: stretch;
