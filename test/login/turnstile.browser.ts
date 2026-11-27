@@ -1,7 +1,7 @@
 import { mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import type { BrowserContext } from "playwright";
+import type { BrowserContext, Page } from "playwright";
 import { chromium } from "playwright";
 import { expect, test } from "vitest";
 
@@ -86,6 +86,25 @@ async function routeTurnstileFixture(
   });
 }
 
+async function waitForLandingStyles(page: Page) {
+  await page.waitForFunction(() => {
+    // Chromium populates link.sheet before nested CSS imports finish loading, and the fixture
+    // aborts the host css/style.css link. Gate on computed styles from the imported landing sheets
+    // instead.
+    if (document.querySelector('[data-ccxp-lite-stylesheet="true"]') === null) {
+      return false;
+    }
+    const form = document.querySelector<HTMLElement>("form.ccxp-lite-login-form");
+    const notices = document.querySelector<HTMLElement>(".ccxp-lite-landing-notices");
+    return (
+      getComputedStyle(document.body).display === "flex" &&
+      form !== null &&
+      getComputedStyle(form).display === "flex" &&
+      (notices === null || getComputedStyle(notices).display === "flex")
+    );
+  });
+}
+
 for (const timing of ["initialized", "late-api"] as const) {
   for (const width of [1280, 375, 332, 331, 320]) {
     test(`packaged login preserves Turnstile with ${timing} widget at ${width}px`, async () => {
@@ -105,6 +124,7 @@ for (const timing of ["initialized", "late-api"] as const) {
         const page = context.pages()[0] ?? (await context.newPage());
         await page.goto("https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/");
         await page.waitForFunction(() => document.body.dataset.ccxpLiteLandingApplied === "true");
+        await waitForLandingStyles(page);
         const host = page.locator(".cf-turnstile");
         await expect.poll(async () => await host.getAttribute("data-fixture-loads")).toBe("1");
         expect(frameRequests).toBe(1);
@@ -184,11 +204,7 @@ test("packaged login keeps flexible Turnstile and avoids clipping at 1050x680", 
     const page = context.pages()[0] ?? (await context.newPage());
     await page.goto("https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/");
     await page.waitForFunction(() => document.body.dataset.ccxpLiteLandingApplied === "true");
-    await page.waitForFunction(() =>
-      [...document.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]')].every(
-        (link) => link.sheet !== null,
-      ),
-    );
+    await waitForLandingStyles(page);
     const host = page.locator(".cf-turnstile");
     await expect.poll(async () => await host.getAttribute("data-fixture-loads")).toBe("1");
     expect(frameRequests).toBe(1);
